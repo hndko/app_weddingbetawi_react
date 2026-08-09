@@ -36,7 +36,7 @@ export function MusicPlayer() {
 
   return (
     <>
-      <audio ref={audioRef} loop src="https://cdn.pixabay.com/download/audio/2022/01/21/audio_31743c58bc.mp3?filename=soft-romantic-piano-113661.mp3" />
+      <audio ref={audioRef} loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
       
       <button 
         onClick={togglePlay}

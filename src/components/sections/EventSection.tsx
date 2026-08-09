@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { config } from '../../data/config';
 import { Calendar, Clock, MapPin } from 'lucide-react';
-import { GigiBalangDivider } from '../decorations/GigiBalangDivider';
+import { FloralDivider } from '../decorations/FloralDivider';
 
 function EventCard({ event, delay }: { event: typeof config.events.akad, delay: number }) {
   return (
@@ -84,7 +84,7 @@ export function EventSection() {
   return (
     <section className="py-24 px-6 bg-warm-white relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full rotate-180 opacity-50">
-        <GigiBalangDivider />
+        <FloralDivider />
       </div>
       
       <div className="text-center mb-12 mt-4">
@@ -100,7 +100,7 @@ export function EventSection() {
       </div>
       
       <div className="absolute bottom-0 left-0 w-full opacity-50">
-        <GigiBalangDivider />
+        <FloralDivider />
       </div>
     </section>
   );

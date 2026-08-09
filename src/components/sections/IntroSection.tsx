@@ -1,11 +1,11 @@
 import { motion } from 'motion/react';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { FloatingFlowers } from '../decorations/FloatingFlowers';
-import { GigiBalangDivider } from '../decorations/GigiBalangDivider';
+import { FloralDivider } from '../decorations/FloralDivider';
 import { MonasSilhouette } from '../decorations/MonasSilhouette';
 import { RumahKebaya } from '../decorations/RumahKebaya';
 import { OndelOndel } from '../decorations/OndelOndel';
-import { Heart } from 'lucide-react';
+import { HouseBackgroundFlowers } from '../decorations/HouseBackgroundFlowers';
 
 export function IntroSection() {
   return (
@@ -57,7 +57,12 @@ export function IntroSection() {
           </svg>
 
           <div className="text-gold mb-6 relative z-10 flex justify-center">
-            <Heart size={32} className="text-gold" fill="currentColor" strokeWidth={1} opacity="0.8" />
+            <svg width="48" height="32" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold opacity-90 drop-shadow-sm">
+              <circle cx="16" cy="16" r="12" stroke="currentColor" strokeWidth="2.5" />
+              <circle cx="32" cy="16" r="12" stroke="currentColor" strokeWidth="2.5" />
+              {/* Little diamond on one of the rings */}
+              <path d="M16 2 L18 6 L16 8 L14 6 Z" fill="currentColor" />
+            </svg>
           </div>
           <h3 className="font-heading text-2xl md:text-3xl text-text-dark mb-6 leading-relaxed">
             Assalamu'alaikum Warahmatullahi Wabarakatuh
@@ -66,20 +71,25 @@ export function IntroSection() {
             Tanpa mengurangi rasa hormat, kami bermaksud mengundang Bapak/Ibu/Saudara/i pada acara resepsi pernikahan kami.
           </p>
           <div className="mt-8 flex justify-center">
-             <GigiBalangDivider />
+             <FloralDivider />
           </div>
         </motion.div>
       </div>
 
       {/* Rumah Kebaya & Ondel-ondel Scene */}
       <motion.div 
-        className="relative w-full max-w-lg mx-auto h-[200px] sm:h-[240px] flex justify-center items-end z-10 mt-4"
+        className="relative w-full max-w-lg mx-auto h-[200px] sm:h-[240px] flex justify-center items-end z-10 mt-4 pointer-events-none"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 1, delay: 0.3 }}
       >
-        <RumahKebaya className="w-[85%] sm:w-[90%] max-w-[400px] absolute bottom-0 z-10 drop-shadow-md" />
+        {/* House background flowers bursting from behind the house */}
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-[0px] -z-10 w-[95%] max-w-[400px]">
+           <HouseBackgroundFlowers className="w-full h-auto opacity-100 drop-shadow-sm scale-90 origin-bottom" />
+        </div>
+
+        <RumahKebaya className="w-[85%] sm:w-[90%] max-w-[400px] relative z-20 drop-shadow-md" />
         
         {/* Ondel-ondel Male on Left */}
         <div className="absolute left-0 sm:left-4 bottom-2 z-20">

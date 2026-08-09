@@ -44,6 +44,13 @@ export interface MusicSettings {
   mode: 'repeat-all' | 'repeat-one' | 'shuffle' | 'linear';
 }
 
+export interface SEOSettings {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  image?: string;
+}
+
 export interface WeddingConfig {
   groom: PersonInfo;
   bride: PersonInfo;
@@ -56,6 +63,7 @@ export interface WeddingConfig {
   loveStory: LoveStoryItem[];
   musicUrl?: string; // deprecated
   music?: MusicSettings;
+  seo?: SEOSettings;
 }
 
 export interface Wish {

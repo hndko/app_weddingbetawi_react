@@ -2,7 +2,6 @@ import { motion } from 'motion/react';
 import { BottomNavigation } from './BottomNavigation';
 import { HeroSection } from './sections/HeroSection';
 import { IntroSection } from './sections/IntroSection';
-import { MusicPlayer } from './MusicPlayer';
 
 import React, { Suspense, lazy } from 'react';
 
@@ -45,7 +44,6 @@ export const InvitationContent: React.FC = () => {
       </Suspense>
     </motion.div>
     
-    <MusicPlayer />
     <BottomNavigation />
   </>
 );

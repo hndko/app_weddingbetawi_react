@@ -78,5 +78,11 @@ export const config = {
       { url: "https://www.youtube.com/watch?v=RO75uUZiAw0" }
     ],
     mode: 'repeat-all' as const
+  },
+  seo: {
+    title: "The Wedding of Cecep & Ipeh | Wedding Invitation",
+    description: "Kami mengundang Anda untuk hadir di acara pernikahan kami.",
+    keywords: "wedding, pernikahan, undangan digital, Cecep, Ipeh",
+    image: "/images/og-image.jpg"
   }
 };

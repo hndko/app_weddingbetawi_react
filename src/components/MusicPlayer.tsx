@@ -9,8 +9,7 @@ const Player = ReactPlayer as any;
 
 export function MusicPlayer() {
   const { weddingConfig } = useWeddingConfig();
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
   const playlist = useMemo(() => {
@@ -22,28 +21,7 @@ export function MusicPlayer() {
 
   const mode = weddingConfig.music?.mode || 'repeat-all';
 
-  // Auto-play might be blocked without user interaction.
-  useEffect(() => {
-    const handleInteraction = () => {
-      if (!hasInteracted) {
-        setHasInteracted(true);
-        setIsPlaying(true);
-      }
-    };
-    
-    document.addEventListener('click', handleInteraction, { once: true });
-    document.addEventListener('touchstart', handleInteraction, { once: true });
-    document.addEventListener('scroll', handleInteraction, { once: true });
-    
-    return () => {
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('touchstart', handleInteraction);
-      document.removeEventListener('scroll', handleInteraction);
-    };
-  }, [hasInteracted]);
-
   const togglePlay = () => {
-    setHasInteracted(true);
     setIsPlaying(!isPlaying);
   };
 
@@ -80,6 +58,17 @@ export function MusicPlayer() {
           onEnded={handleEnded}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
+          config={{
+            youtube: {
+              playerVars: { 
+                autoplay: 1, 
+                controls: 0,
+                showinfo: 0,
+                rel: 0,
+                origin: window.location.origin
+              }
+            }
+          }}
         />
       </div>
       

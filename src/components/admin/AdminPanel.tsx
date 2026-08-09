@@ -969,6 +969,75 @@ Wassalamu'alaikum Wr. Wb.`;
                           </div>
                         </div>
 
+                        {/* SEO Settings */}
+                        <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50/50 text-xs">
+                          <h3 className="font-heading font-semibold text-text-dark mb-3 flex items-center gap-1.5">
+                            <Settings size={15} className="text-sage-dark" /> Pengaturan SEO & Metadata Link
+                          </h3>
+                          <div className="flex flex-col gap-3">
+                            <input
+                              type="text"
+                              placeholder="Judul Halaman (Browser Tab & Link Preview)"
+                              value={formData.seo?.title || ''}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                seo: { ...formData.seo, title: e.target.value }
+                              })}
+                              className="w-full border rounded-lg p-2 bg-white font-medium"
+                            />
+                            <textarea
+                              placeholder="Deskripsi Singkat (Muncul di Link Preview)"
+                              value={formData.seo?.description || ''}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                seo: { ...formData.seo, description: e.target.value }
+                              })}
+                              rows={2}
+                              className="w-full border rounded-lg p-2 bg-white resize-none"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Keywords (Opsional, pisahkan dengan koma)"
+                              value={formData.seo?.keywords || ''}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                seo: { ...formData.seo, keywords: e.target.value }
+                              })}
+                              className="w-full border rounded-lg p-2 bg-white"
+                            />
+                            <div className="flex gap-2 items-center">
+                                <input
+                                  type="text"
+                                  placeholder="URL Gambar Thumbnail Preview (Rekomendasi 1200x630)"
+                                  value={formData.seo?.image || ''}
+                                  onChange={(e) => setFormData({
+                                    ...formData,
+                                    seo: { ...formData.seo, image: e.target.value }
+                                  })}
+                                  className="flex-1 border rounded-lg p-2 bg-white"
+                                />
+                                <label className="bg-sage text-white px-3 py-2 rounded-lg flex items-center justify-center cursor-pointer hover:bg-sage-dark transition-colors shrink-0 relative overflow-hidden">
+                                  {uploadingGallery[-1] ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
+                                  <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    onChange={(e) => {
+                                      // Reuse image upload logic but map to seo image
+                                      const file = e.target.files?.[0];
+                                      if (!file) return;
+                                      const reader = new FileReader();
+                                      reader.onload = (event) => {
+                                        setFormData({ ...formData, seo: { ...formData.seo, image: event.target?.result as string } });
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }} 
+                                    className="absolute inset-0 opacity-0 cursor-pointer hidden" 
+                                  />
+                                </label>
+                            </div>
+                          </div>
+                        </div>
+
                         {/* Save Button */}
                         <div className="sticky bottom-0 bg-white p-3 border-t flex items-center justify-between gap-4">
                           {saveSuccess && (

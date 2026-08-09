@@ -43,6 +43,7 @@ export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ child
             playlist: data.musicUrl ? [{ url: data.musicUrl }] : defaultConfig.music!.playlist,
             mode: 'repeat-all'
           },
+          seo: { ...defaultConfig.seo, ...(data.seo || {}) },
         });
       } else {
         // Initialize doc in Firestore if missing

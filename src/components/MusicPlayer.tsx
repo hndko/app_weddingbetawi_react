@@ -69,8 +69,6 @@ export function MusicPlayer() {
           volume={0.5}
           playsinline
           onEnded={handleEnded}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
           config={{
             youtube: {
               playerVars: { 
@@ -82,10 +80,7 @@ export function MusicPlayer() {
               }
             },
             file: {
-              forceAudio: currentUrl.includes('docs.google.com') || currentUrl.endsWith('.mp3'),
-              attributes: {
-                crossOrigin: "anonymous"
-              }
+              forceAudio: currentUrl?.includes('docs.google.com') || currentUrl?.endsWith('.mp3')
             }
           }}
         />

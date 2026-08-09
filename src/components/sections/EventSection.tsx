@@ -1,9 +1,11 @@
 import { motion } from 'motion/react';
-import { config } from '../../data/config';
+import { useWeddingConfig } from '../../context/WeddingContext';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 import { FloralDivider } from '../decorations/FloralDivider';
+import { EventDetail } from '../../types';
 
-function EventCard({ event, delay }: { event: typeof config.events.akad, delay: number }) {
+function EventCard({ event, delay }: { event: EventDetail, delay: number }) {
+  const { weddingConfig } = useWeddingConfig();
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -68,7 +70,7 @@ function EventCard({ event, delay }: { event: typeof config.events.akad, delay: 
           </div>
           
           <a 
-            href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Pernikahan ${config.groom.nickname} & ${config.bride.nickname} - ${event.title}`)}&dates=${config.dateISO.replace(/[-:]/g, '').split('+')[0]}Z/${config.dateISO.replace(/[-:]/g, '').split('+')[0]}Z&details=${encodeURIComponent(event.address)}&location=${encodeURIComponent(event.address)}`}
+            href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Pernikahan ${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname} - ${event.title}`)}&dates=${weddingConfig.dateISO.replace(/[-:]/g, '').split('+')[0]}Z/${weddingConfig.dateISO.replace(/[-:]/g, '').split('+')[0]}Z&details=${encodeURIComponent(event.address)}&location=${encodeURIComponent(event.address)}`}
             target="_blank" rel="noopener noreferrer"
             className="w-full bg-sage text-white py-3.5 rounded-full text-[13px] font-medium tracking-wide text-center hover:bg-sage-dark transition-colors shadow-sm hover:shadow-md"
           >
@@ -81,6 +83,7 @@ function EventCard({ event, delay }: { event: typeof config.events.akad, delay: 
 }
 
 export function EventSection() {
+  const { weddingConfig } = useWeddingConfig();
   return (
     <section className="py-24 px-6 bg-warm-white relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full rotate-180 opacity-50">
@@ -95,8 +98,8 @@ export function EventSection() {
       </div>
 
       <div className="flex flex-col gap-8">
-        <EventCard event={config.events.akad} delay={0} />
-        <EventCard event={config.events.resepsi} delay={0.2} />
+        <EventCard event={weddingConfig.events.akad} delay={0} />
+        <EventCard event={weddingConfig.events.resepsi} delay={0.2} />
       </div>
       
       <div className="absolute bottom-0 left-0 w-full opacity-50">

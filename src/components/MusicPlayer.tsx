@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 import ReactPlayer from 'react-player';
+import { useWeddingConfig } from '../context/WeddingContext';
 import { cn } from '../utils/cn';
 
+// eslint-disable-next-line @typescript-[#eslint/no-explicit-any]
+const Player = ReactPlayer as any;
+
 export function MusicPlayer() {
+  const { weddingConfig } = useWeddingConfig();
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
@@ -35,8 +40,8 @@ export function MusicPlayer() {
   return (
     <>
       <div className="hidden">
-        <ReactPlayer 
-          url="https://www.youtube.com/watch?v=RO75uUZiAw0" 
+        <Player 
+          url={weddingConfig.musicUrl || "https://www.youtube.com/watch?v=RO75uUZiAw0"} 
           playing={isPlaying} 
           loop={true}
           volume={0.5}

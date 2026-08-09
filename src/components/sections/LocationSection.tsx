@@ -1,8 +1,9 @@
 import { motion } from 'motion/react';
-import { config } from '../../data/config';
+import { useWeddingConfig } from '../../context/WeddingContext';
 import { Map } from 'lucide-react';
 
 export function LocationSection() {
+  const { weddingConfig } = useWeddingConfig();
   return (
     <section className="py-20 px-6 bg-ivory text-center">
       <motion.div
@@ -30,7 +31,7 @@ export function LocationSection() {
         </div>
         
         <a 
-          href={config.events.resepsi.mapUrl}
+          href={weddingConfig.events.resepsi.mapUrl || "#"}
           target="_blank" rel="noopener noreferrer"
           className="inline-flex items-center justify-center gap-2 bg-white text-sage-dark border border-sage/40 py-3.5 px-8 rounded-full text-[13px] font-medium tracking-wide hover:bg-sage-50 transition-colors shadow-sm"
         >

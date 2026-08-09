@@ -1,13 +1,14 @@
 import React from "react";
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { config } from '../../data/config';
+import { useWeddingConfig } from '../../context/WeddingContext';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 export function GallerySection() {
+  const { weddingConfig } = useWeddingConfig();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  const images = config.gallery;
+  const images = weddingConfig.gallery || [];
 
   const openLightbox = (index: number) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);

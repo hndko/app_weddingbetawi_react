@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { config } from '../../data/config';
+import { useWeddingConfig } from '../../context/WeddingContext';
 import { Copy, CheckCircle2 } from 'lucide-react';
 
 export function WeddingGift() {
+  const { weddingConfig } = useWeddingConfig();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(config.bank.account);
+    navigator.clipboard.writeText(weddingConfig.bank.account);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -28,9 +29,9 @@ export function WeddingGift() {
         <div className="bg-white rounded-[24px] p-8 border border-sage/10 shadow-sm relative overflow-hidden max-w-[340px] mx-auto">
           <div className="absolute top-0 right-0 w-24 h-24 bg-sage/5 rounded-bl-[100px] pointer-events-none"></div>
           
-          <h4 className="font-heading text-xl text-sage-dark mb-4">{config.bank.name}</h4>
-          <p className="text-2xl font-body font-medium text-text-dark tracking-wider mb-2">{config.bank.account}</p>
-          <p className="text-xs text-text-dark/60 uppercase tracking-widest mb-8">a.n. {config.bank.holder}</p>
+          <h4 className="font-heading text-xl text-sage-dark mb-4">{weddingConfig.bank.name}</h4>
+          <p className="text-2xl font-body font-medium text-text-dark tracking-wider mb-2">{weddingConfig.bank.account}</p>
+          <p className="text-xs text-text-dark/60 uppercase tracking-widest mb-8">a.n. {weddingConfig.bank.holder}</p>
           
           <button 
             onClick={handleCopy}

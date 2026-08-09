@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { MailOpen } from 'lucide-react';
-import { config } from '../data/config';
+import { useWeddingConfig } from '../context/WeddingContext';
 import { useGuestName } from '../hooks/useGuestName';
 import { RumahKebaya } from './decorations/RumahKebaya';
 import { OndelOndel } from './decorations/OndelOndel';
@@ -12,6 +12,7 @@ import { OndelFloralDecoration } from './decorations/OndelFloralDecoration';
 import React from 'react';
 
 export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
+  const { weddingConfig } = useWeddingConfig();
   const guestName = useGuestName();
 
   return (
@@ -34,14 +35,14 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
         <span className="text-xs md:text-sm tracking-[0.25em] text-sage-dark uppercase mb-4">The Wedding Of</span>
         
         <h1 className="font-heading text-5xl md:text-6xl text-text-dark leading-tight mb-4">
-          {config.groom.nickname}
+          {weddingConfig.groom.nickname}
           <span className="block text-3xl text-sage my-1 font-body italic">&</span>
-          {config.bride.nickname}
+          {weddingConfig.bride.nickname}
         </h1>
         
         <div className="w-16 h-[1px] bg-gold-soft mb-4"></div>
         <div className="text-sm tracking-widest text-sage-dark mb-6">
-          {config.dateStr.toUpperCase()}
+          {weddingConfig.dateStr.toUpperCase()}
         </div>
 
         <div className="bg-white/70 backdrop-blur-md px-6 py-6 rounded-3xl border border-white/50 shadow-sm w-full max-w-[320px] mb-8 relative z-30 overflow-hidden">

@@ -68,5 +68,6 @@ export const config = {
       title: "Menikah",
       description: "Puncak perjalanan cinta kami, mengikat janji suci di hadapan Allah SWT."
     }
-  ]
+  ],
+  musicUrl: "https://www.youtube.com/watch?v=RO75uUZiAw0"
 };

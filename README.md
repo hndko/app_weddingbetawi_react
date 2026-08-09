@@ -116,24 +116,7 @@ Jika Anda men-deploy undangan ini dari awal menggunakan akun Vercel milik Anda s
 ⚠️ **Notifikasi "Your security rules are defined as public"**
 Jika Anda mendapatkan notifikasi tersebut setelah mengganti rules di atas, **Anda bisa mengabaikannya untuk saat ini**. Aturan (`allow read, write: if true;`) ini sengaja dipasang agar proses pengembangan dan pengisian form RSVP/Ucapan dari tamu dapat langsung berjalan tanpa perlu setup autentikasi login tamu (lebih mudah untuk di akses tamu). Jika ada data spam, Anda selalu bisa menghapusnya lewat menu Admin Panel.
 
-### 3. Setup Firebase Storage (Untuk Upload Foto)
-Agar fitur upload foto di admin panel dapat digunakan, aktifkan layanan Storage:
-1. Di menu sidebar Firebase Console, klik **"Build"** > **"Storage"**.
-2. Klik **"Get started"**, pilih **"Start in production mode"**, klik Next, dan Create.
-3. Setelah berhasil dibuat, buka tab **"Rules"** dan ubah isinya menjadi:
-   ```javascript
-   rules_version = '2';
-   service firebase.storage {
-     match /b/{bucket}/o {
-       match /{allPaths=**} {
-         allow read, write: if true;
-       }
-     }
-   }
-   ```
-4. Klik **Publish**.
-
-### 4. Dapatkan Kredensial Environment Variables (Secret Values)
+### 3. Dapatkan Kredensial Environment Variables (Secret Values)
 1. Di menu sebelah kiri atas, klik ikon roda gigi (⚙️ **Settings**) tepat di bawah tulisan "Project Overview", lalu pilih **"General"**.
 2. Gulir layar Anda perlahan ke bagian paling bawah sampai menemukan bagian **"Your apps"**.
 3. Karena Anda belum menambahkan aplikasi, Anda akan melihat beberapa ikon (iOS, Android, Web, Unity, dll). Klik tombol berikon **`</>` (Web)**.

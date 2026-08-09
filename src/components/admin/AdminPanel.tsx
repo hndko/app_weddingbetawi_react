@@ -5,8 +5,7 @@ import {
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../../lib/firebase';
+import { db } from '../../lib/firebase';
 import { WeddingConfig } from '../../types';
 
 export function AdminPanel() {
@@ -108,38 +107,52 @@ export function AdminPanel() {
     }
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `uploads/${type}_${Date.now()}.${fileExt}`;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1000;
+          const MAX_HEIGHT = 1000;
+          let width = img.width;
+          let height = img.height;
 
-      uploadTask.on(
-        'state_changed',
-        null,
-        (error) => {
-          console.error("Upload error: ", error);
-          alert("Gagal mengupload foto.");
-          resetUploadState(type, index);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+
           if (type === 'groom') {
-            setFormData(prev => ({ ...prev, groom: { ...prev.groom, image: downloadURL } }));
+            setFormData(prev => ({ ...prev, groom: { ...prev.groom, image: dataUrl } }));
           } else if (type === 'bride') {
-            setFormData(prev => ({ ...prev, bride: { ...prev.bride, image: downloadURL } }));
+            setFormData(prev => ({ ...prev, bride: { ...prev.bride, image: dataUrl } }));
           } else if (type === 'gallery' && index !== undefined) {
             setFormData(prev => {
               const newGallery = [...prev.gallery];
-              newGallery[index] = downloadURL;
+              newGallery[index] = dataUrl;
               return { ...prev, gallery: newGallery };
             });
           }
           resetUploadState(type, index);
-        }
-      );
+        };
+        img.src = event.target?.result as string;
+      };
+      reader.readAsDataURL(file);
     } catch (err) {
       console.error(err);
+      alert("Gagal mengupload foto.");
       resetUploadState(type, index);
     }
   };

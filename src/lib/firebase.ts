@@ -1,6 +1,5 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
 import firebaseConfigJson from '../../firebase-applet-config.json';
 
 const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID || firebaseConfigJson.projectId;
@@ -25,4 +24,3 @@ export const db = isValidDbId
   ? getFirestore(app, dbId)
   : getFirestore(app);
 
-export const storage = getStorage(app);

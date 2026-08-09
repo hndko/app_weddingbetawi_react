@@ -13,10 +13,23 @@ export function MusicPlayer() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
   const playlist = useMemo(() => {
+    let urls = [];
     if (weddingConfig.music?.playlist?.length) {
-      return weddingConfig.music.playlist.map(t => t.url).filter(Boolean);
+      urls = weddingConfig.music.playlist.map(t => t.url).filter(Boolean);
+    } else {
+      urls = [weddingConfig.musicUrl || "https://www.youtube.com/watch?v=RO75uUZiAw0"];
     }
-    return [weddingConfig.musicUrl || "https://www.youtube.com/watch?v=RO75uUZiAw0"];
+
+    return urls.map(url => {
+      // Auto-convert Google Drive /view links to direct download links
+      if (url.includes('drive.google.com/file/d/')) {
+        const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+          return `https://docs.google.com/uc?export=download&id=${match[1]}`;
+        }
+      }
+      return url;
+    });
   }, [weddingConfig.music, weddingConfig.musicUrl]);
 
   const mode = weddingConfig.music?.mode || 'repeat-all';
@@ -66,6 +79,12 @@ export function MusicPlayer() {
                 showinfo: 0,
                 rel: 0,
                 origin: window.location.origin
+              }
+            },
+            file: {
+              forceAudio: currentUrl.includes('docs.google.com') || currentUrl.endsWith('.mp3'),
+              attributes: {
+                crossOrigin: "anonymous"
               }
             }
           }}

@@ -1,25 +1,25 @@
 export const config = {
   groom: {
-    nickname: "Rizky",
-    fullName: "Rizky Pratama",
+    nickname: "Cecep",
+    fullName: "Cecep Pratama",
     parents: "Putra dari Bapak H. Abdullah & Ibu Hj. Siti Aminah",
     instagram: "@rizkypratama",
     image: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   },
   bride: {
-    nickname: "Aisyah",
-    fullName: "Aisyah Putri",
+    nickname: "Ipeh",
+    fullName: "Ipeh Putri",
     parents: "Putri dari Bapak H. Rahman & Ibu Hj. Fatimah",
     instagram: "@aisyahputri",
     image: "https://images.unsplash.com/photo-1595861173007-8e104fcc74cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   },
-  dateStr: "Minggu, 15 Agustus 2026",
-  dateISO: "2026-08-15T09:00:00+07:00",
+  dateStr: "Minggu, 20 September 2026",
+  dateISO: "2026-09-20T09:00:00+07:00",
   events: {
     akad: {
       title: "AKAD NIKAH",
       day: "Minggu",
-      date: "15 Agustus 2026",
+      date: "20 September 2026",
       time: "09:00 - 11:00 WIB",
       venue: "Masjid Cut Meutia",
       address: "Jl. Taman Cut Mutiah No.1, Menteng, Jakarta Pusat",
@@ -28,7 +28,7 @@ export const config = {
     resepsi: {
       title: "RESEPSI",
       day: "Minggu",
-      date: "15 Agustus 2026",
+      date: "20 September 2026",
       time: "19:00 - 22:00 WIB",
       venue: "Gedung Smesco",
       address: "Jl. Gatot Subroto Kav. 94, Pancoran, Jakarta Selatan",
@@ -45,7 +45,7 @@ export const config = {
   bank: {
     name: "BCA",
     account: "1234567890",
-    holder: "Rizky Pratama"
+    holder: "Cecep Pratama"
   },
   loveStory: [
     {

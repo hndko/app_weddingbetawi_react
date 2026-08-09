@@ -1,6 +1,10 @@
 import React from "react";
 import { useState } from 'react';
 import { motion } from 'motion/react';
+import { FloatingFlowers } from '../decorations/FloatingFlowers';
+import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
+import { FloralDivider } from '../decorations/FloralDivider';
+import { HouseBackgroundFlowers } from '../decorations/HouseBackgroundFlowers';
 
 const initialWishes = [
   { name: 'Andi & Keluarga', text: 'Selamat menempuh hidup baru, semoga menjadi keluarga sakinah mawaddah warahmah.', time: '2 jam lalu' },
@@ -27,10 +31,18 @@ export function WishesSection() {
   };
 
   return (
-    <section className="py-24 px-6 bg-warm-white relative">
-      <div className="max-w-[340px] mx-auto">
-        <div className="text-center mb-10">
+    <section className="py-24 px-6 bg-warm-white relative overflow-hidden flex flex-col items-center">
+      <FloatingFlowers className="opacity-40" />
+      <OndelFloralDecoration position="center" className="opacity-[0.04] scale-150" />
+      
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-[0px] -z-10 w-[90%] max-w-[320px] pointer-events-none">
+         <HouseBackgroundFlowers className="w-full h-auto opacity-40 drop-shadow-sm scale-[0.85] origin-bottom" />
+      </div>
+
+      <div className="max-w-[340px] w-full mx-auto relative z-10">
+        <div className="text-center mb-10 flex flex-col items-center">
            <h3 className="font-heading text-4xl text-text-dark mb-4">Ucapan & Doa</h3>
+           <FloralDivider />
         </div>
 
         <form onSubmit={handleSubmit} className="mb-10 flex flex-col gap-3">

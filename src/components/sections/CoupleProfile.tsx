@@ -5,7 +5,9 @@ import { MonasSilhouette } from '../decorations/MonasSilhouette';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { FloatingFlowers } from '../decorations/FloatingFlowers';
 
-function ProfileCard({ data, delay }: { data: typeof config.groom, delay: number }) {
+function ProfileCard({ data, delay, index }: { data: typeof config.groom, delay: number, index: number }) {
+  const isEven = index % 2 === 0;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -15,9 +17,32 @@ function ProfileCard({ data, delay }: { data: typeof config.groom, delay: number
       className="flex flex-col items-center text-center relative z-10"
     >
       <div className="relative w-48 h-64 md:w-52 md:h-72 mb-6 p-[2px] rounded-t-full rounded-b-[2rem] bg-gradient-to-b from-sage-soft via-transparent to-transparent shadow-sm">
-        {/* Decorative floral accents on the card itself */}
-        <OndelFloralDecoration position="top-left" className="opacity-20 scale-50 -translate-x-6 -translate-y-6 z-20" />
-        <OndelFloralDecoration position="bottom-right" className="opacity-20 scale-50 translate-x-6 translate-y-6 z-20" />
+        {/* Decorative floral accents on the card itself, appearing alternately and animated */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0, rotate: -45 }}
+          whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, delay: delay + 0.3 }}
+          className="absolute z-30 w-full h-full pointer-events-none inset-0"
+        >
+          <OndelFloralDecoration 
+            position={isEven ? "top-left" : "top-right"} 
+            className={`opacity-90 scale-50 ${isEven ? '-translate-x-8 -translate-y-8' : 'translate-x-8 -translate-y-8'}`} 
+          />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, scale: 0, rotate: 45 }}
+          whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, delay: delay + 0.6 }}
+          className="absolute z-30 w-full h-full pointer-events-none inset-0"
+        >
+          <OndelFloralDecoration 
+            position={isEven ? "bottom-right" : "bottom-left"} 
+            className={`opacity-90 scale-50 ${isEven ? 'translate-x-8 translate-y-8' : '-translate-x-8 translate-y-8'}`} 
+          />
+        </motion.div>
 
         <div className="w-full h-full rounded-t-full rounded-b-[1.85rem] overflow-hidden bg-light-gray relative">
           <img src={data.image} alt={data.fullName} className="w-full h-full object-cover object-center" loading="lazy" decoding="async" />
@@ -53,7 +78,7 @@ export function CoupleProfile() {
       </div>
 
       <div className="flex flex-col gap-14">
-        <ProfileCard data={config.groom} delay={0} />
+        <ProfileCard data={config.groom} delay={0} index={0} />
         
         <div className="flex justify-center items-center gap-4 text-gold/60 relative z-10 my-4">
            <span className="w-16 h-[1px] bg-gold/40"></span>
@@ -61,7 +86,7 @@ export function CoupleProfile() {
            <span className="w-16 h-[1px] bg-gold/40"></span>
         </div>
 
-        <ProfileCard data={config.bride} delay={0.2} />
+        <ProfileCard data={config.bride} delay={0.2} index={1} />
       </div>
     </section>
   );

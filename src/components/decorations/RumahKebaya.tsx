@@ -1,5 +1,15 @@
 import { cn } from '../../utils/cn';
 
+const Flower = ({ x, y, scale = 1, color = 'var(--color-betawi-red)', center = 'var(--color-gold)' }: { x: number, y: number, scale?: number, color?: string, center?: string }) => (
+  <g transform={`translate(${x}, ${y}) scale(${scale})`}>
+    <circle cx="10" cy="4" r="6" fill={color} opacity="0.9" />
+    <circle cx="16" cy="10" r="6" fill={color} opacity="0.9" />
+    <circle cx="10" cy="16" r="6" fill={color} opacity="0.9" />
+    <circle cx="4" cy="10" r="6" fill={color} opacity="0.9" />
+    <circle cx="10" cy="10" r="4" fill={center} />
+  </g>
+);
+
 export function RumahKebaya({ className = '' }: { className?: string }) {
   return (
     <svg 
@@ -85,6 +95,16 @@ export function RumahKebaya({ className = '' }: { className?: string }) {
       <circle cx="395" cy="110" r="4" fill="var(--color-betawi-red)" />
       <path d="M 375 180 Q 375 140, 365 115" stroke="var(--color-sage-dark)" strokeWidth="1.5" fill="none" />
       <circle cx="365" cy="115" r="4" fill="var(--color-gold)" />
+
+      {/* Decorative Flowers */}
+      <Flower x={15} y={175} scale={1.2} />
+      <Flower x={35} y={180} scale={0.8} color="var(--color-gold)" center="var(--color-sage-dark)" />
+      
+      <Flower x={365} y={175} scale={1.2} />
+      <Flower x={350} y={180} scale={0.8} color="var(--color-gold)" center="var(--color-sage-dark)" />
+
+      <Flower x={140} y={185} scale={0.9} color="var(--color-sage-soft)" center="var(--color-betawi-red)" />
+      <Flower x={240} y={185} scale={0.9} color="var(--color-sage-soft)" center="var(--color-betawi-red)" />
     </svg>
   );
 }

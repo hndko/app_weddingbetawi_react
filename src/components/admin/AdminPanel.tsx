@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Settings, Link as LinkIcon, Users, MessageSquare, Save, Plus, Trash2, 
-  Copy, Check, X, Lock, Music, Heart, Calendar, Image as ImageIcon, CreditCard, Share2 
+  Copy, Check, X, Lock, Music, Heart, Calendar, Image as ImageIcon, CreditCard, Share2, Upload, Loader2
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
-import { WeddingConfig, LoveStoryItem } from '../../types';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../../lib/firebase';
+import { WeddingConfig } from '../../types';
 
 export function AdminPanel() {
   const { weddingConfig, updateWeddingConfig } = useWeddingConfig();
-  const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordError, setPasswordError] = useState(false);
@@ -31,13 +30,8 @@ export function AdminPanel() {
   const [rsvps, setRsvps] = useState<any[]>([]);
   const [wishes, setWishes] = useState<any[]>([]);
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const isAdminParam = searchParams.has('admin') || window.location.pathname.endsWith('/admin');
-    if (isAdminParam) {
-      setIsOpen(true);
-    }
-  }, []);
+  const [uploadingGallery, setUploadingGallery] = useState<{[key: number]: boolean}>({});
+  const [uploadingAvatar, setUploadingAvatar] = useState<'groom' | 'bride' | null>(null);
 
   useEffect(() => {
     if (weddingConfig) {
@@ -47,25 +41,23 @@ export function AdminPanel() {
 
   // Sync RSVPs from Firestore
   useEffect(() => {
-    if (!isOpen) return;
     const q = query(collection(db, 'rsvps'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setRsvps(docs);
     });
     return () => unsubscribe();
-  }, [isOpen]);
+  }, []);
 
   // Sync Wishes from Firestore
   useEffect(() => {
-    if (!isOpen) return;
     const q = query(collection(db, 'wishes'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setWishes(docs);
     });
     return () => unsubscribe();
-  }, [isOpen]);
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +94,60 @@ export function AdminPanel() {
   const handleDeleteRsvp = async (id: string) => {
     if (confirm('Hapus data RSVP ini?')) {
       await deleteDoc(doc(db, 'rsvps', id));
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'groom' | 'bride' | 'gallery', index?: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (type === 'groom' || type === 'bride') {
+      setUploadingAvatar(type);
+    } else if (type === 'gallery' && index !== undefined) {
+      setUploadingGallery(prev => ({ ...prev, [index]: true }));
+    }
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `uploads/${type}_${Date.now()}.${fileExt}`;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        'state_changed',
+        null,
+        (error) => {
+          console.error("Upload error: ", error);
+          alert("Gagal mengupload foto.");
+          resetUploadState(type, index);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          
+          if (type === 'groom') {
+            setFormData(prev => ({ ...prev, groom: { ...prev.groom, image: downloadURL } }));
+          } else if (type === 'bride') {
+            setFormData(prev => ({ ...prev, bride: { ...prev.bride, image: downloadURL } }));
+          } else if (type === 'gallery' && index !== undefined) {
+            setFormData(prev => {
+              const newGallery = [...prev.gallery];
+              newGallery[index] = downloadURL;
+              return { ...prev, gallery: newGallery };
+            });
+          }
+          resetUploadState(type, index);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      resetUploadState(type, index);
+    }
+  };
+
+  const resetUploadState = (type: string, index?: number) => {
+    if (type === 'groom' || type === 'bride') setUploadingAvatar(null);
+    if (type === 'gallery' && index !== undefined) {
+      setUploadingGallery(prev => ({ ...prev, [index]: false }));
     }
   };
 
@@ -148,73 +194,65 @@ Wassalamu'alaikum Wr. Wb.`;
   const totalNotAttending = rsvps.filter(r => r.attendance !== 'hadir').length;
 
   return (
-    <>
-      {/* Admin Panel Modal Overlay */}
-      <AnimatePresence>
-        {isOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-gray-100 relative"
-            >
-              {/* Header */}
-              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-warm-white">
-                <div className="flex items-center gap-2.5">
-                  <div className="bg-sage/10 text-sage-dark p-2 rounded-xl">
-                    <Settings size={20} />
-                  </div>
-                  <div>
-                    <h2 className="font-heading text-lg text-text-dark font-medium">Admin Panel & Kelola Database</h2>
-                    <p className="text-[11px] text-gray-500">Ubah data undangan, buat link nama tamu & pantau ucapan/RSVP real-time</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
+    <div className="min-h-screen bg-[#F7F9F5] flex flex-col md:py-10 md:px-6">
+      <div className="w-full max-w-4xl mx-auto flex-1 bg-white md:rounded-[32px] shadow-2xl overflow-hidden flex flex-col border-0 md:border border-gray-100 relative">
+        {/* Header */}
+        <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-warm-white sticky top-0 z-10">
+          <div className="flex items-center gap-3">
+            <div className="bg-sage/10 text-sage-dark p-2.5 rounded-xl">
+              <Settings size={22} />
+            </div>
+            <div>
+              <h2 className="font-heading text-xl text-text-dark font-medium">Admin Panel</h2>
+              <p className="text-xs text-gray-500">Kelola undangan & database</p>
+            </div>
+          </div>
+          <a
+            href="/"
+            className="text-gray-400 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors"
+            title="Kembali ke Undangan"
+          >
+            <X size={24} />
+          </a>
+        </div>
 
-              {/* Body */}
-              {!isAuthenticated ? (
-                <div className="p-8 flex flex-col items-center justify-center my-auto text-center">
-                  <div className="w-14 h-14 bg-sage/10 text-sage-dark rounded-full flex items-center justify-center mb-4">
-                    <Lock size={26} />
-                  </div>
-                  <h3 className="font-heading text-xl text-text-dark mb-2">Masukan Passcode Admin</h3>
-                  <p className="text-xs text-gray-500 mb-6 max-w-xs">
-                    Masukan passcode untuk mengakses pengaturan website dan database undangan. <br />
-                    <span className="font-semibold text-sage-dark">Passcode bawaan: password</span>
-                  </p>
-                  <form onSubmit={handleLogin} className="w-full max-w-xs flex flex-col gap-3">
-                    <input
-                      type="password"
-                      value={passwordInput}
-                      onChange={(e) => setPasswordInput(e.target.value)}
-                      placeholder="Passcode..."
-                      className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-center focus:outline-none focus:ring-2 focus:ring-sage"
-                    />
-                    {passwordError && (
-                      <span className="text-xs text-red-500 font-medium">Passcode salah, coba 'password'</span>
-                    )}
-                    <button
-                      type="submit"
-                      className="w-full bg-sage-dark text-white py-3 rounded-xl text-sm font-medium hover:bg-sage transition-colors cursor-pointer"
-                    >
-                      Masuk
-                    </button>
-                  </form>
-                </div>
-              ) : (
-                <div className="flex flex-col flex-1 overflow-hidden">
-                  {/* Tabs Bar */}
-                  <div className="flex border-b border-gray-100 px-4 bg-gray-50/50 overflow-x-auto no-scrollbar">
-                    <button
-                      onClick={() => setActiveTab('generator')}
-                      className={`py-3 px-4 text-xs font-medium border-b-2 flex items-center gap-2 whitespace-nowrap transition-colors ${
+        {/* Body */}
+        {!isAuthenticated ? (
+          <div className="p-8 flex flex-col items-center justify-center flex-1 text-center">
+            <div className="w-16 h-16 bg-sage/10 text-sage-dark rounded-full flex items-center justify-center mb-5">
+              <Lock size={30} />
+            </div>
+            <h3 className="font-heading text-2xl text-text-dark mb-2">Masukan Passcode Admin</h3>
+            <p className="text-sm text-gray-500 mb-8 max-w-xs">
+              Masukan passcode untuk mengakses pengaturan website dan database undangan. <br />
+              <span className="font-semibold text-sage-dark mt-2 block">Passcode bawaan: password</span>
+            </p>
+            <form onSubmit={handleLogin} className="w-full max-w-sm flex flex-col gap-4">
+              <input
+                type="password"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                placeholder="Passcode..."
+                className="w-full border border-gray-300 rounded-xl px-4 py-3.5 text-base text-center focus:outline-none focus:ring-2 focus:ring-sage"
+              />
+              {passwordError && (
+                <span className="text-sm text-red-500 font-medium">Passcode salah, coba 'password'</span>
+              )}
+              <button
+                type="submit"
+                className="w-full bg-sage-dark text-white py-3.5 rounded-xl text-sm font-semibold hover:bg-sage transition-colors cursor-pointer"
+              >
+                Masuk
+              </button>
+            </form>
+          </div>
+        ) : (
+          <div className="flex flex-col flex-1 overflow-hidden">
+            {/* Tabs Bar */}
+            <div className="flex border-b border-gray-100 px-2 sm:px-6 bg-gray-50/50 overflow-x-auto no-scrollbar pt-2">
+              <button
+                onClick={() => setActiveTab('generator')}
+                className={`py-4 px-4 text-sm font-medium border-b-2 flex items-center gap-2 whitespace-nowrap transition-colors ${
                         activeTab === 'generator'
                           ? 'border-sage-dark text-sage-dark font-semibold'
                           : 'border-transparent text-gray-500 hover:text-gray-800'
@@ -369,14 +407,27 @@ Wassalamu'alaikum Wr. Wb.`;
                                 className="w-full border rounded-lg p-2 bg-white"
                               />
                             </div>
-                            <div>
-                              <label className="block text-gray-600 mb-1">URL Foto</label>
-                              <input
-                                type="text"
-                                value={formData.groom.image}
-                                onChange={(e) => setFormData({ ...formData, groom: { ...formData.groom, image: e.target.value } })}
-                                className="w-full border rounded-lg p-2 bg-white"
-                              />
+                            <div className="sm:col-span-2">
+                              <label className="block text-gray-600 mb-1">Foto Mempelai Pria</label>
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={formData.groom.image}
+                                  onChange={(e) => setFormData({ ...formData, groom: { ...formData.groom, image: e.target.value } })}
+                                  className="w-full border rounded-lg p-2 bg-white"
+                                  placeholder="URL atau upload foto..."
+                                />
+                                <label className="bg-sage text-white px-3 py-2 rounded-lg flex items-center justify-center cursor-pointer hover:bg-sage-dark transition-colors shrink-0 relative overflow-hidden">
+                                  {uploadingAvatar === 'groom' ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
+                                  <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    onChange={(e) => handleImageUpload(e, 'groom')} 
+                                    className="absolute inset-0 opacity-0 cursor-pointer hidden" 
+                                    id="groom-upload"
+                                  />
+                                </label>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -423,14 +474,27 @@ Wassalamu'alaikum Wr. Wb.`;
                                 className="w-full border rounded-lg p-2 bg-white"
                               />
                             </div>
-                            <div>
-                              <label className="block text-gray-600 mb-1">URL Foto</label>
-                              <input
-                                type="text"
-                                value={formData.bride.image}
-                                onChange={(e) => setFormData({ ...formData, bride: { ...formData.bride, image: e.target.value } })}
-                                className="w-full border rounded-lg p-2 bg-white"
-                              />
+                            <div className="sm:col-span-2">
+                              <label className="block text-gray-600 mb-1">Foto Mempelai Wanita</label>
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={formData.bride.image}
+                                  onChange={(e) => setFormData({ ...formData, bride: { ...formData.bride, image: e.target.value } })}
+                                  className="w-full border rounded-lg p-2 bg-white"
+                                  placeholder="URL atau upload foto..."
+                                />
+                                <label className="bg-sage text-white px-3 py-2 rounded-lg flex items-center justify-center cursor-pointer hover:bg-sage-dark transition-colors shrink-0 relative overflow-hidden">
+                                  {uploadingAvatar === 'bride' ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
+                                  <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    onChange={(e) => handleImageUpload(e, 'bride')} 
+                                    className="absolute inset-0 opacity-0 cursor-pointer hidden" 
+                                    id="bride-upload"
+                                  />
+                                </label>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -556,20 +620,72 @@ Wassalamu'alaikum Wr. Wb.`;
                           </div>
                         </div>
 
-                        {/* Music & Bank */}
-                        <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50/50 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                          <div>
-                            <h3 className="font-heading font-semibold text-text-dark mb-2 flex items-center gap-1.5">
-                              <Music size={15} className="text-sage-dark" /> Lagu Latar (YouTube URL)
-                            </h3>
-                            <input
-                              type="text"
-                              value={formData.musicUrl}
-                              onChange={(e) => setFormData({ ...formData, musicUrl: e.target.value })}
-                              className="w-full border rounded-lg p-2 bg-white"
-                            />
+                        {/* Music */}
+                        <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50/50 text-xs">
+                          <h3 className="font-heading font-semibold text-text-dark mb-3 flex items-center gap-1.5">
+                            <Music size={15} className="text-sage-dark" /> Lagu Latar (YouTube URL)
+                          </h3>
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-gray-600 mb-1 font-medium">Mode Pemutaran</label>
+                              <select
+                                value={formData.music?.mode || 'repeat-all'}
+                                onChange={(e) => setFormData({ 
+                                  ...formData, 
+                                  music: { ...formData.music!, mode: e.target.value as any } 
+                                })}
+                                className="w-full border rounded-lg p-2 bg-white"
+                              >
+                                <option value="repeat-all">Ulangi Semua (Repeat All)</option>
+                                <option value="repeat-one">Ulangi Satu Lagu (Repeat One)</option>
+                                <option value="shuffle">Acak (Shuffle)</option>
+                                <option value="linear">Sekali Jalan (Linear)</option>
+                              </select>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <label className="block text-gray-600 font-medium">Daftar Putar (Playlist)</label>
+                              {(formData.music?.playlist || (formData.musicUrl ? [{url: formData.musicUrl}] : [])).map((track, idx) => (
+                                <div key={idx} className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    value={track.url}
+                                    onChange={(e) => {
+                                      const newPlaylist = [...(formData.music?.playlist || [])];
+                                      newPlaylist[idx] = { url: e.target.value };
+                                      setFormData({ ...formData, music: { ...formData.music!, playlist: newPlaylist } });
+                                    }}
+                                    className="flex-1 border rounded-lg p-2 bg-white"
+                                    placeholder="https://www.youtube.com/watch?v=..."
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newPlaylist = formData.music!.playlist.filter((_, i) => i !== idx);
+                                      setFormData({ ...formData, music: { ...formData.music!, playlist: newPlaylist } });
+                                    }}
+                                    className="text-red-500 hover:text-red-700 p-2 shrink-0 bg-white border rounded-lg"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              ))}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newPlaylist = [...(formData.music?.playlist || []), { url: '' }];
+                                  setFormData({ ...formData, music: { ...formData.music!, mode: formData.music?.mode || 'repeat-all', playlist: newPlaylist } });
+                                }}
+                                className="text-sage-dark text-xs flex items-center gap-1 font-medium hover:underline mt-1"
+                              >
+                                <Plus size={14} /> Tambah Lagu
+                              </button>
+                            </div>
                           </div>
+                        </div>
 
+                        {/* Bank */}
+                        <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50/50 text-xs">
                           <div>
                             <h3 className="font-heading font-semibold text-text-dark mb-2 flex items-center gap-1.5">
                               <CreditCard size={15} className="text-gold" /> Bank Gift
@@ -625,13 +741,23 @@ Wassalamu'alaikum Wr. Wb.`;
                                     newArr[idx] = e.target.value;
                                     setFormData({ ...formData, gallery: newArr });
                                   }}
-                                  placeholder="https://..."
+                                  placeholder="URL foto atau upload file..."
                                   className="w-full border rounded-lg p-1.5 bg-white"
                                 />
+                                <label className="bg-sage text-white px-3 py-1.5 rounded-lg flex items-center justify-center cursor-pointer hover:bg-sage-dark transition-colors shrink-0 relative overflow-hidden">
+                                  {uploadingGallery[idx] ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
+                                  <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    onChange={(e) => handleImageUpload(e, 'gallery', idx)} 
+                                    className="absolute inset-0 opacity-0 cursor-pointer hidden" 
+                                    id={`gallery-upload-${idx}`}
+                                  />
+                                </label>
                                 <button
                                   type="button"
                                   onClick={() => setFormData({ ...formData, gallery: formData.gallery.filter((_, i) => i !== idx) })}
-                                  className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
+                                  className="text-red-500 hover:text-red-700 p-1 cursor-pointer shrink-0"
                                 >
                                   <Trash2 size={16} />
                                 </button>
@@ -739,10 +865,7 @@ Wassalamu'alaikum Wr. Wb.`;
                   </div>
                 </div>
               )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-    </>
+      </div>
+    </div>
   );
 }

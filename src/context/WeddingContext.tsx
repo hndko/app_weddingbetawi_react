@@ -39,6 +39,10 @@ export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           gallery: data.gallery || defaultConfig.gallery,
           loveStory: data.loveStory || defaultConfig.loveStory,
           musicUrl: data.musicUrl || defaultConfig.musicUrl,
+          music: data.music || {
+            playlist: data.musicUrl ? [{ url: data.musicUrl }] : defaultConfig.music!.playlist,
+            mode: 'repeat-all'
+          },
         });
       } else {
         // Initialize doc in Firestore if missing

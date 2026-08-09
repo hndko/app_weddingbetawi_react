@@ -19,7 +19,7 @@ export function AnimatedFloralVines({ className, position = 'top-left' }: Props)
 
   return (
     <motion.div 
-      className={cn("absolute z-[50] pointer-events-none drop-shadow-sm", className)}
+      className={cn("absolute z-10 pointer-events-none drop-shadow-sm", className)}
       style={{ transform: getTransform(), transformOrigin: 'center' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

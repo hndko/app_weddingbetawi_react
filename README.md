@@ -55,6 +55,16 @@ Berikut adalah cara untuk menjalankan aplikasi di lingkungan pengembangan lokal:
 2. **Akses di browser:**
    Buka peramban web Anda dan kunjungi `http://localhost:3000`.
 
+### 👥 Kustomisasi Nama Tamu Undangan
+Untuk menampilkan nama tamu undangan secara spesifik di halaman depan (sampul), Anda dapat menambahkan parameter `?to=` di akhir URL undangan saat membagikannya.
+
+**Contoh Penggunaan:**
+- Jika URL utama: `https://domainundangan.com`
+- Untuk mengundang **Budi**: `https://domainundangan.com/?to=Budi`
+- Untuk mengundang **Guest A & Guest B**: `https://domainundangan.com/?to=Guest%20A%20&%20Guest%20B`
+
+(Spasi dan karakter khusus seperti `&` idealnya di-encode sebagai `%20` untuk spasi dan `%26` untuk `&`, meskipun browser modern umumnya dapat menanganinya dengan baik.)
+
 **Untuk membangun (*build*) versi produksi:**
 ```bash
 npm run build

@@ -1,10 +1,11 @@
 import { motion } from 'motion/react';
-import { config } from '../../data/config';
+import { useWeddingConfig } from '../../context/WeddingContext';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { OndelOndel } from '../decorations/OndelOndel';
 import { MonasSilhouette } from '../decorations/MonasSilhouette';
 
 export function HeroSection() {
+  const { weddingConfig } = useWeddingConfig();
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-6 py-20 text-center overflow-hidden">
       <div className="absolute top-10 left-10 w-24 h-24 bg-sage/10 rounded-full blur-2xl"></div>
@@ -27,14 +28,14 @@ export function HeroSection() {
         <span className="text-xs md:text-sm tracking-[0.3em] text-sage-dark uppercase mb-8">The Wedding Of</span>
         
         <div className="flex flex-col items-center gap-2 mb-10">
-          <h2 className="font-heading text-5xl md:text-6xl text-text-dark tracking-wide">{config.groom.nickname}</h2>
+          <h2 className="font-heading text-5xl md:text-6xl text-text-dark tracking-wide">{weddingConfig.groom.nickname}</h2>
           <span className="text-4xl text-sage font-body italic my-2">&</span>
-          <h2 className="font-heading text-5xl md:text-6xl text-text-dark tracking-wide">{config.bride.nickname}</h2>
+          <h2 className="font-heading text-5xl md:text-6xl text-text-dark tracking-wide">{weddingConfig.bride.nickname}</h2>
         </div>
         
         <div className="flex items-center gap-4 text-text-dark/80 tracking-widest text-sm mb-12">
           <span className="w-8 h-[1px] bg-gold-soft"></span>
-          <span>15 . 08 . 2026</span>
+          <span>{weddingConfig.dateStr}</span>
           <span className="w-8 h-[1px] bg-gold-soft"></span>
         </div>
 

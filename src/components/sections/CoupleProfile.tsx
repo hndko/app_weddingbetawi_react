@@ -1,11 +1,12 @@
 import { motion } from 'motion/react';
-import { config } from '../../data/config';
+import { useWeddingConfig } from '../../context/WeddingContext';
 import { Instagram } from 'lucide-react';
 import { MonasSilhouette } from '../decorations/MonasSilhouette';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { FloatingFlowers } from '../decorations/FloatingFlowers';
+import { PersonInfo } from '../../types';
 
-function ProfileCard({ data, delay, index }: { data: typeof config.groom, delay: number, index: number }) {
+function ProfileCard({ data, delay, index }: { data: PersonInfo, delay: number, index: number }) {
   const isEven = index % 2 === 0;
   
   return (
@@ -64,6 +65,7 @@ function ProfileCard({ data, delay, index }: { data: typeof config.groom, delay:
 }
 
 export function CoupleProfile() {
+  const { weddingConfig } = useWeddingConfig();
   return (
     <section className="py-24 px-6 relative overflow-hidden bg-warm-white">
       <FloatingFlowers className="opacity-30" />
@@ -78,7 +80,7 @@ export function CoupleProfile() {
       </div>
 
       <div className="flex flex-col gap-14">
-        <ProfileCard data={config.groom} delay={0} index={0} />
+        <ProfileCard data={weddingConfig.groom} delay={0} index={0} />
         
         <div className="flex justify-center items-center gap-4 text-gold/60 relative z-10 my-4">
            <span className="w-16 h-[1px] bg-gold/40"></span>
@@ -86,7 +88,7 @@ export function CoupleProfile() {
            <span className="w-16 h-[1px] bg-gold/40"></span>
         </div>
 
-        <ProfileCard data={config.bride} delay={0.2} index={1} />
+        <ProfileCard data={weddingConfig.bride} delay={0.2} index={1} />
       </div>
     </section>
   );

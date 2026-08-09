@@ -1,8 +1,9 @@
 import { motion } from 'motion/react';
-import { config } from '../../data/config';
+import { useWeddingConfig } from '../../context/WeddingContext';
 import { cn } from '../../utils/cn';
 
 export function LoveStory() {
+  const { weddingConfig } = useWeddingConfig();
   return (
     <section className="py-24 px-8 bg-warm-white relative overflow-hidden">
       <div className="text-center mb-16 relative z-10">
@@ -13,7 +14,7 @@ export function LoveStory() {
       <div className="relative max-w-[320px] mx-auto z-10">
         <div className="absolute left-[15px] top-4 bottom-4 w-[1px] bg-sage-soft"></div>
         
-        {config.loveStory.map((story, index) => (
+        {weddingConfig.loveStory.map((story, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, x: -20 }}

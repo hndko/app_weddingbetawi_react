@@ -1,10 +1,11 @@
 import { motion } from 'motion/react';
-import { config } from '../../data/config';
+import { useWeddingConfig } from '../../context/WeddingContext';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { FloatingFlowers } from '../decorations/FloatingFlowers';
 import { OndelOndel } from '../decorations/OndelOndel';
 
 export function ClosingSection() {
+  const { weddingConfig } = useWeddingConfig();
   return (
     <section className="relative py-28 px-8 text-center bg-ivory overflow-hidden">
       <FloatingFlowers className="opacity-40" />
@@ -28,9 +29,9 @@ export function ClosingSection() {
         </h3>
         
         <div className="flex flex-col items-center gap-1 mb-8">
-          <h2 className="font-heading text-4xl text-text-dark">{config.groom.nickname}</h2>
+          <h2 className="font-heading text-4xl text-text-dark">{weddingConfig.groom.nickname}</h2>
           <span className="text-2xl text-sage font-body italic my-1">&</span>
-          <h2 className="font-heading text-4xl text-text-dark">{config.bride.nickname}</h2>
+          <h2 className="font-heading text-4xl text-text-dark">{weddingConfig.bride.nickname}</h2>
         </div>
         
         <div className="flex justify-center gap-6">

@@ -1,0 +1,45 @@
+{
+  "entities": {
+    "weddingConfig": {
+      "title": "Wedding Config",
+      "description": "Configuration data for the wedding invitation app",
+      "type": "document",
+      "path": "wedding_config/main",
+      "properties": {
+        "groom": { "type": "map", "description": "Groom details" },
+        "bride": { "type": "map", "description": "Bride details" },
+        "dateStr": { "type": "string", "description": "Formatted date string" },
+        "dateISO": { "type": "string", "description": "ISO date for countdown" },
+        "events": { "type": "map", "description": "Events akad and resepsi" },
+        "gallery": { "type": "array", "description": "Gallery image URLs" },
+        "bank": { "type": "map", "description": "Bank account details" },
+        "loveStory": { "type": "array", "description": "Love story items" },
+        "musicUrl": { "type": "string", "description": "Background music YouTube URL" }
+      }
+    },
+    "wishes": {
+      "title": "Wishes & Prayers",
+      "description": "Wishes and prayers from guests",
+      "type": "collection",
+      "path": "wishes",
+      "properties": {
+        "name": { "type": "string", "description": "Guest name" },
+        "text": { "type": "string", "description": "Wish text" },
+        "createdAt": { "type": "timestamp", "description": "Timestamp when wish was created" }
+      }
+    },
+    "rsvps": {
+      "title": "RSVP Responses",
+      "description": "RSVP responses from guests",
+      "type": "collection",
+      "path": "rsvps",
+      "properties": {
+        "name": { "type": "string", "description": "Guest name" },
+        "attendance": { "type": "string", "description": "Hadir / Tidak Hadir" },
+        "guestCount": { "type": "number", "description": "Number of guests" },
+        "notes": { "type": "string", "description": "Notes" },
+        "createdAt": { "type": "timestamp", "description": "Timestamp when RSVP was submitted" }
+      }
+    }
+  }
+}

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { config } from '../../data/config';
+import { useWeddingConfig } from '../../context/WeddingContext';
 
 export function CountdownSection() {
+  const { weddingConfig } = useWeddingConfig();
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const targetDate = new Date(config.dateISO).getTime();
+    const targetDate = new Date(weddingConfig.dateISO).getTime();
 
     const interval = setInterval(() => {
       const now = new Date().getTime();
@@ -25,7 +26,7 @@ export function CountdownSection() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [weddingConfig.dateISO]);
 
   const timeBlocks = [
     { label: 'Hari', value: timeLeft.days },

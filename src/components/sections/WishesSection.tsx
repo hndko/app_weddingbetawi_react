@@ -1,33 +1,82 @@
-import React from "react";
-import { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { motion } from 'motion/react';
+import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
+import { useGuestName } from '../../hooks/useGuestName';
 import { FloatingFlowers } from '../decorations/FloatingFlowers';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { FloralDivider } from '../decorations/FloralDivider';
 import { HouseBackgroundFlowers } from '../decorations/HouseBackgroundFlowers';
+import { Wish } from '../../types';
 
-const initialWishes = [
-  { name: 'Andi & Keluarga', text: 'Selamat menempuh hidup baru, semoga menjadi keluarga sakinah mawaddah warahmah.', time: '2 jam lalu' },
-  { name: 'Siti', text: 'Happy wedding! Lancar-lancar terus yaa dan bahagia selalu.', time: '5 jam lalu' },
+const defaultWishes: Wish[] = [
+  { id: '1', name: 'Andi & Keluarga', text: 'Selamat menempuh hidup baru, semoga menjadi keluarga sakinah mawaddah warahmah.', time: '2 jam lalu' },
+  { id: '2', name: 'Siti', text: 'Happy wedding! Lancar-lancar terus yaa dan bahagia selalu.', time: '5 jam lalu' },
 ];
 
 export function WishesSection() {
-  const [wishes, setWishes] = useState(initialWishes);
+  const defaultGuestName = useGuestName();
+  const [wishes, setWishes] = useState<Wish[]>(defaultWishes);
   const [name, setName] = useState('');
   const [wishText, setWishText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (defaultGuestName && defaultGuestName !== 'Tamu Undangan') {
+      setName(defaultGuestName);
+    }
+  }, [defaultGuestName]);
+
+  useEffect(() => {
+    const q = query(collection(db, 'wishes'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const fetchedWishes: Wish[] = snapshot.docs.map(doc => {
+          const data = doc.data();
+          let timeFormatted = 'Baru saja';
+          if (data.createdAt?.toDate) {
+            const date = data.createdAt.toDate();
+            timeFormatted = date.toLocaleDateString('id-ID', {
+              day: 'numeric',
+              month: 'short',
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+          }
+          return {
+            id: doc.id,
+            name: data.name,
+            text: data.text,
+            time: timeFormatted,
+          };
+        });
+        setWishes(fetchedWishes);
+      }
+    }, (error) => {
+      console.error('Error listening to wishes:', error);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !wishText) return;
+    if (!name.trim() || !wishText.trim()) return;
     
     setIsSubmitting(true);
-    setTimeout(() => {
-      setWishes([{ name, text: wishText, time: 'Baru saja' }, ...wishes]);
-      setName('');
+    try {
+      await addDoc(collection(db, 'wishes'), {
+        name: name.trim(),
+        text: wishText.trim(),
+        createdAt: serverTimestamp(),
+      });
       setWishText('');
+    } catch (err) {
+      console.error('Failed to submit wish:', err);
+      alert('Gagal mengirim ucapan, silakan coba lagi.');
+    } finally {
       setIsSubmitting(false);
-    }, 800);
+    }
   };
 
   return (
@@ -65,7 +114,7 @@ export function WishesSection() {
           <button 
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-sage-dark text-white py-3.5 rounded-xl text-[13px] font-medium tracking-wide hover:bg-sage transition-colors disabled:opacity-70 shadow-sm"
+            className="w-full bg-sage-dark text-white py-3.5 rounded-xl text-[13px] font-medium tracking-wide hover:bg-sage transition-colors disabled:opacity-70 shadow-sm cursor-pointer"
           >
             {isSubmitting ? 'Mengirim...' : 'Kirim Ucapan'}
           </button>
@@ -74,7 +123,7 @@ export function WishesSection() {
         <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto no-scrollbar pr-1">
           {wishes.map((wish, index) => (
             <motion.div 
-              key={index}
+              key={wish.id || index}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white p-5 rounded-2xl border border-sage/10 shadow-sm"

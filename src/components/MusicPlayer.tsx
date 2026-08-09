@@ -1,42 +1,50 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
+import ReactPlayer from 'react-player';
 import { cn } from '../utils/cn';
 
 export function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
+  // Auto-play might be blocked without user interaction.
   useEffect(() => {
-    const playAudio = async () => {
-      if (audioRef.current) {
-        audioRef.current.volume = 0.5;
-        try {
-          await audioRef.current.play();
-          setIsPlaying(true);
-        } catch (e) {
-          console.log('Autoplay prevented:', e);
-          setIsPlaying(false);
-        }
+    const handleInteraction = () => {
+      if (!hasInteracted) {
+        setHasInteracted(true);
+        setIsPlaying(true);
       }
     };
     
-    playAudio();
-  }, []);
+    document.addEventListener('click', handleInteraction, { once: true });
+    document.addEventListener('touchstart', handleInteraction, { once: true });
+    document.addEventListener('scroll', handleInteraction, { once: true });
+    
+    return () => {
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener('scroll', handleInteraction);
+    };
+  }, [hasInteracted]);
 
   const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
+    setHasInteracted(true);
+    setIsPlaying(!isPlaying);
   };
 
   return (
     <>
-      <audio ref={audioRef} loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
+      <div className="hidden">
+        <ReactPlayer 
+          url="https://www.youtube.com/watch?v=RO75uUZiAw0" 
+          playing={isPlaying} 
+          loop={true}
+          volume={0.5}
+          playsinline
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+        />
+      </div>
       
       <button 
         onClick={togglePlay}

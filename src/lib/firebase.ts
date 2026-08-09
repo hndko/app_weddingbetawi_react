@@ -17,8 +17,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-export const db = firebaseConfig.firestoreDatabaseId 
-  ? getFirestore(app, firebaseConfig.firestoreDatabaseId)
+const dbId = firebaseConfig.firestoreDatabaseId;
+const isValidDbId = dbId && !dbId.startsWith('G-') && dbId !== '(default)';
+
+export const db = isValidDbId
+  ? getFirestore(app, dbId)
   : getFirestore(app);
 
 export const storage = getStorage(app);

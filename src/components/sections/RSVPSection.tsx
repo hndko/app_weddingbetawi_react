@@ -18,6 +18,9 @@ export function RSVPSection() {
     if (defaultGuestName && defaultGuestName !== 'Tamu Undangan') {
       setName(defaultGuestName);
     }
+    if (localStorage.getItem('rsvp_submitted') === 'true') {
+      setIsSubmitted(true);
+    }
   }, [defaultGuestName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,6 +37,7 @@ export function RSVPSection() {
         createdAt: serverTimestamp(),
       });
       setIsSubmitted(true);
+      localStorage.setItem('rsvp_submitted', 'true');
     } catch (error) {
       console.error('Error submitting RSVP:', error);
       alert('Gagal mengirim RSVP, silakan coba lagi.');

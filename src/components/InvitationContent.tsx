@@ -34,9 +34,9 @@ export const InvitationContent: React.FC = () => {
       <Suspense fallback={<div className="h-[200px] flex items-center justify-center text-sage">Memuat...</div>}>
         <div id="mempelai"><CoupleProfile /></div>
         <CountdownSection />
+        <div id="cerita"><LoveStory /></div>
         <div id="acara"><EventSection /></div>
         <LocationSection />
-        <LoveStory />
         <div id="galeri"><GallerySection /></div>
         <WeddingGift />
         <RSVPSection />

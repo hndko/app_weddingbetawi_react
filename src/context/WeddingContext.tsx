@@ -35,7 +35,7 @@ export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ child
             akad: { ...defaultConfig.events.akad, ...(data.events?.akad || {}) },
             resepsi: { ...defaultConfig.events.resepsi, ...(data.events?.resepsi || {}) },
           },
-          bank: { ...defaultConfig.bank, ...(data.bank || {}) },
+          banks: data.banks || (data.bank ? [data.bank] : defaultConfig.banks),
           gallery: data.gallery || defaultConfig.gallery,
           loveStory: data.loveStory || defaultConfig.loveStory,
           musicUrl: data.musicUrl || defaultConfig.musicUrl,

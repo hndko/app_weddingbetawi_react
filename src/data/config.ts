@@ -42,11 +42,14 @@ export const config = {
     "https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
     "https://images.unsplash.com/photo-1510076857177-7470076d4098?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
   ],
-  bank: {
-    name: "BCA",
-    account: "1234567890",
-    holder: "Cecep Pratama"
-  },
+  banks: [
+    {
+      name: "BCA",
+      account: "1234567890",
+      holder: "Cecep Pratama",
+      isQris: false,
+    },
+  ],
   loveStory: [
     {
       year: "2021",

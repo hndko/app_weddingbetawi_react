@@ -7,11 +7,13 @@ export function WeddingGift() {
   const { weddingConfig } = useWeddingConfig();
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(weddingConfig.bank.account);
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const banks = weddingConfig.banks || (weddingConfig.bank ? [weddingConfig.bank] : []);
 
   return (
     <section className="py-24 px-6 bg-warm-white text-center relative overflow-hidden">
@@ -26,20 +28,35 @@ export function WeddingGift() {
           Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun apabila memberi adalah ungkapan tanda kasih, Anda dapat memberikan hadiah secara cashless.
         </p>
 
-        <div className="bg-white rounded-[24px] p-8 border border-sage/10 shadow-sm relative overflow-hidden max-w-[340px] mx-auto">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-sage/5 rounded-bl-[100px] pointer-events-none"></div>
-          
-          <h4 className="font-heading text-xl text-sage-dark mb-4">{weddingConfig.bank.name}</h4>
-          <p className="text-2xl font-body font-medium text-text-dark tracking-wider mb-2">{weddingConfig.bank.account}</p>
-          <p className="text-xs text-text-dark/60 uppercase tracking-widest mb-8">a.n. {weddingConfig.bank.holder}</p>
-          
-          <button 
-            onClick={handleCopy}
-            className="w-full bg-sage-50 text-sage-dark border border-sage/30 py-3.5 rounded-full text-[13px] font-medium tracking-wide flex items-center justify-center gap-2 hover:bg-sage hover:text-white transition-colors"
-          >
-            <Copy size={16} />
-            SALIN NOMOR REKENING
-          </button>
+        <div className="flex flex-col gap-6 max-w-[340px] mx-auto">
+          {banks.map((bank, index) => (
+            <div key={index} className="bg-white rounded-[24px] p-8 border border-sage/10 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-sage/5 rounded-bl-[100px] pointer-events-none"></div>
+              
+              <h4 className="font-heading text-xl text-sage-dark mb-4">{bank.name}</h4>
+              
+              {bank.isQris && bank.qrisImage ? (
+                <div className="mb-6 flex justify-center">
+                  <img src={bank.qrisImage} alt={`QRIS ${bank.name}`} className="w-48 h-48 object-contain rounded-xl border border-gray-100" />
+                </div>
+              ) : null}
+
+              {(!bank.isQris || bank.account !== '-') && (
+                <>
+                  <p className="text-2xl font-body font-medium text-text-dark tracking-wider mb-2">{bank.account}</p>
+                  <p className="text-xs text-text-dark/60 uppercase tracking-widest mb-8">a.n. {bank.holder}</p>
+                  
+                  <button 
+                    onClick={() => handleCopy(bank.account)}
+                    className="w-full bg-sage-50 text-sage-dark border border-sage/30 py-3.5 rounded-full text-[13px] font-medium tracking-wide flex items-center justify-center gap-2 hover:bg-sage hover:text-white transition-colors"
+                  >
+                    <Copy size={16} />
+                    SALIN NOMOR REKENING
+                  </button>
+                </>
+              )}
+            </div>
+          ))}
         </div>
       </motion.div>
 

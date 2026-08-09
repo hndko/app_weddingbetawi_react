@@ -20,6 +20,7 @@ export function WishesSection() {
   const [name, setName] = useState('');
   const [wishText, setWishText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(5);
 
   useEffect(() => {
     if (defaultGuestName && defaultGuestName !== 'Tamu Undangan') {
@@ -121,7 +122,7 @@ export function WishesSection() {
         </form>
 
         <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto no-scrollbar pr-1">
-          {wishes.map((wish, index) => (
+          {wishes.slice(0, visibleCount).map((wish, index) => (
             <motion.div 
               key={wish.id || index}
               initial={{ opacity: 0, y: 10 }}
@@ -137,6 +138,14 @@ export function WishesSection() {
               </p>
             </motion.div>
           ))}
+          {wishes.length > visibleCount && (
+            <button
+              onClick={() => setVisibleCount(prev => prev + 5)}
+              className="mt-2 text-xs text-sage-dark font-medium hover:underline py-2"
+            >
+              Lihat Lebih Banyak ({wishes.length - visibleCount})
+            </button>
+          )}
         </div>
       </div>
     </section>

@@ -9,9 +9,17 @@ import { SEO } from './components/SEO';
 import { MusicPlayer } from './components/MusicPlayer';
 
 function AppContent({ isAdminParam }: { isAdminParam: boolean }) {
-  const { weddingConfig } = useWeddingConfig();
+  const { weddingConfig, loading } = useWeddingConfig();
   const [isOpened, setIsOpened] = useState(false);
   
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full bg-[#E8EBE3] flex items-center justify-center font-body">
+        <div className="w-8 h-8 border-4 border-sage border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   const siteName = `The Wedding of ${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname}`;
   
   const seoTitle = weddingConfig.seo?.title || `${siteName} | Wedding Invitation`;

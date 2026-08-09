@@ -25,6 +25,8 @@ export interface BankInfo {
   name: string;
   account: string;
   holder: string;
+  isQris?: boolean;
+  qrisImage?: string;
 }
 
 export interface LoveStoryItem {
@@ -49,7 +51,8 @@ export interface WeddingConfig {
   dateISO: string;
   events: EventsConfig;
   gallery: string[];
-  bank: BankInfo;
+  bank?: BankInfo; // deprecated
+  banks?: BankInfo[];
   loveStory: LoveStoryItem[];
   musicUrl?: string; // deprecated
   music?: MusicSettings;

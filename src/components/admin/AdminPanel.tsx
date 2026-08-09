@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Settings, Link as LinkIcon, Users, MessageSquare, Save, Plus, Trash2, 
-  Copy, Check, X, Lock, Music, Heart, Calendar, Image as ImageIcon, CreditCard, Share2, Upload, Loader2
+  Copy, Check, X, Lock, Music, Heart, Calendar, Image as ImageIcon, CreditCard, Share2, Upload, Loader2, BookOpen
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
@@ -544,7 +544,17 @@ Wassalamu'alaikum Wr. Wb.`;
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                               <input
                                 type="text"
-                                placeholder="Hari, Tanggal"
+                                placeholder="Hari (Contoh: Minggu)"
+                                value={formData.events.akad.day}
+                                onChange={(e) => setFormData({
+                                  ...formData,
+                                  events: { ...formData.events, akad: { ...formData.events.akad, day: e.target.value } }
+                                })}
+                                className="border rounded p-1.5"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Tanggal (Contoh: 20 September 2026)"
                                 value={formData.events.akad.date}
                                 onChange={(e) => setFormData({
                                   ...formData,
@@ -574,11 +584,21 @@ Wassalamu'alaikum Wr. Wb.`;
                               />
                               <input
                                 type="text"
-                                placeholder="Alamat"
+                                placeholder="Alamat Lengkap"
                                 value={formData.events.akad.address}
                                 onChange={(e) => setFormData({
                                   ...formData,
                                   events: { ...formData.events, akad: { ...formData.events.akad, address: e.target.value } }
+                                })}
+                                className="border rounded p-1.5"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Link Google Maps"
+                                value={formData.events.akad.mapUrl}
+                                onChange={(e) => setFormData({
+                                  ...formData,
+                                  events: { ...formData.events, akad: { ...formData.events.akad, mapUrl: e.target.value } }
                                 })}
                                 className="border rounded p-1.5"
                               />
@@ -591,7 +611,17 @@ Wassalamu'alaikum Wr. Wb.`;
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                               <input
                                 type="text"
-                                placeholder="Hari, Tanggal"
+                                placeholder="Hari (Contoh: Minggu)"
+                                value={formData.events.resepsi.day}
+                                onChange={(e) => setFormData({
+                                  ...formData,
+                                  events: { ...formData.events, resepsi: { ...formData.events.resepsi, day: e.target.value } }
+                                })}
+                                className="border rounded p-1.5"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Tanggal (Contoh: 20 September 2026)"
                                 value={formData.events.resepsi.date}
                                 onChange={(e) => setFormData({
                                   ...formData,
@@ -621,7 +651,17 @@ Wassalamu'alaikum Wr. Wb.`;
                               />
                               <input
                                 type="text"
-                                placeholder="Alamat / Google Maps URL"
+                                placeholder="Alamat Lengkap"
+                                value={formData.events.resepsi.address}
+                                onChange={(e) => setFormData({
+                                  ...formData,
+                                  events: { ...formData.events, resepsi: { ...formData.events.resepsi, address: e.target.value } }
+                                })}
+                                className="border rounded p-1.5"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Link Google Maps"
                                 value={formData.events.resepsi.mapUrl}
                                 onChange={(e) => setFormData({
                                   ...formData,
@@ -630,6 +670,73 @@ Wassalamu'alaikum Wr. Wb.`;
                                 className="border rounded p-1.5"
                               />
                             </div>
+                          </div>
+                        </div>
+
+                        {/* Kisah Kami */}
+                        <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50/50 text-xs">
+                          <div className="flex items-center justify-between mb-3">
+                            <h3 className="font-heading font-semibold text-text-dark flex items-center gap-1.5">
+                              <BookOpen size={15} className="text-sage-dark" /> Kisah Kami
+                            </h3>
+                            <button
+                              type="button"
+                              onClick={() => setFormData({ ...formData, loveStory: [...(formData.loveStory || []), { year: '', title: '', description: '' }] })}
+                              className="text-sage-dark hover:underline flex items-center gap-1 cursor-pointer"
+                            >
+                              <Plus size={14} /> Tambah Cerita
+                            </button>
+                          </div>
+                          <div className="flex flex-col gap-4">
+                            {(formData.loveStory || []).map((story, idx) => (
+                              <div key={idx} className="bg-white border rounded-xl p-3 flex flex-col gap-2 relative">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newArr = [...(formData.loveStory || [])];
+                                    newArr.splice(idx, 1);
+                                    setFormData({ ...formData, loveStory: newArr });
+                                  }}
+                                  className="absolute top-2 right-2 text-red-500 hover:text-red-700 p-1"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                                
+                                <input
+                                  type="text"
+                                  placeholder="Tahun / Momen (mis. 2021 atau Pertemuan)"
+                                  value={story.year}
+                                  onChange={(e) => {
+                                    const newArr = [...(formData.loveStory || [])];
+                                    newArr[idx] = { ...story, year: e.target.value };
+                                    setFormData({ ...formData, loveStory: newArr });
+                                  }}
+                                  className="w-full border rounded-lg p-1.5 bg-gray-50 pr-8"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Judul Cerita"
+                                  value={story.title}
+                                  onChange={(e) => {
+                                    const newArr = [...(formData.loveStory || [])];
+                                    newArr[idx] = { ...story, title: e.target.value };
+                                    setFormData({ ...formData, loveStory: newArr });
+                                  }}
+                                  className="w-full border rounded-lg p-1.5 bg-gray-50"
+                                />
+                                <textarea
+                                  placeholder="Deskripsi cerita..."
+                                  value={story.description}
+                                  onChange={(e) => {
+                                    const newArr = [...(formData.loveStory || [])];
+                                    newArr[idx] = { ...story, description: e.target.value };
+                                    setFormData({ ...formData, loveStory: newArr });
+                                  }}
+                                  rows={3}
+                                  className="w-full border rounded-lg p-1.5 bg-gray-50 resize-none"
+                                />
+                              </div>
+                            ))}
                           </div>
                         </div>
 
@@ -697,35 +804,118 @@ Wassalamu'alaikum Wr. Wb.`;
                           </div>
                         </div>
 
-                        {/* Bank */}
+                        {/* Bank / QRIS */}
                         <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50/50 text-xs">
-                          <div>
-                            <h3 className="font-heading font-semibold text-text-dark mb-2 flex items-center gap-1.5">
-                              <CreditCard size={15} className="text-gold" /> Bank Gift
+                          <div className="flex items-center justify-between mb-3">
+                            <h3 className="font-heading font-semibold text-text-dark flex items-center gap-1.5">
+                              <CreditCard size={15} className="text-gold" /> Rekening / QRIS Gift
                             </h3>
-                            <div className="flex flex-col gap-1.5">
-                              <input
-                                type="text"
-                                placeholder="Nama Bank"
-                                value={formData.bank.name}
-                                onChange={(e) => setFormData({ ...formData, bank: { ...formData.bank, name: e.target.value } })}
-                                className="w-full border rounded-lg p-1.5 bg-white"
-                              />
-                              <input
-                                type="text"
-                                placeholder="No Rekening"
-                                value={formData.bank.account}
-                                onChange={(e) => setFormData({ ...formData, bank: { ...formData.bank, account: e.target.value } })}
-                                className="w-full border rounded-lg p-1.5 bg-white"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Atas Nama"
-                                value={formData.bank.holder}
-                                onChange={(e) => setFormData({ ...formData, bank: { ...formData.bank, holder: e.target.value } })}
-                                className="w-full border rounded-lg p-1.5 bg-white"
-                              />
-                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setFormData({ ...formData, banks: [...(formData.banks || (formData.bank ? [formData.bank] : [])), { name: '', account: '', holder: '', isQris: false, qrisImage: '' }] })}
+                              className="text-sage-dark hover:underline flex items-center gap-1 cursor-pointer"
+                            >
+                              <Plus size={14} /> Tambah Akun
+                            </button>
+                          </div>
+                          <div className="flex flex-col gap-4">
+                            {(formData.banks || (formData.bank ? [formData.bank] : [])).map((bank, idx) => (
+                              <div key={idx} className="bg-white border rounded-xl p-3 flex flex-col gap-2 relative">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newArr = [...(formData.banks || [])];
+                                    newArr.splice(idx, 1);
+                                    setFormData({ ...formData, banks: newArr });
+                                  }}
+                                  className="absolute top-2 right-2 text-red-500 hover:text-red-700 p-1"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                                <label className="flex items-center gap-2 mb-1">
+                                  <input
+                                    type="checkbox"
+                                    checked={bank.isQris || false}
+                                    onChange={(e) => {
+                                      const newArr = [...(formData.banks || [])];
+                                      newArr[idx] = { ...bank, isQris: e.target.checked };
+                                      setFormData({ ...formData, banks: newArr });
+                                    }}
+                                  />
+                                  <span>Gunakan QRIS untuk akun ini</span>
+                                </label>
+
+                                <input
+                                  type="text"
+                                  placeholder="Nama Bank / E-Wallet (mis. BCA, OVO, QRIS)"
+                                  value={bank.name}
+                                  onChange={(e) => {
+                                    const newArr = [...(formData.banks || [])];
+                                    newArr[idx] = { ...bank, name: e.target.value };
+                                    setFormData({ ...formData, banks: newArr });
+                                  }}
+                                  className="w-full border rounded-lg p-1.5 bg-gray-50"
+                                />
+
+                                {!bank.isQris && (
+                                  <>
+                                    <input
+                                      type="text"
+                                      placeholder="No Rekening / No HP"
+                                      value={bank.account}
+                                      onChange={(e) => {
+                                        const newArr = [...(formData.banks || [])];
+                                        newArr[idx] = { ...bank, account: e.target.value };
+                                        setFormData({ ...formData, banks: newArr });
+                                      }}
+                                      className="w-full border rounded-lg p-1.5 bg-gray-50"
+                                    />
+                                    <input
+                                      type="text"
+                                      placeholder="Atas Nama"
+                                      value={bank.holder}
+                                      onChange={(e) => {
+                                        const newArr = [...(formData.banks || [])];
+                                        newArr[idx] = { ...bank, holder: e.target.value };
+                                        setFormData({ ...formData, banks: newArr });
+                                      }}
+                                      className="w-full border rounded-lg p-1.5 bg-gray-50"
+                                    />
+                                  </>
+                                )}
+
+                                {bank.isQris && (
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      type="text"
+                                      value={bank.qrisImage || ''}
+                                      placeholder="Data Gambar QRIS..."
+                                      readOnly
+                                      className="w-full border rounded-lg p-1.5 bg-gray-50 text-gray-400"
+                                    />
+                                    <label className="bg-sage text-white px-3 py-1.5 rounded-lg flex items-center justify-center cursor-pointer hover:bg-sage-dark shrink-0">
+                                      <Upload size={14} className="mr-1" /> Pilih QRIS
+                                      <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        onChange={(e) => {
+                                          const file = e.target.files?.[0];
+                                          if (!file) return;
+                                          const reader = new FileReader();
+                                          reader.onload = (event) => {
+                                            const newArr = [...(formData.banks || [])];
+                                            newArr[idx] = { ...bank, qrisImage: event.target?.result as string, account: '-', holder: '-' };
+                                            setFormData({ ...formData, banks: newArr });
+                                          };
+                                          reader.readAsDataURL(file);
+                                        }} 
+                                        className="hidden" 
+                                      />
+                                    </label>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
                           </div>
                         </div>
 

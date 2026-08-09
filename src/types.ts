@@ -33,6 +33,15 @@ export interface LoveStoryItem {
   description: string;
 }
 
+export interface MusicTrack {
+  url: string;
+}
+
+export interface MusicSettings {
+  playlist: MusicTrack[];
+  mode: 'repeat-all' | 'repeat-one' | 'shuffle' | 'linear';
+}
+
 export interface WeddingConfig {
   groom: PersonInfo;
   bride: PersonInfo;
@@ -42,7 +51,8 @@ export interface WeddingConfig {
   gallery: string[];
   bank: BankInfo;
   loveStory: LoveStoryItem[];
-  musicUrl: string;
+  musicUrl?: string; // deprecated
+  music?: MusicSettings;
 }
 
 export interface Wish {

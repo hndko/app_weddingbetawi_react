@@ -69,5 +69,11 @@ export const config = {
       description: "Puncak perjalanan cinta kami, mengikat janji suci di hadapan Allah SWT."
     }
   ],
-  musicUrl: "https://www.youtube.com/watch?v=RO75uUZiAw0"
+  musicUrl: "https://www.youtube.com/watch?v=RO75uUZiAw0",
+  music: {
+    playlist: [
+      { url: "https://www.youtube.com/watch?v=RO75uUZiAw0" }
+    ],
+    mode: 'repeat-all' as const
+  }
 };

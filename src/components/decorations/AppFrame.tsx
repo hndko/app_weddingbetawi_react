@@ -3,7 +3,7 @@ import { AnimatedFloralVines } from './AnimatedFloralVines';
 
 export function AppFrame({ className }: { className?: string }) {
   return (
-    <div className={cn("absolute inset-0 z-[60] pointer-events-none rounded-[inherit] overflow-hidden", className)}>
+    <div className={cn("absolute inset-0 z-0 pointer-events-none rounded-[inherit] overflow-hidden opacity-50", className)}>
       {/* Animated Floral Vines in Corners */}
       <AnimatedFloralVines position="top-left" className="top-0 left-0" />
       <AnimatedFloralVines position="top-right" className="top-0 right-0" />

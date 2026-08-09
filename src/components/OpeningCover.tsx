@@ -13,7 +13,7 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
 
   return (
     <motion.div 
-      className="absolute inset-0 z-50 flex flex-col items-center justify-between bg-ivory text-center px-6 overflow-hidden pt-12 pb-0"
+      className="absolute inset-0 z-50 flex flex-col items-center justify-between text-center px-4 md:px-6 overflow-y-auto no-scrollbar pt-8 md:pt-12 pb-0"
       exit={{ y: '-100%', opacity: 0 }}
       transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
     >
@@ -21,7 +21,7 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.8 }}
-        className="z-10 flex flex-col items-center w-full flex-grow mt-6"
+        className="z-20 flex flex-col items-center w-full flex-grow mt-4 md:mt-6 shrink-0 min-h-max"
       >
         <span className="text-xs md:text-sm tracking-[0.25em] text-sage-dark uppercase mb-4">The Wedding Of</span>
         
@@ -52,7 +52,7 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
 
       {/* Rumah Kebaya & Ondel-ondel Scene at bottom */}
       <motion.div 
-        className="relative w-full max-w-sm mx-auto h-[160px] flex justify-center items-end z-10 opacity-90"
+        className="relative w-full max-w-sm mx-auto h-[120px] md:h-[160px] flex justify-center items-end z-0 opacity-90 pointer-events-none shrink-0"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.5 }}

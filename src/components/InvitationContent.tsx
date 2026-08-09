@@ -22,7 +22,8 @@ export const InvitationContent: React.FC = () => {
   return (
     <>
       <motion.div 
-        className="flex-1 h-full overflow-y-auto no-scrollbar scroll-smooth bg-warm-white pb-[120px]"
+        id="scroll-container"
+        className="flex-1 h-full overflow-y-auto no-scrollbar scroll-smooth pb-[120px]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8, delay: 0.2 }}

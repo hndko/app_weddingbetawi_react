@@ -15,10 +15,9 @@ export default function App() {
       </div>
 
       {/* Mobile App Container */}
-      <div className="relative w-full md:max-w-[430px] min-h-screen bg-warm-white md:min-h-[min(900px,calc(100vh-48px))] md:h-[min(900px,calc(100vh-48px))] md:rounded-[36px] shadow-2xl overflow-hidden flex flex-col md:border-8 border-white">
+      <div className="relative w-full md:max-w-[430px] h-[100dvh] bg-warm-white md:min-h-[min(900px,calc(100vh-48px))] md:h-[min(900px,calc(100vh-48px))] md:rounded-[36px] shadow-2xl overflow-hidden flex flex-col md:border-8 border-white">
         
         <AppFrame />
-
         <AnimatePresence mode="wait">
           {!isOpened ? (
             <OpeningCover key="opening" onOpen={() => setIsOpened(true)} />

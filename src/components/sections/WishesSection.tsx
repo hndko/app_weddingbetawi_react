@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useGuestName } from '../../hooks/useGuestName';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { FloatingFlowers } from '../decorations/FloatingFlowers';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { FloralDivider } from '../decorations/FloralDivider';
@@ -21,6 +22,8 @@ export function WishesSection() {
   const [wishText, setWishText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (defaultGuestName && defaultGuestName !== 'Tamu Undangan') {
@@ -65,6 +68,8 @@ export function WishesSection() {
     if (!name.trim() || !wishText.trim()) return;
     
     setIsSubmitting(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
     try {
       await addDoc(collection(db, 'wishes'), {
         name: name.trim(),
@@ -72,9 +77,11 @@ export function WishesSection() {
         createdAt: serverTimestamp(),
       });
       setWishText('');
+      setSuccessMessage('Ucapan dan doa Anda berhasil dikirimkan!');
+      setTimeout(() => setSuccessMessage(null), 4000);
     } catch (err) {
       console.error('Failed to submit wish:', err);
-      alert('Gagal mengirim ucapan, silakan coba lagi.');
+      setErrorMessage('Gagal mengirim ucapan. Silakan periksa koneksi internet Anda dan coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
@@ -96,6 +103,18 @@ export function WishesSection() {
         </div>
 
         <form onSubmit={handleSubmit} className="mb-10 flex flex-col gap-3">
+          {errorMessage && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-3.5 py-2.5 rounded-xl text-xs flex items-start gap-2">
+              <AlertCircle size={16} className="shrink-0 mt-0.5 text-red-500" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+          {successMessage && (
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-2">
+              <CheckCircle2 size={16} className="shrink-0 text-emerald-600" />
+              <span>{successMessage}</span>
+            </div>
+          )}
           <input 
             type="text" 
             placeholder="Nama Anda"

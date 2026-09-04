@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Settings, Link as LinkIcon, Users, MessageSquare, Save, Plus, Trash2, 
-  Copy, Check, X, Lock, Music, Heart, Calendar, Image as ImageIcon, CreditCard, Share2, Upload, Loader2, BookOpen
+  Copy, Check, X, Lock, Music, Heart, Calendar, Image as ImageIcon, CreditCard, Share2, Upload, Loader2, BookOpen, AlertCircle
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { WeddingConfig } from '../../types';
+import { WeddingConfig, RSVPResponse, Wish } from '../../types';
 
 export function AdminPanel() {
   const { weddingConfig, updateWeddingConfig } = useWeddingConfig();
@@ -26,8 +26,26 @@ export function AdminPanel() {
   const [copiedWaText, setCopiedWaText] = useState(false);
 
   // Firestore live data state
-  const [rsvps, setRsvps] = useState<any[]>([]);
-  const [wishes, setWishes] = useState<any[]>([]);
+  const [rsvps, setRsvps] = useState<RSVPResponse[]>([]);
+  const [wishes, setWishes] = useState<Wish[]>([]);
+
+  // Confirmation modal & toast state
+  const [deleteModal, setDeleteModal] = useState<{
+    type: 'wish' | 'rsvp';
+    id: string;
+    title: string;
+    description: string;
+  } | null>(null);
+
+  const [toastNotification, setToastNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+
+  const showToast = (type: 'success' | 'error', message: string) => {
+    setToastNotification({ type, message });
+    setTimeout(() => setToastNotification(null), 3500);
+  };
 
   const [uploadingGallery, setUploadingGallery] = useState<{[key: number]: boolean}>({});
   const [uploadingAvatar, setUploadingAvatar] = useState<'groom' | 'bride' | null>(null);
@@ -42,7 +60,7 @@ export function AdminPanel() {
   useEffect(() => {
     const q = query(collection(db, 'rsvps'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as RSVPResponse));
       setRsvps(docs);
     });
     return () => unsubscribe();
@@ -52,7 +70,7 @@ export function AdminPanel() {
   useEffect(() => {
     const q = query(collection(db, 'wishes'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Wish));
       setWishes(docs);
     });
     return () => unsubscribe();
@@ -75,24 +93,50 @@ export function AdminPanel() {
     try {
       await updateWeddingConfig(formData);
       setSaveSuccess(true);
+      showToast('success', 'Perubahan berhasil disimpan ke Firestore!');
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
       console.error('Failed to save config:', err);
-      alert('Gagal menyimpan perubahan ke Firestore.');
+      showToast('error', 'Gagal menyimpan perubahan ke Firestore.');
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleDeleteWish = async (id: string) => {
-    if (confirm('Hapus ucapan ini?')) {
-      await deleteDoc(doc(db, 'wishes', id));
-    }
+  const requestDeleteWish = (wish: Wish) => {
+    if (!wish.id) return;
+    setDeleteModal({
+      type: 'wish',
+      id: wish.id,
+      title: 'Hapus Ucapan',
+      description: `Apakah Anda yakin ingin menghapus ucapan dari "${wish.name}"? Tindakan ini permanen.`,
+    });
   };
 
-  const handleDeleteRsvp = async (id: string) => {
-    if (confirm('Hapus data RSVP ini?')) {
-      await deleteDoc(doc(db, 'rsvps', id));
+  const requestDeleteRsvp = (rsvp: RSVPResponse) => {
+    if (!rsvp.id) return;
+    setDeleteModal({
+      type: 'rsvp',
+      id: rsvp.id,
+      title: 'Hapus Data RSVP',
+      description: `Apakah Anda yakin ingin menghapus respon RSVP dari "${rsvp.name}"? Tindakan ini permanen.`,
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteModal) return;
+    try {
+      if (deleteModal.type === 'wish') {
+        await deleteDoc(doc(db, 'wishes', deleteModal.id));
+      } else {
+        await deleteDoc(doc(db, 'rsvps', deleteModal.id));
+      }
+      showToast('success', 'Data berhasil dihapus dari Firestore.');
+    } catch (err) {
+      console.error('Failed to delete document:', err);
+      showToast('error', 'Gagal menghapus data dari Firestore.');
+    } finally {
+      setDeleteModal(null);
     }
   };
 
@@ -152,7 +196,7 @@ export function AdminPanel() {
       reader.readAsDataURL(file);
     } catch (err) {
       console.error(err);
-      alert("Gagal mengupload foto.");
+      showToast('error', 'Gagal memproses dan mengunggah foto.');
       resetUploadState(type, index);
     }
   };
@@ -1097,7 +1141,7 @@ Wassalamu'alaikum Wr. Wb.`;
                                   )}
                                 </div>
                                 <button
-                                  onClick={() => handleDeleteRsvp(rsvp.id)}
+                                  onClick={() => requestDeleteRsvp(rsvp)}
                                   className="text-gray-400 hover:text-red-500 p-1 transition-colors cursor-pointer"
                                   title="Hapus"
                                 >
@@ -1123,7 +1167,7 @@ Wassalamu'alaikum Wr. Wb.`;
                                 <p className="text-gray-700 italic">"{w.text}"</p>
                               </div>
                               <button
-                                onClick={() => handleDeleteWish(w.id)}
+                                onClick={() => requestDeleteWish(w)}
                                 className="text-gray-400 hover:text-red-500 p-1 transition-colors cursor-pointer"
                                 title="Hapus ucapan"
                               >
@@ -1138,6 +1182,53 @@ Wassalamu'alaikum Wr. Wb.`;
                 </div>
               )}
       </div>
+
+      {/* Modern Confirmation Modal */}
+      {deleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-gray-100 flex flex-col gap-4">
+            <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto">
+              <Trash2 size={24} />
+            </div>
+            <div className="text-center">
+              <h3 className="font-heading text-xl text-text-dark font-semibold mb-1">{deleteModal.title}</h3>
+              <p className="text-xs text-gray-500 leading-relaxed">{deleteModal.description}</p>
+            </div>
+            <div className="flex gap-2.5 mt-2">
+              <button
+                type="button"
+                onClick={() => setDeleteModal(null)}
+                className="flex-1 py-2.5 px-4 rounded-xl border border-gray-300 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold shadow-sm transition-colors cursor-pointer"
+              >
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Toast Notification */}
+      {toastNotification && (
+        <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl shadow-xl border text-xs font-medium flex items-center gap-2.5 transition-all ${
+          toastNotification.type === 'success' 
+            ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
+            : 'bg-red-50 text-red-800 border-red-200'
+        }`}>
+          {toastNotification.type === 'success' ? (
+            <Check size={16} className="text-emerald-600 shrink-0" />
+          ) : (
+            <AlertCircle size={16} className="text-red-600 shrink-0" />
+          )}
+          <span>{toastNotification.message}</span>
+        </div>
+      )}
     </div>
   );
 }

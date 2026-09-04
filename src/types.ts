@@ -1,3 +1,5 @@
+import type { Timestamp } from 'firebase/firestore';
+
 export interface PersonInfo {
   nickname: string;
   fullName: string;
@@ -71,7 +73,7 @@ export interface Wish {
   name: string;
   text: string;
   time?: string;
-  createdAt?: any;
+  createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
 }
 
 export interface RSVPResponse {
@@ -80,5 +82,5 @@ export interface RSVPResponse {
   attendance: string;
   guestCount: number;
   notes: string;
-  createdAt?: any;
+  createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
 }

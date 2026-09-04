@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useGuestName } from '../../hooks/useGuestName';
+import { AlertCircle } from 'lucide-react';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 
 export function RSVPSection() {
@@ -13,6 +14,7 @@ export function RSVPSection() {
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (defaultGuestName && defaultGuestName !== 'Tamu Undangan') {
@@ -28,6 +30,7 @@ export function RSVPSection() {
     if (!name.trim()) return;
 
     setIsSubmitting(true);
+    setErrorMessage(null);
     try {
       await addDoc(collection(db, 'rsvps'), {
         name: name.trim(),
@@ -40,7 +43,7 @@ export function RSVPSection() {
       localStorage.setItem('rsvp_submitted', 'true');
     } catch (error) {
       console.error('Error submitting RSVP:', error);
-      alert('Gagal mengirim RSVP, silakan coba lagi.');
+      setErrorMessage('Gagal mengirim RSVP. Silakan periksa koneksi internet Anda dan coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
@@ -64,6 +67,12 @@ export function RSVPSection() {
 
         {!isSubmitted ? (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {errorMessage && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-3.5 py-2.5 rounded-xl text-xs flex items-start gap-2">
+                <AlertCircle size={16} className="shrink-0 mt-0.5 text-red-500" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
             <div>
               <label className="block text-[11px] font-medium text-text-dark/80 uppercase tracking-widest mb-1.5 ml-1">Nama</label>
               <input 

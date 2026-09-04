@@ -19,8 +19,6 @@ coverage/
 .env.*.local
 *.env
 !*.env.example
-firebase-applet-config.json
-!firebase-applet-config.example.json
 
 # Cache & Temporary Files
 .vite/

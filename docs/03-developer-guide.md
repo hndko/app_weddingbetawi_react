@@ -66,7 +66,6 @@ app_weddingbetawi_react/
 │   ├── types.ts                # Deklarasi tipe data TypeScript (strict typing)
 │   └── vite-env.d.ts           # Deklarasi tipe variabel lingkungan Vite (ImportMetaEnv)
 ├── .env.example                # Template variabel lingkungan
-├── firebase-applet-config.json # Konfigurasi default Firebase client
 ├── firestore.rules             # Berkas aturan keamanan database Firestore
 ├── package.json                # Metadata proyek, scripts, dan dependensi
 ├── tsconfig.json               # Konfigurasi compiler TypeScript

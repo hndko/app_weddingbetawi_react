@@ -24,10 +24,9 @@ export function SEO({
   siteName = 'The Wedding',
 }: SEOProps) {
   const currentUrl = canonical || window.location.href;
-  // Use a default image from config or public folder. Let's use the absolute production URL if VITE_APP_URL is available
-  const metaEnv = (import.meta as any).env || {};
+  const metaEnv = import.meta.env as Record<string, string | undefined>;
   const domain = metaEnv.VITE_APP_URL || window.location.origin;
-  const absoluteImage = image?.startsWith('http') ? image : `${domain}${image || '/images/og-image.jpg'}`;
+  const absoluteImage = image?.startsWith('http') ? image : `${domain}${image || '/assets/betawi-themes/images/og-image.jpg'}`;
   
   return (
     <Helmet>

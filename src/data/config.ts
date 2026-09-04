@@ -83,6 +83,6 @@ export const config = {
     title: "The Wedding of Cecep & Ipeh | Wedding Invitation",
     description: "Kami mengundang Anda untuk hadir di acara pernikahan kami.",
     keywords: "wedding, pernikahan, undangan digital, Cecep, Ipeh",
-    image: "/images/og-image.jpg"
+    image: "/assets/betawi-themes/images/og-image.jpg"
   }
 };

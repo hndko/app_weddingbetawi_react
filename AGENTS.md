@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Betawi Heritage Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.3.0`
+- **Versi Aplikasi Saat Ini**: `v1.4.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Firebase Firestore 12.17, Motion 12.23
 - **Tipe Aplikasi**: Client-Side Single Page Application (SPA)
 - **Status CI/CD & Deploy**: Vercel Serverless Static Hosting
@@ -45,7 +45,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 ### 🏗️ 2. Arsitektur Kode & Pemisahan Tanggung Jawab (Separation of Concerns)
 1. **Struktur Direktori Modular Terstandarisasi (`src/modules/`)**:
    - `src/modules/Auth/`: Modul autentikasi panel admin (`Login.tsx`).
-   - `src/modules/Backend/`: Modul pengelolaan data dan dasbor admin (`Panel.tsx`).
+   - `src/modules/Backend/`: Modul pengelolaan data dan dasbor admin (`Panel.tsx`, `components/DragDropUpload.tsx`).
    - `src/modules/Frontend/betawi-themes/`: Seluruh komponen tema undangan pernikahan Betawi (`decorations/`, `sections/`, `OpeningCover.tsx`, `InvitationContent.tsx`, `BottomNavigation.tsx`, `MusicPlayer.tsx`, `SEO.tsx`).
    - `src/types.ts`: Deklarasi tipe TypeScript global dan interface domain.
    - `src/lib/firebase.ts`: Konfigurasi SDK Firebase dan instance Firestore.
@@ -91,15 +91,26 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 ---
 
 ### 🎨 5. Standar Desain UI/UX & Interaktivitas (Interactive Design System)
-1. **Desain Responsif & Mobile-First**:
-   - Undangan digital diakses oleh 90%+ pengguna via smartphone. Desain wajib sempurna pada resolusi mobile (360px hingga 430px) tanpa ada elemen yang terpotong (*overflow-x* tertutup rapi).
-2. **Dilarang Dialog Bawaan Browser (No Native `alert()` / `confirm()`)**:
-   - DILARANG menggunakan `window.alert()`, `window.confirm()`, atau `window.prompt()`.
-   - Gunakan komponen modal dialog kustom bertema Betawi elegan (aksen emas `#D4AF37` dan merah marun `#800000`) atau *toast notification* modern untuk konfirmasi hapus, error, dan notifikasi sukses.
-3. **Feedback Interaktif & Proteksi Double-Submit**:
-   - Semua tombol formulir (Kirim RSVP, Kirim Ucapan, Simpan Pengaturan) wajib menampilkan status *loading spinner* dan menjadi `disabled` saat request asinkron berjalan.
-4. **Estetika Budaya Betawi Modern**:
-   - Pertahankan ornamen budaya Betawi: motif Gigi Balang, Ondel-ondel siluet elegan, font kaligrafi estetis untuk nama mempelai, dan palet warna hangat bernuansa adat Betawi.
+Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-standards`**:
+1. **Toast Alerts (Zero Native/Manual Alerts)**:
+   - DILARANG menggunakan `window.alert()`. Gunakan toast mengambang beranimasi dengan status (success/error), icon, dan auto-dismiss 3,5 detik.
+2. **SweetAlert-Style Confirmation Modals**:
+   - DILARANG menggunakan `window.confirm()`. Aksi destruktif wajib memicu modal konfirmasi animasi berstatus badge bahaya, tombol Batal (`<X size={15}/> Batal`), dan tombol konfirmasi (`<Trash2 size={15}/> Ya, Hapus`).
+3. **Pencarian Real-Time In-Memory (Zero URL Pollution)**:
+   - Pencarian tabel data (RSVP & Wishes) wajib menyaring state di latar belakang tanpa mengubah query parameter di URL browser (`?search=`), dilengkapi tombol reset instan.
+4. **Full-Screen Viewport Backdrop Overlay**:
+   - Backdrop modal wajib menutup 100% layar menggunakan `fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-sm` dengan pencegahan scroll latar (`document.body.style.overflow = 'hidden'`).
+5. **Form Controls dengan Icon Group & Placeholder Wajib**:
+   - Setiap form control (`<input>`, `<select>`, `<textarea>`) wajib dibungkus kontainer grup ikon semantik di sisi kiri dan dilengkapi placeholder bernilai contoh yang jelas.
+6. **Drag & Drop File Upload dengan Preview List**:
+   - Form upload foto (profil mempelai, QRIS, galeri) wajib mendukung dropzone drag-and-drop interaktif, kompresi otomatis Canvas, serta kartu pratinjau foto terunggah di bawahnya lengkap dengan thumbnail dan tombol hapus/ganti.
+7. **Standar Desain Tombol (Dual Button Rule)**:
+   - **Tombol Form & UI Umum**: Wajib memiliki **Icon + Text** (contoh: `<Save size={16}/> Simpan Data`).
+   - **Tombol Aksi Tabel**: Wajib **Icon-Only** (contoh: `<Trash2 size={15}/>`) dengan atribut `title` dan `aria-label` yang jelas agar kolom tabel tetap rapi dan ringkas.
+8. **Penomoran Otomatis Kolom Tabel (`#`)**:
+   - Setiap tabel data wajib memiliki kolom pertama `#` dengan penomoran urut otomatis 1-indexed (`index + 1`), yang tetap urut saat data disaring oleh fitur pencarian.
+9. **Desain Responsif & Estetika Budaya Betawi**:
+   - Desain sempurna pada mobile (360px-430px) dengan motif Gigi Balang, Ondel-ondel siluet elegan, font kaligrafi, dan palet warna hangat adat Betawi.
 
 ---
 

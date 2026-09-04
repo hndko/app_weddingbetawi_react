@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../../../lib/firebase';
 import { useGuestName } from '../../../../hooks/useGuestName';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, User, MessageSquareQuote, Send, ChevronDown, Loader2 } from 'lucide-react';
 import { FloatingFlowers } from '../decorations/FloatingFlowers';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { FloralDivider } from '../decorations/FloralDivider';
@@ -115,28 +115,44 @@ export function WishesSection() {
               <span>{successMessage}</span>
             </div>
           )}
-          <input 
-            type="text" 
-            placeholder="Nama Anda"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full bg-white border border-sage/20 rounded-xl px-4 py-3.5 text-[13px] text-text-dark focus:border-sage outline-none transition-all placeholder:text-text-dark/30 shadow-sm"
-          />
-          <textarea 
-            placeholder="Tulis ucapan dan doa Anda..."
-            value={wishText}
-            onChange={(e) => setWishText(e.target.value)}
-            required
-            rows={3}
-            className="w-full bg-white border border-sage/20 rounded-xl px-4 py-3.5 text-[13px] text-text-dark focus:border-sage outline-none transition-all placeholder:text-text-dark/30 shadow-sm resize-none"
-          />
+          <div className="relative flex items-center">
+            <User size={16} className="absolute left-3.5 text-sage-dark pointer-events-none" />
+            <input 
+              type="text" 
+              placeholder="Nama Lengkap Anda" 
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full bg-white border border-sage/20 rounded-xl pl-10 pr-4 py-3.5 text-[13px] text-text-dark focus:border-sage outline-none transition-all placeholder:text-text-dark/30 shadow-sm"
+            />
+          </div>
+          <div className="relative flex">
+            <MessageSquareQuote size={16} className="absolute left-3.5 top-3.5 text-sage-dark pointer-events-none" />
+            <textarea 
+              placeholder="Tulis ucapan dan doa restu terbaik Anda..."
+              value={wishText}
+              onChange={(e) => setWishText(e.target.value)}
+              required
+              rows={3}
+              className="w-full bg-white border border-sage/20 rounded-xl pl-10 pr-4 py-3.5 text-[13px] text-text-dark focus:border-sage outline-none transition-all placeholder:text-text-dark/30 shadow-sm resize-none"
+            />
+          </div>
           <button 
-            type="submit"
+            type="submit" 
             disabled={isSubmitting}
-            className="w-full bg-sage-dark text-white py-3.5 rounded-xl text-[13px] font-medium tracking-wide hover:bg-sage transition-colors disabled:opacity-70 shadow-sm cursor-pointer"
+            className="w-full bg-sage-dark text-white py-3.5 rounded-xl text-[13px] font-semibold tracking-wide hover:bg-sage transition-all disabled:opacity-70 shadow-sm cursor-pointer flex items-center justify-center gap-2 active:scale-98"
           >
-            {isSubmitting ? 'Mengirim...' : 'Kirim Ucapan'}
+            {isSubmitting ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                <span>Mengirim...</span>
+              </>
+            ) : (
+              <>
+                <Send size={16} />
+                <span>Kirim Ucapan & Doa</span>
+              </>
+            )}
           </button>
         </form>
 
@@ -160,9 +176,10 @@ export function WishesSection() {
           {wishes.length > visibleCount && (
             <button
               onClick={() => setVisibleCount(prev => prev + 5)}
-              className="mt-2 text-xs text-sage-dark font-medium hover:underline py-2"
+              className="mt-2 text-xs text-sage-dark font-semibold hover:underline py-2 flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              Lihat Lebih Banyak ({wishes.length - visibleCount})
+              <ChevronDown size={14} />
+              <span>Lihat Lebih Banyak ({wishes.length - visibleCount})</span>
             </button>
           )}
         </div>

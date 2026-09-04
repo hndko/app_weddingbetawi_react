@@ -61,7 +61,7 @@ function AppContent({ currentPath }: { currentPath: string }) {
   const seoTitle = weddingConfig.seo?.title || `${siteName} | Wedding Invitation`;
   const seoDesc = weddingConfig.seo?.description || "Kami mengundang Anda untuk hadir di acara pernikahan kami.";
   const seoKeywords = weddingConfig.seo?.keywords || "wedding, pernikahan, undangan digital";
-  const seoImage = weddingConfig.seo?.image || weddingConfig.gallery?.[0] || '/images/og-image.jpg';
+  const seoImage = weddingConfig.seo?.image || weddingConfig.gallery?.[0] || '/assets/betawi-themes/images/og-image.jpg';
 
   if (isLogin || isModules) {
     return (

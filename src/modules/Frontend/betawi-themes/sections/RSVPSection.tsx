@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../../../lib/firebase';
 import { useGuestName } from '../../../../hooks/useGuestName';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, User, Users, CheckCircle2, MessageSquare, Send, RotateCcw, Loader2 } from 'lucide-react';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 
 export function RSVPSection() {
@@ -75,65 +75,87 @@ export function RSVPSection() {
             )}
             <div>
               <label className="block text-[11px] font-medium text-text-dark/80 uppercase tracking-widest mb-1.5 ml-1">Nama</label>
-              <input 
-                type="text" 
-                required 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nama Lengkap"
-                className="w-full bg-light-gray border-none rounded-xl px-4 py-3.5 text-sm text-text-dark focus:ring-1 focus:ring-sage outline-none transition-all placeholder:text-text-dark/30"
-              />
+              <div className="relative flex items-center">
+                <User size={16} className="absolute left-3.5 text-sage-dark pointer-events-none" />
+                <input 
+                  type="text" 
+                  required 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Nama Lengkap Tamu"
+                  className="w-full bg-light-gray border-none rounded-xl pl-10 pr-4 py-3.5 text-sm text-text-dark focus:ring-1 focus:ring-sage outline-none transition-all placeholder:text-text-dark/30"
+                />
+              </div>
             </div>
             
             <div>
               <label className="block text-[11px] font-medium text-text-dark/80 uppercase tracking-widest mb-1.5 ml-1">Jumlah Tamu</label>
-              <select 
-                value={guestCount}
-                onChange={(e) => setGuestCount(Number(e.target.value))}
-                className="w-full bg-light-gray border-none rounded-xl px-4 py-3.5 text-sm text-text-dark focus:ring-1 focus:ring-sage outline-none transition-all appearance-none cursor-pointer"
-              >
-                <option value={1}>1 Orang</option>
-                <option value={2}>2 Orang</option>
-                <option value={3}>3 Orang</option>
-                <option value={4}>4 Orang</option>
-              </select>
+              <div className="relative flex items-center">
+                <Users size={16} className="absolute left-3.5 text-sage-dark pointer-events-none" />
+                <select 
+                  value={guestCount}
+                  onChange={(e) => setGuestCount(Number(e.target.value))}
+                  className="w-full bg-light-gray border-none rounded-xl pl-10 pr-4 py-3.5 text-sm text-text-dark focus:ring-1 focus:ring-sage outline-none transition-all appearance-none cursor-pointer"
+                >
+                  <option value={1}>1 Orang</option>
+                  <option value={2}>2 Orang</option>
+                  <option value={3}>3 Orang</option>
+                  <option value={4}>4 Orang</option>
+                </select>
+              </div>
             </div>
             
             <div>
               <label className="block text-[11px] font-medium text-text-dark/80 uppercase tracking-widest mb-1.5 ml-1">Kehadiran</label>
-              <select 
-                value={attendance}
-                onChange={(e) => setAttendance(e.target.value)}
-                className="w-full bg-light-gray border-none rounded-xl px-4 py-3.5 text-sm text-text-dark focus:ring-1 focus:ring-sage outline-none transition-all appearance-none cursor-pointer"
-              >
-                <option value="hadir">Hadir</option>
-                <option value="tidak_hadir">Maaf, Tidak Bisa Hadir</option>
-              </select>
+              <div className="relative flex items-center">
+                <CheckCircle2 size={16} className="absolute left-3.5 text-sage-dark pointer-events-none" />
+                <select 
+                  value={attendance}
+                  onChange={(e) => setAttendance(e.target.value)}
+                  className="w-full bg-light-gray border-none rounded-xl pl-10 pr-4 py-3.5 text-sm text-text-dark focus:ring-1 focus:ring-sage outline-none transition-all appearance-none cursor-pointer"
+                >
+                  <option value="hadir">Hadir</option>
+                  <option value="tidak_hadir">Maaf, Tidak Bisa Hadir</option>
+                </select>
+              </div>
             </div>
 
             <div>
               <label className="block text-[11px] font-medium text-text-dark/80 uppercase tracking-widest mb-1.5 ml-1">Pesan / Catatan (Opsional)</label>
-              <textarea 
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Pesan tambahan..."
-                rows={2}
-                className="w-full bg-light-gray border-none rounded-xl px-4 py-3.5 text-xs text-text-dark focus:ring-1 focus:ring-sage outline-none transition-all resize-none placeholder:text-text-dark/30"
-              />
+              <div className="relative flex">
+                <MessageSquare size={16} className="absolute left-3.5 top-3.5 text-sage-dark pointer-events-none" />
+                <textarea 
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Pesan doa atau ucapan tambahan..."
+                  rows={2}
+                  className="w-full bg-light-gray border-none rounded-xl pl-10 pr-4 py-3.5 text-xs text-text-dark focus:ring-1 focus:ring-sage outline-none transition-all resize-none placeholder:text-text-dark/30"
+                />
+              </div>
             </div>
             
             <button 
               type="submit" 
               disabled={isSubmitting}
-              className="mt-2 w-full bg-sage text-white py-3.5 rounded-full text-[13px] font-medium tracking-wide hover:bg-sage-dark transition-colors disabled:opacity-70 cursor-pointer shadow-sm"
+              className="mt-2 w-full bg-sage text-white py-3.5 rounded-full text-[13px] font-semibold tracking-wide hover:bg-sage-dark transition-all disabled:opacity-70 cursor-pointer shadow-sm flex items-center justify-center gap-2 active:scale-98"
             >
-              {isSubmitting ? 'Mengirim...' : 'Kirim Konfirmasi'}
+              {isSubmitting ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  <span>Mengirim...</span>
+                </>
+              ) : (
+                <>
+                  <Send size={16} />
+                  <span>Kirim Konfirmasi</span>
+                </>
+              )}
             </button>
           </form>
         ) : (
-          <div className="py-8 text-center">
-            <div className="w-16 h-16 bg-sage-50 rounded-full flex items-center justify-center mx-auto mb-4 text-sage">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          <div className="py-8 text-center flex flex-col items-center">
+            <div className="w-16 h-16 bg-sage-50 rounded-full flex items-center justify-center mx-auto mb-4 text-sage border border-sage/20">
+              <CheckCircle2 size={32} />
             </div>
             <h4 className="font-heading text-xl text-text-dark mb-2">Terima Kasih</h4>
             <p className="text-xs text-text-dark/60 leading-relaxed mb-6">
@@ -141,9 +163,10 @@ export function RSVPSection() {
             </p>
             <button
               onClick={() => setIsSubmitted(false)}
-              className="text-xs text-sage-dark underline hover:text-sage"
+              className="text-xs text-sage-dark hover:underline flex items-center gap-1.5 font-semibold cursor-pointer"
             >
-              Ubah Konfirmasi
+              <RotateCcw size={13} />
+              <span>Ubah Konfirmasi</span>
             </button>
           </div>
         )}

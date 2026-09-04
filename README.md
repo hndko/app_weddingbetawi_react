@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.3.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.4.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -202,9 +202,18 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 ### 📱 Navigasi Cepat (Floating Bottom Bar)
 - Menu navigasi bawah mengambang dengan indikator *ScrollSpy* yang mendeteksi seksi yang sedang aktif secara otomatis.
 
-### 🔐 Admin Panel Tersembunyi
-- Halaman admin yang sengaja disembunyikan dari layar utama demi menjaga keindahan visual undangan.
-- Generator link undangan WhatsApp 1-klik yang memudahkan mempelai membagikan undangan ke ratusan kontak dalam hitungan detik.
+### 🔐 Admin Panel Tersembunyi & Standar UI/UX Interaktif (v1.4.0)
+- **Halaman Admin Mandiri**: Dikelola secara aman di `/login` dan `/modules` dengan sinkronisasi History API.
+- **Generator Link WhatsApp 1-Klik**: Memudahkan mempelai menyalin dan membagikan undangan berparameter nama tamu ke WhatsApp secara instan.
+- **8 Pilar UI/UX Interaktif (`interactive-ux-standards`)**:
+  1. *Toast Alerts*: Umpan balik status sukses dan error mengambang yang ramah pengguna.
+  2. *SweetAlert2 Modals*: Dialog konfirmasi hapus data dengan badge bahaya dan tombol *Icon + Text*.
+  3. *Live Background Search*: Pencarian real-time pada data RSVP & Wishes secara instan tanpa mengotori URL browser.
+  4. *Full-Screen Viewport Backdrop*: Penutup latar modal `fixed inset-0 w-screen h-screen z-[9999]` dengan pencegah scroll latar.
+  5. *Input Icon Groups & Placeholders*: Seluruh form input dilengkapi grup ikon semantik dan teks panduan format.
+  6. *Drag & Drop File Upload*: Dropzone interaktif dengan pratinjau berkas terunggah (*itemized preview card*) di bawahnya.
+  7. *Dual Button Convention*: Tombol UI umum berformat *Icon + Text*, sedangkan tombol aksi tabel berformat *Icon-Only*.
+  8. *Tabel Responsif Bernomor Otomatis (`#`)*: Kolom nomor urut dinamis 1-indexed yang tetap konsisten saat difilter.
 
 ---
 
@@ -213,7 +222,7 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 Sebelum memulai instalasi, pastikan lingkungan komputer atau server Anda memenuhi spesifikasi berikut:
 
 - **Node.js**: Versi `18.0.0` atau lebih tinggi (Direkomendasikan: `v20.x` atau `v22.x LTS`).
-- **Package Manager**: `npm` (v9.0+), `bun` (v1.0+), atau `pnpm`.
+- **Package Manager**: Standar proyek menggunakan **`npm`** (`npm run lint`, `npm run build`).
 - **Akun Firebase**: Akun aktif di [Firebase Console](https://console.firebase.google.com) (Tersedia paket gratis *Spark Plan*).
 - **Peramban Web Modern**: Google Chrome, Mozilla Firefox, Apple Safari, atau Microsoft Edge versi terbaru.
 

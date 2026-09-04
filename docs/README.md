@@ -40,9 +40,9 @@ Pilih skenario kebutuhan Anda di bawah ini untuk langsung menuju langkah-langkah
    ```bash
    git clone https://github.com/hndko/app_weddingbetawi_react.git
    cd app_weddingbetawi_react
-   bun install # atau npm install
+   npm install
    cp .env.example .env
-   bun run dev # atau npm run dev
+   npm run dev
    ```
 2. Buka browser pada alamat `http://localhost:3000`.
 3. Panduan perintah selengkapnya dapat dipelajari di [01-daftar-command.md](01-daftar-command.md).

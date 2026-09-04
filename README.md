@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.1.1-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.1.2-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -230,14 +230,8 @@ cd app_weddingbetawi_react
 ```
 
 ### 2. Pasang Dependensi Proyek
-Gunakan salah satu package manager favorit Anda:
-
 ```bash
-# Menggunakan npm
 npm install
-
-# Atau menggunakan bun (lebih cepat)
-bun install
 ```
 
 ### 3. Konfigurasi Environment Variables
@@ -264,11 +258,7 @@ VITE_FIREBASE_DATABASE_ID=""
 
 ### Menjalankan Server Pengembangan (Localhost)
 ```bash
-# Menggunakan npm
 npm run dev
-
-# Menggunakan bun
-bun run dev
 ```
 Buka browser dan akses alamat default: `http://localhost:3000`.
 
@@ -283,11 +273,7 @@ Akses path `/login` pada peramban Anda (setelah memasukkan passcode valid, siste
 
 ### Melakukan Kompilasi Produksi (Production Build)
 ```bash
-# Menggunakan npm
 npm run build
-
-# Menggunakan bun
-bun run build
 ```
 File hasil kompilasi yang siap di-hosting akan tersimpan di dalam folder `dist/`.
 

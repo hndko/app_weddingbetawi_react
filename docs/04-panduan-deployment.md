@@ -21,10 +21,10 @@ Skenario ini digunakan untuk proses modifikasi data, pengujian tampilan mobile d
 cd d:\laragon\www\app_weddingbetawi_react
 
 # 2. Pasang dependensi
-bun install # atau npm install
+npm install
 
 # 3. Jalankan server lokal dengan akses IP jaringan
-bun run dev # atau npm run dev
+npm run dev
 ```
 Buka browser di komputer: `http://localhost:3000`.  
 Buka di smartphone pada jaringan Wi-Fi yang sama: `http://<IP-Komputer-Anda>:3000` (misal: `http://192.168.1.15:3000`).
@@ -32,7 +32,7 @@ Buka di smartphone pada jaringan Wi-Fi yang sama: `http://<IP-Komputer-Anda>:300
 ### B. Menjalankan di Laragon / XAMPP (Hasil Build Statis)
 1. Lakukan kompilasi produksi:
    ```bash
-   bun run build
+   npm run build
    ```
 2. Salin seluruh isi folder `dist/` ke direktori web server lokal Anda:
    - Laragon: `C:\laragon\www\undangan`
@@ -61,9 +61,9 @@ Buka di smartphone pada jaringan Wi-Fi yang sama: `http://<IP-Komputer-Anda>:300
 
 3. **Pengaturan Konfigurasi Build (Terdeteksi Otomatis)**:
    - **Framework Preset**: `Vite`
-   - **Build Command**: `npm run build` atau `bun run build`
+   - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
-   - **Install Command**: `npm install` atau `bun install`
+   - **Install Command**: `npm install`
    - **SPA Fallback Routing**: Repositori telah dilengkapi berkas [`vercel.json`](../vercel.json) bawaan sehingga rute `/login` dan `/modules` tidak akan mengalami error 404 saat di-refresh langsung di browser.
 
 4. **Konfigurasi Environment Variables di Vercel**:
@@ -99,7 +99,7 @@ sudo apt install nginx certbot python3-certbot-nginx -y
 ### B. Kompilasi & Pengunggahan Berkas
 Di komputer lokal Anda, lakukan proses build:
 ```bash
-bun run build
+npm run build
 ```
 Unggah folder `dist/` ke direktori web server di VPS:
 ```bash
@@ -181,7 +181,7 @@ Cocok untuk pengguna hosting tradisional cPanel tanpa akses command line SSH:
 ### A. Langkah Build Lokal
 Di komputer lokal Anda, lakukan kompilasi:
 ```bash
-bun run build # atau npm run build
+npm run build
 ```
 Seluruh aset siap pakai akan berada di dalam direktori `dist/`.
 

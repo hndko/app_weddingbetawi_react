@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Betawi Heritage Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.1.1`
+- **Versi Aplikasi Saat Ini**: `v1.1.2`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Firebase Firestore 12.17, Motion 12.23
 - **Tipe Aplikasi**: Client-Side Single Page Application (SPA)
 - **Status CI/CD & Deploy**: Vercel Serverless Static Hosting
@@ -112,15 +112,18 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 ---
 
 ### 🧪 7. Verifikasi & Pengujian Mutu (Verification & Quality Assurance)
+> [!IMPORTANT]
+> **Standardisasi Package Manager**: Proyek ini telah distandardisasi murni menggunakan **`npm`** (`package-lock.json`). Dilarang menggunakan `bun` untuk kompilasi produksi, type checking, maupun instalasi dependensi.
+
 Sebelum menyatakan tugas selesai atau melakukan commit, AI Assistant WAJIB melakukan verifikasi bertingkat:
-1. **TypeScript Check**: Jalankan pengecekan tipe statis:
+1. **TypeScript Check**: Jalankan pengecekan tipe statis menggunakan `npm`:
    ```bash
-   npm run lint  # atau bun run lint (tsc --noEmit)
+   npm run lint  # (tsc --noEmit)
    ```
    Wajib menghasilkan exit code 0 tanpa error tipe apa pun.
-2. **Production Build Check**: Jalankan proses kompilasi produksi Vite:
+2. **Production Build Check**: Jalankan proses kompilasi produksi Vite menggunakan `npm`:
    ```bash
-   npm run build  # atau bun run build
+   npm run build
    ```
    Wajib sukses menghasilkan bundel `dist/` tanpa peringatan fatal.
 3. **Console Hygiene Check**: Pastikan tidak ada runtime crash atau error unhandled promise di browser.

@@ -202,7 +202,7 @@ sequenceDiagram
     Dev->>UI: 4. Buat komponen seksi presentasi visual
     Dev->>Admin: 5. Tambahkan form input di AdminPanel.tsx
     Dev->>Inv: 6. Daftarkan komponen via React.lazy & Suspense
-    Dev->>Test: 7. Jalankan tsc --noEmit & bun run build
+    Dev->>Test: 7. Jalankan tsc --noEmit & npm run build
     Dev->>Dev: 8. Commit dengan pesan feat: ...
 ```
 
@@ -212,5 +212,5 @@ sequenceDiagram
 4. **Langkah 4 (Component Section)**: Buat komponen presentasional baru di dalam folder `src/components/sections/`.
 5. **Langkah 5 (Admin Control)**: Tambahkan form input pengeditan di dalam tab Edit Data Website pada [`src/components/admin/AdminPanel.tsx`](../src/components/admin/AdminPanel.tsx).
 6. **Langkah 6 (Lazy Mount)**: Daftarkan komponen seksi baru di [`src/components/InvitationContent.tsx`](../src/components/InvitationContent.tsx) menggunakan `React.lazy()`.
-7. **Langkah 7 (Kompilasi & Verifikasi)**: Jalankan pengujian compiler dengan `npm run lint` dan `bun run build`.
+7. **Langkah 7 (Kompilasi & Verifikasi)**: Jalankan pengujian compiler dengan `npm run lint` dan `npm run build`.
 8. **Langkah 8 (Git Commit)**: Commit pekerjaan Anda menggunakan standar pesan konvensional (`git commit -m "feat: tambah seksi live streaming"`).

@@ -48,7 +48,7 @@ Pilih skenario kebutuhan Anda di bawah ini untuk langsung menuju langkah-langkah
 3. Panduan perintah selengkapnya dapat dipelajari di [01-daftar-command.md](01-daftar-command.md).
 
 ### 💌 2. Saya Ingin Membuat Link Undangan Khusus Tamu & Pesan WhatsApp
-1. Buka URL undangan Anda dengan menambahkan akhiran `?admin` (misal: `http://localhost:3000/?admin`).
+1. Buka URL login admin pada `http://localhost:3000/login` (setelah login URL otomatis berpindah ke `/modules`).
 2. Masukkan passcode: **`password`**.
 3. Pilih tab **Link Tamu Undangan**, masukkan nama tamu, lalu klik tombol **"Kirim / Bagikan via WhatsApp"**.
 4. Pelajari alur kerja lengkap di [02-buku-panduan-pengguna.md](02-buku-panduan-pengguna.md#3-modul-generator-link-tamu--pesan-whatsapp).

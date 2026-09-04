@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /login
+Disallow: /modules
 Disallow: /admin
 
 Sitemap: https://invitation.maripartner.com/sitemap.xml

@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Betawi Heritage Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.0.1`
+- **Versi Aplikasi Saat Ini**: `v1.1.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Firebase Firestore 12.17, Motion 12.23
 - **Tipe Aplikasi**: Client-Side Single Page Application (SPA)
 - **Status CI/CD & Deploy**: Vercel Serverless Static Hosting
@@ -50,7 +50,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
    - `src/index.css`: Konfigurasi Tailwind CSS v4 dan styling global.
 2. **Thin Presentational Components**: Komponen antarmuka fokus pada rendering UI. Logika manipulasi state kompleks, integrasi database, atau format string wajib didelegasikan ke fungsi pembantu (*helper*) atau *custom hooks*.
 3. **Penyimpanan Gambar Efisien (Zero Storage Cost)**: Seluruh kompresi foto galeri atau QRIS dilakukan pada sisi klien via Canvas API (Base64 JPEG kompresi ~80-120KB) yang langsung disimpan ke Firestore tanpa memerlukan backend server atau Firebase Storage berbayar.
-4. **Single Page Routing**: Navigasi menggunakan state lokal dan *smooth scrolling* internal section. Parameter query URL (misal: `?to=Nama+Tamu` atau `?admin`) harus ditangani secara elegan dan *resilient*.
+4. **Single Page Routing**: Navigasi menggunakan state lokal dan *smooth scrolling* internal section. Rute admin dikelola via path khusus `/login` dan `/modules` dengan sinkronisasi History API, serta penanganan parameter query nama tamu (`?to=Nama+Tamu`) secara elegan.
 
 ---
 

@@ -41,14 +41,16 @@ Demi menjaga keanggunan tampilan undangan saat dibuka oleh tamu, **tombol akses 
 
 ### Langkah Masuk ke Admin Panel:
 1. Buka peramban di ponsel atau komputer Anda.
-2. Ketik alamat website undangan Anda, kemudian tambahkan kata `?admin` pada bagian paling belakang URL:
-   - Contoh di komputer lokal: `http://localhost:3000/?admin`
-   - Contoh di website publik: `https://undangan-saya.vercel.app/?admin`
-3. Layar kunci pengaman (*Passcode Gate*) akan muncul.
+2. Ketik alamat website undangan Anda dengan menambahkan path `/login`:
+   - Contoh di komputer lokal: `http://localhost:3000/login`
+   - Contoh di website publik: `https://undangan-saya.vercel.app/login`
+3. Layar login pengaman (*Passcode Gate*) akan muncul.
 4. Masukkan salah satu passcode bawaan:
    - **`password`** (atau `admin`, `admin123`)
-5. Klik tombol **"Masuk"**. Anda akan langsung diarahkan ke dasbor utama Admin Panel.
-6. Untuk kembali ke tampilan undangan tamu, klik tombol silang (**✕**) di pojok kanan atas.
+5. Klik tombol **"Masuk"**. Sistem akan memverifikasi passcode, menyimpan sesi aktif di peramban (`sessionStorage`), dan otomatis mengalihkan URL Anda ke `/modules` (Dasbor Admin Panel).
+6. **Logout & Navigasi:**
+   - Untuk keluar dan mengakhiri sesi admin, klik tombol **"Logout"** di kanan atas header (sesi dibersihkan dan URL kembali ke `/login`).
+   - Untuk kembali melihat tampilan undangan utama tanpa logout, klik tombol silang (**✕**) di pojok kanan atas (kembali ke beranda `/`).
 
 ---
 

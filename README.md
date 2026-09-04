@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.0.1-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.1.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -101,8 +101,8 @@ graph TD
 ### 2. Alur Pengelolaan Administrator (Admin Flow)
 ```mermaid
 graph LR
-    A["Akses URL: /?admin atau /admin"] --> B{"Autentikasi Passcode"}
-    B -->|"Passcode Valid"| C["Dashboard Admin Panel"]
+    A["Akses URL: /login"] --> B{"Autentikasi Passcode"}
+    B -->|"Passcode Valid"| C["URL: /modules (Dashboard Admin)"]
     B -->|"Passcode Salah"| D["Pesan Error"]
     C --> E["Link & WA Generator"]
     C --> F["Edit Data & Konten Website"]
@@ -161,7 +161,7 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 | Role | Metode Akses | Hak Akses & Fitur yang Diizinkan |
 | :--- | :--- | :--- |
 | **Tamu Undangan** *(Public Guest)* | Membuka URL undangan publik (`https://domain.com/?to=Nama+Tamu`) | - Membuka sampul undangan interaktif (*Opening Cover*).<br>- Memutar dan menjeda musik latar (*Floating Audio Player*).<br>- Menavigasi seksi undangan via *Bottom Navigation* & *ScrollSpy*.<br>- Melihat detail acara dan membuka rute lokasi ke Google Maps.<br>- Mengirim konfirmasi kehadiran pada formulir RSVP.<br>- Mengirim doa restu dan melihat dinding ucapan secara *real-time*.<br>- Menyalin nomor rekening bank & memindai kode QRIS untuk hadiah. |
-| **Mempelai / Admin** *(Administrator)* | Membuka URL rahasia `/?admin` atau `/admin` dan memasukkan passcode | - Mengakses **WhatsApp Link Generator** (membuat link custom nama tamu dan template pesan WA instan).<br>- Mengubah data profil kedua mempelai dan unggah foto.<br>- Mengubah jadwal, jam, venue, dan link Google Maps acara.<br>- Menambah, menyusun, dan menghapus foto galeri pernikahan.<br>- Mengelola daftar rekening bank & unggah gambar kode QRIS.<br>- Mengatur playlist musik latar (YouTube/Google Drive) dan mode putar.<br>- Mengonfigurasi metadata SEO & pratinjau thumbnail media sosial.<br>- Memantau statistik kehadiran RSVP (Total Hadir, Tidak Hadir, Total Respon).<br>- Menghapus respon RSVP atau ucapan tamu yang tidak pantas (moderasi). |
+| **Mempelai / Admin** *(Administrator)* | Membuka URL rahasia `/login` dan memasukkan passcode (setelah login dialihkan ke `/modules`) | - Mengakses **WhatsApp Link Generator** (membuat link custom nama tamu dan template pesan WA instan).<br>- Mengubah data profil kedua mempelai dan unggah foto.<br>- Mengubah jadwal, jam, venue, dan link Google Maps acara.<br>- Menambah, menyusun, dan menghapus foto galeri pernikahan.<br>- Mengelola daftar rekening bank & unggah gambar kode QRIS.<br>- Mengatur playlist musik latar (YouTube/Google Drive) dan mode putar.<br>- Mengonfigurasi metadata SEO & pratinjau thumbnail media sosial.<br>- Memantau statistik kehadiran RSVP (Total Hadir, Tidak Hadir, Total Respon).<br>- Menghapus respon RSVP atau ucapan tamu yang tidak pantas (moderasi). |
 
 ---
 
@@ -278,8 +278,8 @@ Tambahkan parameter `?to=` pada akhir URL undangan:
 - Mengundang keluarga: `http://localhost:3000/?to=Bapak+Ahmad+%26+Keluarga`
 
 ### Mengakses Halaman Admin
-Tambahkan parameter `?admin=true` atau `/admin` pada URL:
-- `http://localhost:3000/?admin`
+Akses path `/login` pada peramban Anda (setelah memasukkan passcode valid, sistem otomatis mengalihkan URL ke `/modules`):
+- `http://localhost:3000/login`
 
 ### Melakukan Kompilasi Produksi (Production Build)
 ```bash
@@ -299,7 +299,7 @@ Untuk keperluan pengujian awal dan mode pengembangan, sistem menyediakan passcod
 
 | Tipe Akun | Lokasi Akses | Passcode Default |
 | :--- | :--- | :--- |
-| **Administrator** | URL `/?admin` atau `/admin` | **`password`** <br> *(Alternatif valid: `admin`, `admin123`)* |
+| **Administrator** | URL `/login` (dialihkan ke `/modules`) | **`password`** <br> *(Alternatif valid: `admin`, `admin123`)* |
 
 > [!TIP]
 > Anda dapat mengganti atau memperketat verifikasi passcode ini pada berkas [AdminPanel.tsx](file:///d:/laragon/www/app_weddingbetawi_react/src/components/admin/AdminPanel.tsx#L64) sesuai preferensi keamanan Anda.

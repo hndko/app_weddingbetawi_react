@@ -64,6 +64,7 @@ Buka di smartphone pada jaringan Wi-Fi yang sama: `http://<IP-Komputer-Anda>:300
    - **Build Command**: `npm run build` atau `bun run build`
    - **Output Directory**: `dist`
    - **Install Command**: `npm install` atau `bun install`
+   - **SPA Fallback Routing**: Repositori telah dilengkapi berkas [`vercel.json`](../vercel.json) bawaan sehingga rute `/login` dan `/modules` tidak akan mengalami error 404 saat di-refresh langsung di browser.
 
 4. **Konfigurasi Environment Variables di Vercel**:
    Sebelum menekan tombol deploy, buka bagian **Environment Variables** dan tambahkan kunci rahasia berikut:
@@ -208,7 +209,7 @@ Buat berkas bernama `.htaccess` di direktori `public_html` dan masukkan aturan b
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Alihkan seluruh rute lainnya (termasuk /admin) ke index.html
+  # Alihkan seluruh rute lainnya (termasuk /login & /modules) ke index.html
   RewriteRule ^ index.html [L]
 </IfModule>
 
@@ -264,7 +265,7 @@ Sebelum membagikan link undangan kepada para tamu, lakukan pengujian verifikasi 
 - [ ] **Pemutar Musik**: Musik latar otomatis berputar setelah tombol *"Buka Undangan"* diklik. Tombol *mute/unmute* berfungsi baik.
 - [ ] **Uji Coba Kirim RSVP**: Isi nama dan konfirmasi kehadiran. Pastikan data berhasil terkirim tanpa pesan error dialog browser.
 - [ ] **Uji Coba Kirim Doa**: Kirim pesan ucapan doa restu dan pastikan ucapan tersebut langsung muncul di dinding ucapan (*real-time*).
-- [ ] **Akses Admin Panel**: Buka `https://domainanda.com/?admin` dan pastikan formulir login passcode muncul dan dapat dibuka dengan passcode `password`.
+- [ ] **Akses Admin Panel**: Buka `https://domainanda.com/login` dan pastikan formulir login passcode muncul, dapat dibuka dengan passcode `password`, dan otomatis beralih ke `https://domainanda.com/modules`.
 - [ ] **Tautan Google Maps**: Tombol *"Buka di Google Maps"* pada seksi Akad dan Resepsi berhasil membuka koordinat peta yang akurat di aplikasi HP.
 - [ ] **Salin Rekening**: Tombol *"Salin Nomor Rekening"* menampilkan notifikasi tersalin dan nomor rekening berhasil menempel saat di-paste.
 - [ ] **Pratinjau Media Sosial**: Bagikan tautan website Anda ke chat WhatsApp (pribadi) dan pastikan judul, deskripsi, dan thumbnail foto muncul dengan menarik.

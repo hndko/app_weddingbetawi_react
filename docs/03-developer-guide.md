@@ -11,11 +11,11 @@ Aplikasi dibangun sebagai **Single Page Application (SPA)** berbasis **React 19*
 ```mermaid
 graph TD
     subgraph Client Application
-        Entry["main.tsx (Vite SPA Mount)"] --> App["App.tsx (Root Controller & Router Guard)"]
+        Entry["main.tsx (Vite SPA Mount)"] --> App["App.tsx (Root Controller & Client Router)"]
         App --> Context["WeddingContext (Global State & Realtime Sync)"]
-        Context --> RouteGuard{"Is Admin Mode (?admin / /admin)?"}
-        RouteGuard -->|"Yes"| AdminPanel["AdminPanel.tsx (Management Dashboard)"]
-        RouteGuard -->|"No"| GuestView["Invitation View (Cover & Scrollable Body)"]
+        Context --> RouteGuard{"Client Route (/login, /modules)?"}
+        RouteGuard -->|"Yes"| AdminPanel["AdminPanel.tsx (/login -> /modules)"]
+        RouteGuard -->|"No (/)"| GuestView["Invitation View (Cover & Scrollable Body)"]
         GuestView --> Cover["OpeningCover.tsx (Interactive Envelope)"]
         GuestView --> Content["InvitationContent.tsx (Lazy-Loaded Sections)"]
         Content --> BottomNav["BottomNavigation.tsx (ScrollSpy Navigation)"]
@@ -159,11 +159,11 @@ Proyek mematuhi prinsip keamanan web modern:
    - Tidak menggunakan `dangerouslySetInnerHTML` di seluruh komponen.
    - Karakter nama tamu dari parameter URL di-*decode* secara aman dan dirender sebagai teks murni oleh React virtual DOM.
 2. **Pencegahan Pengindeksan Halaman Admin oleh Mesin Pencari**:
-   - Berkas [`public/robots.txt`](../public/robots.txt) memuat aturan `Disallow: /admin`.
-   - Komponen [`SEO.tsx`](../src/components/SEO.tsx) menyematkan tag `<meta name="robots" content="noindex, nofollow" />` setiap kali parameter `?admin` aktif.
-3. **Penyembunyian Rute Admin**:
-   - Rute admin tidak diekspos melalui tombol atau menu visual publik.
-   - Pintu masuk dilindungi oleh gerbang verifikasi passcode (`passwordInput`).
+   - Berkas [`public/robots.txt`](../public/robots.txt) memuat aturan `Disallow: /login`, `Disallow: /modules`, dan `Disallow: /admin`.
+   - Komponen [`SEO.tsx`](../src/components/SEO.tsx) menyematkan tag `<meta name="robots" content="noindex, nofollow" />` pada rute `/login` dan `/modules`.
+3. **Penyembunyian & Proteksi Rute Admin**:
+   - Rute admin tidak diekspos melalui tautan publik.
+   - Pintu masuk dilindungi gerbang verifikasi passcode (`/login`) dan validasi sesi di peramban (`sessionStorage`) sebelum menampilkan dasbor `/modules`.
 4. **Sanitasi Input Firestore**:
    - Fungsi pengiriman data melakukan `.trim()` pada string nama, doa, dan catatan sebelum dikirimkan ke koleksi `rsvps` maupun `wishes`.
 

@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Settings, Link as LinkIcon, Users, MessageSquare, Save, Plus, Trash2, 
-  Copy, Check, X, Lock, Music, Heart, Calendar, Image as ImageIcon, CreditCard, Share2, Upload, Loader2, BookOpen, AlertCircle
+  Copy, Check, X, Lock, LogOut, Music, Heart, Calendar, Image as ImageIcon, CreditCard, Share2, Upload, Loader2, BookOpen, AlertCircle
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { WeddingConfig, RSVPResponse, Wish } from '../../types';
 
-export function AdminPanel() {
+interface AdminPanelProps {
+  currentRoute?: 'login' | 'modules';
+  onNavigate?: (path: string) => void;
+  onReplace?: (path: string) => void;
+}
+
+export function AdminPanel({ currentRoute = 'login', onNavigate, onReplace }: AdminPanelProps) {
   const { weddingConfig, updateWeddingConfig } = useWeddingConfig();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem('admin_authenticated') === 'true';
+    } catch {
+      return false;
+    }
+  });
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordError, setPasswordError] = useState(false);
   const [activeTab, setActiveTab] = useState<'config' | 'generator' | 'rsvps' | 'wishes'>('generator');
@@ -76,14 +88,56 @@ export function AdminPanel() {
     return () => unsubscribe();
   }, []);
 
+  // Sinkronisasi rute jika belum login atau sudah login
+  useEffect(() => {
+    if (currentRoute === 'modules' && !isAuthenticated) {
+      if (onReplace) {
+        onReplace('/login');
+      } else {
+        window.history.replaceState(null, '', '/login');
+      }
+    } else if (currentRoute === 'login' && isAuthenticated) {
+      if (onReplace) {
+        onReplace('/modules');
+      } else {
+        window.history.replaceState(null, '', '/modules');
+      }
+    }
+  }, [currentRoute, isAuthenticated, onReplace]);
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanInput = passwordInput.trim().toLowerCase();
     if (cleanInput === 'password' || cleanInput === 'admin123' || cleanInput === 'admin') {
+      try {
+        sessionStorage.setItem('admin_authenticated', 'true');
+      } catch {
+        // Safe fallback for restricted storage environments
+      }
       setIsAuthenticated(true);
       setPasswordError(false);
+      if (onNavigate) {
+        onNavigate('/modules');
+      } else {
+        window.history.pushState(null, '', '/modules');
+      }
     } else {
       setPasswordError(true);
+    }
+  };
+
+  const handleLogout = () => {
+    try {
+      sessionStorage.removeItem('admin_authenticated');
+    } catch {
+      // Safe fallback
+    }
+    setIsAuthenticated(false);
+    setPasswordInput('');
+    if (onNavigate) {
+      onNavigate('/login');
+    } else {
+      window.history.pushState(null, '', '/login');
     }
   };
 
@@ -209,8 +263,8 @@ export function AdminPanel() {
   };
 
   // Generated URL & WA Message
-  const currentUrl = window.location.origin + window.location.pathname;
-  const generatedLink = guestName ? `${currentUrl}?to=${encodeURIComponent(guestName)}` : currentUrl;
+  const baseUrl = window.location.origin;
+  const generatedLink = guestName ? `${baseUrl}/?to=${encodeURIComponent(guestName)}` : `${baseUrl}/`;
   const waMessage = `Assalamu'alaikum Wr. Wb.
 
 Kepada Yth. Bapak/Ibu/Saudara/i ${guestName || 'Tamu Undangan'},
@@ -257,20 +311,38 @@ Wassalamu'alaikum Wr. Wb.`;
         <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-warm-white sticky top-0 z-10">
           <div className="flex items-center gap-3">
             <div className="bg-sage/10 text-sage-dark p-2.5 rounded-xl">
-              <Settings size={22} />
+              {isAuthenticated ? <Settings size={22} /> : <Lock size={22} />}
             </div>
             <div>
-              <h2 className="font-heading text-xl text-text-dark font-medium">Admin Panel</h2>
-              <p className="text-xs text-gray-500">Kelola undangan & database</p>
+              <h2 className="font-heading text-xl text-text-dark font-medium">
+                {isAuthenticated ? 'Admin Modules' : 'Admin Login'}
+              </h2>
+              <p className="text-xs text-gray-500">
+                {isAuthenticated ? 'Kelola undangan & database' : 'Autentikasi panel admin'}
+              </p>
             </div>
           </div>
-          <a
-            href="/"
-            className="text-gray-400 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors"
-            title="Kembali ke Undangan"
-          >
-            <X size={24} />
-          </a>
+          <div className="flex items-center gap-2">
+            {isAuthenticated && (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                title="Logout dari Admin"
+              >
+                <LogOut size={16} />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => (onNavigate ? onNavigate('/') : (window.location.href = '/'))}
+              className="text-gray-400 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
+              title="Kembali ke Undangan"
+            >
+              <X size={24} />
+            </button>
+          </div>
         </div>
 
         {/* Body */}

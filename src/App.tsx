@@ -8,9 +8,45 @@ import { AdminPanel } from './components/admin/AdminPanel';
 import { SEO } from './components/SEO';
 import { MusicPlayer } from './components/MusicPlayer';
 
-function AppContent({ isAdminParam }: { isAdminParam: boolean }) {
+export function navigateTo(path: string) {
+  if (window.location.pathname !== path) {
+    window.history.pushState(null, '', path);
+    window.dispatchEvent(new Event('app_navigate'));
+  }
+}
+
+export function replaceTo(path: string) {
+  window.history.replaceState(null, '', path);
+  window.dispatchEvent(new Event('app_navigate'));
+}
+
+function useCurrentPath(): string {
+  const [path, setPath] = useState<string>(() => window.location.pathname);
+
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setPath(window.location.pathname);
+    };
+
+    window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('app_navigate', handleLocationChange);
+
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('app_navigate', handleLocationChange);
+    };
+  }, []);
+
+  return path;
+}
+
+function AppContent({ currentPath }: { currentPath: string }) {
   const { weddingConfig, loading } = useWeddingConfig();
   const [isOpened, setIsOpened] = useState(false);
+
+  const rawPath = currentPath.toLowerCase().replace(/\/+$/, '') || '/';
+  const isLogin = rawPath === '/login';
+  const isModules = rawPath === '/modules';
   
   if (loading) {
     return (
@@ -27,16 +63,20 @@ function AppContent({ isAdminParam }: { isAdminParam: boolean }) {
   const seoKeywords = weddingConfig.seo?.keywords || "wedding, pernikahan, undangan digital";
   const seoImage = weddingConfig.seo?.image || weddingConfig.gallery?.[0] || '/images/og-image.jpg';
 
-  if (isAdminParam) {
+  if (isLogin || isModules) {
     return (
       <>
         <SEO 
-          title={`Admin Panel | ${siteName}`}
+          title={isModules ? `Admin Modules | ${siteName}` : `Admin Login | ${siteName}`}
           description="Halaman admin untuk mengatur undangan pernikahan."
           robots="noindex, nofollow"
           siteName={siteName}
         />
-        <AdminPanel />
+        <AdminPanel 
+          currentRoute={isModules ? 'modules' : 'login'} 
+          onNavigate={navigateTo}
+          onReplace={replaceTo}
+        />
       </>
     );
   }
@@ -74,12 +114,11 @@ function AppContent({ isAdminParam }: { isAdminParam: boolean }) {
 }
 
 export default function App() {
-  const searchParams = new URLSearchParams(window.location.search);
-  const isAdminParam = searchParams.has('admin') || window.location.pathname.endsWith('/admin');
+  const currentPath = useCurrentPath();
 
   return (
     <WeddingProvider>
-      <AppContent isAdminParam={isAdminParam} />
+      <AppContent currentPath={currentPath} />
     </WeddingProvider>
   );
 }

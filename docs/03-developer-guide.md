@@ -37,6 +37,7 @@ graph TD
 
 ```text
 app_weddingbetawi_react/
+├── docs/                       # Dokumentasi resmi proyek & blueprint skema Firestore
 ├── public/                     # Aset publik statis (favicon, robots.txt, sitemap.xml, webmanifest)
 ├── src/
 │   ├── components/             # Komponen UI utama
@@ -76,7 +77,11 @@ app_weddingbetawi_react/
 
 ## 🗄️ 3. Skema Data & Model Firestore
 
-Sistem menggunakan model NoSQL berbasis dokumen tunggal dan koleksi transaksi terpisah:
+Sistem menggunakan model NoSQL berbasis dokumen tunggal dan koleksi transaksi terpisah.
+
+> [!TIP]
+> **Blueprint Skema Mesin (JSON Schema):**
+> Kamus skema data deklaratif dalam format JSON tersedia pada berkas [**`docs/firebase-blueprint.json`**](firebase-blueprint.json) untuk referensi pemetaan koleksi dan dokumen Firestore.
 
 ### 1. Dokumen Konfigurasi: `wedding_config/main`
 Tipe data didefinisikan secara ketat pada [`src/types.ts`](../src/types.ts):

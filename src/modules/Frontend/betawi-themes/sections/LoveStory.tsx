@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
-import { useWeddingConfig } from '../../context/WeddingContext';
-import { cn } from '../../utils/cn';
+import { useWeddingConfig } from '../../../../context/WeddingContext';
+import { cn } from '../../../../utils/cn';
 
 export function LoveStory() {
   const { weddingConfig } = useWeddingConfig();

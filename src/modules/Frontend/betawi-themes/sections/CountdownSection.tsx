@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { useWeddingConfig } from '../../context/WeddingContext';
+import { useWeddingConfig } from '../../../../context/WeddingContext';
 
 export function CountdownSection() {
   const { weddingConfig } = useWeddingConfig();

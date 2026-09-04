@@ -1,8 +1,8 @@
 import { motion } from 'motion/react';
-import { useWeddingConfig } from '../../context/WeddingContext';
+import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 import { FloralDivider } from '../decorations/FloralDivider';
-import { EventDetail } from '../../types';
+import { EventDetail } from '../../../../types';
 
 function EventCard({ event, delay }: { event: EventDetail, delay: number }) {
   const { weddingConfig } = useWeddingConfig();

@@ -1,6 +1,6 @@
 import { Home, Heart, Calendar, Image as ImageIcon, MessageCircle, BookOpen } from 'lucide-react';
-import { useScrollSpy } from '../hooks/useScrollSpy';
-import { cn } from '../utils/cn';
+import { useScrollSpy } from '../../../hooks/useScrollSpy';
+import { cn } from '../../../utils/cn';
 
 export function BottomNavigation() {
   const activeId = useScrollSpy(['home', 'mempelai', 'cerita', 'acara', 'galeri', 'ucapan'], 100);

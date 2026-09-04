@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { WeddingProvider, useWeddingConfig } from './context/WeddingContext';
-import { OpeningCover } from './components/OpeningCover';
-import { InvitationContent } from './components/InvitationContent';
-import { AppFrame } from './components/decorations/AppFrame';
-import { AdminPanel } from './components/admin/AdminPanel';
-import { SEO } from './components/SEO';
-import { MusicPlayer } from './components/MusicPlayer';
+import { OpeningCover } from './modules/Frontend/betawi-themes/OpeningCover';
+import { InvitationContent } from './modules/Frontend/betawi-themes/InvitationContent';
+import { AppFrame } from './modules/Frontend/betawi-themes/decorations/AppFrame';
+import { Panel as AdminPanel } from './modules/Backend/Panel';
+import { SEO } from './modules/Frontend/betawi-themes/SEO';
+import { MusicPlayer } from './modules/Frontend/betawi-themes/MusicPlayer';
 
 export function navigateTo(path: string) {
   if (window.location.pathname !== path) {

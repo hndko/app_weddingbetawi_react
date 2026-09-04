@@ -40,17 +40,20 @@ app_weddingbetawi_react/
 ├── docs/                       # Dokumentasi resmi proyek & blueprint skema Firestore
 ├── public/                     # Aset publik statis (favicon, robots.txt, sitemap.xml, webmanifest)
 ├── src/
-│   ├── components/             # Komponen UI utama
-│   │   ├── admin/
-│   │   │   ├── AdminAuth.tsx   # Halaman autentikasi panel admin bertema Betawi
-│   │   │   └── AdminPanel.tsx  # Dasbor pengelolaan lengkap (Tab 1 s.d. Tab 4)
-│   │   ├── decorations/        # Elemen dekorasi budaya Betawi (Ondel-ondel, Rumah Kebaya, Monas)
-│   │   ├── sections/           # Seksi halaman undangan (Hero, Couple, Countdown, Event, RSVP, dll.)
-│   │   ├── BottomNavigation.tsx# Menu navigasi mengambang bawah
-│   │   ├── InvitationContent.tsx# Container scrollable seksi undangan
-│   │   ├── MusicPlayer.tsx     # Pemutar audio latar (YouTube, Drive, MP3)
-│   │   ├── OpeningCover.tsx    # Sampul pembuka amplop interaktif
-│   │   └── SEO.tsx             # Headless meta tag generator (react-helmet-async)
+│   ├── modules/                # Arsitektur Modular Berbasis Domain
+│   │   ├── Auth/
+│   │   │   └── Login.tsx       # Halaman autentikasi panel admin bertema Betawi
+│   │   ├── Backend/
+│   │   │   └── Panel.tsx       # Dasbor pengelolaan lengkap (Tab 1 s.d. Tab 4)
+│   │   └── Frontend/
+│   │       └── betawi-themes/  # Modul tema undangan khusus adat Betawi
+│   │           ├── decorations/# Elemen dekorasi Betawi (Ondel-ondel, Rumah Kebaya, Monas)
+│   │           ├── sections/   # Seksi halaman undangan (Hero, Couple, Event, RSVP, dll.)
+│   │           ├── BottomNavigation.tsx  # Menu navigasi mengambang bawah
+│   │           ├── InvitationContent.tsx # Container scrollable seksi undangan
+│   │           ├── MusicPlayer.tsx       # Pemutar audio latar (YouTube, Drive, MP3)
+│   │           ├── OpeningCover.tsx      # Sampul pembuka amplop interaktif
+│   │           └── SEO.tsx               # Headless meta tag generator (react-helmet-async)
 │   ├── context/
 │   │   └── WeddingContext.tsx  # Context provider global untuk sinkronisasi data Firestore
 │   ├── data/

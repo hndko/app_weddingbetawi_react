@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useWeddingConfig } from '../../context/WeddingContext';
+import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { Copy, CheckCircle2 } from 'lucide-react';
 
 export function WeddingGift() {

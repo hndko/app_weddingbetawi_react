@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { motion } from 'motion/react';
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
-import { useGuestName } from '../../hooks/useGuestName';
+import { db } from '../../../../lib/firebase';
+import { useGuestName } from '../../../../hooks/useGuestName';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { FloatingFlowers } from '../decorations/FloatingFlowers';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { FloralDivider } from '../decorations/FloralDivider';
 import { HouseBackgroundFlowers } from '../decorations/HouseBackgroundFlowers';
-import { Wish } from '../../types';
+import { Wish } from '../../../../types';
 
 const defaultWishes: Wish[] = [
   { id: '1', name: 'Andi & Keluarga', text: 'Selamat menempuh hidup baru, semoga menjadi keluarga sakinah mawaddah warahmah.', time: '2 jam lalu' },

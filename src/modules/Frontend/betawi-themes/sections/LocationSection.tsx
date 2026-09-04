@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { useWeddingConfig } from '../../context/WeddingContext';
+import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { Map } from 'lucide-react';
 
 export function LocationSection() {

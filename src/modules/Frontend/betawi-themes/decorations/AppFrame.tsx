@@ -1,4 +1,4 @@
-import { cn } from '../../utils/cn';
+import { cn } from '../../../../utils/cn';
 import { AnimatedFloralVines } from './AnimatedFloralVines';
 
 export function AppFrame({ className }: { className?: string }) {

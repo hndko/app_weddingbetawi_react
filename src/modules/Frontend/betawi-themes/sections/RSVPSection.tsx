@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from 'motion/react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
-import { useGuestName } from '../../hooks/useGuestName';
+import { db } from '../../../../lib/firebase';
+import { useGuestName } from '../../../../hooks/useGuestName';
 import { AlertCircle } from 'lucide-react';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 

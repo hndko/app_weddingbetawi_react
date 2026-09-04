@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Betawi Heritage Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.2.0`
+- **Versi Aplikasi Saat Ini**: `v1.3.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Firebase Firestore 12.17, Motion 12.23
 - **Tipe Aplikasi**: Client-Side Single Page Application (SPA)
 - **Status CI/CD & Deploy**: Vercel Serverless Static Hosting
@@ -43,10 +43,12 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 ---
 
 ### 🏗️ 2. Arsitektur Kode & Pemisahan Tanggung Jawab (Separation of Concerns)
-1. **Struktur Direktori Terstandarisasi**:
-   - `src/components/`: Komponen antarmuka pengguna modular (pecah per seksi: Hero, Couple, Event, Story, Gallery, RSVP, Wishes, Admin).
+1. **Struktur Direktori Modular Terstandarisasi (`src/modules/`)**:
+   - `src/modules/Auth/`: Modul autentikasi panel admin (`Login.tsx`).
+   - `src/modules/Backend/`: Modul pengelolaan data dan dasbor admin (`Panel.tsx`).
+   - `src/modules/Frontend/betawi-themes/`: Seluruh komponen tema undangan pernikahan Betawi (`decorations/`, `sections/`, `OpeningCover.tsx`, `InvitationContent.tsx`, `BottomNavigation.tsx`, `MusicPlayer.tsx`, `SEO.tsx`).
    - `src/types.ts`: Deklarasi tipe TypeScript global dan interface domain.
-   - `src/firebase.ts`: Konfigurasi SDK Firebase, instance Firestore, dan otentikasi.
+   - `src/lib/firebase.ts`: Konfigurasi SDK Firebase dan instance Firestore.
    - `src/index.css`: Konfigurasi Tailwind CSS v4 dan styling global.
 2. **Thin Presentational Components**: Komponen antarmuka fokus pada rendering UI. Logika manipulasi state kompleks, integrasi database, atau format string wajib didelegasikan ke fungsi pembantu (*helper*) atau *custom hooks*.
 3. **Penyimpanan Gambar Efisien (Zero Storage Cost)**: Seluruh kompresi foto galeri atau QRIS dilakukan pada sisi klien via Canvas API (Base64 JPEG kompresi ~80-120KB) yang langsung disimpan ke Firestore tanpa memerlukan backend server atau Firebase Storage berbayar.

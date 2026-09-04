@@ -7,15 +7,17 @@ import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { WeddingConfig, RSVPResponse, Wish } from '../../types';
-import { AdminAuth } from './AdminAuth';
+import { Login } from '../Auth/Login';
 
-interface AdminPanelProps {
+export interface PanelProps {
   currentRoute?: 'login' | 'modules';
   onNavigate?: (path: string) => void;
   onReplace?: (path: string) => void;
 }
 
-export function AdminPanel({ currentRoute = 'login', onNavigate, onReplace }: AdminPanelProps) {
+export type AdminPanelProps = PanelProps;
+
+export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelProps) {
   const { weddingConfig, updateWeddingConfig } = useWeddingConfig();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     try {
@@ -283,7 +285,7 @@ Wassalamu'alaikum Wr. Wb.`;
 
   if (!isAuthenticated) {
     return (
-      <AdminAuth
+      <Login
         groomName={weddingConfig?.groom?.nickname || 'Mempelai Pria'}
         brideName={weddingConfig?.bride?.nickname || 'Mempelai Wanita'}
         onLoginSuccess={() => {
@@ -1272,3 +1274,5 @@ Wassalamu'alaikum Wr. Wb.`;
     </div>
   );
 }
+
+export const AdminPanel = Panel;

@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useWeddingConfig } from '../../context/WeddingContext';
+import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 export function GallerySection() {

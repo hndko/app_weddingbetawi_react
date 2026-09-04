@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Lock, Eye, EyeOff, ArrowLeft, ShieldCheck, AlertCircle, Loader2, KeyRound } from 'lucide-react';
 
-interface AdminAuthProps {
+export interface LoginProps {
   groomName: string;
   brideName: string;
   onLoginSuccess: () => void;
   onNavigateBack: () => void;
 }
 
-export function AdminAuth({
+export function Login({
   groomName,
   brideName,
   onLoginSuccess,
   onNavigateBack,
-}: AdminAuthProps) {
+}: LoginProps) {
   const [passcode, setPasscode] = useState('');
   const [showPasscode, setShowPasscode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -220,3 +220,5 @@ export function AdminAuth({
     </div>
   );
 }
+
+export const AdminAuth = Login;

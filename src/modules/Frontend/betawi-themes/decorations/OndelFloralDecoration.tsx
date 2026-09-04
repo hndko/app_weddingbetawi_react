@@ -1,4 +1,4 @@
-import { cn } from "../../utils/cn";
+import { cn } from '../../../../utils/cn';
 
 export function OndelFloralDecoration({ className, position }: { className?: string, position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'bottom-center' | 'top-center' | 'center' }) {
   return (

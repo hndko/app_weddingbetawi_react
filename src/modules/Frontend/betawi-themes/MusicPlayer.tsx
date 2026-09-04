@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { VolumeX, Music } from 'lucide-react';
-import { useWeddingConfig } from '../context/WeddingContext';
-import { cn } from '../utils/cn';
+import { useWeddingConfig } from '../../../context/WeddingContext';
+import { cn } from '../../../utils/cn';
 
 declare global {
   interface Window {

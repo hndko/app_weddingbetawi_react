@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { MailOpen } from 'lucide-react';
-import { useWeddingConfig } from '../context/WeddingContext';
-import { useGuestName } from '../hooks/useGuestName';
+import { useWeddingConfig } from '../../../context/WeddingContext';
+import { useGuestName } from '../../../hooks/useGuestName';
 import { RumahKebaya } from './decorations/RumahKebaya';
 import { OndelOndel } from './decorations/OndelOndel';
 import { FloatingFlowers } from './decorations/FloatingFlowers';

@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { useWeddingConfig } from '../../context/WeddingContext';
+import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { FloatingFlowers } from '../decorations/FloatingFlowers';
 import { OndelOndel } from '../decorations/OndelOndel';

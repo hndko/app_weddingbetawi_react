@@ -1,10 +1,10 @@
 import { motion } from 'motion/react';
-import { useWeddingConfig } from '../../context/WeddingContext';
+import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { Instagram } from 'lucide-react';
 import { MonasSilhouette } from '../decorations/MonasSilhouette';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { FloatingFlowers } from '../decorations/FloatingFlowers';
-import { PersonInfo } from '../../types';
+import { PersonInfo } from '../../../../types';
 
 function ProfileCard({ data, delay, index }: { data: PersonInfo, delay: number, index: number }) {
   const isEven = index % 2 === 0;

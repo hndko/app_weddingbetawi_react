@@ -16,7 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const dbId = firebaseConfig.firestoreDatabaseId;
-const isValidDbId = dbId && !dbId.startsWith('G-') && dbId !== '(default)';
+const isValidDbId = dbId && !dbId.startsWith('G-') && !dbId.startsWith('ai-studio-') && dbId !== '(default)';
 
 export const db = isValidDbId
   ? getFirestore(app, dbId)

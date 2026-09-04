@@ -106,7 +106,7 @@ function AppContent({ currentPath }: { currentPath: string }) {
               <InvitationContent key="content" />
             )}
           </AnimatePresence>
-          {isOpened && <MusicPlayer />}
+          <MusicPlayer isOpened={isOpened} />
         </div>
       </div>
     </>

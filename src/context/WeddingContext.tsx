@@ -21,9 +21,15 @@ export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Safety fallback: jika Firestore offline/unreachable, jangan gantung loading UI lebih dari 1 detik
+    const safetyTimer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
     const docRef = doc(db, 'wedding_config', 'main');
     
     const unsubscribe = onSnapshot(docRef, async (docSnap) => {
+      clearTimeout(safetyTimer);
       if (docSnap.exists()) {
         const data = docSnap.data() as WeddingConfig;
         setWeddingConfig({
@@ -59,7 +65,10 @@ export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(safetyTimer);
+      unsubscribe();
+    };
   }, []);
 
   const updateWeddingConfig = async (newConfig: WeddingConfig) => {

@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Betawi Heritage Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.1.2`
+- **Versi Aplikasi Saat Ini**: `v1.1.3`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Firebase Firestore 12.17, Motion 12.23
 - **Tipe Aplikasi**: Client-Side Single Page Application (SPA)
 - **Status CI/CD & Deploy**: Vercel Serverless Static Hosting
@@ -55,10 +55,11 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 ---
 
 ### 🔒 3. Standar Keamanan & Sanitasi Input (Security & OWASP Guardrails)
-1. **Isolasi Rahasia & Kredensial (.env)**:
+1. **Isolasi Rahasia & Kredensial (.env & .env.example)**:
    - DILARANG KERAS mengekspos API Key produksi, Firebase Service Account, atau OAuth credentials ke repositori publik.
    - Semua variabel lingkungan klien wajib menggunakan prefix `VITE_` (misal: `VITE_FIREBASE_API_KEY`).
    - File kredensial lokal dan rahasia wajib selalu terdaftar di `.gitignore`.
+   - **Konsistensi Mutlak `.env` dan `.env.example`**: Seluruh variabel lingkungan pada `.env` dan `.env.example` WAJIB 100% sinkron dan konsisten (kunci yang sama, urutan yang sama, dan format penamaan yang sama). Setiap kali ada penambahan atau modifikasi variabel baru pada `.env`, `.env.example` WAJIB langsung diperbarui dengan nilai placeholder/dummy, dan sebaliknya. Variabel usang atau tidak terpakai wajib dieliminasi dari kedua berkas.
 2. **Pencegahan Cross-Site Scripting (XSS)**:
    - Semua data dinamis dari pengguna (nama tamu, pesan ucapan, konfirmasi RSVP) wajib di-escape oleh React secara alami.
    - DILARANG menggunakan `dangerouslySetInnerHTML` tanpa pustaka sanitasi HTML pihak ketiga (seperti DOMPurify).
@@ -175,6 +176,7 @@ Format: <type>(<scope>): <description>
 
 Sebelum AI Assistant mengakhiri sesi pengerjaan tugas, lakukan pengecekan berikut secara berurutan:
 - [ ] Kode bebas dari tipe `any`, komentar *slop*, `console.log`, dan dialog browser `alert()` / `confirm()`.
+- [ ] Berkas `.env` dan `.env.example` 100% konsisten dalam kunci, urutan, dan penamaan (Pilar 3).
 - [ ] Menjalankan verifikasi tipe `tsc --noEmit` / `npm run lint` dan lulus 100%.
 - [ ] Menjalankan uji kompilasi `npm run build` dan sukses menghasilkan `dist/`.
 - [ ] Versi SemVer dinaikkan di `package.json`, `README.md`, dan `AGENTS.md` (Pilar 8).

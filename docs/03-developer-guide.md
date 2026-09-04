@@ -42,6 +42,7 @@ app_weddingbetawi_react/
 ├── src/
 │   ├── components/             # Komponen UI utama
 │   │   ├── admin/
+│   │   │   ├── AdminAuth.tsx   # Halaman autentikasi panel admin bertema Betawi
 │   │   │   └── AdminPanel.tsx  # Dasbor pengelolaan lengkap (Tab 1 s.d. Tab 4)
 │   │   ├── decorations/        # Elemen dekorasi budaya Betawi (Ondel-ondel, Rumah Kebaya, Monas)
 │   │   ├── sections/           # Seksi halaman undangan (Hero, Couple, Countdown, Event, RSVP, dll.)

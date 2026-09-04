@@ -7,6 +7,7 @@ import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { WeddingConfig, RSVPResponse, Wish } from '../../types';
+import { AdminAuth } from './AdminAuth';
 
 interface AdminPanelProps {
   currentRoute?: 'login' | 'modules';
@@ -23,8 +24,6 @@ export function AdminPanel({ currentRoute = 'login', onNavigate, onReplace }: Ad
       return false;
     }
   });
-  const [passwordInput, setPasswordInput] = useState('');
-  const [passwordError, setPasswordError] = useState(false);
   const [activeTab, setActiveTab] = useState<'config' | 'generator' | 'rsvps' | 'wishes'>('generator');
 
   // Form state for config
@@ -105,27 +104,6 @@ export function AdminPanel({ currentRoute = 'login', onNavigate, onReplace }: Ad
     }
   }, [currentRoute, isAuthenticated, onReplace]);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleanInput = passwordInput.trim().toLowerCase();
-    if (cleanInput === 'password' || cleanInput === 'admin123' || cleanInput === 'admin') {
-      try {
-        sessionStorage.setItem('admin_authenticated', 'true');
-      } catch {
-        // Safe fallback for restricted storage environments
-      }
-      setIsAuthenticated(true);
-      setPasswordError(false);
-      if (onNavigate) {
-        onNavigate('/modules');
-      } else {
-        window.history.pushState(null, '', '/modules');
-      }
-    } else {
-      setPasswordError(true);
-    }
-  };
-
   const handleLogout = () => {
     try {
       sessionStorage.removeItem('admin_authenticated');
@@ -133,7 +111,6 @@ export function AdminPanel({ currentRoute = 'login', onNavigate, onReplace }: Ad
       // Safe fallback
     }
     setIsAuthenticated(false);
-    setPasswordInput('');
     if (onNavigate) {
       onNavigate('/login');
     } else {
@@ -304,6 +281,30 @@ Wassalamu'alaikum Wr. Wb.`;
     .reduce((acc, r) => acc + (Number(r.guestCount) || 1), 0);
   const totalNotAttending = rsvps.filter(r => r.attendance !== 'hadir').length;
 
+  if (!isAuthenticated) {
+    return (
+      <AdminAuth
+        groomName={weddingConfig?.groom?.nickname || 'Mempelai Pria'}
+        brideName={weddingConfig?.bride?.nickname || 'Mempelai Wanita'}
+        onLoginSuccess={() => {
+          setIsAuthenticated(true);
+          if (onNavigate) {
+            onNavigate('/modules');
+          } else {
+            window.history.pushState(null, '', '/modules');
+          }
+        }}
+        onNavigateBack={() => {
+          if (onNavigate) {
+            onNavigate('/');
+          } else {
+            window.location.href = '/';
+          }
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F7F9F5] flex flex-col md:py-10 md:px-6">
       <div className="w-full max-w-4xl mx-auto flex-1 bg-white md:rounded-[32px] shadow-2xl overflow-hidden flex flex-col border-0 md:border border-gray-100 relative">
@@ -311,29 +312,27 @@ Wassalamu'alaikum Wr. Wb.`;
         <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-warm-white sticky top-0 z-10">
           <div className="flex items-center gap-3">
             <div className="bg-sage/10 text-sage-dark p-2.5 rounded-xl">
-              {isAuthenticated ? <Settings size={22} /> : <Lock size={22} />}
+              <Settings size={22} />
             </div>
             <div>
               <h2 className="font-heading text-xl text-text-dark font-medium">
-                {isAuthenticated ? 'Admin Modules' : 'Admin Login'}
+                Admin Modules
               </h2>
               <p className="text-xs text-gray-500">
-                {isAuthenticated ? 'Kelola undangan & database' : 'Autentikasi panel admin'}
+                Kelola undangan & database
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {isAuthenticated && (
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                title="Logout dari Admin"
-              >
-                <LogOut size={16} />
-                <span className="hidden sm:inline">Logout</span>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+              title="Logout dari Admin"
+            >
+              <LogOut size={16} />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
             <button
               type="button"
               onClick={() => (onNavigate ? onNavigate('/') : (window.location.href = '/'))}
@@ -346,38 +345,8 @@ Wassalamu'alaikum Wr. Wb.`;
         </div>
 
         {/* Body */}
-        {!isAuthenticated ? (
-          <div className="p-8 flex flex-col items-center justify-center flex-1 text-center">
-            <div className="w-16 h-16 bg-sage/10 text-sage-dark rounded-full flex items-center justify-center mb-5">
-              <Lock size={30} />
-            </div>
-            <h3 className="font-heading text-2xl text-text-dark mb-2">Masukan Passcode Admin</h3>
-            <p className="text-sm text-gray-500 mb-8 max-w-xs">
-              Masukan passcode untuk mengakses pengaturan website dan database undangan. <br />
-              <span className="font-semibold text-sage-dark mt-2 block">Passcode bawaan: password</span>
-            </p>
-            <form onSubmit={handleLogin} className="w-full max-w-sm flex flex-col gap-4">
-              <input
-                type="password"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                placeholder="Passcode..."
-                className="w-full border border-gray-300 rounded-xl px-4 py-3.5 text-base text-center focus:outline-none focus:ring-2 focus:ring-sage"
-              />
-              {passwordError && (
-                <span className="text-sm text-red-500 font-medium">Passcode salah, coba 'password'</span>
-              )}
-              <button
-                type="submit"
-                className="w-full bg-sage-dark text-white py-3.5 rounded-xl text-sm font-semibold hover:bg-sage transition-colors cursor-pointer"
-              >
-                Masuk
-              </button>
-            </form>
-          </div>
-        ) : (
-          <div className="flex flex-col flex-1 overflow-hidden">
-            {/* Tabs Bar */}
+        <div className="flex flex-col flex-1 overflow-hidden">
+          {/* Tabs Bar */}
             <div className="flex border-b border-gray-100 px-2 sm:px-6 bg-gray-50/50 overflow-x-auto no-scrollbar pt-2">
               <button
                 onClick={() => setActiveTab('generator')}
@@ -1252,7 +1221,6 @@ Wassalamu'alaikum Wr. Wb.`;
                     )}
                   </div>
                 </div>
-              )}
       </div>
 
       {/* Modern Confirmation Modal */}

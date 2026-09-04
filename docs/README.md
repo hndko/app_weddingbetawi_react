@@ -23,6 +23,7 @@ docs/
 
 | Berkas Dokumen | Judul Panduan | Target Pembaca | Topik Pembahasan Utama |
 | :--- | :--- | :--- | :--- |
+| [**AGENTS.md**](../AGENTS.md) | **Panduan & Aturan AI Coding Agent** | *AI Assistant / Developer* | 10 pilar aturan operasional AI Assistant: SemVer, Conventional Commits, Sync Docs, OWASP, & Clean Code. |
 | [**01-daftar-command.md**](01-daftar-command.md) | **Daftar Perintah CLI & Operasional** | *Developer / DevOps* | Perintah `bun` & `npm`, dev server, linting TypeScript, kompilasi produksi, maintenance cache, konvensi commit Git, dan cheatsheet operasional harian. |
 | [**02-buku-panduan-pengguna.md**](02-buku-panduan-pengguna.md) | **Buku Panduan Pengguna (User Manual)** | *Mempelai / Admin Operasional* | Panduan akses Admin Panel, generator link WhatsApp otomatis, modifikasi konten/jadwal acara, upload foto & QRIS, monitoring RSVP, serta moderasi ucapan doa. |
 | [**03-developer-guide.md**](03-developer-guide.md) | **Panduan Arsitektur & Pengembang** | *Frontend Engineer / Reviewer* | Arsitektur SPA React 19 + TypeScript, arsitektur *Zero Storage Cost* (Canvas Base64), model data Firestore, state management, audit kepatuhan OWASP, dan konvensi Clean Code. |

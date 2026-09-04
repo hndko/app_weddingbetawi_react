@@ -1,0 +1,179 @@
+# 🤖 AGENTS.md — Panduan & Aturan Proyek untuk AI Assistant & Coding Agents
+
+Dokumen ini adalah **sumber kebenaran tunggal (*Single Source of Truth*)** untuk seluruh AI Assistant, Coding Agents, LLM Pair Programmer, dan pengembang yang bekerja pada repositori **Betawi Heritage - Digital Wedding Invitation SPA**. 
+
+Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek ini **WAJIB** membaca, memahami, dan mematuhi seluruh aturan di bawah ini tanpa pengecualian.
+
+---
+
+## 📌 Metadata Proyek
+- **Nama Proyek**: Betawi Heritage Digital Wedding Invitation SPA
+- **Versi Aplikasi Saat Ini**: `v1.0.1`
+- **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Firebase Firestore 12.17, Motion 12.23
+- **Tipe Aplikasi**: Client-Side Single Page Application (SPA)
+- **Status CI/CD & Deploy**: Vercel Serverless Static Hosting
+
+---
+
+## 🏛️ 10 Pilar Aturan Wajib untuk AI Assistant & Coding Agents
+
+```text
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                   10 PILAR ATURAN WAJIB CODING AGENT                             │
+├───────────────────┬───────────────────┬───────────────────┬──────────────────────┤
+│ 1. Prime Directive│ 2. Clean Arch     │ 3. OWASP Security │ 4. Clean Code Hygiene│
+│ 5. UX & Modals    │ 6. Realtime Perf  │ 7. Test & Verify  │ 8. SemVer (1.0.X)    │
+│ 9. Git Auto-Push  │ 10. Mandatory Sync│                   │                      │
+└───────────────────┴───────────────────┴───────────────────┴──────────────────────┘
+```
+
+---
+
+### 🎯 1. Peran, Otoritas & Prinsip Kerja AI Agent (Role & Prime Directives)
+1. **Peran Senior Engineer & Tech Lead**: Agen bertindak sebagai Senior Full-Stack Engineer, Security Auditor, dan Clean Code Evangelist. Berikan solusi berstandar industri dengan penjelasan yang lugas dan berbobot teknis tinggi (*anti-slop*).
+2. **Prinsip Nol Asumsi & Non-Halusinasi**: Dilarang mengasumsikan keberadaan berkas, dependensi, fungsi, atau skema basis data sebelum memeriksa berkas aslinya secara langsung.
+3. **Preservasi Logika Bisnis & Invarian Domain**: Setiap modifikasi kode tidak boleh merusak logika bisnis inti:
+   - Alur RSVP tamu (status kehadiran, jumlah tamu, pesan doa).
+   - Pengiriman dan moderasi ucapan (*wishes stream*).
+   - Generator link WhatsApp tamu dengan enkripsi parameter URL yang valid.
+   - Kontrol audio background musik, playlist, dan state interaksi pengguna.
+   - Manajemen konten mempelai & jadwal via Admin Panel.
+4. **Prinsip Non-Destruktif**: Dilarang menghapus konfigurasi krusial, variabel `.env`, atau data produksi tanpa instruksi eksplisit dari pengguna.
+
+---
+
+### 🏗️ 2. Arsitektur Kode & Pemisahan Tanggung Jawab (Separation of Concerns)
+1. **Struktur Direktori Terstandarisasi**:
+   - `src/components/`: Komponen antarmuka pengguna modular (pecah per seksi: Hero, Couple, Event, Story, Gallery, RSVP, Wishes, Admin).
+   - `src/types.ts`: Deklarasi tipe TypeScript global dan interface domain.
+   - `src/firebase.ts`: Konfigurasi SDK Firebase, instance Firestore, dan otentikasi.
+   - `src/index.css`: Konfigurasi Tailwind CSS v4 dan styling global.
+2. **Thin Presentational Components**: Komponen antarmuka fokus pada rendering UI. Logika manipulasi state kompleks, integrasi database, atau format string wajib didelegasikan ke fungsi pembantu (*helper*) atau *custom hooks*.
+3. **Penyimpanan Gambar Efisien (Zero Storage Cost)**: Seluruh kompresi foto galeri atau QRIS dilakukan pada sisi klien via Canvas API (Base64 JPEG kompresi ~80-120KB) yang langsung disimpan ke Firestore tanpa memerlukan backend server atau Firebase Storage berbayar.
+4. **Single Page Routing**: Navigasi menggunakan state lokal dan *smooth scrolling* internal section. Parameter query URL (misal: `?to=Nama+Tamu` atau `?admin`) harus ditangani secara elegan dan *resilient*.
+
+---
+
+### 🔒 3. Standar Keamanan & Sanitasi Input (Security & OWASP Guardrails)
+1. **Isolasi Rahasia & Kredensial (.env)**:
+   - DILARANG KERAS mengekspos API Key produksi, Firebase Service Account, atau OAuth credentials ke repositori publik.
+   - Semua variabel lingkungan klien wajib menggunakan prefix `VITE_` (misal: `VITE_FIREBASE_API_KEY`).
+   - File kredensial lokal dan rahasia wajib selalu terdaftar di `.gitignore`.
+2. **Pencegahan Cross-Site Scripting (XSS)**:
+   - Semua data dinamis dari pengguna (nama tamu, pesan ucapan, konfirmasi RSVP) wajib di-escape oleh React secara alami.
+   - DILARANG menggunakan `dangerouslySetInnerHTML` tanpa pustaka sanitasi HTML pihak ketiga (seperti DOMPurify).
+3. **Aturan Keamanan Firestore (Firestore Security Rules)**:
+   - Pastikan aturan Firestore membatasi kuota panjang karakter (misal: nama maksimal 100 karakter, pesan doa maksimal 500 karakter).
+   - Dokumen konfigurasi admin (`settings`) hanya boleh dimutasi oleh admin terotentikasi.
+4. **Proteksi Panel Admin**:
+   - Rute panel admin wajib dilindungi oleh passcode atau verifikasi Firebase Auth.
+   - Cegah *brute-force* sederhana dengan penanganan delay visual pada UI.
+
+---
+
+### 💎 4. Kualitas Kode & Anti-Slop (Clean Code & Quality Invariants)
+1. **TypeScript Strict (Zero Tolerance for `any`)**:
+   - DILARANG menggunakan tipe `any`. Gunakan tipe data eksplisit, *union types*, atau `unknown` dengan *type guard*.
+   - Setiap entitas Firestore (`Wishes`, `RSVP`, `WeddingContent`, `MusicTrack`) wajib memiliki interface lengkap di `src/types.ts`.
+2. **Kebersihan Kode (Zero Dead Code & AI-Slop)**:
+   - Hapus seluruh `console.log`, `alert()`, `confirm()`, atau `debugger` sisa pengujian.
+   - Dilarang meninggalkan komentar generik khas AI (contoh: `// import React from react`, `// this is a function`). Komentar hanya ditulis untuk menjelaskan alasan arsitektural (*why*), bukan aksi kode (*what*).
+   - Dilarang meninggalkan blok kode usang yang dikomentari (*commented-out dead code*), `TODO`, atau `FIXME`.
+3. **Konvensi Penamaan**:
+   - Komponen React: `PascalCase` (`RSVPSection.tsx`, `AdminPanel.tsx`).
+   - Hooks & Fungsi: `camelCase` (`useWeddingData`, `formatDateIndonesia`).
+   - Konstanta Global: `UPPER_SNAKE_CASE` (`DEFAULT_PASSCODE`, `COLLECTION_WISHES`).
+   - Tipe & Interface: `PascalCase` (`RSVPData`, `WeddingConfig`).
+
+---
+
+### 🎨 5. Standar Desain UI/UX & Interaktivitas (Interactive Design System)
+1. **Desain Responsif & Mobile-First**:
+   - Undangan digital diakses oleh 90%+ pengguna via smartphone. Desain wajib sempurna pada resolusi mobile (360px hingga 430px) tanpa ada elemen yang terpotong (*overflow-x* tertutup rapi).
+2. **Dilarang Dialog Bawaan Browser (No Native `alert()` / `confirm()`)**:
+   - DILARANG menggunakan `window.alert()`, `window.confirm()`, atau `window.prompt()`.
+   - Gunakan komponen modal dialog kustom bertema Betawi elegan (aksen emas `#D4AF37` dan merah marun `#800000`) atau *toast notification* modern untuk konfirmasi hapus, error, dan notifikasi sukses.
+3. **Feedback Interaktif & Proteksi Double-Submit**:
+   - Semua tombol formulir (Kirim RSVP, Kirim Ucapan, Simpan Pengaturan) wajib menampilkan status *loading spinner* dan menjadi `disabled` saat request asinkron berjalan.
+4. **Estetika Budaya Betawi Modern**:
+   - Pertahankan ornamen budaya Betawi: motif Gigi Balang, Ondel-ondel siluet elegan, font kaligrafi estetis untuk nama mempelai, dan palet warna hangat bernuansa adat Betawi.
+
+---
+
+### ⚡ 6. Kinerja, Concurrency & Firestore Real-Time (Performance & Data Management)
+1. **Pembersihan Listener Real-Time (Cleanup Handlers)**:
+   - Setiap langganan `onSnapshot` Firestore WAJIB menyertakan fungsi *unsubscribe* pada *cleanup function* `useEffect` untuk mencegah kebocoran memori (*memory leak*).
+2. **Optimasi Beban Data (Query Limits & Pagination)**:
+   - Data ucapan doa dan RSVP wajib dibatasi (`limit(50)` atau pagination) agar konsumsi bandwidth dan Firestore Read tetap hemat dan cepat.
+3. **Aset & Audio Lazy-Loading**:
+   - Elemen audio menggunakan mode streaming atau play-on-user-interaction.
+   - Gambar didistribusikan dengan kompresi WebP/JPEG teroptimasi dan memanfaatkan atribut `loading="lazy"`.
+
+---
+
+### 🧪 7. Verifikasi & Pengujian Mutu (Verification & Quality Assurance)
+Sebelum menyatakan tugas selesai atau melakukan commit, AI Assistant WAJIB melakukan verifikasi bertingkat:
+1. **TypeScript Check**: Jalankan pengecekan tipe statis:
+   ```bash
+   npm run lint  # atau bun run lint (tsc --noEmit)
+   ```
+   Wajib menghasilkan exit code 0 tanpa error tipe apa pun.
+2. **Production Build Check**: Jalankan proses kompilasi produksi Vite:
+   ```bash
+   npm run build  # atau bun run build
+   ```
+   Wajib sukses menghasilkan bundel `dist/` tanpa peringatan fatal.
+3. **Console Hygiene Check**: Pastikan tidak ada runtime crash atau error unhandled promise di browser.
+
+---
+
+### 🏷️ 8. Aturan Versioning Aplikasi (Semantic Versioning - SemVer)
+Setiap pengerjaan peningkatan kode, perbaikan bug, atau penambahan fitur baru **WAJIB** menaikkan penomoran versi aplikasi (`MAJOR.MINOR.PATCH`) di file `package.json`, `composer.json` (jika ada pada stack terkait), `README.md`, dan `AGENTS.md`:
+
+- **MAJOR (`X.0.0`)**: Naik saat ada perubahan besar yang tidak kompatibel dengan versi sebelumnya (*breaking changes*).
+- **MINOR (`1.X.0`)**: Naik saat ada penambahan fitur baru yang aman dan kompatibel dengan versi sebelumnya.
+- **PATCH (`1.0.X`)**: Naik saat ada perbaikan bug (*bugfixes*), refactoring, atau perbaikan kecil yang aman.
+
+---
+
+### 📦 9. Aturan Git Commit & Push Otomatis (Conventional Commits)
+Setiap selesai pengerjaan tugas, AI Assistant **WAJIB** melakukan commit dan push ke GitHub secara otomatis dengan aturan:
+
+#### Format Pesan Commit (Conventional Commits):
+```text
+Format: <type>(<scope>): <description>
+```
+
+#### Tipe (`type`):
+- `feat`: Menambahkan fitur baru.
+- `fix`: Memperbaiki bug atau error.
+- `docs`: Mengubah atau memperbarui dokumentasi.
+- `style`: Mengubah format kode tanpa mengubah logika (spasi, titik koma, kerapian).
+- `refactor`: Mengubah struktur kode tanpa menambah fitur / memperbarui bug.
+- `test`: Menambah atau memperbaiki unit test.
+- `chore`: Perawatan rutin (update dependency, konfigurasikan file).
+
+#### Aturan Penulisan Kalimat Commit:
+1. **Kata Kerja Imperatif (Perintah)**: Gunakan `add`, `fix`, `update`, `refactor` (bukan `added`, `fixing`, `updated`).
+2. **Judul Maksimal 50 Karakter**: Jaga judul subjek singkat dan jelas.
+3. **Tanpa Tanda Titik**: Dilarang mengakhiri baris subjek dengan tanda titik `.`.
+4. **Commit Atomik**: 1 commit fokus pada 1 tugas spesifik dan pastikan kode tidak *broken* sebelum commit.
+
+---
+
+### 🔄 10. Kewajiban Pengkinian Dokumen (Mandatory Sync)
+1. **Sinkronisasi AGENTS.md**: Setiap kali ada aturan baru atau penyesuaian panduan pengodean, **WAJIB** langsung dicatat dan diperbarui pada `AGENTS.md`.
+2. **Sinkronisasi README.md**: Setiap kali ada penambahan fitur baru, perbaikan besar, perubahan API, atau kenaikan versi, **WAJIB** langsung memperbarui `README.md`.
+3. **Sinkronisasi Docs Suite (`docs/`)**: Apabila terdapat penambahan perintah CLI baru, fitur admin baru, atau perubahan alur deploy, perbarui dokumen terkait di `docs/01-daftar-command.md`, `docs/02-buku-panduan-pengguna.md`, `docs/03-developer-guide.md`, atau `docs/04-panduan-deployment.md`.
+
+---
+
+## 📋 Checklist Verifikasi Akhir Sebelum Selesai (Pre-Completion Protocol)
+
+Sebelum AI Assistant mengakhiri sesi pengerjaan tugas, lakukan pengecekan berikut secara berurutan:
+- [ ] Kode bebas dari tipe `any`, komentar *slop*, `console.log`, dan dialog browser `alert()` / `confirm()`.
+- [ ] Menjalankan verifikasi tipe `tsc --noEmit` / `npm run lint` dan lulus 100%.
+- [ ] Menjalankan uji kompilasi `npm run build` dan sukses menghasilkan `dist/`.
+- [ ] Versi SemVer dinaikkan di `package.json`, `README.md`, dan `AGENTS.md` (Pilar 8).
+- [ ] Dokumentasi `README.md` dan `AGENTS.md` tersinkronisasi dengan perubahan terbaru (Pilar 10).
+- [ ] Melakukan Git commit dengan format *Conventional Commits* dan melakukan push ke repositori GitHub (Pilar 9).

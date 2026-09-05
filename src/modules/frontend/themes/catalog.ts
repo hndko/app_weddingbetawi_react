@@ -239,6 +239,23 @@ export const THEME_CATALOG: ThemeMeta[] = [
     status: 'ready',
     favicon: '/assets/themes/instagram/favicon.svg',
   },
+  {
+    id: 'vintage',
+    name: 'Vintage Newspaper Gazette',
+    category: 'modern',
+    subtitle: 'The Wedding Gazette & Editorial Journal',
+    description: 'Konsep koran cetak broadsheet klasik 1920-an berbalut kertas koran antik, masthead retro The Wedding Gazette, stempel pos berputar, dan audio mesin tik mekanik.',
+    thumbnail: '/assets/themes/vintage/thumbnail.svg',
+    previewColors: {
+      primary: '#1E1E1E',
+      secondary: '#8B3A2B',
+      accent: '#B8860B',
+      bg: '#F4EBD9',
+    },
+    features: ['Retro Masthead Gazette', 'Typewriter Sound Chime', 'Broadsheet Editorial Grid', 'Vintage Postal Stamp'],
+    status: 'ready',
+    favicon: '/assets/themes/vintage/favicon.svg',
+  },
 ];
 
 

@@ -402,6 +402,33 @@ export const THEME_TOKENS: Record<string, ThemeVisualTokens> = {
     floatingBtnRing: 'rgba(141, 166, 107, 0.25)',
     floatingBtnActiveText: '#566B46',
   },
+
+  // 📰 Vintage Newspaper Gazette (Aged Newsprint, Black Ink & Sepia)
+  vintage: {
+    isDark: false,
+    bg: '#F4EBD9',
+    cardBg: 'rgba(250, 245, 238, 0.95)',
+    cardBorder: 'rgba(30, 30, 30, 0.25)',
+    textPrimary: '#1E1E1E',
+    textMuted: '#555555',
+    primary: '#1E1E1E',
+    secondary: '#8B3A2B',
+    accent: '#B8860B',
+    inputBg: 'rgba(244, 235, 217, 0.9)',
+    inputBorder: 'rgba(30, 30, 30, 0.3)',
+    inputText: '#1E1E1E',
+    btnPrimaryBg: '#1E1E1E',
+    btnPrimaryText: '#FAF5EE',
+    navBg: 'rgba(244, 235, 217, 0.94)',
+    navBorder: 'rgba(30, 30, 30, 0.25)',
+    navActive: '#8B3A2B',
+    navInactive: 'rgba(30, 30, 30, 0.5)',
+    floatingBtnBg: 'rgba(250, 245, 238, 0.95)',
+    floatingBtnBorder: 'rgba(30, 30, 30, 0.35)',
+    floatingBtnText: '#1E1E1E',
+    floatingBtnRing: 'rgba(139, 58, 43, 0.25)',
+    floatingBtnActiveText: '#8B3A2B',
+  },
 };
 
 export const DEFAULT_THEME_TOKENS: ThemeVisualTokens = THEME_TOKENS.betawi;

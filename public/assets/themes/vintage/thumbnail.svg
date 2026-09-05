@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 533" width="100%" height="100%">
+  <defs>
+    <!-- Paper Background Texture -->
+    <linearGradient id="paperBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FAF4E8" />
+      <stop offset="50%" stop-color="#F2E6D0" />
+      <stop offset="100%" stop-color="#E8DAC0" />
+    </linearGradient>
+
+    <!-- Halftone Newspaper Pattern -->
+    <pattern id="halftone" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="6" cy="6" r="0.8" fill="#1E1E1E" opacity="0.08" />
+    </pattern>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="400" height="533" fill="url(#paperBg)" />
+  <rect width="400" height="533" fill="url(#halftone)" />
+
+  <!-- Outer Double Newspaper Border -->
+  <rect x="14" y="14" width="372" height="505" fill="none" stroke="#1E1E1E" stroke-width="3" />
+  <rect x="18" y="18" width="364" height="497" fill="none" stroke="#1E1E1E" stroke-width="0.8" />
+
+  <!-- Top Masthead Info Bar -->
+  <g transform="translate(200, 36)" text-anchor="middle" font-family="'Times New Roman', serif" font-size="9" fill="#3D3D3D" letter-spacing="1.5">
+    <text x="-120" y="0">VOL. I • NO. 01</text>
+    <text x="0" y="0">★ SPECIAL COMMEMORATIVE ISSUE ★</text>
+    <text x="120" y="0">PRICE: ONE PRAYER</text>
+  </g>
+
+  <!-- Double Rule Under Info Bar -->
+  <line x1="22" y1="44" x2="378" y2="44" stroke="#1E1E1E" stroke-width="2.5" />
+  <line x1="22" y1="48" x2="378" y2="48" stroke="#1E1E1E" stroke-width="0.75" />
+
+  <!-- Masthead Title: THE WEDDING GAZETTE -->
+  <g transform="translate(200, 84)" text-anchor="middle">
+    <text font-family="'Playfair Display', 'Georgia', serif" font-size="28" font-weight="900" fill="#1A1A1A" letter-spacing="2">
+      THE WEDDING GAZETTE
+    </text>
+    <text y="18" font-family="'Times New Roman', serif" font-size="9.5" font-style="italic" fill="#5A5A5A" letter-spacing="1">
+      "The Daily Chronicle of Eternal Love, Devotion &amp; Celebration"
+    </text>
+  </g>
+
+  <!-- Rule Under Masthead -->
+  <line x1="22" y1="112" x2="378" y2="112" stroke="#1E1E1E" stroke-width="1.2" />
+
+  <!-- Lead Headline -->
+  <g transform="translate(200, 142)" text-anchor="middle">
+    <text font-family="'Georgia', serif" font-size="16" font-weight="bold" fill="#8B3A2B" letter-spacing="2">
+      EXCLUSIVE: TWO HEARTS UNITED
+    </text>
+    <text y="18" font-family="'Times New Roman', serif" font-size="11" font-weight="600" fill="#2B2B2B" letter-spacing="1">
+      A GRAND CELEBRATION OF LIFELONG LOVE &amp; HARMONY
+    </text>
+  </g>
+
+  <!-- Central Illustrated Photo Frame -->
+  <g transform="translate(200, 260)">
+    <!-- Photo Backing and Border -->
+    <rect x="-140" y="-85" width="280" height="170" fill="#EAE0CE" stroke="#1E1E1E" stroke-width="1.5" />
+    <rect x="-135" y="-80" width="270" height="160" fill="#DDD0BC" />
+    
+    <!-- Duotone Couple Silhouette / Oval -->
+    <ellipse cx="0" cy="-5" rx="55" ry="65" fill="#4A3B32" opacity="0.85" />
+    <circle cx="0" cy="-28" r="22" fill="#F4EBD9" opacity="0.9" />
+    <path d="M-30,40 C-30,5 30,5 30,40 Z" fill="#F4EBD9" opacity="0.9" />
+    
+    <!-- Photo Caption -->
+    <rect x="-135" y="60" width="270" height="20" fill="#1E1E1E" />
+    <text y="74" text-anchor="middle" font-family="'Times New Roman', serif" font-size="8.5" fill="#FAF5EE" letter-spacing="1">
+      PORTRAIT OF THE NEWLYWEDS IN FULL RADIANCE
+    </text>
+  </g>
+
+  <!-- Postal Rubber Stamp (Red Sepia) -->
+  <g transform="translate(320, 210) rotate(-15)">
+    <circle cx="0" cy="0" r="36" fill="none" stroke="#9E2A2B" stroke-width="2" stroke-dasharray="3 1.5" opacity="0.85" />
+    <circle cx="0" cy="0" r="30" fill="none" stroke="#9E2A2B" stroke-width="1" opacity="0.8" />
+    <text text-anchor="middle" y="-12" font-family="sans-serif" font-size="7" font-weight="bold" fill="#9E2A2B" letter-spacing="1">
+      OFFICIAL DISPATCH
+    </text>
+    <text text-anchor="middle" y="3" font-family="sans-serif" font-size="10" font-weight="bold" fill="#9E2A2B">
+      ★ PASSED ★
+    </text>
+    <text text-anchor="middle" y="15" font-family="sans-serif" font-size="6.5" fill="#9E2A2B" letter-spacing="1">
+      SPECIAL ISSUE
+    </text>
+  </g>
+
+  <!-- Two Column Newspaper Text Simulation -->
+  <g transform="translate(40, 375)" fill="#2B2B2B" opacity="0.75">
+    <!-- Left Column Lines -->
+    <rect x="0" y="0" width="145" height="3" />
+    <rect x="0" y="8" width="140" height="2" />
+    <rect x="0" y="15" width="145" height="2" />
+    <rect x="0" y="22" width="135" height="2" />
+    <rect x="0" y="29" width="145" height="2" />
+    <rect x="0" y="36" width="120" height="2" />
+    <rect x="0" y="43" width="145" height="2" />
+
+    <!-- Center Column Rule -->
+    <line x1="160" y1="-5" x2="160" y2="75" stroke="#1E1E1E" stroke-width="0.8" />
+
+    <!-- Right Column Lines -->
+    <rect x="175" y="0" width="145" height="3" />
+    <rect x="175" y="8" width="140" height="2" />
+    <rect x="175" y="15" width="145" height="2" />
+    <rect x="175" y="22" width="130" height="2" />
+    <rect x="175" y="29" width="145" height="2" />
+    <rect x="175" y="36" width="138" height="2" />
+    <rect x="175" y="43" width="125" height="2" />
+  </g>
+
+  <!-- Footer Banner -->
+  <g transform="translate(200, 485)" text-anchor="middle">
+    <line x1="-175" y1="-14" x2="175" y2="-14" stroke="#1E1E1E" stroke-width="1.5" />
+    <text font-family="'Times New Roman', serif" font-size="10" font-weight="bold" fill="#1E1E1E" letter-spacing="2">
+      PRINTED WITH DEVOTION • ALL RIGHTS PRESERVED
+    </text>
+  </g>
+</svg>

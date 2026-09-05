@@ -78,6 +78,11 @@ const PalembangOpeningCover = lazy(() => import('./palembang/OpeningCover').then
 const PalembangInvitationContent = lazy(() => import('./palembang/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const PalembangAppFrame = lazy(() => import('./palembang/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
+// Lazy-loaded Vintage Newspaper theme
+const VintageOpeningCover = lazy(() => import('./vintage/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const VintageInvitationContent = lazy(() => import('./vintage/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const VintageAppFrame = lazy(() => import('./vintage/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
 export const THEMES: Record<string, ThemeDefinition> = {
   betawi: {
     meta: THEME_CATALOG[0],
@@ -202,6 +207,15 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: InstagramOpeningCover,
       InvitationContent: InstagramInvitationContent,
       AppFrame: InstagramAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  vintage: {
+    meta: THEME_CATALOG[14],
+    components: {
+      OpeningCover: VintageOpeningCover,
+      InvitationContent: VintageInvitationContent,
+      AppFrame: VintageAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

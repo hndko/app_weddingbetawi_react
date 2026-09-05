@@ -22,6 +22,7 @@ import { BudgetVendorTracker } from './components/BudgetVendorTracker';
 import { SeatingChartManager } from './components/SeatingChartManager';
 import { TriviaQuizManager } from './components/TriviaQuizManager';
 import { WhatsAppBroadcastModal } from './components/WhatsAppBroadcastModal';
+import { renderGuestPassCanvas, downloadPassImage, downloadPassPDF } from '../../utils/digitalPassGenerator';
 import { APP_VERSION } from '../../version';
 
 export interface PanelProps {
@@ -628,6 +629,33 @@ Wassalamu'alaikum Wr. Wb.`;
     const msg = getGuestWaMessage(guest.name, link);
     await navigator.clipboard.writeText(msg);
     showToast('success', `Pesan WhatsApp untuk "${guest.name}" berhasil disalin!`);
+  };
+
+  const handleDownloadGuestPass = async (guest: { name: string; actualPax?: number; id?: string; tableNumber?: string }, format: 'png' | 'pdf' = 'png') => {
+    try {
+      const canvas = await renderGuestPassCanvas({
+        guestName: guest.name,
+        guestPax: guest.actualPax || 1,
+        guestId: guest.id,
+        tableNumber: guest.tableNumber,
+        weddingConfig,
+      });
+
+      const sanitizedFilename = `Pass-${guest.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+      if (format === 'png') {
+        downloadPassImage(canvas, sanitizedFilename, 'png');
+      } else {
+        await downloadPassPDF(canvas, sanitizedFilename, {
+          guestName: guest.name,
+          coupleText: `${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname}`,
+        });
+      }
+      showToast('success', `Tiket Pass ${guest.name} (${format.toUpperCase()}) berhasil diunduh!`);
+    } catch (err) {
+      console.warn('Failed to download guest pass:', err);
+      showToast('error', 'Gagal membuat kartu pass digital.');
+    }
   };
 
   // Add Single Guest Form Handler
@@ -1924,7 +1952,7 @@ Wassalamu'alaikum Wr. Wb.`;
                               <th className="py-3 px-4 w-44">WhatsApp</th>
                               <th className="py-3 px-4 hidden md:table-cell">Tautan Personal</th>
                               <th className="py-3 px-3 text-center w-36">Status</th>
-                              <th className="py-3 px-3 text-center w-36">Aksi</th>
+                              <th className="py-3 px-3 text-center w-48">Aksi</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-100">
@@ -1997,6 +2025,28 @@ Wassalamu'alaikum Wr. Wb.`;
                                   {/* Table Action Buttons (Icon-Only Rule) */}
                                   <td className="py-3.5 px-3 text-center whitespace-nowrap">
                                     <div className="flex items-center justify-center gap-1">
+                                      {/* Unduh Kartu Pass (PNG HD) */}
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDownloadGuestPass(guest, 'png')}
+                                        className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                                        title="Unduh Tiket Pass (Gambar PNG HD)"
+                                        aria-label="Unduh Pass PNG"
+                                      >
+                                        <Download size={15} />
+                                      </button>
+
+                                      {/* Unduh Kartu Pass (PDF) */}
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDownloadGuestPass(guest, 'pdf')}
+                                        className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                        title="Unduh Tiket Pass (Dokumen PDF Siap Cetak)"
+                                        aria-label="Unduh Pass PDF"
+                                      >
+                                        <FileText size={15} />
+                                      </button>
+
                                       {/* Kirim WhatsApp */}
                                       <button
                                         type="button"
@@ -2134,6 +2184,25 @@ Wassalamu'alaikum Wr. Wb.`;
                     <Share2 size={16} />
                     <span>Kirim Langsung ke WhatsApp Tamu</span>
                   </button>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-gray-100">
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadGuestPass({ name: guestName }, 'png')}
+                      className="w-full bg-white border border-gray-200 text-gray-700 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-2xs cursor-pointer"
+                    >
+                      <Download size={15} />
+                      <span>Unduh Digital Pass HD (PNG)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadGuestPass({ name: guestName }, 'pdf')}
+                      className="w-full bg-indigo-50 border border-indigo-200 text-indigo-700 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 hover:bg-indigo-100 transition-all shadow-2xs cursor-pointer"
+                    >
+                      <FileText size={15} />
+                      <span>Unduh E-Ticket PDF</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

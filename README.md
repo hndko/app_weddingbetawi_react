@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.36.1-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.37.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -259,6 +259,19 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 
 ### 📱 Navigasi Cepat (Floating Bottom Bar)
 - Menu navigasi bawah mengambang dengan indikator *ScrollSpy* yang mendeteksi seksi yang sedang aktif secara otomatis.
+
+### 🎫 Digital Pass & E-Ticket PDF Export Suite (v1.37.0)
+- **Ultra-Sharp High-Density Rendering (1200x1850 px, 300 DPI Equivalent)**:
+  - Generator canvas murni di sisi klien dengan kartu pass digital bertekstur modern, ambient glow tematik, monogram inisial mempelai emas, perforated dashed cutouts, dynamic name auto-scaling, badge meja seating & kuota pax, barcode watermark, serta QR code kontras tinggi.
+- **Dual Export Formats (PNG HD & PDF Print-Ready via `jsPDF`)**:
+  - Unduhan instan format gambar PNG resolusi tinggi untuk disimpan di galeri smartphone atau dibagikan via WhatsApp.
+  - Dokumen PDF A6 Portrait *print-ready* tanpa margin berlebih via `jspdf`, siap dicetak oleh panitia, vendor EO, atau tamu.
+- **Dual-Sided Access (Sisi Tamu & Sisi Admin)**:
+  - **Sisi Tamu (`GuestQRPassModal`)**: Tersedia tombol ganda *"Simpan Gambar HD (PNG)"* dan *"Unduh Tiket PDF (Siap Cetak)"* langsung pada pop-up tiket digital tamu.
+  - **Sisi Admin Panel (`Panel.tsx`)**: Tersedia tombol unduh PNG & PDF pada generator tautan tamu personal serta tombol aksi tabel icon-only di setiap baris daftar tamu undangan.
+  - **Sisi Meja Resepsi (`ReceptionCheckin.tsx`)**: Akses unduh tiket pass instan dari daftar hasil pencarian cepat manual maupun dari tabel riwayat check-in untuk melayani tamu yang memerlukan slip fisik di lokasi acara.
+- **Thematic Adaptive Styling**:
+  - Secara cerdas mengadaptasi token warna primer (`tokens.primary`), latar belakang kartu, dan teks sesuai salah satu dari 20 tema desain aktif (Betawi, Jawa, Sunda, Minang, Bali, Batak, Dayak, Bugis, Modern Minimalist, Vintage Retro, Cyberpunk, Netflix, Spotify, dsb.).
 
 ### 📺 Live Wishes Stage Projector Screen (Layar LED Panggung Hari-H) (v1.18.0)
 - **Akses Mandiri Standalone**: Dapat dibuka melalui URL publik `/live` atau `/projector` tanpa memerlukan otentikasi login, serta tombol jalan pintas langsung dari Admin Panel (`/modules`).

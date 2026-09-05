@@ -20,6 +20,7 @@ import {
   Check,
   UserCheck,
   Sparkles,
+  FileText,
 } from 'lucide-react';
 import jsQR from 'jsqr';
 import {
@@ -34,8 +35,10 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
+import { useWeddingConfig } from '../../../context/WeddingContext';
 import { playSuccessBeep, playWarningBeep } from '../../../utils/audioBeep';
 import { parseGuestPayload, generateTicketCode } from '../../../utils/qrGenerator';
+import { renderGuestPassCanvas, downloadPassImage, downloadPassPDF } from '../../../utils/digitalPassGenerator';
 import type { GuestInvitation, RSVPResponse, CheckInRecord, WeddingTable } from '../../../types';
 
 interface ReceptionCheckinProps {
@@ -57,10 +60,44 @@ interface PendingCheckinData {
 }
 
 export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinProps) {
+  const { weddingConfig } = useWeddingConfig();
+
   // Check-in records synced from Firestore
   const [checkins, setCheckins] = useState<CheckInRecord[]>([]);
   // Wedding tables synced from Firestore for live seating resolution
   const [tables, setTables] = useState<WeddingTable[]>([]);
+
+  // Download digital pass (PNG HD or PDF) for reception guests
+  const handleDownloadPass = async (
+    name: string,
+    pax?: number,
+    tableNumber?: string,
+    format: 'png' | 'pdf' = 'png'
+  ) => {
+    try {
+      const canvas = await renderGuestPassCanvas({
+        guestName: name,
+        guestPax: pax || 1,
+        tableNumber: tableNumber,
+        weddingConfig,
+      });
+
+      const sanitizedFilename = `Pass-${name.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+      if (format === 'png') {
+        downloadPassImage(canvas, sanitizedFilename, 'png');
+      } else {
+        await downloadPassPDF(canvas, sanitizedFilename, {
+          guestName: name,
+          coupleText: `${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname}`,
+        });
+      }
+      showToast('success', `Tiket Pass ${name} (${format.toUpperCase()}) berhasil diunduh!`);
+    } catch (err) {
+      console.warn('Failed to download guest pass:', err);
+      showToast('error', 'Gagal membuat kartu pass digital.');
+    }
+  };
 
   // Camera & Scanner States
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
@@ -813,14 +850,34 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => handleInitiateManualCheckin(item)}
-                    className="shrink-0 px-3 py-1.5 bg-sage text-white hover:bg-sage-dark rounded-lg text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer active:scale-95"
-                  >
-                    <UserCheck size={13} />
-                    <span>{item.isCheckedIn ? 'Edit' : 'Check-in'}</span>
-                  </button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadPass(item.name, item.pax, item.tableNumber, 'png')}
+                      className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                      title="Unduh Tiket Pass (PNG HD)"
+                      aria-label="Unduh Pass PNG"
+                    >
+                      <Download size={14} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadPass(item.name, item.pax, item.tableNumber, 'pdf')}
+                      className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                      title="Unduh Tiket Pass (PDF Siap Cetak)"
+                      aria-label="Unduh Pass PDF"
+                    >
+                      <FileText size={14} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleInitiateManualCheckin(item)}
+                      className="px-3 py-1.5 bg-sage text-white hover:bg-sage-dark rounded-lg text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer active:scale-95"
+                    >
+                      <UserCheck size={13} />
+                      <span>{item.isCheckedIn ? 'Edit' : 'Check-in'}</span>
+                    </button>
+                  </div>
                 </div>
               ))
             )}
@@ -872,7 +929,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                 <th className="py-3 px-3 text-center">Suvenir</th>
                 <th className="py-3 px-3">Nomor Meja</th>
                 <th className="py-3 px-3 text-center">Metode</th>
-                <th className="py-3 px-3 text-center w-16">Aksi</th>
+                <th className="py-3 px-3 text-center w-28">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -927,16 +984,36 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                         {item.source === 'qr_scan' ? 'Scan QR' : 'Manual'}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-center">
-                      <button
-                        type="button"
-                        onClick={() => setDeleteTarget(item)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                        title="Hapus / Batalkan Check-in"
-                        aria-label="Hapus check-in"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                    <td className="py-3 px-3 text-center whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadPass(item.name, item.actualPax, item.tableNumber, 'png')}
+                          className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                          title="Unduh Tiket Pass (PNG HD)"
+                          aria-label="Unduh Pass PNG"
+                        >
+                          <Download size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadPass(item.name, item.actualPax, item.tableNumber, 'pdf')}
+                          className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                          title="Unduh Tiket Pass (PDF Siap Cetak)"
+                          aria-label="Unduh Pass PDF"
+                        >
+                          <FileText size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(item)}
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                          title="Hapus / Batalkan Check-in"
+                          aria-label="Hapus check-in"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

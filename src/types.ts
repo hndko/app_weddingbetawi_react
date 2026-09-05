@@ -75,6 +75,8 @@ export interface Wish {
   text: string;
   time?: string;
   createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+  audioUrl?: string;
+  audioDuration?: number;
 }
 
 export interface RSVPResponse {

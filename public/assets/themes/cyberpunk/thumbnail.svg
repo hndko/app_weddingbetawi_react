@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="100%" height="100%">
+  <defs>
+    <linearGradient id="cyberBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#05050A" />
+      <stop offset="50%" stop-color="#0A0A18" />
+      <stop offset="100%" stop-color="#140A24" />
+    </linearGradient>
+    <linearGradient id="neonCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B2FEFF" />
+      <stop offset="100%" stop-color="#00F0FF" />
+    </linearGradient>
+    <linearGradient id="neonPink" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF66B2" />
+      <stop offset="100%" stop-color="#FF007F" />
+    </linearGradient>
+    <pattern id="cyberGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#00F0FF" stroke-width="0.5" opacity="0.18" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="250" fill="url(#cyberBg)" />
+  <rect width="400" height="250" fill="url(#cyberGrid)" />
+
+  <!-- Cyberpunk Angled Tech Frame -->
+  <path d="M 20 40 L 40 20 L 360 20 L 380 40 L 380 210 L 360 230 L 40 230 L 20 210 Z" fill="none" stroke="url(#neonCyan)" stroke-width="2" opacity="0.85" />
+  <path d="M 30 45 L 45 30 L 355 30 L 370 45 L 370 205 L 355 220 L 45 220 L 30 205 Z" fill="none" stroke="url(#neonPink)" stroke-width="0.8" opacity="0.4" stroke-dasharray="8,4" />
+
+  <!-- Top Center HUD Bar -->
+  <g transform="translate(200, 30)">
+    <rect x="-60" y="-8" width="120" height="16" fill="#05050A" stroke="#00F0FF" stroke-width="1.2" />
+    <text x="0" y="3.5" font-family="'Courier New', monospace" font-size="7.5" font-weight="bold" fill="#00F0FF" text-anchor="middle" letter-spacing="2">
+      SYS.MATRIMONY // v2077
+    </text>
+  </g>
+
+  <!-- Holographic Glowing Neon Heart & Circuit Wings -->
+  <g transform="translate(200, 105)">
+    <!-- Circuit Wings -->
+    <path d="M -40,-10 L -75,-10 L -95,-30" fill="none" stroke="#00F0FF" stroke-width="2" stroke-linecap="round" />
+    <circle cx="-95" cy="-30" r="3" fill="#00F0FF" />
+    <path d="M -50,15 L -85,15 L -105,35" fill="none" stroke="#FF007F" stroke-width="1.8" stroke-linecap="round" />
+    <circle cx="-105" cy="35" r="2.5" fill="#FF007F" />
+
+    <path d="M 40,-10 L 75,-10 L 95,-30" fill="none" stroke="#00F0FF" stroke-width="2" stroke-linecap="round" />
+    <circle cx="95" cy="-30" r="3" fill="#00F0FF" />
+    <path d="M 50,15 L 85,15 L 105,35" fill="none" stroke="#FF007F" stroke-width="1.8" stroke-linecap="round" />
+    <circle cx="105" cy="35" r="2.5" fill="#FF007F" />
+
+    <!-- Center Cyber Glitch Heart -->
+    <path
+      d="M 0,-15 C -25,-40 -50,-10 0,35 C 50,-10 25,-40 0,-15 Z"
+      fill="#FF007F"
+      opacity="0.3"
+    />
+    <path
+      d="M 0,-15 C -25,-40 -50,-10 0,35 C 50,-10 25,-40 0,-15 Z"
+      fill="none"
+      stroke="url(#neonPink)"
+      stroke-width="3"
+    />
+    <!-- Glitch Inner Wireframe -->
+    <path d="M -18,-5 L 18,-5 M -12,10 L 12,10 M -6,22 L 6,22" stroke="#00F0FF" stroke-width="1.5" opacity="0.8" />
+    <circle cx="0" cy="5" r="5" fill="#FFE600" />
+  </g>
+
+  <!-- Typography -->
+  <text x="200" y="195" text-anchor="middle" font-family="'Courier New', monospace" font-size="14" font-weight="900" fill="#00F0FF" letter-spacing="4">
+    CYBERPUNK 2077
+  </text>
+  <text x="200" y="212" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" fill="#FF007F" font-weight="bold" letter-spacing="1.5">
+    Neo-Jakarta: High-Tech Matrimony
+  </text>
+</svg>

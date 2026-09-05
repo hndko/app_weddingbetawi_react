@@ -307,6 +307,40 @@ export const THEME_CATALOG: ThemeMeta[] = [
     status: 'ready',
     favicon: '/assets/themes/royal/favicon.svg',
   },
+  {
+    id: 'dayak',
+    name: 'Dayak Kenyah Borneo',
+    category: 'adat',
+    subtitle: 'Pesona Talawang & Petikan Magis Sape\'',
+    description: 'Kemegahan adat Dayak Kenyah Kalimantan berhias perisai sakral Talawang, bulu burung Enggang, sulur mistis Aso & Kalung Manik, serta petikan nada magis musik Sape\'.',
+    thumbnail: '/assets/themes/dayak/thumbnail.svg',
+    previewColors: {
+      primary: '#8B0000',
+      secondary: '#D4AF37',
+      accent: '#F59E0B',
+      bg: '#FBF8F2',
+    },
+    features: ['Perisai Sakral Talawang', 'Petikan Magis Sape\' Kenyah', 'Bulu Burung Enggang Melayang', 'Sulur Motif Aso Naga Borneo'],
+    status: 'ready',
+    favicon: '/assets/themes/dayak/favicon.svg',
+  },
+  {
+    id: 'cyberpunk',
+    name: 'Cyberpunk Neo-Jakarta',
+    category: 'modern',
+    subtitle: 'Matrimony in Night City: High-Tech Love',
+    description: 'Gaya futuristik Cyberpunk 2077 berhias sirkuit neon cyan & magenta, HUD biometrik kuantum cinta, efek digital glitch dinamis, dan denting laser synth masa depan.',
+    thumbnail: '/assets/themes/cyberpunk/thumbnail.svg',
+    previewColors: {
+      primary: '#00F0FF',
+      secondary: '#FF007F',
+      accent: '#FFE600',
+      bg: '#0A0A12',
+    },
+    features: ['Cyberpunk Biometric HUD', 'Laser Synth Audio Glitch', 'Floating Neon Hex Particles', 'Digital Glitch Cyber Frame'],
+    status: 'ready',
+    favicon: '/assets/themes/cyberpunk/favicon.svg',
+  },
 ];
 
 

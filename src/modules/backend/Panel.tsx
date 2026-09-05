@@ -21,6 +21,7 @@ import { ReceptionCheckin } from './components/ReceptionCheckin';
 import { BudgetVendorTracker } from './components/BudgetVendorTracker';
 import { SeatingChartManager } from './components/SeatingChartManager';
 import { TriviaQuizManager } from './components/TriviaQuizManager';
+import { WhatsAppBroadcastModal } from './components/WhatsAppBroadcastModal';
 import { APP_VERSION } from '../../version';
 
 export interface PanelProps {
@@ -108,6 +109,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
 
   // Add guest modal state
   const [isAddGuestModalOpen, setIsAddGuestModalOpen] = useState(false);
+  const [isWhatsAppBroadcastModalOpen, setIsWhatsAppBroadcastModalOpen] = useState(false);
   const [newGuestName, setNewGuestName] = useState('');
   const [newGuestPhone, setNewGuestPhone] = useState('');
   const [isSubmittingGuest, setIsSubmittingGuest] = useState(false);
@@ -606,6 +608,13 @@ Wassalamu'alaikum Wr. Wb.`;
     } catch {
       showToast('error', 'Gagal memperbarui status pengiriman.');
     }
+  };
+
+  const handleUpdateGuestStatusById = async (guestId: string, status: 'pending' | 'sent') => {
+    await updateDoc(doc(db, 'guests', guestId), {
+      status,
+      sentAt: status === 'sent' ? serverTimestamp() : null,
+    });
   };
 
   const copyGuestLink = async (guest: GuestInvitation) => {
@@ -1786,6 +1795,16 @@ Wassalamu'alaikum Wr. Wb.`;
 
                       {/* Toolbar Action Buttons (Icon + Text) */}
                       <div className="flex items-center flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setIsWhatsAppBroadcastModalOpen(true)}
+                          className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
+                          title="Buka Asisten Broadcast & Pengingat WhatsApp"
+                        >
+                          <Send size={14} />
+                          <span>Broadcast WhatsApp</span>
+                        </button>
+
                         <button
                           type="button"
                           onClick={() => {
@@ -3414,6 +3433,16 @@ Wassalamu'alaikum Wr. Wb.`;
           </div>
         </div>
       )}
+
+      {/* WhatsApp Broadcast & RSVP Reminder Assistant Modal */}
+      <WhatsAppBroadcastModal
+        isOpen={isWhatsAppBroadcastModalOpen}
+        onClose={() => setIsWhatsAppBroadcastModalOpen(false)}
+        guests={guests}
+        weddingConfig={weddingConfig}
+        onUpdateGuestStatus={handleUpdateGuestStatusById}
+        onToast={showToast}
+      />
 
       {/* SweetAlert2-Style Full-Screen Viewport Confirmation Modal */}
       {deleteModal && (

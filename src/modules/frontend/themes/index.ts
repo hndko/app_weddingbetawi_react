@@ -98,6 +98,16 @@ const RoyalOpeningCover = lazy(() => import('./royal/OpeningCover').then(m => ({
 const RoyalInvitationContent = lazy(() => import('./royal/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const RoyalAppFrame = lazy(() => import('./royal/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
+// Lazy-loaded Dayak theme
+const DayakOpeningCover = lazy(() => import('./dayak/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const DayakInvitationContent = lazy(() => import('./dayak/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const DayakAppFrame = lazy(() => import('./dayak/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
+// Lazy-loaded Cyberpunk theme
+const CyberpunkOpeningCover = lazy(() => import('./cyberpunk/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const CyberpunkInvitationContent = lazy(() => import('./cyberpunk/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const CyberpunkAppFrame = lazy(() => import('./cyberpunk/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
 export const THEMES: Record<string, ThemeDefinition> = {
   betawi: {
     meta: THEME_CATALOG[0],
@@ -258,6 +268,24 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: RoyalOpeningCover,
       InvitationContent: RoyalInvitationContent,
       AppFrame: RoyalAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  dayak: {
+    meta: THEME_CATALOG[18],
+    components: {
+      OpeningCover: DayakOpeningCover,
+      InvitationContent: DayakInvitationContent,
+      AppFrame: DayakAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  cyberpunk: {
+    meta: THEME_CATALOG[19],
+    components: {
+      OpeningCover: CyberpunkOpeningCover,
+      InvitationContent: CyberpunkInvitationContent,
+      AppFrame: CyberpunkAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

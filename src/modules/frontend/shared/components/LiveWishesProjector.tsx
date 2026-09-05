@@ -23,6 +23,7 @@ import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { generateQRCodeDataURL } from '../../../../utils/qrGenerator';
 import { playStageChime } from '../../../../utils/stageChime';
 import type { Wish } from '../../../../types';
+import { WishAudioPlayer } from './WishAudioPlayer';
 
 export function LiveWishesProjector() {
   const { weddingConfig } = useWeddingConfig();
@@ -365,6 +366,17 @@ export function LiveWishesProjector() {
                       <p className="font-heading text-xl sm:text-2xl lg:text-3xl text-white/95 leading-relaxed font-normal italic">
                         "{currentWish.text}"
                       </p>
+
+                      {currentWish.audioUrl && (
+                        <div className="mt-4 max-w-sm">
+                          <WishAudioPlayer
+                            audioUrl={currentWish.audioUrl}
+                            durationSeconds={currentWish.audioDuration}
+                            accentColor="#D4AF37"
+                            isDark={true}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
 

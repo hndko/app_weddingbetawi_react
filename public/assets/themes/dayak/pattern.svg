@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .stroke-gold { stroke: #D4AF37; stroke-width: 1.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .stroke-red { stroke: #8B0000; stroke-width: 1; fill: none; }
+      .fill-gold { fill: #D4AF37; }
+    </style>
+  </defs>
+  <!-- Background Diamond Grid -->
+  <path d="M0,30 L30,0 L60,30 L30,60 Z" class="stroke-gold" opacity="0.4" />
+  <path d="M10,30 L30,10 L50,30 L30,50 Z" class="stroke-red" opacity="0.3" />
+
+  <!-- Center Spirals (Dayak Kenyah Aso / Tree of Life Tendril) -->
+  <path d="M30,22 C35,22 38,26 36,30 C34,34 26,34 24,30 C22,26 25,22 30,22" class="stroke-gold" opacity="0.6" />
+  <circle cx="30" cy="30" r="2.5" class="fill-gold" opacity="0.7" />
+
+  <!-- Corner Dots -->
+  <circle cx="0" cy="0" r="2" class="fill-gold" opacity="0.5" />
+  <circle cx="60" cy="0" r="2" class="fill-gold" opacity="0.5" />
+  <circle cx="0" cy="60" r="2" class="fill-gold" opacity="0.5" />
+  <circle cx="60" cy="60" r="2" class="fill-gold" opacity="0.5" />
+</svg>

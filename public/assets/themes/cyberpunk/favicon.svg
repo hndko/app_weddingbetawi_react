@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="cyberFavGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0FF" />
+      <stop offset="100%" stop-color="#FF007F" />
+    </linearGradient>
+  </defs>
+  <!-- Cyber Hexagon Badge -->
+  <polygon points="32,4 58,18 58,46 32,60 6,46 6,18" fill="#0A0A12" stroke="url(#cyberFavGrad)" stroke-width="3" />
+  <!-- Neon Heart Matrix -->
+  <path
+    d="M 32,20 C 24,10 14,20 32,38 C 50,20 40,10 32,20 Z"
+    fill="#FF007F"
+    stroke="#00F0FF"
+    stroke-width="1.5"
+  />
+  <circle cx="32" cy="27" r="3" fill="#FFE600" />
+</svg>

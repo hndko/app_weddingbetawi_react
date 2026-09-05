@@ -27,7 +27,9 @@ Aplikasi ini adalah platform undangan pernikahan digital berbasis web responsif 
 | Menyimpan jadwal acara ke Google Calendar & Apple/iCal | ✅ Ya | ✅ Ya |
 | Mengisi konfirmasi kehadiran (RSVP) | ✅ Ya | ✅ Ya |
 | Menulis doa restu di dinding ucapan | ✅ Ya | ✅ Ya |
+| Merekam & mendengarkan pesan suara (*Audio Guestbook*) | ✅ Ya | ✅ Ya |
 | Berfoto & mengunduh photostrip di Virtual Photo Booth | ✅ Ya | ✅ Ya |
+| Mengirim broadcast & pengingat WhatsApp (*Queue Runner*) | ❌ Tidak | ✅ Ya |
 | Mengakses generator pesan WhatsApp nama tamu | ❌ Tidak | ✅ Ya |
 | Mengubah teks mempelai, tanggal acara, & lokasi | ❌ Tidak | ✅ Ya |
 | Mengunggah foto mempelai & galeri foto | ❌ Tidak | ✅ Ya |

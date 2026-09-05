@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.35.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.36.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -195,6 +195,25 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 ---
 
 ## ✨ Fitur Utama
+
+### 🦅 Tema Dayak Kenyah Borneo & ⚡ Cyberpunk 2077 Night City (v1.36.0)
+- **Total 20 Tema Siap Pakai**: Menembus 20 variasi tema pernikahan digital yang kaya budaya adat Nusantara dan konsep modern futuristik.
+- **Dayak Kenyah Borneo (`id: dayak`)**: Nuansa agung adat Dayak Kenyah Kalimantan dengan perisai sakral Talawang, bulu burung Enggang yang melayang lembut, sulur naga Aso Kenyah, serta petikan harmoni magis alat musik dawai Sape' dan denting gong tradisi via Web Audio API.
+- **Cyberpunk 2077 Neo-Jakarta (`id: cyberpunk`)**: Konsep futuristik sci-fi Night City berhias sirkuit neon cyan & magenta, HUD biometrik kuantum cinta (*100% Neural Sync*), efek audio hologram boot glitch, dan denting laser synth masa depan.
+
+### 📲 Asisten Broadcast & Pengingat WhatsApp (Queue Runner) (v1.36.0)
+- **Modal Interaktif Antrean Tamu (Queue Runner)**: Mengirimkan link undangan personal dan pengingat kehadiran 1-klik ke nomor WhatsApp para tamu dengan alur antrean otomatis (*Next Tamu*).
+- **4 Pilihan Template Siap Kirim**:
+  - *Undangan Resmi*: Format formal akad & resepsi lengkap dengan tautan personal.
+  - *Pengingat H-3*: Pengingat konfirmasi kehadiran RSVP agar katering dan meja tertata presisi.
+  - *Pengingat H-1*: Pengingat hari menjelang pernikahan beserta link peta Google Maps & panduan lokasi.
+  - *Template Kustom*: Fleksibel disesuaikan dengan variabel `{nama}`, `{mempelai}`, `{tanggal}`, `{venue}`, `{link}`.
+- **Otomatisasi Status Firestore**: Menandai tamu sebagai `Sudah Terkirim` secara otomatis begitu tombol kirim WhatsApp diklik.
+
+### 🎙️ Audio Guestbook / Voice Memo Wishes (v1.36.0)
+- **Perekaman Suara Klien Tanpa Biaya Server (*Zero Storage Cost*)**: Tamu dapat merekam pesan suara selamat dan doa restu hingga 20 detik langsung dari browser menggunakan MediaRecorder API.
+- **Kompresi Audio Base64 WebM/Opus**: Disimpan langsung ke dalam dokumen ucapan Firestore (~40-60KB) tanpa membutuhkan Firebase Storage berbayar.
+- **Waveform Audio Player Interaktif**: Pemutar audio terintegrasi pada Dinding Ucapan tamu dan Layar Panggung Proyektor (*Live Wishes Projector*) lengkap dengan animasi gelombang suara (*soundwave*).
 
 ### 🌺 Ornamen & Estetika Budaya Betawi
 - **Ilustrasi Khas Betawi**: Menghadirkan siluet Monumen Nasional (Monas), ornamen Rumah Kebaya, serta animasi karakter Ondel-ondel Betawi yang anggun.

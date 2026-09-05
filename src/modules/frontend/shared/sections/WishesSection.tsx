@@ -7,6 +7,8 @@ import { useThemeTokens } from '../../themes';
 import { cn } from '../../../../utils/cn';
 import { AlertCircle, CheckCircle2, User, MessageSquareQuote, Send, ChevronDown, Loader2 } from 'lucide-react';
 import { Wish } from '../../../../types';
+import { VoiceMemoRecorder } from '../components/VoiceMemoRecorder';
+import { WishAudioPlayer } from '../components/WishAudioPlayer';
 
 function SectionDivider({ className = '' }: { className?: string }) {
   return (
@@ -29,6 +31,8 @@ export function WishesSection() {
   const [wishes, setWishes] = useState<Wish[]>(defaultWishes);
   const [name, setName] = useState('');
   const [wishText, setWishText] = useState('');
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioDuration, setAudioDuration] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -61,6 +65,8 @@ export function WishesSection() {
             name: data.name,
             text: data.text,
             time: timeFormatted,
+            audioUrl: data.audioUrl,
+            audioDuration: data.audioDuration,
           };
         });
         setWishes(fetchedWishes);
@@ -78,12 +84,20 @@ export function WishesSection() {
     setErrorMessage(null);
     setSuccessMessage(null);
     try {
-      await addDoc(collection(db, 'wishes'), {
+      const payload: Record<string, unknown> = {
         name: name.trim(),
         text: wishText.trim(),
         createdAt: serverTimestamp(),
-      });
+      };
+      if (audioUrl) {
+        payload.audioUrl = audioUrl;
+        payload.audioDuration = audioDuration;
+      }
+
+      await addDoc(collection(db, 'wishes'), payload);
       setWishText('');
+      setAudioUrl(null);
+      setAudioDuration(0);
       setSuccessMessage('Ucapan dan doa Anda berhasil dikirimkan!');
       setTimeout(() => setSuccessMessage(null), 4000);
     } catch (err) {
@@ -155,6 +169,16 @@ export function WishesSection() {
               }}
             />
           </div>
+
+          <VoiceMemoRecorder
+            onAudioRecorded={(url, dur) => {
+              setAudioUrl(url);
+              setAudioDuration(dur);
+            }}
+            accentColor={tokens.accent}
+            isDark={isDark}
+          />
+
           <button 
             type="submit" 
             disabled={isSubmitting}
@@ -213,6 +237,15 @@ export function WishesSection() {
               >
                 "{wish.text}"
               </p>
+
+              {wish.audioUrl && (
+                <WishAudioPlayer
+                  audioUrl={wish.audioUrl}
+                  durationSeconds={wish.audioDuration}
+                  accentColor={tokens.accent}
+                  isDark={isDark}
+                />
+              )}
             </motion.div>
           ))}
           {wishes.length > visibleCount && (

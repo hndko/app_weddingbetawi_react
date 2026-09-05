@@ -54,19 +54,43 @@ Demi menjaga keanggunan tampilan undangan saat dibuka oleh tamu, **tombol akses 
 
 ---
 
-## 🔗 4. Modul Generator Link Tamu & Pesan WhatsApp (Tab 1)
+## 📱 4. Tata Letak Dasbor Admin Modern (Dashboard Layout)
 
-Modul ini adalah fitur paling sering digunakan saat Anda siap menyebarkan undangan ke keluarga dan sahabat.
+Dasbor Admin telah didesain dengan konsep modern dan sepenuhnya responsif di semua perangkat:
+- **Sidebar Desktop**: Navigasi vertikal di sisi kiri dengan 5 menu utama serta tombol ciutkan/lebarkan (*collapse toggle*).
+- **Mobile Slide-Over Drawer**: Menu navigasi laci yang dapat dibuka lewat tombol hamburger di ponsel.
+- **Header Topbar**: Menampilkan breadcrumb lokasi menu aktif, tombol pintas **"Lihat Undangan"** (*live preview*), status role Admin, dan tombol **"Logout"**.
+
+---
+
+## 📊 5. Modul Ringkasan Dasbor / Overview (Menu 1)
+
+Modul ini adalah beranda dasbor yang memberikan gambaran umum seketika tentang kesiapan acara dan respon tamu:
+1. **Banner Countdown Hari-H**: Menampilkan sisa waktu menuju hari pernikahan dalam hitungan hari, jam, menit, dan detik.
+2. **4 Kartu Indikator KPI**:
+   - **Total Tamu Hadir**: Akumulasi seluruh tamu dan rombongan keluarga yang menyatakan hadir.
+   - **Tidak Hadir**: Jumlah tamu yang mengonfirmasi tidak bisa hadir.
+   - **Total Respon**: Total formulir konfirmasi yang telah masuk.
+   - **Doa Restu**: Total ucapan doa yang dikirimkan oleh para tamu.
+3. **Rasio Kehadiran Visual**: Batang persentase dinamis yang membandingkan perbandingan tamu hadir vs tidak hadir.
+4. **Tombol Jalan Pintas Cepat**: Akses instan untuk membuat link WA tamu, mengubah konten, atau mengekspor buku tamu.
+5. **Feed Aktivitas Terbaru**: Memperlihatkan 5 konfirmasi kehadiran dan ucapan terbaru yang masuk secara langsung.
+
+---
+
+## 🔗 6. Modul Generator Link Tamu & Pesan WhatsApp (Menu 2)
+
+Modul ini digunakan saat Anda siap menyebarkan undangan ke keluarga dan sahabat.
 
 ```mermaid
 graph LR
     A["Ketik Nama Tamu (cth: 'Bpk. Ahmad & Keluarga')"] --> B["Link Khusus Terbuat Otomatis"]
     B --> C["Pilih Aksi: Salin Link / Salin Teks WA / Klik Tombol WhatsApp"]
-    C --> D["WhatsApp Terbuka Langsung dengan Format Pesan Cantik"]
+    D["WhatsApp Terbuka Langsung dengan Format Pesan Cantik"]
 ```
 
 ### Langkah-Langkah:
-1. Masuk ke Admin Panel, pilih tab **"Link Tamu Undangan"** (tab pertama).
+1. Masuk ke Dasbor Admin, pilih menu **"Link Tamu & WA"** (Menu 2).
 2. Pada kolom **Nama Tamu Undangan**, ketikkan nama tamu yang ingin Anda undang.
    - *Contoh format santai*: `Budi Santoso`
    - *Contoh format formal*: `Bapak Dr. H. Faisal, M.Si & Keluarga`
@@ -74,86 +98,61 @@ graph LR
    - **Link Khusus**: Berisi parameter `?to=...` yang memastikan nama tamu tersebut muncul di sampul depan undangan.
    - **Template Pesan WhatsApp**: Pesan sopan berformat islami dan rapi yang langsung memuat nama tamu serta tautan undangan.
 4. **Pilih Metode Pembagian:**
-   - **Klik "Kirim / Bagikan via WhatsApp"**: Peramban akan otomatis membuka aplikasi WhatsApp dengan teks pesan yang sudah terisi. Anda tinggal memilih kontak tujuan dan klik kirim.
-   - **Salin Teks WA**: Klik tombol *"Salin Teks WA"* jika ingin mengedit atau menempelkan pesan ke aplikasi chat lain (Telegram/Email).
+   - **Klik "Kirim via WhatsApp"**: Peramban akan otomatis membuka aplikasi WhatsApp dengan teks pesan yang sudah terisi. Anda tinggal memilih kontak tujuan dan klik kirim.
+   - **Salin Teks WA**: Klik tombol *"Salin Teks WA"* jika ingin mengedit atau menempelkan pesan ke aplikasi chat lain.
    - **Salin URL**: Hanya menyalin tautan website singkatnya saja.
 
 ---
 
-## ✏️ 5. Modul Edit Data Website & Konten (Tab 2)
+## ✏️ 7. Modul Manajemen Konten Website (Menu 3)
 
-Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda kapan saja secara *real-time*.
+Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda kapan saja secara *real-time*. Konten diatur dalam sub-tab rapi:
 
-### A. Mempelai Pria & Wanita (Groom & Bride)
-* Masukkan **Nama Panggilan** (digunakan untuk judul sampul dan link preview).
-* Masukkan **Nama Lengkap** beserta gelar akademik.
-* Masukkan **Nama Orang Tua** (ayah dan ibu).
-* Masukkan akun **Instagram** (opsional).
-* **Unggah Foto Mempelai**: Klik tombol ikon upload (unggah) untuk memilih foto dari ponsel atau galeri komputer. Sistem secara cerdas akan mengompresi foto secara otomatis agar ringan dibuka oleh tamu.
+### A. Sub-Tab Mempelai (Groom & Bride)
+* Masukkan **Nama Panggilan**, **Nama Lengkap**, **Nama Orang Tua**, dan akun **Instagram**.
+* **Unggah Foto Mempelai**: Kotak Drag & Drop dengan pratinjau kartu foto. Kompresi otomatis menjaga performa web tetap cepat.
 
-### B. Tanggal Pernikahan & Live Countdown Timer
-* **Tanggal Format Teks**: Ketik teks tanggal formal yang akan dicetak di layar (misal: `Minggu, 20 September 2026`).
-* **Format ISO untuk Hitung Mundur**: Format waktu target untuk penghitung mundur otomatis (format: `YYYY-MM-DDTHH:mm:ss+07:00`, contoh: `2026-09-20T09:00:00+07:00`).
+### B. Sub-Tab Acara & Lokasi (Akad & Resepsi)
+* Atur **Judul Acara**, **Hari**, **Tanggal**, dan **Waktu Pelaksanaan** (misal: `09:00 - 11:00 WIB`).
+* Atur **Tanggal Format Teks** dan **Format ISO untuk Hitung Mundur**.
+* Masukkan **Nama Gedung / Masjid**, **Alamat Lengkap**, dan **Tautan Google Maps**.
 
-### C. Detail Acara Akad Nikah & Resepsi
-* Ubah **Judul Acara**, **Hari**, **Tanggal**, dan **Waktu Pelaksanaan** (misal: `09:00 - 11:00 WIB`).
-* Masukkan **Nama Gedung / Masjid** dan **Alamat Lengkap**.
-* Tempelkan **Tautan Google Maps** agar tamu dapat membuka navigasi peta GPS hanya dengan 1-klik.
+### C. Sub-Tab Galeri Foto
+* Tambahkan foto-foto pra-nikah (*prewedding*) melalui dropzone drag & drop atau URL langsung.
+* Dilengkapi daftar kartu pratinjau foto dan tombol hapus individual.
 
-### D. Linimasa Kisah Cinta (Love Story)
-* Anda dapat menambah, mengedit, atau menghapus momen perjalanan asmara kedua mempelai dengan mengisi **Tahun**, **Judul Momen**, dan **Cerita Singkat**.
+### D. Sub-Tab Kisah Cinta (Love Story)
+* Tambah, edit, atau hapus momen perjalanan asmara kedua mempelai dengan mengisi **Tahun**, **Judul Momen**, dan **Cerita Singkat**.
 
-### E. Musik Latar Belakang (Audio Playlist)
-* Masukkan URL lagu dari **YouTube** (contoh: `https://www.youtube.com/watch?v=RO75uUZiAw0`) atau tautan audio **Google Drive** yang diset publik.
-* Klik tombol **"+ Tambah Lagu"** jika ingin membuat daftar putar (*playlist*) multi-lagu.
-* Pilih **Mode Pemutaran**:
-  - *Repeat All*: Memutar seluruh daftar lagu berulang-ulang tanpa henti.
-  - *Repeat One*: Mengulang satu lagu yang sama terus-menerus.
-  - *Shuffle*: Memutar lagu-lagu di dalam daftar secara acak.
-  - *Linear*: Memutar lagu dari awal hingga akhir lalu berhenti.
+### E. Sub-Tab Musik & Hadiah (Playlist & Digital Gift)
+* Masukkan URL playlist lagu dari **YouTube** atau tautan audio **Google Drive**.
+* Pilih **Mode Pemutaran**: *Repeat All*, *Repeat One*, *Shuffle*, atau *Linear*.
+* Kelola rekening bank (BCA, Mandiri, BRI, dll.) atau centang opsi **QRIS** untuk mengunggah gambar barcode pembayaran.
 
-### F. Amplop Digital (Hadiah Bank & QRIS)
-* Klik **"+ Tambah Akun"** untuk menambahkan rekening baru.
-* Centang opsi **"Gunakan QRIS untuk akun ini"** apabila Anda ingin menampilkan gambar kode barcode QRIS (misal: Gopay, OVO, ShopeePay, atau QRIS Bank).
-* Klik tombol **"Pilih QRIS"** untuk mengunggah gambar barcode.
-* Jika berupa transfer bank biasa: Isi **Nama Bank**, **Nomor Rekening**, dan **Atas Nama Pemilik Rekening**.
-
-### G. Galeri Foto Pernikahan
-* Tambahkan foto-foto pra-nikah (*prewedding*) Anda.
-* Anda dapat memasukkan URL gambar langsung atau klik tombol upload untuk memilih file gambar dari memori perangkat.
-
-### H. Pengaturan SEO & Pratinjau Sosial Media
-* **Judul Halaman**: Judul yang tampil di tab peramban dan judul preview saat dibagikan ke WhatsApp.
-* **Deskripsi Singkat**: Kalimat pendek yang muncul di bawah judul saat link dibagikan.
-* **Gambar Thumbnail Preview**: Foto yang menjadi sampul thumbnail kartu di chat WhatsApp.
+### F. Sub-Tab SEO & Metadata
+* **Judul Halaman**, **Deskripsi Singkat**, dan **Foto Thumbnail Preview** saat dibagikan ke WhatsApp dan media sosial.
 
 > [!IMPORTANT]
-> Jangan lupa menekan tombol **"Simpan ke Firestore"** di bagian paling bawah setelah selesai melakukan perubahan. Indikator toast hijau akan muncul sebagai tanda data berhasil tersimpan ke cloud.
+> Selalu tekan tombol **"Simpan Perubahan"** pada bilah aksi mengambang (*sticky save bar*) di bagian bawah setelah mengubah data.
 
 ---
 
-## 📊 6. Modul Pemantauan RSVP Kehadiran (Tab 3)
+## 📋 8. Modul Buku Tamu RSVP & Export CSV (Menu 4)
 
-Tab ini memberikan rekapitulasi konfirmasi kehadiran dari para tamu:
-
-1. **Kotak Indikator Ringkasan**:
-   - **Total Tamu Hadir**: Akumulasi total orang yang menyatakan hadir (termasuk jumlah rombongan keluarga yang dibawa).
-   - **Tidak Hadir**: Jumlah tamu yang mengonfirmasi berhalangan hadir.
-   - **Total Respon**: Total keseluruhan data respon konfirmasi yang telah masuk.
-2. **Daftar Kartu Respon**:
-   - Memperlihatkan nama tamu, status konfirmasi, jumlah tamu, catatan/doa yang disertakan, serta tanggal pengisian.
-3. **Menghapus Data Spam**:
-   - Jika terdapat data iseng atau dobel, klik tombol tong sampah pada kartu yang bersangkutan. Dialog konfirmasi modern akan muncul menanyakan kepastian Anda sebelum data dihapus secara permanen.
+Menu ini menyediakan rekapitulasi interaktif konfirmasi kehadiran:
+1. **Pencarian Real-Time**: Kolom pencarian cepat di latar belakang tanpa mengubah URL peramban, dilengkapi tombol reset instan.
+2. **Penomoran Urut Otomatis (`#`)**: Nomor urut 1-indexed yang tetap konsisten dan berurutan saat data disaring.
+3. **Export ke Excel (CSV)**: Tombol **"Export ke CSV"** untuk mengunduh seluruh data konfirmasi kehadiran ke berkas spreadsheet berformat UTF-8 BOM yang rapi.
+4. **Hapus Data Spam**: Tombol aksi berikon tong sampah dengan konfirmasi SweetAlert2 berlatar layar penuh.
 
 ---
 
-## 💬 7. Modul Moderasi Ucapan Doa (Tab 4)
+## 💬 9. Modul Moderasi Ucapan Doa (Menu 5)
 
 Dinding ucapan doa restu tamu diperbarui secara otomatis secara *real-time*:
-
-1. Setiap kali tamu mengirimkan ucapan di website, pesan tersebut akan langsung muncul di tab ini tanpa perlu memuat ulang peramban (*auto-sync*).
-2. Anda dapat membaca seluruh ucapan doa dari sahabat dan kerabat.
-3. Jika terdapat pesan yang tidak sopan atau spam iklan, Anda dapat menghapusnya dengan mengklik ikon tong sampah merah pada pesan tersebut.
+1. **Pencarian Cepat Ucapan**: Mempermudah pencarian nama tamu atau isi doa tertentu.
+2. **Penomoran Urut Otomatis (`#`)**: Tabel ucapan tersusun rapi dengan nomor urut dinamis.
+3. **Moderasi Pesan**: Hapus pesan spam atau tidak sopan secara aman dengan dialog konfirmasi SweetAlert2.
 
 ---
 

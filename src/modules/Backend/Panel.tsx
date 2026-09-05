@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  Settings, Link as LinkIcon, Users, MessageSquare, Save, Plus, Trash2, 
-  Copy, Check, X, LogOut, Music, Heart, Calendar, Image as ImageIcon, 
-  CreditCard, Share2, AlertCircle, Clock, Building, MapPin, 
-  Search, RotateCcw, User, KeyRound, Globe, FileText, CheckCircle2, ChevronRight, BookOpen
+  Settings, Link as LinkIcon, Users, UserX, MessageSquare, MessageSquareHeart, 
+  Save, Plus, Trash2, Copy, Check, X, LogOut, Music, Heart, Calendar, 
+  Image as ImageIcon, CreditCard, Share2, AlertCircle, Clock, Building, 
+  MapPin, Search, RotateCcw, User, KeyRound, Globe, FileText, CheckCircle2, 
+  Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
+  ArrowUpRight, ShieldCheck, Sparkles, BookOpen
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
@@ -67,7 +69,11 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
       return false;
     }
   });
-  const [activeTab, setActiveTab] = useState<'config' | 'generator' | 'rsvps' | 'wishes'>('generator');
+
+  // Modern Dashboard Navigation State
+  const [activeMenu, setActiveMenu] = useState<'overview' | 'generator' | 'config' | 'rsvps' | 'wishes'>('overview');
+  const [configSubTab, setConfigSubTab] = useState<'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'seo'>('couple');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Form state for config
   const [formData, setFormData] = useState<WeddingConfig>(weddingConfig);
@@ -83,7 +89,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   const [rsvps, setRsvps] = useState<RSVPResponse[]>([]);
   const [wishes, setWishes] = useState<Wish[]>([]);
 
-  // In-memory live search state (Background search without URL pollution)
+  // In-memory live search state (Zero URL Pollution)
   const [rsvpSearchQuery, setRsvpSearchQuery] = useState('');
   const [wishSearchQuery, setWishSearchQuery] = useState('');
 
@@ -108,6 +114,14 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   // Upload loading state
   const [uploadingAvatar, setUploadingAvatar] = useState<'groom' | 'bride' | 'seo' | null>(null);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+
+  // Countdown timer calculation for overview widget
+  const [countdownLeft, setCountdownLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   useEffect(() => {
     if (weddingConfig) {
@@ -135,7 +149,31 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     return () => unsubscribe();
   }, []);
 
-  // Route sync
+  // Calculate live countdown
+  useEffect(() => {
+    const calculateCountdown = () => {
+      const targetTime = new Date(formData.dateISO || '2026-09-20T08:00:00+07:00').getTime();
+      const now = new Date().getTime();
+      const difference = targetTime - now;
+
+      if (difference > 0) {
+        setCountdownLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
+      } else {
+        setCountdownLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    calculateCountdown();
+    const interval = setInterval(calculateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [formData.dateISO]);
+
+  // Route synchronization
   useEffect(() => {
     if (currentRoute === 'modules' && !isAuthenticated) {
       if (onReplace) {
@@ -152,9 +190,9 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     }
   }, [currentRoute, isAuthenticated, onReplace]);
 
-  // Prevent background scrolling when SweetAlert modal is open
+  // Body scroll lock on modal open
   useEffect(() => {
-    if (deleteModal) {
+    if (deleteModal || isMobileSidebarOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -162,7 +200,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     return () => {
       document.body.style.overflow = '';
     };
-  }, [deleteModal]);
+  }, [deleteModal, isMobileSidebarOpen]);
 
   const handleLogout = () => {
     try {
@@ -334,6 +372,56 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     );
   }, [wishes, wishSearchQuery]);
 
+  // Calculations for RSVPs
+  const totalAttending = useMemo(() => {
+    return rsvps
+      .filter(r => r.attendance === 'hadir')
+      .reduce((acc, r) => acc + (Number(r.guestCount) || 1), 0);
+  }, [rsvps]);
+
+  const totalNotAttending = useMemo(() => {
+    return rsvps.filter(r => r.attendance !== 'hadir').length;
+  }, [rsvps]);
+
+  const totalResponses = rsvps.length;
+  const attendanceRate = totalResponses > 0 
+    ? Math.round((rsvps.filter(r => r.attendance === 'hadir').length / totalResponses) * 100) 
+    : 0;
+
+  // CSV Export for RSVP data
+  const exportRsvpToCsv = () => {
+    if (rsvps.length === 0) {
+      showToast('error', 'Belum ada data RSVP untuk diekspor.');
+      return;
+    }
+
+    const headers = ['No', 'Nama Tamu', 'Kehadiran', 'Jumlah Tamu', 'Catatan / Doa', 'Waktu Konfirmasi'];
+    const rows = rsvps.map((r, i) => {
+      let formattedDate = '-';
+      if (r.createdAt && typeof (r.createdAt as { toDate?: () => Date }).toDate === 'function') {
+        formattedDate = (r.createdAt as { toDate: () => Date }).toDate().toLocaleString('id-ID');
+      }
+      return [
+        (i + 1).toString(),
+        `"${(r.name || '').replace(/"/g, '""')}"`,
+        r.attendance === 'hadir' ? 'Hadir' : 'Tidak Hadir',
+        (r.guestCount || 1).toString(),
+        `"${(r.notes || '').replace(/"/g, '""')}"`,
+        `"${formattedDate}"`,
+      ].join(',');
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `rekap-rsvp-wedding-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('success', 'Rekap data RSVP berhasil diunduh (CSV)!');
+  };
+
   // Generated URL & WA Message
   const baseUrl = window.location.origin;
   const generatedLink = guestName ? `${baseUrl}/?to=${encodeURIComponent(guestName)}` : `${baseUrl}/`;
@@ -356,12 +444,14 @@ Wassalamu'alaikum Wr. Wb.`;
   const copyLink = async () => {
     await navigator.clipboard.writeText(generatedLink);
     setCopiedLink(true);
+    showToast('success', 'URL undangan berhasil disalin!');
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const copyWaMessage = async () => {
     await navigator.clipboard.writeText(waMessage);
     setCopiedWaText(true);
+    showToast('success', 'Pesan template WhatsApp berhasil disalin!');
     setTimeout(() => setCopiedWaText(false), 2000);
   };
 
@@ -369,12 +459,6 @@ Wassalamu'alaikum Wr. Wb.`;
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMessage)}`;
     window.open(url, '_blank');
   };
-
-  // Calculations for RSVPs
-  const totalAttending = rsvps
-    .filter(r => r.attendance === 'hadir')
-    .reduce((acc, r) => acc + (Number(r.guestCount) || 1), 0);
-  const totalNotAttending = rsvps.filter(r => r.attendance !== 'hadir').length;
 
   if (!isAuthenticated) {
     return (
@@ -401,626 +485,1244 @@ Wassalamu'alaikum Wr. Wb.`;
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F9F5] flex flex-col md:py-10 md:px-6">
-      <div className="w-full max-w-4xl mx-auto flex-1 bg-white md:rounded-[32px] shadow-2xl overflow-hidden flex flex-col border-0 md:border border-gray-100 relative">
-        {/* Header */}
-        <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-warm-white sticky top-0 z-10">
-          <div className="flex items-center gap-3">
-            <div className="bg-sage/10 text-sage-dark p-2.5 rounded-xl">
-              <Settings size={22} />
+    <div className="min-h-screen bg-[#F4F6F0] flex flex-col antialiased text-text-dark selection:bg-sage/30">
+      {/* TOPBAR HEADER */}
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200/80 px-4 sm:px-6 py-3 flex items-center justify-between shadow-2xs">
+        <div className="flex items-center gap-3">
+          {/* Mobile Hamburger Toggle */}
+          <button
+            type="button"
+            onClick={() => setIsMobileSidebarOpen(true)}
+            className="lg:hidden p-2 text-gray-600 hover:text-sage-dark hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
+            title="Buka Menu Sidebar"
+            aria-label="Buka Menu Sidebar"
+          >
+            <Menu size={20} />
+          </button>
+
+          {/* Breadcrumb / Title */}
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-sage/15 text-sage-dark flex items-center justify-center font-bold text-sm shadow-2xs">
+              <ShieldCheck size={18} />
             </div>
             <div>
-              <h2 className="font-heading text-xl text-text-dark font-medium">
-                Admin Modules
-              </h2>
-              <p className="text-xs text-gray-500">
-                Kelola undangan, data mempelai & database
-              </p>
+              <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-medium">
+                <span>Modules</span>
+                <span>/</span>
+                <span className="text-sage-dark font-semibold capitalize">{activeMenu}</span>
+              </div>
+              <h1 className="text-sm sm:text-base font-heading font-bold text-text-dark leading-none mt-0.5">
+                {activeMenu === 'overview' && 'Ringkasan Dashboard'}
+                {activeMenu === 'generator' && 'WhatsApp Link Generator'}
+                {activeMenu === 'config' && 'Kelola Konten Undangan'}
+                {activeMenu === 'rsvps' && 'Buku Tamu & RSVP'}
+                {activeMenu === 'wishes' && 'Doa & Ucapan Restu'}
+              </h1>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer border border-red-100"
-              title="Logout dari Admin"
-            >
-              <LogOut size={16} />
-              <span>Logout</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => (onNavigate ? onNavigate('/') : (window.location.href = '/'))}
-              className="text-gray-400 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
-              title="Kembali ke Undangan"
-            >
-              <X size={22} />
-            </button>
           </div>
         </div>
 
-        {/* Body */}
-        <div className="flex flex-col flex-1 overflow-hidden">
-          {/* Tabs Bar */}
-          <div className="flex border-b border-gray-100 px-2 sm:px-6 bg-gray-50/50 overflow-x-auto no-scrollbar pt-2">
-            <button
-              onClick={() => setActiveTab('generator')}
-              className={`py-3.5 px-4 text-xs font-medium border-b-2 flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer ${
-                activeTab === 'generator'
-                  ? 'border-sage-dark text-sage-dark font-bold'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
-              }`}
-            >
-              <LinkIcon size={15} />
-              <span>Link Tamu Undangan</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('config')}
-              className={`py-3.5 px-4 text-xs font-medium border-b-2 flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer ${
-                activeTab === 'config'
-                  ? 'border-sage-dark text-sage-dark font-bold'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
-              }`}
-            >
-              <Settings size={15} />
-              <span>Edit Data Website</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('rsvps')}
-              className={`py-3.5 px-4 text-xs font-medium border-b-2 flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer ${
-                activeTab === 'rsvps'
-                  ? 'border-sage-dark text-sage-dark font-bold'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
-              }`}
-            >
-              <Users size={15} />
-              <span>RSVP ({rsvps.length})</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('wishes')}
-              className={`py-3.5 px-4 text-xs font-medium border-b-2 flex items-center gap-2 whitespace-nowrap transition-colors cursor-pointer ${
-                activeTab === 'wishes'
-                  ? 'border-sage-dark text-sage-dark font-bold'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
-              }`}
-            >
-              <MessageSquare size={15} />
-              <span>Ucapan ({wishes.length})</span>
-            </button>
+        {/* Topbar Right Actions */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Active Admin Badge */}
+          <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/70 text-[11px] font-semibold text-emerald-700">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Admin Mode</span>
           </div>
 
-          {/* Tab Contents */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-            {/* TAB 1: LINK GENERATOR */}
-            {activeTab === 'generator' && (
-              <div className="flex flex-col gap-6">
+          {/* Direct Link to Invitation */}
+          <button
+            type="button"
+            onClick={() => window.open('/', '_blank')}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200/90 rounded-xl transition-all shadow-2xs cursor-pointer active:scale-98"
+            title="Pratinjau Undangan Publik di Tab Baru"
+          >
+            <ExternalLink size={14} className="text-sage-dark" />
+            <span className="hidden sm:inline">Lihat Web</span>
+          </button>
+
+          {/* Logout Button */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50/50 hover:bg-red-50 border border-red-200/80 rounded-xl transition-colors cursor-pointer shadow-2xs active:scale-98"
+            title="Keluar dari sesi admin"
+          >
+            <LogOut size={15} />
+            <span className="hidden sm:inline">Logout</span>
+          </button>
+        </div>
+      </header>
+
+      {/* DASHBOARD MAIN LAYOUT CONTAINER */}
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* DESKTOP SIDEBAR */}
+        <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200/80 shrink-0 select-none justify-between">
+          <div>
+            {/* Cultural Betawi Brand Header */}
+            <div className="p-5 border-b border-gray-100 bg-gradient-to-br from-warm-white to-gray-50/60">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-50 to-emerald-50 border border-gold/30 flex items-center justify-center text-sage-dark shadow-xs">
+                  <Sparkles size={20} className="text-gold" />
+                </div>
                 <div>
-                  <label className="block text-xs font-semibold text-text-dark mb-1.5">Nama Tamu Undangan</label>
-                  <div className="relative flex items-center">
-                    <User className="absolute left-3.5 text-gray-400 pointer-events-none" size={16} />
-                    <input
-                      type="text"
-                      value={guestName}
-                      onChange={(e) => setGuestName(e.target.value)}
-                      placeholder="Contoh: Bapak Budi & Keluarga"
-                      className="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sage focus:border-sage placeholder:text-gray-400 transition-all"
-                    />
+                  <h2 className="font-heading text-base font-bold text-text-dark tracking-tight">
+                    Betawi Heritage
+                  </h2>
+                  <p className="text-[11px] text-gray-500 font-medium">Panel Pengelola</p>
+                </div>
+              </div>
+
+              {/* Active Couple Banner Card */}
+              <div className="mt-3.5 p-2.5 bg-sage/10 border border-sage/20 rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Heart size={14} className="text-betawi-red shrink-0 fill-betawi-red" />
+                  <span className="text-xs font-semibold text-sage-dark truncate">
+                    {formData.groom.nickname} & {formData.bride.nickname}
+                  </span>
+                </div>
+                <span className="text-[10px] uppercase font-bold text-gold px-1.5 py-0.5 rounded bg-white shadow-2xs">
+                  Active
+                </span>
+              </div>
+            </div>
+
+            {/* Navigation Menu Links */}
+            <nav className="p-3.5 flex flex-col gap-1">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 py-1.5">
+                Menu Utama
+              </span>
+
+              <button
+                type="button"
+                onClick={() => setActiveMenu('overview')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeMenu === 'overview'
+                    ? 'bg-sage-dark text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <LayoutDashboard size={16} />
+                  <span>Ringkasan Dashboard</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveMenu('generator')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeMenu === 'generator'
+                    ? 'bg-sage-dark text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <LinkIcon size={16} />
+                  <span>Generator Link WA</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveMenu('config')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeMenu === 'config'
+                    ? 'bg-sage-dark text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <SlidersHorizontal size={16} />
+                  <span>Kelola Undangan</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveMenu('rsvps')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeMenu === 'rsvps'
+                    ? 'bg-sage-dark text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Users size={16} />
+                  <span>Buku Tamu (RSVP)</span>
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  activeMenu === 'rsvps' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {rsvps.length}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveMenu('wishes')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeMenu === 'wishes'
+                    ? 'bg-sage-dark text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <MessageSquare size={16} />
+                  <span>Doa & Ucapan Restu</span>
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  activeMenu === 'wishes' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {wishes.length}
+                </span>
+              </button>
+            </nav>
+          </div>
+
+          {/* Sidebar Footer Info */}
+          <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+            <div className="flex items-center justify-between text-[11px] text-gray-500 font-medium">
+              <span>Versi Sistem</span>
+              <span className="font-mono font-semibold px-2 py-0.5 bg-white border border-gray-200 rounded-md">v1.4.2</span>
+            </div>
+          </div>
+        </aside>
+
+        {/* MOBILE SLIDE-OVER DRAWER SIDEBAR */}
+        {isMobileSidebarOpen && (
+          <div 
+            className="fixed inset-0 z-50 lg:hidden flex"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          >
+            {/* Backdrop */}
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity" />
+
+            {/* Drawer Content */}
+            <div 
+              className="relative w-72 max-w-[80vw] bg-white h-full shadow-2xl flex flex-col justify-between z-10 animate-in slide-in-from-left duration-200"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div>
+                <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-warm-white">
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles size={18} className="text-gold" />
+                    <span className="font-heading font-bold text-sm">Betawi Heritage</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                    className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <nav className="p-3 flex flex-col gap-1">
+                  <button
+                    type="button"
+                    onClick={() => { setActiveMenu('overview'); setIsMobileSidebarOpen(false); }}
+                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold ${
+                      activeMenu === 'overview' ? 'bg-sage-dark text-white' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <LayoutDashboard size={16} />
+                    <span>Ringkasan Dashboard</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveMenu('generator'); setIsMobileSidebarOpen(false); }}
+                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold ${
+                      activeMenu === 'generator' ? 'bg-sage-dark text-white' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <LinkIcon size={16} />
+                    <span>Generator Link WA</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveMenu('config'); setIsMobileSidebarOpen(false); }}
+                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold ${
+                      activeMenu === 'config' ? 'bg-sage-dark text-white' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <SlidersHorizontal size={16} />
+                    <span>Kelola Undangan</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveMenu('rsvps'); setIsMobileSidebarOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold ${
+                      activeMenu === 'rsvps' ? 'bg-sage-dark text-white' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Users size={16} />
+                      <span>Buku Tamu (RSVP)</span>
+                    </div>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 font-bold">{rsvps.length}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveMenu('wishes'); setIsMobileSidebarOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold ${
+                      activeMenu === 'wishes' ? 'bg-sage-dark text-white' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <MessageSquare size={16} />
+                      <span>Doa & Ucapan Restu</span>
+                    </div>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 font-bold">{wishes.length}</span>
+                  </button>
+                </nav>
+              </div>
+
+              <div className="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between text-xs">
+                <span className="text-gray-500 font-medium">Betawi SPA v1.4.2</span>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="text-red-600 font-semibold flex items-center gap-1 hover:underline cursor-pointer"
+                >
+                  <LogOut size={13} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MAIN VIEWPORT CONTENT AREA */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+          {/* ========================================================================= */}
+          {/* MENU 1: RINGKASAN DASHBOARD (OVERVIEW) */}
+          {/* ========================================================================= */}
+          {activeMenu === 'overview' && (
+            <div className="flex flex-col gap-6">
+              {/* Event Countdown & Welcome Banner */}
+              <div className="bg-gradient-to-r from-sage-dark via-[#435334] to-[#2C3E2D] rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden">
+                {/* Subtle Betawi Ornament Watermark */}
+                <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none translate-x-10 translate-y-10">
+                  <Sparkles size={240} />
+                </div>
+
+                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                  <div className="flex flex-col gap-1.5 max-w-lg">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-gold uppercase tracking-widest">
+                      <Sparkles size={14} /> The Wedding Celebration
+                    </span>
+                    <h2 className="font-heading text-2xl sm:text-3xl font-bold">
+                      {formData.groom.nickname} & {formData.bride.nickname}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                      {formData.dateStr || 'Minggu, 20 September 2026'} &bull; {formData.events.akad.venue || 'Masjid Raya Betawi'}
+                    </p>
+                  </div>
+
+                  {/* Live Countdown Timer Cards */}
+                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
+                    <div className="flex flex-col items-center px-2 sm:px-3">
+                      <span className="text-lg sm:text-2xl font-bold font-mono">{countdownLeft.days}</span>
+                      <span className="text-[10px] text-gray-300 uppercase tracking-wider">Hari</span>
+                    </div>
+                    <span className="text-gray-400 font-bold">:</span>
+                    <div className="flex flex-col items-center px-2 sm:px-3">
+                      <span className="text-lg sm:text-2xl font-bold font-mono">{countdownLeft.hours}</span>
+                      <span className="text-[10px] text-gray-300 uppercase tracking-wider">Jam</span>
+                    </div>
+                    <span className="text-gray-400 font-bold">:</span>
+                    <div className="flex flex-col items-center px-2 sm:px-3">
+                      <span className="text-lg sm:text-2xl font-bold font-mono">{countdownLeft.minutes}</span>
+                      <span className="text-[10px] text-gray-300 uppercase tracking-wider">Menit</span>
+                    </div>
+                    <span className="text-gray-400 font-bold">:</span>
+                    <div className="flex flex-col items-center px-2 sm:px-3">
+                      <span className="text-lg sm:text-2xl font-bold font-mono text-gold">{countdownLeft.seconds}</span>
+                      <span className="text-[10px] text-gray-300 uppercase tracking-wider">Detik</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4 Core KPI Stat Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* 1. Tamu Hadir */}
+                <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tamu Hadir</span>
+                    <span className="text-2xl sm:text-3xl font-bold text-emerald-700 mt-1">{totalAttending}</span>
+                    <span className="text-[11px] text-emerald-600 font-medium mt-0.5">Orang terkonfirmasi</span>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
+                    <Users size={24} />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-text-dark mb-1.5">Generated Link Undangan</label>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1 flex items-center">
-                      <LinkIcon className="absolute left-3.5 text-gray-400 pointer-events-none" size={16} />
-                      <input
-                        type="text"
-                        readOnly
-                        value={generatedLink}
-                        placeholder="Link undangan akan otomatis terbuat..."
-                        className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-600 overflow-hidden text-ellipsis placeholder:text-gray-400"
-                      />
+                {/* 2. Tamu Berhalangan */}
+                <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Berhalangan</span>
+                    <span className="text-2xl sm:text-3xl font-bold text-red-700 mt-1">{totalNotAttending}</span>
+                    <span className="text-[11px] text-red-600 font-medium mt-0.5">Tidak dapat hadir</span>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 border border-red-100 flex items-center justify-center shrink-0">
+                    <UserX size={24} />
+                  </div>
+                </div>
+
+                {/* 3. Total Respon & Rate */}
+                <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Total Respon</span>
+                    <span className="text-2xl sm:text-3xl font-bold text-blue-700 mt-1">{totalResponses}</span>
+                    <span className="text-[11px] text-blue-600 font-medium mt-0.5">{attendanceRate}% Kehadiran</span>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+                    <CheckCircle2 size={24} />
+                  </div>
+                </div>
+
+                {/* 4. Doa & Restu */}
+                <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Doa Masuk</span>
+                    <span className="text-2xl sm:text-3xl font-bold text-amber-700 mt-1">{wishes.length}</span>
+                    <span className="text-[11px] text-amber-600 font-medium mt-0.5">Ucapan selamat</span>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
+                    <MessageSquareHeart size={24} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Attendance Ratio Visual Progress Bar */}
+              <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col gap-2.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-text-dark flex items-center gap-1.5">
+                    <CheckCircle2 size={15} className="text-emerald-600" /> Rasio Konfirmasi Kehadiran Tamu
+                  </span>
+                  <span className="font-semibold text-gray-600">
+                    {attendanceRate}% Hadir ({rsvps.filter(r => r.attendance === 'hadir').length} dari {totalResponses} respon)
+                  </span>
+                </div>
+                <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden flex">
+                  <div 
+                    style={{ width: `${attendanceRate}%` }} 
+                    className="bg-emerald-500 h-full transition-all duration-500 rounded-l-full" 
+                    title={`Hadir: ${attendanceRate}%`}
+                  />
+                  <div 
+                    style={{ width: `${100 - attendanceRate}%` }} 
+                    className="bg-red-400 h-full transition-all duration-500 rounded-r-full" 
+                    title={`Tidak Hadir: ${100 - attendanceRate}%`}
+                  />
+                </div>
+                <div className="flex items-center gap-4 text-[11px] text-gray-500 pt-1">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    <span>Hadir ({totalAttending} Orang)</span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                    <span>Tidak Hadir ({totalNotAttending} Tamu)</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Quick Action Shortcuts Grid */}
+              <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col gap-3">
+                <h3 className="font-heading text-sm font-bold text-text-dark">Aksi Cepat</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setActiveMenu('generator')}
+                    className="p-3.5 rounded-xl border border-gray-200 hover:border-sage bg-gray-50/50 hover:bg-sage/5 transition-all text-left flex flex-col gap-2 cursor-pointer group"
+                  >
+                    <LinkIcon size={18} className="text-sage-dark group-hover:scale-110 transition-transform" />
+                    <div>
+                      <span className="block text-xs font-bold text-gray-800">Buat Link Tamu</span>
+                      <span className="text-[11px] text-gray-500">Kirim link via WA</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={exportRsvpToCsv}
+                    className="p-3.5 rounded-xl border border-gray-200 hover:border-emerald-500 bg-gray-50/50 hover:bg-emerald-50/20 transition-all text-left flex flex-col gap-2 cursor-pointer group"
+                  >
+                    <Download size={18} className="text-emerald-600 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <span className="block text-xs font-bold text-gray-800">Unduh Rekap CSV</span>
+                      <span className="text-[11px] text-gray-500">Cetak data RSVP</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveMenu('config'); setConfigSubTab('events'); }}
+                    className="p-3.5 rounded-xl border border-gray-200 hover:border-blue-500 bg-gray-50/50 hover:bg-blue-50/20 transition-all text-left flex flex-col gap-2 cursor-pointer group"
+                  >
+                    <Calendar size={18} className="text-blue-600 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <span className="block text-xs font-bold text-gray-800">Atur Jadwal Acara</span>
+                      <span className="text-[11px] text-gray-500">Akad & Resepsi</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveMenu('config'); setConfigSubTab('gallery'); }}
+                    className="p-3.5 rounded-xl border border-gray-200 hover:border-purple-500 bg-gray-50/50 hover:bg-purple-50/20 transition-all text-left flex flex-col gap-2 cursor-pointer group"
+                  >
+                    <ImageIcon size={18} className="text-purple-600 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <span className="block text-xs font-bold text-gray-800">Upload Galeri Foto</span>
+                      <span className="text-[11px] text-gray-500">Kelola album foto</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Recent Activity Split View */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Recent RSVPs */}
+                <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col gap-3">
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <Users size={16} className="text-sage-dark" />
+                      <h4 className="text-xs font-bold text-text-dark uppercase tracking-wider">RSVP Terbaru</h4>
                     </div>
                     <button
                       type="button"
-                      onClick={copyLink}
-                      className="bg-sage text-white px-4 py-2.5 rounded-xl hover:bg-sage-dark transition-colors flex items-center gap-1.5 text-xs font-medium shrink-0 cursor-pointer shadow-xs"
+                      onClick={() => setActiveMenu('rsvps')}
+                      className="text-xs text-sage-dark hover:underline font-semibold flex items-center gap-0.5 cursor-pointer"
                     >
-                      {copiedLink ? <Check size={16} /> : <Copy size={16} />}
-                      <span>{copiedLink ? 'Tersalin' : 'Salin URL'}</span>
+                      <span>Lihat Semua</span>
+                      <ArrowUpRight size={13} />
                     </button>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    {rsvps.slice(0, 4).length === 0 ? (
+                      <p className="text-xs text-gray-400 py-6 text-center">Belum ada respon RSVP masuk.</p>
+                    ) : (
+                      rsvps.slice(0, 4).map((r) => (
+                        <div key={r.id} className="p-2.5 bg-gray-50/80 rounded-xl flex items-center justify-between gap-3 text-xs">
+                          <div className="flex flex-col min-w-0">
+                            <span className="font-semibold text-gray-800 truncate">{r.name}</span>
+                            <span className="text-[11px] text-gray-500 truncate italic">{r.notes || 'Tanpa pesan tambahan'}</span>
+                          </div>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0 ${
+                            r.attendance === 'hadir' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                          }`}>
+                            {r.attendance === 'hadir' ? `Hadir (${r.guestCount})` : 'Tidak Hadir'}
+                          </span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-xs font-semibold text-text-dark">Template Pesan WhatsApp</label>
+                {/* Recent Wishes */}
+                <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col gap-3">
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare size={16} className="text-gold" />
+                      <h4 className="text-xs font-bold text-text-dark uppercase tracking-wider">Doa Restu Terbaru</h4>
+                    </div>
                     <button
                       type="button"
-                      onClick={copyWaMessage}
-                      className="text-xs text-sage-dark hover:underline flex items-center gap-1 cursor-pointer font-medium"
+                      onClick={() => setActiveMenu('wishes')}
+                      className="text-xs text-sage-dark hover:underline font-semibold flex items-center gap-0.5 cursor-pointer"
                     >
-                      {copiedWaText ? <Check size={14} /> : <Copy size={14} />}
-                      <span>{copiedWaText ? 'Teks Tersalin' : 'Salin Teks WA'}</span>
+                      <span>Lihat Semua</span>
+                      <ArrowUpRight size={13} />
                     </button>
                   </div>
-                  <textarea
-                    readOnly
-                    rows={7}
-                    value={waMessage}
-                    placeholder="Template pesan WhatsApp..."
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 text-xs text-gray-700 font-mono resize-none focus:outline-none"
+
+                  <div className="flex flex-col gap-2">
+                    {wishes.slice(0, 4).length === 0 ? (
+                      <p className="text-xs text-gray-400 py-6 text-center">Belum ada ucapan doa masuk.</p>
+                    ) : (
+                      wishes.slice(0, 4).map((w) => (
+                        <div key={w.id} className="p-2.5 bg-gray-50/80 rounded-xl flex flex-col gap-1 text-xs">
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-gray-800">{w.name}</span>
+                            <span className="text-[10px] text-gray-400">{w.time || 'Baru saja'}</span>
+                          </div>
+                          <p className="text-[11px] text-gray-600 italic line-clamp-1">"{w.text}"</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* MENU 2: GENERATOR LINK WHATSAPP */}
+          {/* ========================================================================= */}
+          {activeMenu === 'generator' && (
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xs flex flex-col gap-6 max-w-3xl">
+              <div>
+                <h3 className="font-heading text-lg font-bold text-text-dark">Generator Tautan WhatsApp Tamu</h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Buat link undangan personal dengan nama tamu dan kirimkan template ucapan resmi secara instan.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-text-dark mb-1.5">Nama Tamu Undangan</label>
+                <div className="relative flex items-center">
+                  <User className="absolute left-3.5 text-gray-400 pointer-events-none" size={16} />
+                  <input
+                    type="text"
+                    value={guestName}
+                    onChange={(e) => setGuestName(e.target.value)}
+                    placeholder="Contoh: Bapak Budi Santoso & Rekan"
+                    className="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sage focus:border-sage placeholder:text-gray-400 transition-all"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-text-dark mb-1.5">Tautan Undangan Personal</label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1 flex items-center">
+                    <LinkIcon className="absolute left-3.5 text-gray-400 pointer-events-none" size={16} />
+                    <input
+                      type="text"
+                      readOnly
+                      value={generatedLink}
+                      placeholder="Link undangan akan otomatis terbuat..."
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-600 overflow-hidden text-ellipsis placeholder:text-gray-400"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={copyLink}
+                    className="bg-sage text-white px-4 py-2.5 rounded-xl hover:bg-sage-dark transition-colors flex items-center gap-1.5 text-xs font-medium shrink-0 cursor-pointer shadow-xs"
+                  >
+                    {copiedLink ? <Check size={16} /> : <Copy size={16} />}
+                    <span>{copiedLink ? 'Tersalin' : 'Salin URL'}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-semibold text-text-dark">Template Pesan WhatsApp</label>
+                  <button
+                    type="button"
+                    onClick={copyWaMessage}
+                    className="text-xs text-sage-dark hover:underline flex items-center gap-1 cursor-pointer font-medium"
+                  >
+                    {copiedWaText ? <Check size={14} /> : <Copy size={14} />}
+                    <span>{copiedWaText ? 'Teks Tersalin' : 'Salin Teks WA'}</span>
+                  </button>
+                </div>
+                <textarea
+                  readOnly
+                  rows={8}
+                  value={waMessage}
+                  placeholder="Template pesan WhatsApp..."
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 text-xs text-gray-700 font-mono resize-none focus:outline-none"
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={shareToWhatsapp}
+                className="w-full bg-emerald-600 text-white py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 hover:bg-emerald-700 transition-colors shadow-sm cursor-pointer"
+              >
+                <Share2 size={16} />
+                <span>Kirim Langsung ke WhatsApp Tamu</span>
+              </button>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* MENU 3: KELOLA KONTEN UNDANGAN (ORGANIZED SUB-PILLS) */}
+          {/* ========================================================================= */}
+          {activeMenu === 'config' && (
+            <div className="flex flex-col gap-6">
+              {/* Sub-Pills Navigation Bar */}
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+                <button
+                  type="button"
+                  onClick={() => setConfigSubTab('couple')}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                    configSubTab === 'couple'
+                      ? 'bg-sage-dark text-white shadow-xs'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <Heart size={14} />
+                  <span>Profil Mempelai</span>
+                </button>
 
                 <button
                   type="button"
-                  onClick={shareToWhatsapp}
-                  className="w-full bg-emerald-600 text-white py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 hover:bg-emerald-700 transition-colors shadow-sm cursor-pointer"
+                  onClick={() => setConfigSubTab('events')}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                    configSubTab === 'events'
+                      ? 'bg-sage-dark text-white shadow-xs'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                  }`}
                 >
-                  <Share2 size={16} />
-                  <span>Kirim / Bagikan via WhatsApp</span>
+                  <Calendar size={14} />
+                  <span>Acara & Lokasi</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setConfigSubTab('gallery')}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                    configSubTab === 'gallery'
+                      ? 'bg-sage-dark text-white shadow-xs'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <ImageIcon size={14} />
+                  <span>Galeri Foto ({formData.gallery.length})</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setConfigSubTab('story')}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                    configSubTab === 'story'
+                      ? 'bg-sage-dark text-white shadow-xs'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <BookOpen size={14} />
+                  <span>Kisah Kami</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setConfigSubTab('music_gift')}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                    configSubTab === 'music_gift'
+                      ? 'bg-sage-dark text-white shadow-xs'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <Music size={14} />
+                  <span>Musik & Hadiah</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setConfigSubTab('seo')}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                    configSubTab === 'seo'
+                      ? 'bg-sage-dark text-white shadow-xs'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <Globe size={14} />
+                  <span>SEO & Metadata</span>
                 </button>
               </div>
-            )}
 
-            {/* TAB 2: EDIT WEBSITE CONFIG */}
-            {activeTab === 'config' && (
+              {/* Form Content Container */}
               <form onSubmit={handleSaveConfig} className="flex flex-col gap-6">
-                {/* Groom Info */}
-                <div className="border border-gray-200 rounded-2xl p-5 bg-gray-50/50 flex flex-col gap-4">
-                  <h3 className="font-heading text-sm font-semibold text-text-dark flex items-center gap-2">
-                    <Heart size={16} className="text-betawi-red" />
-                    <span>Mempelai Pria (Groom)</span>
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <label className="block text-gray-600 mb-1 font-medium">Nama Panggilan</label>
-                      <div className="relative flex items-center">
-                        <User className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                        <input
-                          type="text"
-                          value={formData.groom.nickname}
-                          onChange={(e) => setFormData({ ...formData, groom: { ...formData.groom, nickname: e.target.value } })}
-                          placeholder="Contoh: Ali"
-                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
-                        />
+                {/* SUB-PILL 1: PROFIL MEMPELAI */}
+                {configSubTab === 'couple' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Groom */}
+                    <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-4">
+                      <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                        <Heart size={16} className="text-betawi-red fill-betawi-red" />
+                        <span>Mempelai Pria (Groom)</span>
+                      </h3>
+                      <div className="flex flex-col gap-3 text-xs">
+                        <div>
+                          <label className="block text-gray-600 mb-1 font-medium">Nama Panggilan</label>
+                          <div className="relative flex items-center">
+                            <User className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.groom.nickname}
+                              onChange={(e) => setFormData({ ...formData, groom: { ...formData.groom, nickname: e.target.value } })}
+                              placeholder="Contoh: Ali"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-gray-600 mb-1 font-medium">Nama Lengkap & Gelar</label>
+                          <div className="relative flex items-center">
+                            <User className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.groom.fullName}
+                              onChange={(e) => setFormData({ ...formData, groom: { ...formData.groom, fullName: e.target.value } })}
+                              placeholder="Contoh: Ali bin Fulan, S.Kom"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-gray-600 mb-1 font-medium">Nama Orang Tua</label>
+                          <div className="relative flex items-center">
+                            <Users className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.groom.parents}
+                              onChange={(e) => setFormData({ ...formData, groom: { ...formData.groom, parents: e.target.value } })}
+                              placeholder="Contoh: Putra dari Bapak H. Ahmad & Ibu Hj. Siti"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-gray-600 mb-1 font-medium">Akun Instagram</label>
+                          <div className="relative flex items-center">
+                            <Share2 className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.groom.instagram}
+                              onChange={(e) => setFormData({ ...formData, groom: { ...formData.groom, instagram: e.target.value } })}
+                              placeholder="Contoh: @ali_betawi"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-gray-600 mb-1 font-medium">Foto Profil Mempelai Pria</label>
+                          <DragDropUpload
+                            id="groom-avatar-upload"
+                            label="Tarik & lepas foto mempelai pria, atau klik untuk memilih"
+                            value={formData.groom.image}
+                            isUploading={uploadingAvatar === 'groom'}
+                            onFileSelect={handleUploadGroom}
+                            onRemove={() => setFormData(prev => ({ ...prev, groom: { ...prev.groom, image: '' } }))}
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <label className="block text-gray-600 mb-1 font-medium">Nama Lengkap</label>
-                      <div className="relative flex items-center">
-                        <User className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                        <input
-                          type="text"
-                          value={formData.groom.fullName}
-                          onChange={(e) => setFormData({ ...formData, groom: { ...formData.groom, fullName: e.target.value } })}
-                          placeholder="Contoh: Ali bin Fulan, S.Kom"
-                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
-                        />
-                      </div>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-gray-600 mb-1 font-medium">Nama Orang Tua</label>
-                      <div className="relative flex items-center">
-                        <Users className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                        <input
-                          type="text"
-                          value={formData.groom.parents}
-                          onChange={(e) => setFormData({ ...formData, groom: { ...formData.groom, parents: e.target.value } })}
-                          placeholder="Contoh: Bapak H. Ahmad & Ibu Hj. Siti"
-                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
-                        />
-                      </div>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-gray-600 mb-1 font-medium">Instagram</label>
-                      <div className="relative flex items-center">
-                        <Share2 className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                        <input
-                          type="text"
-                          value={formData.groom.instagram}
-                          onChange={(e) => setFormData({ ...formData, groom: { ...formData.groom, instagram: e.target.value } })}
-                          placeholder="Contoh: @ali_betawi"
-                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
-                        />
-                      </div>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-gray-600 mb-1 font-medium">Foto Mempelai Pria</label>
-                      <DragDropUpload
-                        id="groom-avatar-upload"
-                        label="Tarik & lepas foto mempelai pria, atau klik untuk memilih"
-                        value={formData.groom.image}
-                        isUploading={uploadingAvatar === 'groom'}
-                        onFileSelect={handleUploadGroom}
-                        onRemove={() => setFormData(prev => ({ ...prev, groom: { ...prev.groom, image: '' } }))}
-                      />
-                    </div>
-                  </div>
-                </div>
 
-                {/* Bride Info */}
-                <div className="border border-gray-200 rounded-2xl p-5 bg-gray-50/50 flex flex-col gap-4">
-                  <h3 className="font-heading text-sm font-semibold text-text-dark flex items-center gap-2">
-                    <Heart size={16} className="text-pink-500" />
-                    <span>Mempelai Wanita (Bride)</span>
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <label className="block text-gray-600 mb-1 font-medium">Nama Panggilan</label>
-                      <div className="relative flex items-center">
-                        <Heart className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                        <input
-                          type="text"
-                          value={formData.bride.nickname}
-                          onChange={(e) => setFormData({ ...formData, bride: { ...formData.bride, nickname: e.target.value } })}
-                          placeholder="Contoh: Fatimah"
-                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-gray-600 mb-1 font-medium">Nama Lengkap</label>
-                      <div className="relative flex items-center">
-                        <Heart className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                        <input
-                          type="text"
-                          value={formData.bride.fullName}
-                          onChange={(e) => setFormData({ ...formData, bride: { ...formData.bride, fullName: e.target.value } })}
-                          placeholder="Contoh: Fatimah Azzahra, S.Pd"
-                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
-                        />
-                      </div>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-gray-600 mb-1 font-medium">Nama Orang Tua</label>
-                      <div className="relative flex items-center">
-                        <Users className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                        <input
-                          type="text"
-                          value={formData.bride.parents}
-                          onChange={(e) => setFormData({ ...formData, bride: { ...formData.bride, parents: e.target.value } })}
-                          placeholder="Contoh: Bapak H. Mahmud & Ibu Hj. Aminah"
-                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
-                        />
-                      </div>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-gray-600 mb-1 font-medium">Instagram</label>
-                      <div className="relative flex items-center">
-                        <Share2 className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                        <input
-                          type="text"
-                          value={formData.bride.instagram}
-                          onChange={(e) => setFormData({ ...formData, bride: { ...formData.bride, instagram: e.target.value } })}
-                          placeholder="Contoh: @fatimah_betawi"
-                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
-                        />
-                      </div>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-gray-600 mb-1 font-medium">Foto Mempelai Wanita</label>
-                      <DragDropUpload
-                        id="bride-avatar-upload"
-                        label="Tarik & lepas foto mempelai wanita, atau klik untuk memilih"
-                        value={formData.bride.image}
-                        isUploading={uploadingAvatar === 'bride'}
-                        onFileSelect={handleUploadBride}
-                        onRemove={() => setFormData(prev => ({ ...prev, bride: { ...prev.bride, image: '' } }))}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Date & Events */}
-                <div className="border border-gray-200 rounded-2xl p-5 bg-gray-50/50 flex flex-col gap-4">
-                  <h3 className="font-heading text-sm font-semibold text-text-dark flex items-center gap-2">
-                    <Calendar size={16} className="text-sage-dark" />
-                    <span>Tanggal & Rangkaian Acara</span>
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs mb-1">
-                    <div>
-                      <label className="block text-gray-600 mb-1 font-medium">Format Tanggal (Tampil)</label>
-                      <div className="relative flex items-center">
-                        <Calendar className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                        <input
-                          type="text"
-                          value={formData.dateStr}
-                          onChange={(e) => setFormData({ ...formData, dateStr: e.target.value })}
-                          placeholder="Contoh: Minggu, 20 September 2026"
-                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-gray-600 mb-1 font-medium">Tanggal Countdown ISO</label>
-                      <div className="relative flex items-center">
-                        <Calendar className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                        <input
-                          type="text"
-                          value={formData.dateISO}
-                          onChange={(e) => setFormData({ ...formData, dateISO: e.target.value })}
-                          placeholder="Contoh: 2026-09-20T08:00:00+07:00"
-                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage font-mono text-[11px]"
-                        />
+                    {/* Bride */}
+                    <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-4">
+                      <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                        <Heart size={16} className="text-pink-500 fill-pink-500" />
+                        <span>Mempelai Wanita (Bride)</span>
+                      </h3>
+                      <div className="flex flex-col gap-3 text-xs">
+                        <div>
+                          <label className="block text-gray-600 mb-1 font-medium">Nama Panggilan</label>
+                          <div className="relative flex items-center">
+                            <Heart className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.bride.nickname}
+                              onChange={(e) => setFormData({ ...formData, bride: { ...formData.bride, nickname: e.target.value } })}
+                              placeholder="Contoh: Fatimah"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-gray-600 mb-1 font-medium">Nama Lengkap & Gelar</label>
+                          <div className="relative flex items-center">
+                            <Heart className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.bride.fullName}
+                              onChange={(e) => setFormData({ ...formData, bride: { ...formData.bride, fullName: e.target.value } })}
+                              placeholder="Contoh: Fatimah Azzahra, S.Pd"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-gray-600 mb-1 font-medium">Nama Orang Tua</label>
+                          <div className="relative flex items-center">
+                            <Users className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.bride.parents}
+                              onChange={(e) => setFormData({ ...formData, bride: { ...formData.bride, parents: e.target.value } })}
+                              placeholder="Contoh: Putri dari Bapak H. Mahmud & Ibu Hj. Aminah"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-gray-600 mb-1 font-medium">Akun Instagram</label>
+                          <div className="relative flex items-center">
+                            <Share2 className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.bride.instagram}
+                              onChange={(e) => setFormData({ ...formData, bride: { ...formData.bride, instagram: e.target.value } })}
+                              placeholder="Contoh: @fatimah_betawi"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-gray-600 mb-1 font-medium">Foto Profil Mempelai Wanita</label>
+                          <DragDropUpload
+                            id="bride-avatar-upload"
+                            label="Tarik & lepas foto mempelai wanita, atau klik untuk memilih"
+                            value={formData.bride.image}
+                            isUploading={uploadingAvatar === 'bride'}
+                            onFileSelect={handleUploadBride}
+                            onRemove={() => setFormData(prev => ({ ...prev, bride: { ...prev.bride, image: '' } }))}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
+                )}
 
-                  {/* Akad */}
-                  <div className="p-4 bg-white border border-gray-200 rounded-xl">
-                    <h4 className="font-semibold text-xs text-sage-dark mb-3 flex items-center gap-1.5">
-                      <Clock size={14} /> Akad Nikah
-                    </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                      <div className="relative flex items-center">
-                        <Calendar className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Hari (Contoh: Minggu)"
-                          value={formData.events.akad.day}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, akad: { ...formData.events.akad, day: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage"
-                        />
-                      </div>
-                      <div className="relative flex items-center">
-                        <Calendar className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Tanggal (Contoh: 20 September 2026)"
-                          value={formData.events.akad.date}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, akad: { ...formData.events.akad, date: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage"
-                        />
-                      </div>
-                      <div className="relative flex items-center">
-                        <Clock className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Jam (Contoh: 08.00 - 10.00 WIB)"
-                          value={formData.events.akad.time}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, akad: { ...formData.events.akad, time: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage"
-                        />
-                      </div>
-                      <div className="relative flex items-center">
-                        <Building className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Nama Tempat (Contoh: Masjid Raya Betawi)"
-                          value={formData.events.akad.venue}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, akad: { ...formData.events.akad, venue: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage"
-                        />
-                      </div>
-                      <div className="relative flex items-center sm:col-span-2">
-                        <MapPin className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Alamat Lengkap (Contoh: Jl. Danau Sunter Utara No. 12)"
-                          value={formData.events.akad.address}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, akad: { ...formData.events.akad, address: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage"
-                        />
-                      </div>
-                      <div className="relative flex items-center sm:col-span-2">
-                        <LinkIcon className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Link Google Maps (https://maps.app.goo.gl/...)"
-                          value={formData.events.akad.mapUrl}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, akad: { ...formData.events.akad, mapUrl: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage text-gray-600 font-mono text-[11px]"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Resepsi */}
-                  <div className="p-4 bg-white border border-gray-200 rounded-xl">
-                    <h4 className="font-semibold text-xs text-sage-dark mb-3 flex items-center gap-1.5">
-                      <Clock size={14} /> Resepsi Pernikahan
-                    </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                      <div className="relative flex items-center">
-                        <Calendar className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Hari (Contoh: Minggu)"
-                          value={formData.events.resepsi.day}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, resepsi: { ...formData.events.resepsi, day: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage"
-                        />
-                      </div>
-                      <div className="relative flex items-center">
-                        <Calendar className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Tanggal (Contoh: 20 September 2026)"
-                          value={formData.events.resepsi.date}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, resepsi: { ...formData.events.resepsi, date: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage"
-                        />
-                      </div>
-                      <div className="relative flex items-center">
-                        <Clock className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Jam (Contoh: 11.00 - 17.00 WIB)"
-                          value={formData.events.resepsi.time}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, resepsi: { ...formData.events.resepsi, time: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage"
-                        />
-                      </div>
-                      <div className="relative flex items-center">
-                        <Building className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Nama Tempat (Contoh: Balai Sarwono Jakarta)"
-                          value={formData.events.resepsi.venue}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, resepsi: { ...formData.events.resepsi, venue: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage"
-                        />
-                      </div>
-                      <div className="relative flex items-center sm:col-span-2">
-                        <MapPin className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Alamat Lengkap (Contoh: Jl. Madrasah No. 14, Cilandak)"
-                          value={formData.events.resepsi.address}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, resepsi: { ...formData.events.resepsi, address: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage"
-                        />
-                      </div>
-                      <div className="relative flex items-center sm:col-span-2">
-                        <LinkIcon className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                        <input
-                          type="text"
-                          placeholder="Link Google Maps (https://maps.app.goo.gl/...)"
-                          value={formData.events.resepsi.mapUrl}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            events: { ...formData.events, resepsi: { ...formData.events.resepsi, mapUrl: e.target.value } }
-                          })}
-                          className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-sage text-gray-600 font-mono text-[11px]"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Kisah Kami */}
-                <div className="border border-gray-200 rounded-2xl p-5 bg-gray-50/50 text-xs flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-heading font-semibold text-text-dark flex items-center gap-1.5">
-                      <BookOpen size={16} className="text-sage-dark" />
-                      <span>Kisah Kami (Love Story)</span>
+                {/* SUB-PILL 2: ACARA & LOKASI */}
+                {configSubTab === 'events' && (
+                  <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xs flex flex-col gap-6">
+                    <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                      <Calendar size={16} className="text-sage-dark" />
+                      <span>Jadwal Akad & Resepsi Pernikahan</span>
                     </h3>
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, loveStory: [...(formData.loveStory || []), { year: '', title: '', description: '' }] })}
-                      className="text-sage-dark hover:text-sage flex items-center gap-1 cursor-pointer font-semibold"
-                    >
-                      <Plus size={15} />
-                      <span>Tambah Cerita</span>
-                    </button>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    {(formData.loveStory || []).map((story, idx) => (
-                      <div key={idx} className="bg-white border border-gray-200 rounded-xl p-3.5 flex flex-col gap-2.5 relative shadow-2xs">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newArr = [...(formData.loveStory || [])];
-                            newArr.splice(idx, 1);
-                            setFormData({ ...formData, loveStory: newArr });
-                          }}
-                          className="absolute top-3 right-3 text-gray-400 hover:text-red-500 p-1 cursor-pointer transition-colors"
-                          title="Hapus bagian cerita ini"
-                          aria-label="Hapus bagian cerita ini"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                        
-                        <div className="relative flex items-center pr-8">
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                      <div>
+                        <label className="block text-gray-600 mb-1 font-medium">Format Tanggal Tampil</label>
+                        <div className="relative flex items-center">
+                          <Calendar className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                          <input
+                            type="text"
+                            value={formData.dateStr}
+                            onChange={(e) => setFormData({ ...formData, dateStr: e.target.value })}
+                            placeholder="Contoh: Minggu, 20 September 2026"
+                            className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-gray-600 mb-1 font-medium">Tanggal Target Countdown (ISO Format)</label>
+                        <div className="relative flex items-center">
+                          <Clock className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                          <input
+                            type="text"
+                            value={formData.dateISO}
+                            onChange={(e) => setFormData({ ...formData, dateISO: e.target.value })}
+                            placeholder="Contoh: 2026-09-20T08:00:00+07:00"
+                            className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white font-mono text-[11px] focus:outline-none focus:ring-2 focus:ring-sage"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Akad Box */}
+                    <div className="p-5 bg-gray-50/70 border border-gray-200 rounded-2xl flex flex-col gap-3">
+                      <h4 className="text-xs font-bold text-sage-dark uppercase tracking-wider flex items-center gap-1.5">
+                        <Clock size={14} /> Sesi Akad Nikah
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="relative flex items-center">
                           <Calendar className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
                           <input
                             type="text"
-                            placeholder="Tahun / Momen (mis. 2021 atau Pertemuan Pertama)"
-                            value={story.year}
-                            onChange={(e) => {
-                              const newArr = [...(formData.loveStory || [])];
-                              newArr[idx] = { ...story, year: e.target.value };
-                              setFormData({ ...formData, loveStory: newArr });
-                            }}
-                            className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sage"
+                            placeholder="Hari (Contoh: Minggu)"
+                            value={formData.events.akad.day}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, akad: { ...formData.events.akad, day: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage"
                           />
                         </div>
                         <div className="relative flex items-center">
-                          <BookOpen className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                          <Calendar className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
                           <input
                             type="text"
-                            placeholder="Judul Cerita (mis. Dari Teman Menjadi Pasangan)"
-                            value={story.title}
-                            onChange={(e) => {
-                              const newArr = [...(formData.loveStory || [])];
-                              newArr[idx] = { ...story, title: e.target.value };
-                              setFormData({ ...formData, loveStory: newArr });
-                            }}
-                            className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sage"
+                            placeholder="Tanggal (Contoh: 20 September 2026)"
+                            value={formData.events.akad.date}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, akad: { ...formData.events.akad, date: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage"
                           />
                         </div>
-                        <div className="relative flex">
-                          <MessageSquare className="absolute left-2.5 top-2 text-gray-400 pointer-events-none" size={14} />
-                          <textarea
-                            placeholder="Tuliskan deskripsi cerita singkat..."
-                            value={story.description}
-                            onChange={(e) => {
-                              const newArr = [...(formData.loveStory || [])];
-                              newArr[idx] = { ...story, description: e.target.value };
-                              setFormData({ ...formData, loveStory: newArr });
-                            }}
-                            rows={3}
-                            className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sage resize-none"
+                        <div className="relative flex items-center">
+                          <Clock className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                          <input
+                            type="text"
+                            placeholder="Jam (Contoh: 08.00 - 10.00 WIB)"
+                            value={formData.events.akad.time}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, akad: { ...formData.events.akad, time: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage"
+                          />
+                        </div>
+                        <div className="relative flex items-center">
+                          <Building className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                          <input
+                            type="text"
+                            placeholder="Nama Gedung / Masjid"
+                            value={formData.events.akad.venue}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, akad: { ...formData.events.akad, venue: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage"
+                          />
+                        </div>
+                        <div className="relative flex items-center sm:col-span-2">
+                          <MapPin className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                          <input
+                            type="text"
+                            placeholder="Alamat Lengkap Venue"
+                            value={formData.events.akad.address}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, akad: { ...formData.events.akad, address: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage"
+                          />
+                        </div>
+                        <div className="relative flex items-center sm:col-span-2">
+                          <LinkIcon className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                          <input
+                            type="text"
+                            placeholder="Link Google Maps (https://maps.app.goo.gl/...)"
+                            value={formData.events.akad.mapUrl}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, akad: { ...formData.events.akad, mapUrl: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage font-mono text-[11px]"
                           />
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
 
-                {/* Music */}
-                <div className="border border-gray-200 rounded-2xl p-5 bg-gray-50/50 text-xs flex flex-col gap-4">
-                  <h3 className="font-heading font-semibold text-text-dark flex items-center gap-1.5">
-                    <Music size={16} className="text-sage-dark" />
-                    <span>Lagu Latar (YouTube Audio URL)</span>
-                  </h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-gray-600 mb-1 font-medium">Mode Pemutaran</label>
-                      <div className="relative flex items-center">
-                        <Music className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                    {/* Resepsi Box */}
+                    <div className="p-5 bg-gray-50/70 border border-gray-200 rounded-2xl flex flex-col gap-3">
+                      <h4 className="text-xs font-bold text-sage-dark uppercase tracking-wider flex items-center gap-1.5">
+                        <Clock size={14} /> Sesi Resepsi Pernikahan
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="relative flex items-center">
+                          <Calendar className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                          <input
+                            type="text"
+                            placeholder="Hari (Contoh: Minggu)"
+                            value={formData.events.resepsi.day}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, resepsi: { ...formData.events.resepsi, day: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage"
+                          />
+                        </div>
+                        <div className="relative flex items-center">
+                          <Calendar className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                          <input
+                            type="text"
+                            placeholder="Tanggal (Contoh: 20 September 2026)"
+                            value={formData.events.resepsi.date}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, resepsi: { ...formData.events.resepsi, date: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage"
+                          />
+                        </div>
+                        <div className="relative flex items-center">
+                          <Clock className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                          <input
+                            type="text"
+                            placeholder="Jam (Contoh: 11.00 - 17.00 WIB)"
+                            value={formData.events.resepsi.time}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, resepsi: { ...formData.events.resepsi, time: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage"
+                          />
+                        </div>
+                        <div className="relative flex items-center">
+                          <Building className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                          <input
+                            type="text"
+                            placeholder="Nama Gedung / Tempat"
+                            value={formData.events.resepsi.venue}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, resepsi: { ...formData.events.resepsi, venue: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage"
+                          />
+                        </div>
+                        <div className="relative flex items-center sm:col-span-2">
+                          <MapPin className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                          <input
+                            type="text"
+                            placeholder="Alamat Lengkap Resepsi"
+                            value={formData.events.resepsi.address}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, resepsi: { ...formData.events.resepsi, address: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage"
+                          />
+                        </div>
+                        <div className="relative flex items-center sm:col-span-2">
+                          <LinkIcon className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                          <input
+                            type="text"
+                            placeholder="Link Google Maps (https://maps.app.goo.gl/...)"
+                            value={formData.events.resepsi.mapUrl}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              events: { ...formData.events, resepsi: { ...formData.events.resepsi, mapUrl: e.target.value } }
+                            })}
+                            className="w-full border border-gray-200 rounded-lg pl-8 pr-2.5 py-2 bg-white focus:ring-1 focus:ring-sage font-mono text-[11px]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SUB-PILL 3: GALERI FOTO */}
+                {configSubTab === 'gallery' && (
+                  <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xs flex flex-col gap-4">
+                    <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                      <ImageIcon size={16} className="text-sage-dark" />
+                      <span>Album Galeri Foto Pernikahan ({formData.gallery.length} foto)</span>
+                    </h3>
+                    <DragDropUpload
+                      id="gallery-dropzone-dashboard"
+                      multiple
+                      label="Tarik & lepas foto-foto galeri di sini, atau klik untuk memilih"
+                      helperText="Pilih beberapa foto sekaligus. Otomatis dikompresi (Zero Storage Cost)."
+                      value={formData.gallery}
+                      isUploading={isUploadingGallery}
+                      onFileSelect={handleUploadGallery}
+                      onRemove={(idx) => {
+                        if (idx === undefined) return;
+                        setFormData(prev => ({
+                          ...prev,
+                          gallery: prev.gallery.filter((_, i) => i !== idx)
+                        }));
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* SUB-PILL 4: KISAH KAMI */}
+                {configSubTab === 'story' && (
+                  <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xs flex flex-col gap-4">
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                      <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2">
+                        <BookOpen size={16} className="text-sage-dark" />
+                        <span>Timeline Perjalanan Kisah Cinta</span>
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, loveStory: [...(formData.loveStory || []), { year: '', title: '', description: '' }] })}
+                        className="text-sage-dark hover:text-sage flex items-center gap-1 font-semibold text-xs cursor-pointer"
+                      >
+                        <Plus size={14} />
+                        <span>Tambah Cerita</span>
+                      </button>
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                      {(formData.loveStory || []).map((story, idx) => (
+                        <div key={idx} className="bg-gray-50/70 border border-gray-200 rounded-2xl p-4 flex flex-col gap-2.5 relative">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newArr = [...(formData.loveStory || [])];
+                              newArr.splice(idx, 1);
+                              setFormData({ ...formData, loveStory: newArr });
+                            }}
+                            className="absolute top-3 right-3 text-gray-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-white transition-colors cursor-pointer"
+                            title="Hapus bagian cerita ini"
+                            aria-label="Hapus bagian cerita ini"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+
+                          <div className="relative flex items-center pr-10 text-xs">
+                            <Calendar className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                            <input
+                              type="text"
+                              placeholder="Tahun / Momen (mis. 2021 atau Pertemuan Pertama)"
+                              value={story.year}
+                              onChange={(e) => {
+                                const newArr = [...(formData.loveStory || [])];
+                                newArr[idx] = { ...story, year: e.target.value };
+                                setFormData({ ...formData, loveStory: newArr });
+                              }}
+                              className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage"
+                            />
+                          </div>
+                          <div className="relative flex items-center text-xs">
+                            <BookOpen className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                            <input
+                              type="text"
+                              placeholder="Judul Momen (mis. Awal Berjumpa)"
+                              value={story.title}
+                              onChange={(e) => {
+                                const newArr = [...(formData.loveStory || [])];
+                                newArr[idx] = { ...story, title: e.target.value };
+                                setFormData({ ...formData, loveStory: newArr });
+                              }}
+                              className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage font-medium"
+                            />
+                          </div>
+                          <div className="relative flex text-xs">
+                            <MessageSquare className="absolute left-2.5 top-2 text-gray-400 pointer-events-none" size={14} />
+                            <textarea
+                              placeholder="Tuliskan deskripsi cerita singkat..."
+                              value={story.description}
+                              onChange={(e) => {
+                                const newArr = [...(formData.loveStory || [])];
+                                newArr[idx] = { ...story, description: e.target.value };
+                                setFormData({ ...formData, loveStory: newArr });
+                              }}
+                              rows={3}
+                              className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage resize-none"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* SUB-PILL 5: MUSIK & HADIAH */}
+                {configSubTab === 'music_gift' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Audio Settings */}
+                    <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-4 text-xs">
+                      <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                        <Music size={16} className="text-sage-dark" />
+                        <span>Lagu Latar & Playlist</span>
+                      </h3>
+
+                      <div>
+                        <label className="block text-gray-600 mb-1 font-medium">Mode Pemutaran Audio</label>
                         <select
                           value={formData.music?.mode || 'repeat-all'}
                           onChange={(e) => setFormData({ 
                             ...formData, 
                             music: { ...formData.music!, mode: e.target.value as 'repeat-all' | 'repeat-one' | 'shuffle' | 'linear' } 
                           })}
-                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage cursor-pointer"
+                          className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white focus:ring-2 focus:ring-sage cursor-pointer"
                         >
                           <option value="repeat-all">Ulangi Semua (Repeat All)</option>
                           <option value="repeat-one">Ulangi Satu Lagu (Repeat One)</option>
@@ -1028,486 +1730,498 @@ Wassalamu'alaikum Wr. Wb.`;
                           <option value="linear">Sekali Jalan (Linear)</option>
                         </select>
                       </div>
-                    </div>
-                    
-                    <div className="space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-gray-600 font-medium">Daftar Putar (Playlist)</label>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newPlaylist = [...(formData.music?.playlist || []), { url: '' }];
-                            setFormData({ ...formData, music: { ...formData.music!, mode: formData.music?.mode || 'repeat-all', playlist: newPlaylist } });
-                          }}
-                          className="text-sage-dark hover:text-sage text-xs flex items-center gap-1 font-semibold cursor-pointer"
-                        >
-                          <Plus size={14} />
-                          <span>Tambah Lagu</span>
-                        </button>
-                      </div>
 
-                      {(formData.music?.playlist || (formData.musicUrl ? [{url: formData.musicUrl}] : [])).map((track, idx) => (
-                        <div key={idx} className="flex gap-2 items-center">
-                          <div className="relative flex-1 flex items-center">
-                            <Music className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                            <input
-                              type="text"
-                              value={track.url}
-                              onChange={(e) => {
-                                const newPlaylist = [...(formData.music?.playlist || [])];
-                                newPlaylist[idx] = { url: e.target.value };
-                                setFormData({ ...formData, music: { ...formData.music!, playlist: newPlaylist } });
-                              }}
-                              className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white font-mono text-[11px] focus:outline-none focus:ring-1 focus:ring-sage"
-                              placeholder="https://www.youtube.com/watch?v=..."
-                            />
-                          </div>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <label className="block text-gray-600 font-medium">Daftar Link Lagu YouTube</label>
                           <button
                             type="button"
                             onClick={() => {
-                              const newPlaylist = (formData.music?.playlist || []).filter((_, i) => i !== idx);
-                              setFormData({ ...formData, music: { ...formData.music!, playlist: newPlaylist } });
+                              const newPlaylist = [...(formData.music?.playlist || []), { url: '' }];
+                              setFormData({ ...formData, music: { ...formData.music!, mode: formData.music?.mode || 'repeat-all', playlist: newPlaylist } });
                             }}
-                            className="text-gray-400 hover:text-red-500 p-2 shrink-0 bg-white border border-gray-200 rounded-lg transition-colors cursor-pointer"
-                            title="Hapus lagu ini"
-                            aria-label="Hapus lagu ini"
+                            className="text-sage-dark hover:underline flex items-center gap-1 font-semibold cursor-pointer"
                           >
-                            <Trash2 size={15} />
+                            <Plus size={13} /> Tambah Lagu
                           </button>
                         </div>
-                      ))}
+
+                        {(formData.music?.playlist || (formData.musicUrl ? [{url: formData.musicUrl}] : [])).map((track, idx) => (
+                          <div key={idx} className="flex gap-2 items-center">
+                            <div className="relative flex-1 flex items-center">
+                              <Music className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                              <input
+                                type="text"
+                                value={track.url}
+                                onChange={(e) => {
+                                  const newPlaylist = [...(formData.music?.playlist || [])];
+                                  newPlaylist[idx] = { url: e.target.value };
+                                  setFormData({ ...formData, music: { ...formData.music!, playlist: newPlaylist } });
+                                }}
+                                className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-gray-50 focus:bg-white font-mono text-[11px] focus:ring-1 focus:ring-sage"
+                                placeholder="https://www.youtube.com/watch?v=..."
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newPlaylist = (formData.music?.playlist || []).filter((_, i) => i !== idx);
+                                setFormData({ ...formData, music: { ...formData.music!, playlist: newPlaylist } });
+                              }}
+                              className="text-gray-400 hover:text-red-500 p-2 shrink-0 bg-gray-50 hover:bg-red-50 border border-gray-200 rounded-lg transition-colors cursor-pointer"
+                              title="Hapus lagu ini"
+                              aria-label="Hapus lagu ini"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* Bank / QRIS */}
-                <div className="border border-gray-200 rounded-2xl p-5 bg-gray-50/50 text-xs flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-heading font-semibold text-text-dark flex items-center gap-1.5">
-                      <CreditCard size={16} className="text-gold" />
-                      <span>Rekening Bank & QRIS Gift</span>
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, banks: [...(formData.banks || (formData.bank ? [formData.bank] : [])), { name: '', account: '', holder: '', isQris: false, qrisImage: '' }] })}
-                      className="text-sage-dark hover:text-sage flex items-center gap-1 cursor-pointer font-semibold"
-                    >
-                      <Plus size={15} />
-                      <span>Tambah Akun</span>
-                    </button>
-                  </div>
-
-                  <div className="flex flex-col gap-3">
-                    {(formData.banks || (formData.bank ? [formData.bank] : [])).map((bank, idx) => (
-                      <div key={idx} className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col gap-2.5 relative shadow-2xs">
+                    {/* Bank / QRIS Gift */}
+                    <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-4 text-xs">
+                      <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                        <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2">
+                          <CreditCard size={16} className="text-gold" />
+                          <span>Rekening Hadiah & QRIS</span>
+                        </h3>
                         <button
                           type="button"
-                          onClick={() => {
-                            const newArr = [...(formData.banks || [])];
-                            newArr.splice(idx, 1);
-                            setFormData({ ...formData, banks: newArr });
-                          }}
-                          className="absolute top-3 right-3 text-gray-400 hover:text-red-500 p-1 cursor-pointer transition-colors"
-                          title="Hapus akun bank ini"
-                          aria-label="Hapus akun bank ini"
+                          onClick={() => setFormData({ ...formData, banks: [...(formData.banks || (formData.bank ? [formData.bank] : [])), { name: '', account: '', holder: '', isQris: false, qrisImage: '' }] })}
+                          className="text-sage-dark hover:underline flex items-center gap-1 font-semibold cursor-pointer"
                         >
-                          <Trash2 size={15} />
+                          <Plus size={13} /> Tambah Akun
                         </button>
+                      </div>
 
-                        <label className="flex items-center gap-2 mb-1 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={bank.isQris || false}
-                            onChange={(e) => {
-                              const newArr = [...(formData.banks || [])];
-                              newArr[idx] = { ...bank, isQris: e.target.checked };
-                              setFormData({ ...formData, banks: newArr });
-                            }}
-                            className="rounded text-sage focus:ring-sage"
-                          />
-                          <span className="font-medium text-gray-700">Gunakan QRIS untuk akun ini</span>
-                        </label>
+                      <div className="flex flex-col gap-3">
+                        {(formData.banks || (formData.bank ? [formData.bank] : [])).map((bank, idx) => (
+                          <div key={idx} className="p-3.5 bg-gray-50/70 border border-gray-200 rounded-xl flex flex-col gap-2 relative">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newArr = [...(formData.banks || [])];
+                                newArr.splice(idx, 1);
+                                setFormData({ ...formData, banks: newArr });
+                              }}
+                              className="absolute top-2.5 right-2.5 text-gray-400 hover:text-red-600 p-1"
+                              title="Hapus akun ini"
+                              aria-label="Hapus akun ini"
+                            >
+                              <Trash2 size={14} />
+                            </button>
 
-                        <div className="relative flex items-center pr-8">
-                          <CreditCard className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={bank.isQris || false}
+                                onChange={(e) => {
+                                  const newArr = [...(formData.banks || [])];
+                                  newArr[idx] = { ...bank, isQris: e.target.checked };
+                                  setFormData({ ...formData, banks: newArr });
+                                }}
+                                className="rounded text-sage"
+                              />
+                              <span className="font-semibold text-gray-700">Akun ini menggunakan QRIS</span>
+                            </label>
+
+                            <div className="relative flex items-center pr-8">
+                              <CreditCard className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                              <input
+                                type="text"
+                                placeholder="Nama Bank / E-Wallet (mis. BCA, Mandiri)"
+                                value={bank.name}
+                                onChange={(e) => {
+                                  const newArr = [...(formData.banks || [])];
+                                  newArr[idx] = { ...bank, name: e.target.value };
+                                  setFormData({ ...formData, banks: newArr });
+                                }}
+                                className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage"
+                              />
+                            </div>
+
+                            {!bank.isQris ? (
+                              <>
+                                <div className="relative flex items-center">
+                                  <KeyRound className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                                  <input
+                                    type="text"
+                                    placeholder="Nomor Rekening / No HP"
+                                    value={bank.account}
+                                    onChange={(e) => {
+                                      const newArr = [...(formData.banks || [])];
+                                      newArr[idx] = { ...bank, account: e.target.value };
+                                      setFormData({ ...formData, banks: newArr });
+                                    }}
+                                    className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage"
+                                  />
+                                </div>
+                                <div className="relative flex items-center">
+                                  <User className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                                  <input
+                                    type="text"
+                                    placeholder="Atas Nama Pemilik Rekening"
+                                    value={bank.holder}
+                                    onChange={(e) => {
+                                      const newArr = [...(formData.banks || [])];
+                                      newArr[idx] = { ...bank, holder: e.target.value };
+                                      setFormData({ ...formData, banks: newArr });
+                                    }}
+                                    className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage"
+                                  />
+                                </div>
+                              </>
+                            ) : (
+                              <DragDropUpload
+                                id={`qris-dropzone-${idx}`}
+                                label="Upload gambar barcode QRIS"
+                                value={bank.qrisImage}
+                                onFileSelect={(files) => handleUploadQris(files, idx)}
+                                onRemove={() => {
+                                  const newArr = [...(formData.banks || [])];
+                                  newArr[idx] = { ...bank, qrisImage: '' };
+                                  setFormData({ ...formData, banks: newArr });
+                                }}
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SUB-PILL 6: SEO & METADATA */}
+                {configSubTab === 'seo' && (
+                  <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xs flex flex-col gap-4 text-xs">
+                    <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                      <Globe size={16} className="text-sage-dark" />
+                      <span>Pengaturan Metadata SEO & Link Preview WhatsApp</span>
+                    </h3>
+
+                    <div className="flex flex-col gap-3">
+                      <div>
+                        <label className="block text-gray-600 mb-1 font-medium">Judul Halaman (Browser Title & OpenGraph)</label>
+                        <div className="relative flex items-center">
+                          <Globe className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
                           <input
                             type="text"
-                            placeholder="Nama Bank / E-Wallet (mis. BCA, Mandiri, QRIS)"
-                            value={bank.name}
-                            onChange={(e) => {
-                              const newArr = [...(formData.banks || [])];
-                              newArr[idx] = { ...bank, name: e.target.value };
-                              setFormData({ ...formData, banks: newArr });
-                            }}
-                            className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sage"
+                            placeholder="Judul Halaman Undangan"
+                            value={formData.seo?.title || ''}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              seo: { ...formData.seo, title: e.target.value }
+                            })}
+                            className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white font-semibold focus:ring-2 focus:ring-sage"
                           />
                         </div>
-
-                        {!bank.isQris ? (
-                          <>
-                            <div className="relative flex items-center">
-                              <KeyRound className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                              <input
-                                type="text"
-                                placeholder="No Rekening / No HP (mis. 1234567890)"
-                                value={bank.account}
-                                onChange={(e) => {
-                                  const newArr = [...(formData.banks || [])];
-                                  newArr[idx] = { ...bank, account: e.target.value };
-                                  setFormData({ ...formData, banks: newArr });
-                                }}
-                                className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sage"
-                              />
-                            </div>
-                            <div className="relative flex items-center">
-                              <User className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                              <input
-                                type="text"
-                                placeholder="Atas Nama Pemilik Rekening"
-                                value={bank.holder}
-                                onChange={(e) => {
-                                  const newArr = [...(formData.banks || [])];
-                                  newArr[idx] = { ...bank, holder: e.target.value };
-                                  setFormData({ ...formData, banks: newArr });
-                                }}
-                                className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sage"
-                              />
-                            </div>
-                          </>
-                        ) : (
-                          <DragDropUpload
-                            id={`qris-upload-${idx}`}
-                            label="Tarik & lepas barcode QRIS, atau klik untuk memilih"
-                            value={bank.qrisImage}
-                            onFileSelect={(files) => handleUploadQris(files, idx)}
-                            onRemove={() => {
-                              const newArr = [...(formData.banks || [])];
-                              newArr[idx] = { ...bank, qrisImage: '' };
-                              setFormData({ ...formData, banks: newArr });
-                            }}
-                          />
-                        )}
                       </div>
-                    ))}
-                  </div>
-                </div>
 
-                {/* Gallery Drop & Drop */}
-                <div className="border border-gray-200 rounded-2xl p-5 bg-gray-50/50 text-xs flex flex-col gap-4">
-                  <h3 className="font-heading font-semibold text-text-dark flex items-center gap-1.5">
-                    <ImageIcon size={16} className="text-sage-dark" />
-                    <span>Galeri Foto Pernikahan ({formData.gallery.length} foto)</span>
-                  </h3>
-                  <DragDropUpload
-                    id="gallery-dropzone"
-                    multiple
-                    label="Tarik & lepas foto-foto galeri di sini, atau klik untuk memilih"
-                    helperText="Bisa memilih beberapa foto sekaligus. Otomatis dikompresi untuk menjaga performa."
-                    value={formData.gallery}
-                    isUploading={isUploadingGallery}
-                    onFileSelect={handleUploadGallery}
-                    onRemove={(idx) => {
-                      if (idx === undefined) return;
-                      setFormData(prev => ({
-                        ...prev,
-                        gallery: prev.gallery.filter((_, i) => i !== idx)
-                      }));
-                    }}
-                  />
-                </div>
+                      <div>
+                        <label className="block text-gray-600 mb-1 font-medium">Deskripsi Ringkas (Muncul di Preview Chat)</label>
+                        <div className="relative flex">
+                          <FileText className="absolute left-3 top-2.5 text-gray-400 pointer-events-none" size={15} />
+                          <textarea
+                            placeholder="Deskripsi undangan pernikahan..."
+                            value={formData.seo?.description || ''}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              seo: { ...formData.seo, description: e.target.value }
+                            })}
+                            rows={3}
+                            className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white resize-none focus:ring-2 focus:ring-sage"
+                          />
+                        </div>
+                      </div>
 
-                {/* SEO Settings */}
-                <div className="border border-gray-200 rounded-2xl p-5 bg-gray-50/50 text-xs flex flex-col gap-4">
-                  <h3 className="font-heading font-semibold text-text-dark flex items-center gap-1.5">
-                    <Globe size={16} className="text-sage-dark" />
-                    <span>Pengaturan SEO & Metadata Link Preview</span>
-                  </h3>
-                  <div className="flex flex-col gap-3">
-                    <div className="relative flex items-center">
-                      <Globe className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                      <input
-                        type="text"
-                        placeholder="Judul Halaman (Browser Tab & Link Preview)"
-                        value={formData.seo?.title || ''}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          seo: { ...formData.seo, title: e.target.value }
-                        })}
-                        className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-sage"
-                      />
-                    </div>
-                    <div className="relative flex">
-                      <FileText className="absolute left-3 top-2.5 text-gray-400 pointer-events-none" size={15} />
-                      <textarea
-                        placeholder="Deskripsi Singkat Undangan (Muncul di Link Preview WhatsApp & Media Sosial)"
-                        value={formData.seo?.description || ''}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          seo: { ...formData.seo, description: e.target.value }
-                        })}
-                        rows={2}
-                        className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-sage"
-                      />
-                    </div>
-                    <div className="relative flex items-center">
-                      <Settings className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-                      <input
-                        type="text"
-                        placeholder="Keywords (Opsional, pisahkan dengan koma: nikah, betawi, wedding)"
-                        value={formData.seo?.keywords || ''}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          seo: { ...formData.seo, keywords: e.target.value }
-                        })}
-                        className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-600 mb-1 font-medium">Gambar Thumbnail Preview (OpenGraph)</label>
-                      <DragDropUpload
-                        id="seo-thumbnail-upload"
-                        label="Tarik & lepas gambar thumbnail preview, atau klik untuk memilih"
-                        value={formData.seo?.image}
-                        isUploading={uploadingAvatar === 'seo'}
-                        onFileSelect={handleUploadSeo}
-                        onRemove={() => setFormData(prev => ({ ...prev, seo: { ...prev.seo, image: '' } }))}
-                      />
+                      <div>
+                        <label className="block text-gray-600 mb-1 font-medium">Keywords Pencarian</label>
+                        <div className="relative flex items-center">
+                          <Settings className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                          <input
+                            type="text"
+                            placeholder="Contoh: wedding, undangan, nikah betawi"
+                            value={formData.seo?.keywords || ''}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              seo: { ...formData.seo, keywords: e.target.value }
+                            })}
+                            className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:ring-2 focus:ring-sage"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-600 mb-1 font-medium">Foto Thumbnail Pratinjau (1200x630)</label>
+                        <DragDropUpload
+                          id="seo-upload-dashboard"
+                          label="Upload gambar thumbnail preview sosial media"
+                          value={formData.seo?.image}
+                          isUploading={uploadingAvatar === 'seo'}
+                          onFileSelect={handleUploadSeo}
+                          onRemove={() => setFormData(prev => ({ ...prev, seo: { ...prev.seo, image: '' } }))}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
-                {/* Save Button */}
-                <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm p-4 border-t border-gray-100 flex items-center justify-between gap-4 -mx-4 sm:-mx-6 -mb-4 sm:-mb-6 rounded-b-[32px]">
-                  {saveSuccess ? (
-                    <span className="text-xs text-emerald-600 font-semibold flex items-center gap-1.5">
-                      <CheckCircle2 size={15} /> Berhasil disimpan ke Firestore!
-                    </span>
-                  ) : (
-                    <span className="text-xs text-gray-400">Pastikan data sudah sesuai sebelum menyimpan</span>
-                  )}
+                {/* Floating Save Action Bar */}
+                <div className="sticky bottom-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-gray-200/90 shadow-lg flex items-center justify-between gap-4">
+                  <div>
+                    {saveSuccess ? (
+                      <span className="text-xs text-emerald-600 font-semibold flex items-center gap-1.5">
+                        <CheckCircle2 size={16} /> Perubahan berhasil disimpan ke Firestore!
+                      </span>
+                    ) : (
+                      <span className="text-xs text-gray-500 font-medium">
+                        Simpan seluruh konfigurasi setelah selesai mengedit
+                      </span>
+                    )}
+                  </div>
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="ml-auto bg-sage-dark text-white px-6 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 hover:bg-sage transition-all disabled:opacity-50 cursor-pointer shadow-md active:scale-98"
+                    className="bg-sage-dark hover:bg-sage text-white px-6 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all disabled:opacity-50 cursor-pointer shadow-md active:scale-98 shrink-0"
                   >
                     <Save size={16} />
                     <span>{isSaving ? 'Menyimpan...' : 'Simpan ke Firestore'}</span>
                   </button>
                 </div>
               </form>
-            )}
+            </div>
+          )}
 
-            {/* TAB 3: RSVP DATA */}
-            {activeTab === 'rsvps' && (
-              <div className="flex flex-col gap-4">
-                {/* KPI Cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center">
-                  <div className="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-3.5 shadow-2xs">
-                    <span className="block text-2xl font-bold text-emerald-700">{totalAttending}</span>
-                    <span className="text-[10px] text-emerald-800 uppercase font-semibold tracking-wider">Total Tamu Hadir</span>
-                  </div>
-                  <div className="bg-red-50 border border-red-200/80 rounded-2xl p-3.5 shadow-2xs">
-                    <span className="block text-2xl font-bold text-red-700">{totalNotAttending}</span>
-                    <span className="text-[10px] text-red-800 uppercase font-semibold tracking-wider">Tidak Hadir</span>
-                  </div>
-                  <div className="bg-blue-50 border border-blue-200/80 rounded-2xl p-3.5 col-span-2 sm:col-span-1 shadow-2xs">
-                    <span className="block text-2xl font-bold text-blue-700">{rsvps.length}</span>
-                    <span className="text-[10px] text-blue-800 uppercase font-semibold tracking-wider">Total Respon</span>
-                  </div>
+          {/* ========================================================================= */}
+          {/* MENU 4: BUKU TAMU & RSVP */}
+          {/* ========================================================================= */}
+          {activeMenu === 'rsvps' && (
+            <div className="flex flex-col gap-5">
+              {/* Header & Export Toolbar */}
+              <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-heading text-lg font-bold text-text-dark">Buku Tamu Konfirmasi Kehadiran</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Rekap data kehadiran tamu undangan ({totalAttending} Hadir &bull; {totalNotAttending} Tidak Hadir)
+                  </p>
                 </div>
 
-                {/* In-Memory Real-Time Live Search Bar */}
-                <div className="relative flex items-center">
-                  <Search size={16} className="absolute left-3.5 text-gray-400 pointer-events-none" />
-                  <input
-                    type="text"
-                    value={rsvpSearchQuery}
-                    onChange={(e) => setRsvpSearchQuery(e.target.value)}
-                    placeholder="Cari nama tamu, status kehadiran, atau catatan RSVP secara live..."
-                    className="w-full pl-10 pr-10 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage focus:border-sage transition-all placeholder:text-gray-400"
-                  />
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={exportRsvpToCsv}
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer w-full sm:w-auto active:scale-98"
+                    title="Download Rekap Tamu ke format Excel / CSV"
+                  >
+                    <Download size={15} />
+                    <span>Ekspor CSV</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* In-Memory Live Search Bar */}
+              <div className="relative flex items-center">
+                <Search size={16} className="absolute left-3.5 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={rsvpSearchQuery}
+                  onChange={(e) => setRsvpSearchQuery(e.target.value)}
+                  placeholder="Cari nama tamu, status kehadiran, atau catatan RSVP..."
+                  className="w-full pl-10 pr-10 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sage focus:border-sage transition-all placeholder:text-gray-400 shadow-2xs"
+                />
+                {rsvpSearchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setRsvpSearchQuery('')}
+                    className="absolute right-3 text-gray-400 hover:text-gray-600 p-1 cursor-pointer"
+                    title="Hapus filter pencarian"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              {/* Responsive Data Table */}
+              {filteredRsvps.length === 0 ? (
+                <div className="text-center py-14 bg-white border border-dashed border-gray-200 rounded-3xl flex flex-col items-center gap-2 shadow-2xs">
+                  <Users size={36} className="text-gray-300" />
+                  <p className="text-xs text-gray-500 font-medium">
+                    {rsvpSearchQuery
+                      ? `Tidak ada data RSVP yang cocok dengan "${rsvpSearchQuery}"`
+                      : 'Belum ada data konfirmasi RSVP masuk.'}
+                  </p>
                   {rsvpSearchQuery && (
                     <button
                       type="button"
                       onClick={() => setRsvpSearchQuery('')}
-                      className="absolute right-3 text-gray-400 hover:text-gray-600 p-1 cursor-pointer"
-                      title="Hapus filter pencarian"
+                      className="text-xs text-sage-dark hover:underline flex items-center gap-1 font-semibold mt-1 cursor-pointer"
                     >
-                      <X size={14} />
+                      <RotateCcw size={13} />
+                      <span>Reset Pencarian</span>
                     </button>
                   )}
                 </div>
-
-                {/* Structured Responsive Data Table */}
-                {filteredRsvps.length === 0 ? (
-                  <div className="text-center py-12 bg-gray-50/50 border border-dashed border-gray-200 rounded-2xl flex flex-col items-center gap-2">
-                    <Users size={32} className="text-gray-300" />
-                    <p className="text-xs text-gray-500 font-medium">
-                      {rsvpSearchQuery
-                        ? `Tidak ada data RSVP yang cocok dengan "${rsvpSearchQuery}"`
-                        : 'Belum ada respon RSVP masuk.'}
-                    </p>
-                    {rsvpSearchQuery && (
-                      <button
-                        type="button"
-                        onClick={() => setRsvpSearchQuery('')}
-                        className="text-xs text-sage-dark hover:underline flex items-center gap-1 font-semibold mt-1 cursor-pointer"
-                      >
-                        <RotateCcw size={13} />
-                        <span>Reset Pencarian</span>
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto w-full border border-gray-200 rounded-2xl bg-white shadow-xs">
-                    <table className="w-full text-left border-collapse text-xs">
-                      <thead>
-                        <tr className="bg-gray-50/90 border-b border-gray-200 text-gray-600 font-semibold uppercase tracking-wider text-[11px]">
-                          <th className="py-3 px-3.5 text-center w-12">#</th>
-                          <th className="py-3 px-4">Nama Tamu</th>
-                          <th className="py-3 px-3 text-center">Kehadiran</th>
-                          <th className="py-3 px-3 text-center">Jumlah</th>
-                          <th className="py-3 px-4">Catatan / Doa</th>
-                          <th className="py-3 px-3 text-center w-16">Aksi</th>
+              ) : (
+                <div className="overflow-x-auto w-full border border-gray-200 rounded-2xl bg-white shadow-xs">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-gray-50/90 border-b border-gray-200 text-gray-600 font-semibold uppercase tracking-wider text-[11px]">
+                        <th className="py-3 px-3.5 text-center w-12">#</th>
+                        <th className="py-3 px-4">Nama Tamu</th>
+                        <th className="py-3 px-3 text-center">Kehadiran</th>
+                        <th className="py-3 px-3 text-center">Jumlah</th>
+                        <th className="py-3 px-4">Pesan / Catatan</th>
+                        <th className="py-3 px-3 text-center w-16">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {filteredRsvps.map((rsvp, idx) => (
+                        <tr key={rsvp.id} className="hover:bg-gray-50/70 transition-colors">
+                          <td className="py-3.5 px-3.5 text-center text-gray-400 font-medium">
+                            {idx + 1}
+                          </td>
+                          <td className="py-3.5 px-4 font-semibold text-text-dark whitespace-nowrap">
+                            {rsvp.name}
+                          </td>
+                          <td className="py-3.5 px-3 text-center whitespace-nowrap">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                              rsvp.attendance === 'hadir'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {rsvp.attendance === 'hadir' ? 'Hadir' : 'Tidak Hadir'}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-3 text-center text-gray-700 font-medium whitespace-nowrap">
+                            {rsvp.attendance === 'hadir' ? `${rsvp.guestCount} Orang` : '-'}
+                          </td>
+                          <td className="py-3.5 px-4 text-gray-600 max-w-xs truncate italic">
+                            {rsvp.notes ? `"${rsvp.notes}"` : '-'}
+                          </td>
+                          <td className="py-3.5 px-3 text-center">
+                            <button
+                              type="button"
+                              onClick={() => requestDeleteRsvp(rsvp)}
+                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                              title="Hapus data RSVP ini"
+                              aria-label="Hapus data RSVP ini"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {filteredRsvps.map((rsvp, idx) => (
-                          <tr key={rsvp.id} className="hover:bg-gray-50/60 transition-colors">
-                            <td className="py-3 px-3.5 text-center text-gray-400 font-medium">
-                              {idx + 1}
-                            </td>
-                            <td className="py-3 px-4 font-semibold text-text-dark whitespace-nowrap">
-                              {rsvp.name}
-                            </td>
-                            <td className="py-3 px-3 text-center whitespace-nowrap">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                                rsvp.attendance === 'hadir'
-                                  ? 'bg-emerald-100 text-emerald-800'
-                                  : 'bg-red-100 text-red-800'
-                              }`}>
-                                {rsvp.attendance === 'hadir' ? 'Hadir' : 'Tidak Hadir'}
-                              </span>
-                            </td>
-                            <td className="py-3 px-3 text-center text-gray-700 font-medium whitespace-nowrap">
-                              {rsvp.attendance === 'hadir' ? `${rsvp.guestCount} Orang` : '-'}
-                            </td>
-                            <td className="py-3 px-4 text-gray-600 max-w-xs truncate italic">
-                              {rsvp.notes ? `"${rsvp.notes}"` : '-'}
-                            </td>
-                            <td className="py-3 px-3 text-center">
-                              <button
-                                type="button"
-                                onClick={() => requestDeleteRsvp(rsvp)}
-                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                                title="Hapus respon RSVP ini"
-                                aria-label="Hapus respon RSVP ini"
-                              >
-                                <Trash2 size={15} />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* MENU 5: DOA & UCAPAN RESTU */}
+          {/* ========================================================================= */}
+          {activeMenu === 'wishes' && (
+            <div className="flex flex-col gap-5">
+              <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="font-heading text-lg font-bold text-text-dark">Moderasi Doa & Ucapan Restu</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Daftar seluruh kiriman doa dan restu dari tamu undangan ({wishes.length} ucapan masuk)
+                  </p>
+                </div>
+              </div>
+
+              {/* In-Memory Live Search Bar */}
+              <div className="relative flex items-center">
+                <Search size={16} className="absolute left-3.5 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={wishSearchQuery}
+                  onChange={(e) => setWishSearchQuery(e.target.value)}
+                  placeholder="Cari pengirim atau isi pesan doa ucapan..."
+                  className="w-full pl-10 pr-10 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sage focus:border-sage transition-all placeholder:text-gray-400 shadow-2xs"
+                />
+                {wishSearchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setWishSearchQuery('')}
+                    className="absolute right-3 text-gray-400 hover:text-gray-600 p-1 cursor-pointer"
+                    title="Hapus filter pencarian"
+                  >
+                    <X size={14} />
+                  </button>
                 )}
               </div>
-            )}
 
-            {/* TAB 4: WISHES DATA */}
-            {activeTab === 'wishes' && (
-              <div className="flex flex-col gap-4">
-                {/* In-Memory Real-Time Live Search Bar */}
-                <div className="relative flex items-center">
-                  <Search size={16} className="absolute left-3.5 text-gray-400 pointer-events-none" />
-                  <input
-                    type="text"
-                    value={wishSearchQuery}
-                    onChange={(e) => setWishSearchQuery(e.target.value)}
-                    placeholder="Cari pengirim atau isi pesan doa ucapan secara live..."
-                    className="w-full pl-10 pr-10 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-sage focus:border-sage transition-all placeholder:text-gray-400"
-                  />
+              {/* Responsive Table */}
+              {filteredWishes.length === 0 ? (
+                <div className="text-center py-14 bg-white border border-dashed border-gray-200 rounded-3xl flex flex-col items-center gap-2 shadow-2xs">
+                  <MessageSquare size={36} className="text-gray-300" />
+                  <p className="text-xs text-gray-500 font-medium">
+                    {wishSearchQuery
+                      ? `Tidak ada ucapan yang cocok dengan "${wishSearchQuery}"`
+                      : 'Belum ada ucapan doa masuk.'}
+                  </p>
                   {wishSearchQuery && (
                     <button
                       type="button"
                       onClick={() => setWishSearchQuery('')}
-                      className="absolute right-3 text-gray-400 hover:text-gray-600 p-1 cursor-pointer"
-                      title="Hapus filter pencarian"
+                      className="text-xs text-sage-dark hover:underline flex items-center gap-1 font-semibold mt-1 cursor-pointer"
                     >
-                      <X size={14} />
+                      <RotateCcw size={13} />
+                      <span>Reset Pencarian</span>
                     </button>
                   )}
                 </div>
-
-                {/* Structured Responsive Data Table */}
-                {filteredWishes.length === 0 ? (
-                  <div className="text-center py-12 bg-gray-50/50 border border-dashed border-gray-200 rounded-2xl flex flex-col items-center gap-2">
-                    <MessageSquare size={32} className="text-gray-300" />
-                    <p className="text-xs text-gray-500 font-medium">
-                      {wishSearchQuery
-                        ? `Tidak ada ucapan yang cocok dengan "${wishSearchQuery}"`
-                        : 'Belum ada ucapan doa masuk.'}
-                    </p>
-                    {wishSearchQuery && (
-                      <button
-                        type="button"
-                        onClick={() => setWishSearchQuery('')}
-                        className="text-xs text-sage-dark hover:underline flex items-center gap-1 font-semibold mt-1 cursor-pointer"
-                      >
-                        <RotateCcw size={13} />
-                        <span>Reset Pencarian</span>
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto w-full border border-gray-200 rounded-2xl bg-white shadow-xs">
-                    <table className="w-full text-left border-collapse text-xs">
-                      <thead>
-                        <tr className="bg-gray-50/90 border-b border-gray-200 text-gray-600 font-semibold uppercase tracking-wider text-[11px]">
-                          <th className="py-3 px-3.5 text-center w-12">#</th>
-                          <th className="py-3 px-4 w-40">Pengirim</th>
-                          <th className="py-3 px-4">Pesan Doa & Ucapan</th>
-                          <th className="py-3 px-3 text-center w-28">Waktu</th>
-                          <th className="py-3 px-3 text-center w-16">Aksi</th>
+              ) : (
+                <div className="overflow-x-auto w-full border border-gray-200 rounded-2xl bg-white shadow-xs">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-gray-50/90 border-b border-gray-200 text-gray-600 font-semibold uppercase tracking-wider text-[11px]">
+                        <th className="py-3 px-3.5 text-center w-12">#</th>
+                        <th className="py-3 px-4 w-44">Pengirim</th>
+                        <th className="py-3 px-4">Pesan Doa & Ucapan</th>
+                        <th className="py-3 px-3 text-center w-28">Waktu</th>
+                        <th className="py-3 px-3 text-center w-16">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {filteredWishes.map((w, idx) => (
+                        <tr key={w.id} className="hover:bg-gray-50/70 transition-colors">
+                          <td className="py-3.5 px-3.5 text-center text-gray-400 font-medium">
+                            {idx + 1}
+                          </td>
+                          <td className="py-3.5 px-4 font-semibold text-text-dark whitespace-nowrap">
+                            {w.name}
+                          </td>
+                          <td className="py-3.5 px-4 text-gray-700 leading-relaxed italic">
+                            "{w.text}"
+                          </td>
+                          <td className="py-3.5 px-3 text-center text-gray-400 text-[11px] whitespace-nowrap">
+                            {w.time || '-'}
+                          </td>
+                          <td className="py-3.5 px-3 text-center">
+                            <button
+                              type="button"
+                              onClick={() => requestDeleteWish(w)}
+                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                              title="Hapus ucapan ini"
+                              aria-label="Hapus ucapan ini"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {filteredWishes.map((w, idx) => (
-                          <tr key={w.id} className="hover:bg-gray-50/60 transition-colors">
-                            <td className="py-3 px-3.5 text-center text-gray-400 font-medium">
-                              {idx + 1}
-                            </td>
-                            <td className="py-3 px-4 font-semibold text-text-dark whitespace-nowrap">
-                              {w.name}
-                            </td>
-                            <td className="py-3 px-4 text-gray-700 leading-relaxed italic">
-                              "{w.text}"
-                            </td>
-                            <td className="py-3 px-3 text-center text-gray-400 text-[11px] whitespace-nowrap">
-                              {w.time || '-'}
-                            </td>
-                            <td className="py-3 px-3 text-center">
-                              <button
-                                type="button"
-                                onClick={() => requestDeleteWish(w)}
-                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                                title="Hapus ucapan ini"
-                                aria-label="Hapus ucapan ini"
-                              >
-                                <Trash2 size={15} />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+        </main>
       </div>
 
       {/* SweetAlert2-Style Full-Screen Viewport Confirmation Modal */}
@@ -1522,7 +2236,7 @@ Wassalamu'alaikum Wr. Wb.`;
             onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-gray-100 flex flex-col items-center text-center gap-4 animate-in fade-in zoom-in-95 duration-200"
           >
-            {/* Pulsing Danger Badge */}
+            {/* Danger Badge */}
             <div className="w-16 h-16 rounded-full bg-red-50 border border-red-100 text-red-600 flex items-center justify-center shadow-xs ring-8 ring-red-50/60">
               <Trash2 size={28} />
             </div>

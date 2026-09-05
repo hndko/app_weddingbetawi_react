@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.4.2-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.5.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -202,16 +202,25 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 ### 📱 Navigasi Cepat (Floating Bottom Bar)
 - Menu navigasi bawah mengambang dengan indikator *ScrollSpy* yang mendeteksi seksi yang sedang aktif secara otomatis.
 
-### 🔐 Admin Panel Tersembunyi & Standar UI/UX Interaktif (v1.4.0)
-- **Halaman Admin Mandiri**: Dikelola secara aman di `/login` dan `/modules` dengan sinkronisasi History API.
-- **Generator Link WhatsApp 1-Klik**: Memudahkan mempelai menyalin dan membagikan undangan berparameter nama tamu ke WhatsApp secara instan.
-- **8 Pilar UI/UX Interaktif (`interactive-ux-standards`)**:
-  1. *Toast Alerts*: Umpan balik status sukses dan error mengambang yang ramah pengguna.
-  2. *SweetAlert2 Modals*: Dialog konfirmasi hapus data dengan badge bahaya dan tombol *Icon + Text*.
+### 🔐 Admin Dashboard Responsif & Standar UI/UX Interaktif (v1.5.0)
+- **Arsitektur Dashboard Modern**: Tata letak modular di `/modules` dengan Sidebar desktop (expand/collapse), Mobile Slide-over Drawer (hamburger toggle), Topbar dengan breadcrumb navigasi dinamis, dan tombol pintas Live Preview.
+- **Menu 1: Dashboard Overview (Ringkasan Real-Time)**:
+  - Banner hitung mundur hari-H pernikahan interaktif.
+  - 4 Kartu KPI Ringkasan: Total Hadir, Total Tidak Hadir, Total Respon, dan Total Doa.
+  - Rasio Kehadiran visual (*Progress Bar* persentase Hadir vs Tidak Hadir).
+  - Tombol jalan pintas cepat (*Quick Action Shortcuts*).
+  - Feed aktivitas interaksi terbaru (*Live Recent Feeds* untuk RSVP & Doa Tamu).
+- **Menu 2: Generator Link WhatsApp 1-Klik**: Pembuatan tautan undangan kustom nama tamu serta integrasi langsung kirim pesan ke WhatsApp atau salin tautan.
+- **Menu 3: Manajemen Konten Terpartisi (Sub-Tabs)**: Tab pill rapi untuk Mempelai, Acara & Lokasi, Galeri Foto, Kisah Cinta, Musik & Hadiah/QRIS, serta SEO & Metadata dengan bilah simpan melayang (*sticky action bar*).
+- **Menu 4: Buku Tamu RSVP & Export CSV**: Daftar konfirmasi kehadiran dengan pencarian latar *real-time*, penomoran urut otomatis 1-indexed (`#`), dan tombol **Export ke Excel (CSV)** berformat UTF-8 BOM.
+- **Menu 5: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan dan dialog hapus SweetAlert2.
+- **Penerapan Penuh 8 Pilar UI/UX Interaktif (`interactive-ux-standards`)**:
+  1. *Toast Alerts*: Umpan balik status sukses dan error mengambang yang ramah pengguna (auto-dismiss 3,5 detik).
+  2. *SweetAlert2 Confirmation Modals*: Dialog konfirmasi hapus data dengan badge bahaya dan tombol *Icon + Text*.
   3. *Live Background Search*: Pencarian real-time pada data RSVP & Wishes secara instan tanpa mengotori URL browser.
-  4. *Full-Screen Viewport Backdrop*: Penutup latar modal `fixed inset-0 w-screen h-screen z-[9999]` dengan pencegah scroll latar.
+  4. *Full-Screen Viewport Backdrop*: Penutup latar modal `fixed inset-0 w-screen h-screen z-[9999]` dengan pencegah scroll latar (`overflow: hidden`).
   5. *Input Icon Groups & Placeholders*: Seluruh form input dilengkapi grup ikon semantik dan teks panduan format.
-  6. *Drag & Drop File Upload*: Dropzone interaktif dengan pratinjau berkas terunggah (*itemized preview card*) di bawahnya.
+  6. *Drag & Drop File Upload*: Dropzone interaktif dengan kompresi Canvas otomatis dan pratinjau kartu berkas terunggah (*itemized preview card*).
   7. *Dual Button Convention*: Tombol UI umum berformat *Icon + Text*, sedangkan tombol aksi tabel berformat *Icon-Only*.
   8. *Tabel Responsif Bernomor Otomatis (`#`)*: Kolom nomor urut dinamis 1-indexed yang tetap konsisten saat difilter.
 

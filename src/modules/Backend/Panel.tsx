@@ -6,7 +6,7 @@ import {
   MapPin, Search, RotateCcw, User, KeyRound, Globe, FileText, CheckCircle2, 
   Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
   ArrowUpRight, ShieldCheck, Sparkles, BookOpen, Upload, UserPlus, 
-  FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown
+  FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
@@ -15,6 +15,7 @@ import { WeddingConfig, RSVPResponse, Wish, GuestInvitation } from '../../types'
 import { Login } from '../Auth/Login';
 import { DragDropUpload } from './components/DragDropUpload';
 import { EventScheduleEditor } from './components/EventScheduleEditor';
+import { ThemeSelector } from './components/ThemeSelector';
 import * as XLSX from 'xlsx';
 
 export interface PanelProps {
@@ -75,7 +76,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
 
   // Modern Dashboard Navigation State
   const [activeMenu, setActiveMenu] = useState<'overview' | 'generator' | 'config' | 'rsvps' | 'wishes'>('overview');
-  const [configSubTab, setConfigSubTab] = useState<'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'seo'>('couple');
+  const [configSubTab, setConfigSubTab] = useState<'theme' | 'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'seo'>('theme');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Form state for config
@@ -1920,6 +1921,19 @@ Wassalamu'alaikum Wr. Wb.`;
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
                 <button
                   type="button"
+                  onClick={() => setConfigSubTab('theme')}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                    configSubTab === 'theme'
+                      ? 'bg-sage-dark text-white shadow-xs'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <Palette size={14} />
+                  <span>Tema Desain</span>
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setConfigSubTab('couple')}
                   className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
                     configSubTab === 'couple'
@@ -1999,6 +2013,22 @@ Wassalamu'alaikum Wr. Wb.`;
 
               {/* Form Content Container */}
               <form onSubmit={handleSaveConfig} className="flex flex-col gap-6">
+                {/* SUB-PILL 0: TEMA DESAIN */}
+                {configSubTab === 'theme' && (
+                  <ThemeSelector
+                    currentThemeId={formData.theme || 'betawi'}
+                    onSelectTheme={(themeId) => {
+                      setFormData({ ...formData, theme: themeId });
+                      showToast(
+                        'success',
+                        `Tema berhasil diubah ke ${
+                          themeId === 'jawa' ? 'Javanese Royal Kraton' : 'Betawi Heritage'
+                        }! Tekan tombol Simpan Perubahan di bawah.`
+                      );
+                    }}
+                  />
+                )}
+
                 {/* SUB-PILL 1: PROFIL MEMPELAI */}
                 {configSubTab === 'couple' && (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

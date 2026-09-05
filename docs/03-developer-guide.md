@@ -44,16 +44,18 @@ app_weddingbetawi_react/
 │   │   ├── Auth/
 │   │   │   └── Login.tsx       # Halaman autentikasi panel admin bertema Betawi
 │   │   ├── Backend/
-│   │   │   └── Panel.tsx       # Dasbor pengelolaan lengkap (Tab 1 s.d. Tab 4)
+│   │   │   ├── components/     # Komponen sub-modul admin (ThemeSelector, DragDropUpload, dsb.)
+│   │   │   └── Panel.tsx       # Dasbor pengelolaan lengkap (Overview, Tamu WA, Konten, RSVP, Doa)
 │   │   └── Frontend/
-│   │       └── betawi-themes/  # Modul tema undangan khusus adat Betawi
-│   │           ├── decorations/# Elemen dekorasi Betawi (Ondel-ondel, Rumah Kebaya, Monas)
-│   │           ├── sections/   # Seksi halaman undangan (Hero, Couple, Event, RSVP, dll.)
-│   │           ├── BottomNavigation.tsx  # Menu navigasi mengambang bawah
-│   │           ├── InvitationContent.tsx # Container scrollable seksi undangan
-│   │           ├── MusicPlayer.tsx       # Pemutar audio latar (YouTube, Drive, MP3)
-│   │           ├── OpeningCover.tsx      # Sampul pembuka amplop interaktif
-│   │           └── SEO.tsx               # Headless meta tag generator (react-helmet-async)
+│   │       ├── betawi-themes/  # Komponen tema klasik & seksi domain bersama
+│   │       │   ├── decorations/# Ornamen Gigi Balang, Ondel-ondel, Rumah Kebaya
+│   │       │   ├── sections/   # Seksi bersama (Hero, Couple, Event, RSVP, Doa, dll.)
+│   │       │   └── ...
+│   │       └── themes/         # Multi-Theme Architecture Engine
+│   │           ├── betawi/     # Adapter tema Betawi Heritage
+│   │           ├── jawa/       # Adapter tema Javanese Royal Kraton (Gunungan, Pawiwahan)
+│   │           ├── index.ts    # Centralized Registry (THEMES, resolveTheme, THEME_CATALOG)
+│   │           └── types.ts    # ThemeMeta & ThemeDefinition interface contracts
 │   ├── context/
 │   │   └── WeddingContext.tsx  # Context provider global untuk sinkronisasi data Firestore
 │   ├── data/

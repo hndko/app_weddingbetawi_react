@@ -66,6 +66,7 @@ export interface WeddingConfig {
   musicUrl?: string; // deprecated
   music?: MusicSettings;
   seo?: SEOSettings;
+  theme?: string;
 }
 
 export interface Wish {

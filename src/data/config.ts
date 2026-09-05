@@ -1,4 +1,5 @@
 export const config = {
+  theme: "betawi",
   groom: {
     nickname: "Cecep",
     fullName: "Cecep Pratama",

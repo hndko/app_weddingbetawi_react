@@ -1,12 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { WeddingProvider, useWeddingConfig } from './context/WeddingContext';
-import { OpeningCover } from './modules/Frontend/betawi-themes/OpeningCover';
-import { InvitationContent } from './modules/Frontend/betawi-themes/InvitationContent';
-import { AppFrame } from './modules/Frontend/betawi-themes/decorations/AppFrame';
+import { resolveTheme } from './modules/Frontend/themes';
 import { Panel as AdminPanel } from './modules/Backend/Panel';
 import { SEO } from './modules/Frontend/betawi-themes/SEO';
-import { MusicPlayer } from './modules/Frontend/betawi-themes/MusicPlayer';
+import { MusicPlayer as DefaultMusicPlayer } from './modules/Frontend/betawi-themes/MusicPlayer';
 
 export function navigateTo(path: string) {
   if (window.location.pathname !== path) {
@@ -81,6 +79,27 @@ function AppContent({ currentPath }: { currentPath: string }) {
     );
   }
 
+  // Check URL query parameter ?theme= for live demo/preview override
+  const previewTheme = useMemo(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('theme') || undefined;
+    } catch {
+      return undefined;
+    }
+  }, []);
+
+  const activeTheme = useMemo(() => {
+    return resolveTheme(previewTheme || weddingConfig.theme);
+  }, [previewTheme, weddingConfig.theme]);
+
+  const {
+    OpeningCover,
+    InvitationContent,
+    AppFrame = () => null,
+    MusicPlayer = DefaultMusicPlayer,
+  } = activeTheme.components;
+
   return (
     <>
       <SEO 
@@ -91,7 +110,10 @@ function AppContent({ currentPath }: { currentPath: string }) {
         siteName={siteName}
         image={seoImage}
       />
-      <div className="relative min-h-screen w-full bg-[#E8EBE3] flex items-center justify-center font-body selection:bg-sage/30">
+      <div 
+        className="relative min-h-screen w-full flex items-center justify-center font-body selection:bg-sage/30 transition-colors duration-500"
+        style={{ backgroundColor: activeTheme.meta.previewColors.bg }}
+      >
         {/* Desktop background decoration */}
         <div className="hidden md:block fixed inset-0 opacity-[0.03] pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(var(--color-sage-dark) 2px, transparent 2px)', backgroundSize: '40px 40px' }}></div>
@@ -101,9 +123,9 @@ function AppContent({ currentPath }: { currentPath: string }) {
           <AppFrame />
           <AnimatePresence mode="wait">
             {!isOpened ? (
-              <OpeningCover key="opening" onOpen={() => setIsOpened(true)} />
+              <OpeningCover key={`opening-${activeTheme.meta.id}`} onOpen={() => setIsOpened(true)} />
             ) : (
-              <InvitationContent key="content" />
+              <InvitationContent key={`content-${activeTheme.meta.id}`} />
             )}
           </AnimatePresence>
           <MusicPlayer isOpened={isOpened} />

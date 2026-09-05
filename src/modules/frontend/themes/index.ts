@@ -20,6 +20,10 @@ import { OpeningCover as IslamicOpeningCover } from './islamic/OpeningCover';
 import { InvitationContent as IslamicInvitationContent } from './islamic/InvitationContent';
 import { AppFrame as IslamicAppFrame } from './islamic/decorations/AppFrame';
 
+import { OpeningCover as MinangOpeningCover } from './minang/OpeningCover';
+import { InvitationContent as MinangInvitationContent } from './minang/InvitationContent';
+import { AppFrame as MinangAppFrame } from './minang/decorations/AppFrame';
+
 export * from './types';
 
 export const THEME_CATALOG: ThemeMeta[] = [
@@ -108,6 +112,23 @@ export const THEME_CATALOG: ThemeMeta[] = [
     status: 'ready',
     favicon: '/assets/themes/islamic/favicon.svg',
   },
+  {
+    id: 'minang',
+    name: 'Minangkabau Royal Songket',
+    category: 'adat',
+    subtitle: 'Baralek Gadang Adat Minang',
+    description: 'Kemegahan ranah Minang berhias mahkota Suntiang emas bertingkat, Rumah Gadang gonjong, ukiran Pucuak Rebung, dan beludru marun.',
+    thumbnail: '/assets/themes/minang/thumbnail.svg',
+    previewColors: {
+      primary: '#7B1122',
+      secondary: '#D4AF37',
+      accent: '#FFF3C4',
+      bg: '#FAF5F0',
+    },
+    features: ['Mahkota Suntiang Emas', 'Rumah Gadang Gonjong', 'Songket Pucuak Rebung', 'Baralek Gadang Minang'],
+    status: 'ready',
+    favicon: '/assets/themes/minang/favicon.svg',
+  },
 ];
 
 export const THEMES: Record<string, ThemeDefinition> = {
@@ -153,6 +174,15 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: IslamicOpeningCover,
       InvitationContent: IslamicInvitationContent,
       AppFrame: IslamicAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  minang: {
+    meta: THEME_CATALOG[5],
+    components: {
+      OpeningCover: MinangOpeningCover,
+      InvitationContent: MinangInvitationContent,
+      AppFrame: MinangAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

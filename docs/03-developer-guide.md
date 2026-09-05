@@ -56,6 +56,7 @@ app_weddingbetawi_react/
 │   │           ├── sunda/      # Adapter tema Sundanese Parahyangan (Mahkota Siger, Priangan, decor)
 │   │           ├── minimalist/ # Adapter tema Modern Botanical Minimalist (Eucalyptus, decor)
 │   │           ├── islamic/    # Adapter tema Islamic Arabian Garden (Arabesque Arch, Hilal, decor)
+│   │           ├── minang/     # Adapter tema Minangkabau Royal Songket (Suntiang, Gonjong, decor)
 │   │           ├── index.ts    # Centralized Registry (THEMES, resolveTheme, THEME_CATALOG)
 │   │           └── types.ts    # ThemeMeta & ThemeDefinition interface contracts
 │   ├── context/

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <linearGradient id="songketPatternGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#997A15"/>
+    </linearGradient>
+  </defs>
+  <!-- Diamond Songket Pattern with Pucuak Rebung Central Spike -->
+  <path d="M30,5 L55,30 L30,55 L5,30 Z" fill="none" stroke="url(#songketPatternGold)" stroke-width="1.2" opacity="0.35"/>
+  <path d="M30,16 L44,30 L30,44 L16,30 Z" fill="none" stroke="#D4AF37" stroke-width="0.8" opacity="0.25"/>
+  <circle cx="30" cy="30" r="3" fill="#D4AF37" opacity="0.45"/>
+  <circle cx="5" cy="5" r="1.5" fill="#D4AF37" opacity="0.3"/>
+  <circle cx="55" cy="5" r="1.5" fill="#D4AF37" opacity="0.3"/>
+  <circle cx="5" cy="55" r="1.5" fill="#D4AF37" opacity="0.3"/>
+  <circle cx="55" cy="55" r="1.5" fill="#D4AF37" opacity="0.3"/>
+</svg>

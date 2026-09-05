@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="minangBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4A0713"/>
+      <stop offset="50%" stop-color="#7B1122"/>
+      <stop offset="100%" stop-color="#2D030A"/>
+    </linearGradient>
+    <linearGradient id="minangGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFF3C4"/>
+      <stop offset="50%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#997A15"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#minangBg)"/>
+  
+  <!-- Subtle Songket Diamond Lattice -->
+  <g opacity="0.08" stroke="#D4AF37" stroke-width="1.5" fill="none">
+    <path d="M0,50 L50,0 L100,50 L50,100 Z M100,50 L150,0 L200,50 L150,100 Z M200,50 L250,0 L300,50 L250,100 Z M300,50 L350,0 L400,50 L350,100 Z M400,50 L450,0 L500,50 L450,100 Z M500,50 L550,0 L600,50 L550,100 Z M600,50 L650,0 L700,50 L650,100 Z M700,50 L750,0 L800,50 L750,100 Z"/>
+    <path d="M0,150 L50,100 L100,150 L50,200 Z M100,150 L150,100 L200,150 L150,200 Z M200,150 L250,100 L300,150 L250,200 Z M300,150 L350,100 L400,150 L350,200 Z M400,150 L450,100 L500,150 L450,200 Z M500,150 L550,100 L600,150 L550,200 Z M600,150 L650,100 L700,150 L650,200 Z M700,150 L750,100 L800,150 L750,200 Z"/>
+  </g>
+
+  <rect x="25" y="25" width="750" height="450" fill="none" stroke="url(#minangGold)" stroke-width="2" rx="16" opacity="0.75"/>
+  
+  <!-- Rumah Gadang Gonjong Silhouette & Suntiang -->
+  <g transform="translate(400, 200) scale(1.6)">
+    <!-- Rumah Gadang Roof Horns (Gonjong) -->
+    <path d="M-110,60 C-95,15 -75,-15 -55,-40 C-60,0 -40,30 -25,50 C-15,10 0,-50 10,-60 C15,-50 25,10 35,50 C50,30 70,0 65,-40 C85,-15 105,15 120,60 Z" fill="none" stroke="url(#minangGold)" stroke-width="2" opacity="0.4"/>
+    
+    <!-- Suntiang Gadang Layered Fan -->
+    <path d="M-55,45 C-50,15 -25,-15 0,-30 C25,-15 50,15 55,45 Z" fill="url(#minangGold)" opacity="0.95"/>
+    <path d="M-40,45 C-35,25 -15,0 0,-12 C15,0 35,25 40,45 Z" fill="#7B1122"/>
+    <circle cx="0" cy="-36" r="4" fill="#FFF3C4"/>
+    <circle cx="-25" cy="-22" r="3" fill="#FFF3C4"/>
+    <circle cx="25" cy="-22" r="3" fill="#FFF3C4"/>
+    <circle cx="-42" cy="-5" r="2.5" fill="#FFF3C4"/>
+    <circle cx="42" cy="-5" r="2.5" fill="#FFF3C4"/>
+    <!-- Base Tiara band -->
+    <rect x="-35" y="42" width="70" height="8" rx="2" fill="url(#minangGold)"/>
+  </g>
+
+  <text x="400" y="375" font-family="serif" font-size="28" fill="#FFFFFF" font-weight="bold" text-anchor="middle" letter-spacing="4">MINANG ROYAL SONGKET</text>
+  <text x="400" y="412" font-family="sans-serif" font-size="13" fill="#D4AF37" text-anchor="middle" letter-spacing="6">BARALEK GADANG MINANGKABAU</text>
+</svg>

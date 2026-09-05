@@ -148,17 +148,16 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
 > [!IMPORTANT]
 > **Standardisasi Package Manager**: Proyek ini telah distandardisasi murni menggunakan **`npm`** (`package-lock.json`). Dilarang menggunakan `bun` untuk kompilasi produksi, type checking, maupun instalasi dependensi.
 
+> [!NOTE]
+> **User Directive (Dev & Build Server)**: Tidak perlu menjalankan `npm run dev` atau `npm run build` secara otomatis, karena pengguna telah menjalankan `npm run dev` secara manual di terminal terpisah. Cukup gunakan `npm run lint` (`tsc --noEmit`) untuk verifikasi integritas tipe statis.
+
 Sebelum menyatakan tugas selesai atau melakukan commit, AI Assistant WAJIB melakukan verifikasi bertingkat:
 1. **TypeScript Check**: Jalankan pengecekan tipe statis menggunakan `npm`:
    ```bash
    npm run lint  # (tsc --noEmit)
    ```
    Wajib menghasilkan exit code 0 tanpa error tipe apa pun.
-2. **Production Build Check**: Jalankan proses kompilasi produksi Vite menggunakan `npm`:
-   ```bash
-   npm run build
-   ```
-   Wajib sukses menghasilkan bundel `dist/` tanpa peringatan fatal.
+2. **Production Build Check**: Dilewati sesuai User Directive di atas, kecuali diminta secara eksplisit oleh pengguna.
 3. **Console Hygiene Check**: Pastikan tidak ada runtime crash atau error unhandled promise di browser.
 
 ---
@@ -213,7 +212,7 @@ Sebelum AI Assistant mengakhiri sesi pengerjaan tugas, lakukan pengecekan beriku
 - [ ] Setiap tema memiliki paket aset default luring di `public/assets/themes/{id}/` dan animasi dekorasi tematik (`motion/react`).
 - [ ] Berkas `.env` dan `.env.example` 100% konsisten dalam kunci, urutan, dan penamaan (Pilar 3).
 - [ ] Menjalankan verifikasi tipe `tsc --noEmit` / `npm run lint` dan lulus 100%.
-- [ ] Menjalankan uji kompilasi `npm run build` dan sukses menghasilkan `dist/`.
+- [ ] Menjalankan uji kompilasi `npm run build` (opsional / dilewati jika dev server aktif manual sesuai User Directive).
 - [ ] Versi SemVer dinaikkan di `package.json`, `src/version.ts`, `README.md`, dan `AGENTS.md` (Pilar 8).
 - [ ] Dokumentasi `README.md` dan `AGENTS.md` tersinkronisasi dengan perubahan terbaru (Pilar 10).
 - [ ] Melakukan Git commit dengan format *Conventional Commits* dan melakukan push ke repositori GitHub (Pilar 9).

@@ -209,6 +209,7 @@ Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda k
   - **Modern Botanical Minimalist** (*Modern & Intimate*): Cabang daun eucalyptus & olive sprig halus, garis lengkung geometris modern, palet Slate Charcoal, Soft Sage & Off-White.
   - **Islamic Arabian Garden** (*Nuansa Islami & Sakral*): Ornamen lengkungan kubah Moorish / Arabesque Arch, bintang 8-sudut Rub el Hizb, bulan sabit Hilal bercahaya, doa QS. Ar-Rum: 21, palet Midnight Oasis, Arabian Teal & Royal Arabesque Gold.
   - **Minangkabau Royal Songket** (*Adat Tradisional*): Ornamen atap Rumah Gadang Gonjong megah, mahkota Suntiang emas bertingkat, ukiran Pucuak Rebung, pepatah Adat Basandi Syarak, palet Royal Crimson Maroon & Antique Songket Gold.
+  - **Balinese Royal Temple** (*Adat Tradisional*): Ornamen Gapura Candi Bentar pura, payung Tedung Agung, penjor emas, ukiran Patra Punggel, kelopak Bunga Jepun (Kamboja) melayang, sloka Rgveda 10.85.42, salam Om Swastyastu & Matur Suksma, palet Sandstone Gold & Deep Brick Stone.
 * **Filter Kategori Tema**: Saring katalog berdasarkan tab *Semua*, *Adat Tradisional*, *Modern Minimalist*, atau *Nuansa Islami*.
 * **Titik Palet Warna Interaktif**: Setiap kartu tema memperlihatkan 3 warna khas tema tersebut.
 * **1-Klik Ganti Tema**: Klik tombol **"Gunakan Tema Ini"** untuk beralih tema seketika ke seluruh tamu secara instan tanpa perlu memprogram ulang.

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <linearGradient id="baliPatternGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E5C158"/>
+      <stop offset="100%" stop-color="#997A15"/>
+    </linearGradient>
+  </defs>
+  <!-- Balinese Patra Punggel Spiral Foliate Motif -->
+  <g fill="none" stroke="url(#baliPatternGold)" stroke-width="1.2" opacity="0.32">
+    <!-- Center floral diamond -->
+    <path d="M30,8 C38,18 42,22 52,30 C42,38 38,42 30,52 C22,42 18,38 8,30 C18,22 22,18 30,8 Z"/>
+    <!-- Intricate inward scroll curls -->
+    <path d="M30,18 C34,24 36,26 42,30 C36,34 34,36 30,42 C26,36 24,34 18,30 C24,26 26,24 30,18 Z"/>
+    <!-- Corner accent leaves -->
+    <path d="M0,0 C6,10 10,14 20,20"/>
+    <path d="M60,0 C54,10 50,14 40,20"/>
+    <path d="M0,60 C6,50 10,46 20,40"/>
+    <path d="M60,60 C54,50 50,46 40,40"/>
+  </g>
+  <circle cx="30" cy="30" r="2.5" fill="#E5C158" opacity="0.45"/>
+  <circle cx="0" cy="0" r="1.5" fill="#E5C158" opacity="0.3"/>
+  <circle cx="60" cy="0" r="1.5" fill="#E5C158" opacity="0.3"/>
+  <circle cx="0" cy="60" r="1.5" fill="#E5C158" opacity="0.3"/>
+  <circle cx="60" cy="60" r="1.5" fill="#E5C158" opacity="0.3"/>
+</svg>

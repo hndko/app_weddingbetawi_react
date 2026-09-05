@@ -103,4 +103,21 @@ export const THEME_CATALOG: ThemeMeta[] = [
     status: 'ready',
     favicon: '/assets/themes/minang/favicon.svg',
   },
+  {
+    id: 'bali',
+    name: 'Balinese Royal Temple',
+    category: 'adat',
+    subtitle: 'Pawiwahan Adat Bali Agung',
+    description: 'Kemegahan sakral adat Bali berhias Gapura Candi Bentar, payung kehormatan Tedung Agung, ukiran Patra Punggel, dan keharuman Bunga Jepun Kamboja.',
+    thumbnail: '/assets/themes/bali/thumbnail.svg',
+    previewColors: {
+      primary: '#7C2D12',
+      secondary: '#C5A059',
+      accent: '#E5C158',
+      bg: '#FAF6F0',
+    },
+    features: ['Gapura Candi Bentar', 'Bunga Jepun Melayang', 'Tedung Agung Emas', 'Patra Punggel Carvings'],
+    status: 'ready',
+    favicon: '/assets/themes/bali/favicon.svg',
+  },
 ];

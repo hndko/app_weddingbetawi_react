@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.19.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.20.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -216,6 +216,14 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
   - Jika tidak ada ucapan baru, daftar ucapan bergulir otomatis per halaman (*carousel*) secara halus.
   - Operator panggung dapat mengontrol kecepatan transisi (Cepat 4s, Normal 7s, Lambat 10s, Jeda), tombol *Fullscreen* (F11), dan tombol *Mute/Unmute* nada audio melalui bilah kontrol bawah mengambang yang otomatis bersembunyi setelah 3,5 detik kursor tidak bergerak.
 
+### 🛕 Tema Balinese Royal Temple (Adat Pawiwahan Ageng Bali) (v1.20.0)
+- **Kemegahan Pura & Arsitektur Tradisional Bali**: Menghadirkan siluet Gapura Candi Bentar bertingkat, payung Tedung Agung upacara kembar, penjor emas melengkung, serta motif relief ukiran Patra Punggel.
+- **Salam Tradisional & Sloka Rgveda**: Pembuka salam sakral *"Om Swastyastu"* berlatar piringan surya mandala emas, serta kutipan suci pernikahan Hindu Dharma (*Rgveda Mandala X Sukta 85 Sloka 42*) yang sarat berkah keharmonisan keluarga (*Grhastha Ashrama*).
+- **Profil Mempelai Purusha & Pradana**: Penandaan mempelai pria (*Purusha*) dan mempelai wanita (*Pradana*) berbingkai relief batu padas Bali mewah.
+- **Bunga Kamboja / Jepun Melayang**: Partikel kelopak Bunga Jepun kuning-putih harum yang melayang lembut dengan rotasi alami menggunakan `motion/react` berutilitas `pointer-events-none`.
+- **Penutup Penuh Doa**: Doa penutup *"Matur Suksma"* dan mantram kedamaian abadi *"Om Shanti Shanti Shanti Om"*.
+- **Paket Aset Mandiri Offline**: Dilengkapi `thumbnail.svg`, `pattern.svg`, dan `favicon.svg` di `public/assets/themes/bali/` (*zero external CDN dependency*).
+
 ### ⚡ Optimasi Performa & Vite Code-Splitting Modular (v1.19.0)
 - **Pengurangan Ukuran Entry Point Hingga 97%**: Entry bundle publik berkurang drastis dari **1.82 MB** menjadi hanya **56 KB** (19 KB gzip) melalui partisi cerdas *Rollup manualChunks* dan *asynchronous lazy-loading*.
 - **Route Lazy-Loading (React.lazy & Suspense)**:
@@ -263,10 +271,11 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
       - **Modern Botanical Minimalist** (`minimalist`): Daun eucalyptus, lengkung geometris modern.
       - **Islamic Arabian Garden** (`islamic`): Kubah masjid Nabawi, ornamen bintang 8-point rub el hizb.
       - **Minangkabau Royal Songket** (`minang`): Rumah Gadang gonjong megah, tabir pelaminan emas Baralek Gadang.
+      - **Balinese Royal Temple** (`bali`): Gapura Candi Bentar, Penjor Emas, Payung Tedung Agung, ukiran Patra Punggel, sloka Rgveda 10.85.42, kelopak Bunga Jepun (Kamboja) melayang.
     - *Favicon & Meta Theme-Color Dinamis*: Favicon peramban otomatis berganti dan `meta theme-color` menyesuaikan palet tema aktif.
     - *Centralized Theme Registry*: Standarisasi kontrak antarmuka tema untuk skalabilitas tanpa batas.
     - *Pemilih Tema Visual*: Pratinjau palet warna tema, badge kategori gaya, dan tombol aktivasi 1-klik yang tersinkronisasi ke Firestore.
-    - *Demo URL Preview*: Uji coba instan dengan parameter query `?theme=minang`, `?theme=islamic`, `?theme=minimalist`, `?theme=sunda`, `?theme=jawa`, atau `?theme=betawi`.
+    - *Demo URL Preview*: Uji coba instan dengan parameter query `?theme=bali`, `?theme=minang`, `?theme=islamic`, `?theme=minimalist`, `?theme=sunda`, `?theme=jawa`, atau `?theme=betawi`.
   - **Modal Lightbox Slider Berkas Terunggah**: Kartu pratinjau foto dapat diklik untuk membuka foto penuh dalam modal Lightbox interaktif berlatar gelap & blur, tombol geser Kiri/Kanan, counter foto, dan shortcut keyboard (`ArrowLeft`, `ArrowRight`, `Escape`).
   - **Reorder Timeline Kisah Cinta (Tombol Naik & Turun)**: Pengaturan kronologi momen kisah cinta fleksibel dengan tombol **Naik (`<ArrowUp />`)** dan **Turun (`<ArrowDown />`)** di samping penomoran dinamis (`#1`, `#2`, dst.), mengeliminasi keharusan menghapus dan mengetik ulang jika terjadi kesalahan urutan.
   - **Pemilih Tanggal & Waktu Interaktif (Date & Time Picker)**:

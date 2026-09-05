@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="favBaliGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFF3C4"/>
+      <stop offset="50%" stop-color="#E5C158"/>
+      <stop offset="100%" stop-color="#B38B22"/>
+    </linearGradient>
+    <linearGradient id="favJepunCenter" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#CA8A04"/>
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="#7C2D12"/>
+  <circle cx="50" cy="50" r="43" fill="none" stroke="url(#favBaliGold)" stroke-width="2.5"/>
+  
+  <!-- Candi Bentar Split Gate Silhouette & Bunga Jepun -->
+  <g transform="translate(50, 48) scale(0.65)">
+    <!-- Left Wing of Candi Bentar -->
+    <path d="M-6,30 L-26,30 L-26,20 L-20,18 L-24,10 L-18,8 L-22,0 L-16,-2 L-19,-14 L-12,-16 L-15,-28 L-6,-34 Z" fill="url(#favBaliGold)"/>
+    <!-- Right Wing of Candi Bentar -->
+    <path d="M6,30 L26,30 L26,20 L20,18 L24,10 L18,8 L22,0 L16,-2 L19,-14 L12,-16 L15,-28 L6,-34 Z" fill="url(#favBaliGold)"/>
+    
+    <!-- Central Frangipani / Bunga Jepun (5 Petals) -->
+    <g transform="translate(0, 10) scale(0.55)">
+      <!-- Petal 1 Top -->
+      <path d="M0,0 C-10,-12 -6,-28 0,-32 C6,-28 10,-12 0,0 Z" fill="#FFFBEB"/>
+      <!-- Petal 2 Top-Right -->
+      <path d="M0,0 C8,-12 24,-14 28,-8 C26,-2 14,8 0,0 Z" fill="#FFFBEB"/>
+      <!-- Petal 3 Bottom-Right -->
+      <path d="M0,0 C12,-4 26,8 24,16 C18,20 6,12 0,0 Z" fill="#FFFBEB"/>
+      <!-- Petal 4 Bottom-Left -->
+      <path d="M0,0 C0,12 -12,22 -20,18 C-24,12 -16,0 0,0 Z" fill="#FFFBEB"/>
+      <!-- Petal 5 Top-Left -->
+      <path d="M0,0 C-12,4 -24,-4 -26,-12 C-22,-18 -8,-8 0,0 Z" fill="#FFFBEB"/>
+      <!-- Yellow Core Glow -->
+      <circle cx="0" cy="0" r="8" fill="url(#favJepunCenter)"/>
+    </g>
+  </g>
+</svg>

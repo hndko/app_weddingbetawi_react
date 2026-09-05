@@ -36,6 +36,11 @@ const MinangOpeningCover = lazy(() => import('./minang/OpeningCover').then(m => 
 const MinangInvitationContent = lazy(() => import('./minang/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const MinangAppFrame = lazy(() => import('./minang/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
+// Lazy-loaded Bali theme
+const BaliOpeningCover = lazy(() => import('./bali/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const BaliInvitationContent = lazy(() => import('./bali/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const BaliAppFrame = lazy(() => import('./bali/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
 export const THEMES: Record<string, ThemeDefinition> = {
   betawi: {
     meta: THEME_CATALOG[0],
@@ -88,6 +93,15 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: MinangOpeningCover,
       InvitationContent: MinangInvitationContent,
       AppFrame: MinangAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  bali: {
+    meta: THEME_CATALOG[6],
+    components: {
+      OpeningCover: BaliOpeningCover,
+      InvitationContent: BaliInvitationContent,
+      AppFrame: BaliAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

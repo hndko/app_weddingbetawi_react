@@ -27,6 +27,7 @@ Aplikasi ini adalah platform undangan pernikahan digital berbasis web responsif 
 | Menyimpan jadwal acara ke Google Calendar & Apple/iCal | ✅ Ya | ✅ Ya |
 | Mengisi konfirmasi kehadiran (RSVP) | ✅ Ya | ✅ Ya |
 | Menulis doa restu di dinding ucapan | ✅ Ya | ✅ Ya |
+| Berfoto & mengunduh photostrip di Virtual Photo Booth | ✅ Ya | ✅ Ya |
 | Mengakses generator pesan WhatsApp nama tamu | ❌ Tidak | ✅ Ya |
 | Mengubah teks mempelai, tanggal acara, & lokasi | ❌ Tidak | ✅ Ya |
 | Mengunggah foto mempelai & galeri foto | ❌ Tidak | ✅ Ya |
@@ -407,7 +408,43 @@ Modul ini adalah pusat pengelolaan permainan interaktif seputar kedua mempelai y
 
 ---
 
-## ❓ 15. Tanya Jawab Umum (FAQ)
+## 📸 15. Virtual Photo Booth & Cetak Photostrip (v1.29.0)
+
+Fitur ini menghadirkan pengalaman studio foto instan (*self-photo studio*) langsung di smartphone para tamu undangan tanpa perlu mengunduh aplikasi pihak ketiga:
+
+```mermaid
+graph LR
+    A["Tamu Ketuk Tombol Kamera / Seksi Booth"] --> B["Pilih Format (3-Pose / Polaroid)"]
+    B --> C["Foto Selfie (Timer 3s) / Unggah Galeri"]
+    C --> D["Pilih Filter & Warna Bingkai"]
+    D --> E["Canvas API Menggabungkan Gambar HD"]
+    E --> F["1-Klik Unduh PNG ke Galeri HP (100% Privasi)"]
+```
+
+### A. Format & Desain yang Didukung:
+1. **Format Layout Ganda**:
+   - **3-Pose Photostrip (Gaya Studio Korea)**: 3 frame foto bersusun vertikal (600x1800 px) dengan margin studio, garis batas ganda beraksen, serta footer nama mempelai, tanggal pernikahan, dan stempel terbatas.
+   - **Single Polaroid Frame**: Format foto persegi klasik (800x1000 px) dengan dagu polaroid luas berhias teks nama kedua mempelai dan pesan manis.
+2. **Pilihan Desain Bingkai (Multitemplat)**:
+   - **Theme Matched**: Warna otomatis menyesuaikan tema undangan yang sedang aktif.
+   - **Black Studio**: Bingkai hitam pekat eksklusif (`#121214`) dengan aksen tulisan emas (`#D4AF37`).
+   - **White Studio**: Bingkai putih bersih modern (`#FFFFFF`) dengan aksen charcoal.
+   - **Romantic Pastel**: Bingkai blush pink lembut (`#FDF2F4`) dengan aksen tipografi rose burgundy.
+3. **Filter Foto Artistik Real-Time**:
+   - Pilihan filter instan: **Natural** (asli), **B&W Vintage** (monokrom kontras), **Sepia Retro** (hangat klasik), dan **Warm Glow** (kilau lembut).
+
+### B. Cara Penggunaan bagi Tamu:
+1. Ketuk tombol mengambang kamera berikon ✨ di pojok kanan bawah atau ketuk tombol **"Buka Virtual Photo Booth"** pada seksi galeri undangan.
+2. Pilih format yang diinginkan (**3-Pose Strip** atau **Single Polaroid**).
+3. Pilih metode pengambilan:
+   - **Kamera Selfie**: Mengaktifkan kamera depan/belakang dengan timer hitung mundur 3 detik (dilengkapi suara beep dan kilatan lampu putih studio saat foto terambil).
+   - **Unggah Galeri**: Memilih foto yang sudah tersimpan di galeri ponsel.
+4. Kustomisasi filter warna dan warna bingkai pada layar pratinjau.
+5. Ketuk tombol **"Unduh Photostrip HD (PNG)"** untuk menyimpan hasil foto resolusi tinggi langsung ke galeri ponsel secara instan.
+
+---
+
+## ❓ 16. Tanya Jawab Umum (FAQ)
 
 ### T: Apakah musik otomatis berputar saat tamu pertama kali membuka website?
 **J:** Kebijakan peramban modern (Chrome, Safari, iOS) melarang suara berputar otomatis (*autoplay*) sebelum ada interaksi fisik dari pengguna. Oleh sebab itu, aplikasi menyediakan gerbang **Opening Cover** dengan tombol *"Buka Undangan"*. Saat tamu mengetuk tombol tersebut, musik akan langsung berputar secara mulus.

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { useThemeTokens } from '../../themes';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { PhotoBoothSection } from './PhotoBoothSection';
 
 export function GallerySection() {
   const { weddingConfig } = useWeddingConfig();
@@ -97,6 +98,9 @@ export function GallerySection() {
           </motion.div>
         )}
       </div>
+
+      {/* Virtual Wedding Photo Booth Teaser Card */}
+      <PhotoBoothSection />
 
       <AnimatePresence>
         {lightboxIndex !== null && (

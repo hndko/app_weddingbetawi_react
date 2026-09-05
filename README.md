@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.28.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.29.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -262,6 +262,32 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 - **Checklist Kesiapan Logistik Hari-H**: Tombol centang 1-klik untuk memantau status persiapan vendor dan barang bawaan.
 - **Ekspor Rekapitulasi CSV (UTF-8 BOM)**: Unduh seluruh data finansial dan status vendor ke file spreadsheet untuk pelaporan bendahara dan keluarga.
 - **Redesain Estetika Light Theme Selaras Admin Panel (v1.22.1)**: Mengadopsi palet warna *warm light* terpadu (`bg-[#fcfaf7]`), kartu putih dengan aksen *sage green* & *warm gold*, badge kategori pastel lembut, tipografi berkejelasan tinggi, tabel data bersih dengan efek *hover*, serta modal form dan konfirmasi SweetAlert2 bernuansa terang elegan.
+
+### 📸 Digital Photo Booth & Guest Photostrip Generator (v1.29.0)
+- **Wedding Virtual Photobooth Tamu**: Pengalaman photobooth digital interaktif langsung di smartphone tamu undangan tanpa perlu aplikasi tambahan.
+- **Format Layout Fleksibel Ganda**:
+  - **3-Pose Photostrip (Korean Self-Photo Studio)**: 3 slot foto berurutan secara vertikal (resolusi tinggi 600x1800 px) dengan margin studio profesional dan footer nama mempelai.
+  - **Single Polaroid Frame**: Format kotak klasik (resolusi 800x1000 px) berbingkai polaroid dengan catatan cinta dan tanggal pernikahan.
+- **Metode Pengambilan Foto Ganda**:
+  - **Kamera Langsung (Live Selfie Camera)**: Streaming HTML5 video responsif dengan dukungan kamera depan/belakang (*user* vs *environment*).
+  - **Timer Hitung Mundur Ritmik 3 Detik**: Overlay hitung mundur interaktif (3.. 2.. 1.. 📸) dengan efek lampu kilat studio putih (*white shutter flash*) dan synthesizer audio mekanik kamera.
+  - **Unggah dari Galeri Perangkat**: Alternatif bagi tamu yang ingin memilih foto terbaik yang telah tersimpan di galeri ponsel.
+- **Multitemplat Desain Bingkai**:
+  - **Theme-Matched Frame**: Otomatis mengadaptasi warna latar belakang, border, dan aksen tipografi dari tema undangan yang sedang aktif (Betawi, Jawa, Sunda, Minang, Bali, Modern, Rustic, Oriental, Netflix, Spotify).
+  - **Classic Black Studio**: Nuansa gelap premium (`#121214`) dengan aksen teks emas murni (`#D4AF37`).
+  - **Clean White Studio**: Nuansa putih bersih (`#FFFFFF`) minimalis modern dengan aksen charcoal.
+  - **Soft Romantic Pastel**: Nuansa blush pink lembut (`#FDF2F4`) dengan tipografi rose burgundy (`#881337`).
+- **Filter Foto Artistik Real-Time**:
+  - **Natural**: Tampilan warna asli foto berdefinisi tinggi.
+  - **B&W Vintage**: Monokrom hitam-putih artistik dengan kontras terangkat.
+  - **Sepia Retro**: Nuansa hangat bernostalgia ala film analog tempo dulu.
+  - **Warm Glow**: Pancaran keemasan lembut (*warm bloom*) untuk foto romantis.
+- **Engine Sintesis Canvas API & 1-Click HD Download**:
+  - Seluruh penggabungan foto, filter warna, border ganda, stempel pernikahan, dan nama mempelai dirender seketika di sisi klien (*Canvas API*).
+  - Tombol **"Unduh Photostrip HD (PNG)"** mengunduh berkas gambar jernih secara instan ke galeri tamu dengan 100% privasi dan zero storage cost database (Pilar 2.3 & 3).
+- **Aksesibilitas Terapung & Seksi Undangan**:
+  - Tombol mengambang kamera terpadu (`PhotoBoothFloatingButton`) di kanan bawah atas tombol musik.
+  - Kartu promosi seksi undangan (`PhotoBoothSection`) di bawah galeri pernikahan.
 
 ### 🎨 Semantic Theme Tokens & Full Theme Synchronization (v1.28.0)
 - **Harmonisasi Antarmuka Menyeluruh Lintas 10 Tema**: Mengeliminasi seluruh kelas warna statis (*hardcoded* krem/sage Betawi) pada elemen terapung, bilah navigasi bawah, dan seksi konten bersama sehingga 100% beradaptasi secara dinamis terhadap tema aktif.

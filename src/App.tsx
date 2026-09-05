@@ -6,6 +6,7 @@ import { SEO } from './modules/frontend/shared/components/SEO';
 import { MusicPlayer as DefaultMusicPlayer } from './modules/frontend/shared/components/MusicPlayer';
 import { GuestQRPassFloatingButton } from './modules/frontend/shared/components/GuestQRPassFloatingButton';
 import { TriviaFloatingButton } from './modules/frontend/shared/components/TriviaFloatingButton';
+import { PhotoBoothFloatingButton } from './modules/frontend/shared/components/PhotoBoothFloatingButton';
 import { cn } from './utils/cn';
 
 // Lazy-loaded route components for high performance and zero-overhead code splitting
@@ -185,6 +186,7 @@ function AppContent({ currentPath }: { currentPath: string }) {
               )}
             </AnimatePresence>
             <MusicPlayer isOpened={isOpened} />
+            <PhotoBoothFloatingButton isOpened={isOpened} />
             <GuestQRPassFloatingButton isOpened={isOpened} />
             <TriviaFloatingButton isOpened={isOpened} />
           </Suspense>

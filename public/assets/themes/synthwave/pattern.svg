@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .stroke-main { stroke: #8B5CF6; stroke-width: 1.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .fill-main { fill: #8B5CF6; }
+    </style>
+  </defs>
+  <!-- Neon Laser Synth Grid Pattern -->
+      <line x1="0" y1="30" x2="60" y2="30" stroke="#F43F5E" stroke-width="0.8" opacity="0.5" />
+      <line x1="30" y1="0" x2="30" y2="60" stroke="#06B6D4" stroke-width="0.8" opacity="0.5" />
+      <circle cx="30" cy="30" r="2.5" fill="#FBBF24" opacity="0.7" />
+</svg>

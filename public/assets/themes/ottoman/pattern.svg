@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .stroke-main { stroke: #B45309; stroke-width: 1.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .fill-main { fill: #B45309; }
+    </style>
+  </defs>
+  <!-- Iznik Ceramic Floral Arabesque -->
+      <circle cx="30" cy="30" r="16" stroke="#0E7490" stroke-width="1" fill="none" opacity="0.4" />
+      <path d="M30,14 C25,24 35,24 30,30 C25,36 35,36 30,46" stroke="#B45309" stroke-width="1.2" fill="none" opacity="0.6" />
+      <circle cx="30" cy="30" r="3" fill="#881337" />
+</svg>

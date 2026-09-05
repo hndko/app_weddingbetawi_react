@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.38.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.39.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -259,6 +259,31 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 
 ### 📱 Navigasi Cepat (Floating Bottom Bar)
 - Menu navigasi bawah mengambang dengan indikator *ScrollSpy* yang mendeteksi seksi yang sedang aktif secara otomatis.
+
+### 🎨 Katalog Tema & Desain Undangan Lengkap (Suite 34 Tema: 20 Siap Pakai & 14 Segera Hadir) (v1.39.0)
+- **Ekspansi Katalog Tema Menjadi 34 Tema**:
+  Menyajikan kurasi 14 tema baru berstatus *"Segera Hadir"* dengan visual thumbnail SVG vektor mandiri luring (*zero external CDN dependencies*), palet warna tematik 4-titik, daftar fitur unggulan, dan kartu katalog interaktif:
+  - **Adat Nusantara (+5 Tema Baru, Total 14 Adat)**:
+    - `aceh`: **Aceh Serambi Mekkah** — Pinto Aceh & Rencong Meukuta Alam, mahkota Kupiah Meukeutop keemasan, dan sulur Awan Siweueh.
+    - `banjar`: **Banjar Baamar Galung Pancar Matahari** — Mahkota Baamar Galung keemasan, ronce melati bogam, kilau intan Martapura, dan Rumah Bubungan Tinggi.
+    - `melayu`: **Melayu Riau Teluk Belanga** — Tenun songket Siak benang emas, ornamen atap Selembayung, tepak sirih persembahan, dan kuning diraja.
+    - `sasak`: **Sasak Lombok Bale Tani** — Kain tenun ikat Subahnale khas Sade, lumbung tradisional Bale Tani, dan siluet agung Gunung Rinjani.
+    - `papua`: **Papua Cenderawasih Paradise** — Mahkota bulu burung surga Cenderawasih, ukiran kayu Asmat magis, noken, dan zamrud Raja Ampat.
+  - **Modern & Pop Culture (+5 Tema Baru, Total 15 Modern)**:
+    - `cinema`: **IMAX Cinema Premiere & Movie Ticket** — Tiket gala premiere barcode robek, sorotan spotlight premiere, dan popcorn retro.
+    - `airline`: **First-Class Boarding Pass & Aviation** — Format boarding pass penerbangan first-class, stempel visa romantis, dan flight radar map track.
+    - `anime`: **Romantic Anime & Manga Panel** — Estetika manga & anime Jepang, kelopak bunga sakura gugur perlahan, dan langit senja komet Makoto Shinkai.
+    - `glassmorphism`: **Glassmorphism Aurora Hologram** — Lapisan frosted glass tembus pandang, pembiasan cahaya prisma pelangi aurora borealis.
+    - `synthwave`: **Retro 80s Synthwave & Neon Sunset** — Horizon wireframe perspektif 3D, matahari terbenam neon bergaris horizontal, dan palem neon synth.
+  - **Syar'i / Islami (+4 Tema Baru, Total 5 Islami)**:
+    - `ottoman`: **Ottoman Empire Istanbul Grandeur** — Keramik Iznik biru pirus, kaligrafi Thuluth emas, kubah Hagia Sophia, dan bulan sabit kembar.
+    - `moroccan`: **Moroccan Riad & Zellige Mosaic** — Lantai mozaik geometris Zellige terakota, lengkungan tapal kuda Moorish, dan lentera Marrakech.
+    - `andalusia`: **Al-Andalus Granada Alhambra** — Relief plafon Muqarnas, air mancur marmer Generalife Alhambra, dan daun zaitun keemasan.
+    - `nabawi`: **Madinah Nabawi Serenity** — Siluet Kubah Hijau (Green Dome), pilar marmer putih Rawdah berbalut emas, dan payung hidrolik mekar.
+- **Standar Aset Luring Mandiri (Pilar 2 AGENTS.md)**:
+  Setiap tema baru dibekali paket aset SVG vektor lokal mandiri di `public/assets/themes/{id}/` (`thumbnail.svg`, `pattern.svg`, `favicon.svg`) tanpa ketergantungan jaringan eksternal.
+- **Integrasi ThemeSelector di Admin Panel (`/modules`)**:
+  Kartu tema berstatus *"Segera Hadir"* otomatis menampilkan badge status jam, menonaktifkan tombol aktivasi, dan menyembunyikan pratinjau live agar pengalaman pengguna tetap konsisten.
 
 ### 🖼️ Sistem Multi-Layout Galeri Bahagia & Visual Selector (v1.38.0)
 - **4 Variasi Konsep Tata Letak Galeri Pilihan Pengantin**:

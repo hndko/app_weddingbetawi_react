@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .stroke-main { stroke: #D97706; stroke-width: 1.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .fill-main { fill: #D97706; }
+    </style>
+  </defs>
+  <path d="M0,30 L15,15 L30,30 L45,15 L60,30 L45,45 L30,30 L15,45 Z" stroke="#D97706" stroke-width="1.2" fill="none" opacity="0.4" />
+      <circle cx="30" cy="30" r="2.5" fill="#065F46" />
+      <circle cx="0" cy="30" r="2" fill="#D97706" />
+      <circle cx="60" cy="30" r="2" fill="#D97706" />
+</svg>

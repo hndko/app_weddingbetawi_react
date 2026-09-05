@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .stroke-main { stroke: #F59E0B; stroke-width: 1.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .fill-main { fill: #F59E0B; }
+    </style>
+  </defs>
+  <path d="M10,10 Q30,30 50,10" stroke="#0284C7" stroke-width="1" stroke-dasharray="2,2" fill="none" opacity="0.4" />
+      <polygon points="50,10 46,7 48,11" fill="#0284C7" opacity="0.6" />
+      <circle cx="30" cy="40" r="2" fill="#F59E0B" opacity="0.6" />
+</svg>

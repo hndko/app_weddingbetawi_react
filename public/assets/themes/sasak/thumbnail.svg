@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sasakBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1F140A" />
+      <stop offset="100%" stop-color="#422A14" />
+    </linearGradient>
+    <linearGradient id="sasakGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3C4" />
+      <stop offset="50%" stop-color="#D97706" />
+      <stop offset="100%" stop-color="#854D0E" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="250" fill="url(#sasakBg)" />
+
+  <!-- Outer Frame -->
+  <rect x="14" y="14" width="372" height="222" rx="10" fill="none" stroke="url(#sasakGold)" stroke-width="2" opacity="0.85" />
+  <rect x="20" y="20" width="360" height="210" rx="8" fill="none" stroke="#FED7AA" stroke-width="0.8" opacity="0.25" stroke-dasharray="4,4" />
+
+  <!-- Themed Cultural/Modern Artwork Motif -->
+  <!-- Bale Tani Thatched Lumbung & Mount Rinjani Silhouette -->
+      <g transform="translate(200, 110)">
+        <!-- Mount Rinjani Backdrop -->
+        <polygon points="-80,30 0,-45 80,30" fill="#065F46" opacity="0.7" stroke="#D97706" stroke-width="1.5" />
+        <polygon points="-40,30 0,-15 40,30" fill="#044E38" opacity="0.8" />
+        <!-- Bale Tani Dome Thatched Roof -->
+        <path d="M -40,45 C -40,-15 40,-15 40,45 Z" fill="#854D0E" stroke="#FED7AA" stroke-width="2" />
+        <!-- Bamboo Woven Stilts and Doorway -->
+        <rect x="-12" y="15" width="24" height="30" fill="#1F140A" stroke="#D97706" stroke-width="1.5" />
+        <!-- Subahnale Ikat Diamond Ornament -->
+        <polygon points="0,0 8,10 0,20 -8,10" fill="#D97706" stroke="#FED7AA" stroke-width="1" />
+        <!-- Roof crest peak -->
+        <line x1="0" y1="-20" x2="0" y2="-32" stroke="#FED7AA" stroke-width="2" stroke-linecap="round" />
+        <circle cx="0" cy="-33" r="3" fill="#D97706" stroke="#FED7AA" stroke-width="1" />
+      </g>
+
+  <!-- Typography -->
+  <text x="200" y="205" text-anchor="middle" font-family="'Cinzel', serif" font-size="12.5" font-weight="bold" fill="url(#sasakGold)" letter-spacing="2.5">
+    SASAK LOMBOK BALE TANI
+  </text>
+  <text x="200" y="222" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" fill="#FED7AA" opacity="0.85" letter-spacing="0.8">
+    Tenun Ikat Subahnale &amp; Karisma Gunung Rinjani
+  </text>
+</svg>

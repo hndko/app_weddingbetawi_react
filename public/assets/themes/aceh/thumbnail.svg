@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="100%" height="100%">
+  <defs>
+    <linearGradient id="acehBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#260000" />
+      <stop offset="100%" stop-color="#5A0505" />
+    </linearGradient>
+    <linearGradient id="acehGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3C4" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#800000" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="250" fill="url(#acehBg)" />
+
+  <!-- Outer Frame -->
+  <rect x="14" y="14" width="372" height="222" rx="10" fill="none" stroke="url(#acehGold)" stroke-width="2" opacity="0.85" />
+  <rect x="20" y="20" width="360" height="210" rx="8" fill="none" stroke="#FFF3C4" stroke-width="0.8" opacity="0.25" stroke-dasharray="4,4" />
+
+  <!-- Themed Cultural/Modern Artwork Motif -->
+  <!-- Pinto Aceh Gate Motif -->
+      <g transform="translate(200, 110)">
+        <path d="M -45,45 L -45,-15 C -45,-45 0,-65 0,-65 C 0,-65 45,-45 45,-15 L 45,45 Z" fill="#380404" stroke="#D4AF37" stroke-width="2.5" />
+        <path d="M -35,45 L -35,-10 C -35,-35 0,-52 0,-52 C 0,-52 35,-35 35,-10 L 35,45 Z" fill="none" stroke="#FFF3C4" stroke-width="1.2" opacity="0.8" />
+        <!-- Inner Arch opening -->
+        <path d="M -20,45 L -20,10 C -20,-10 0,-25 0,-25 C 0,-25 20,-10 20,10 L 20,45 Z" fill="#1A472A" stroke="#D4AF37" stroke-width="2" />
+        <!-- Hanging drop beads & pendants -->
+        <circle cx="0" cy="-5" r="4" fill="#D4AF37" />
+        <circle cx="-10" cy="15" r="2.5" fill="#FFF3C4" />
+        <circle cx="0" cy="15" r="3" fill="#FFF3C4" />
+        <circle cx="10" cy="15" r="2.5" fill="#FFF3C4" />
+        <!-- Kupiah Meukeutop crest top -->
+        <path d="M -15,-65 L 0,-85 L 15,-65 Z" fill="#D4AF37" stroke="#FFF3C4" stroke-width="1.5" />
+        <circle cx="0" cy="-88" r="3" fill="#FFF3C4" />
+        <!-- Filigree rosettes on flanks -->
+        <circle cx="-32" cy="10" r="5" fill="none" stroke="#D4AF37" stroke-width="1.2" />
+        <circle cx="32" cy="10" r="5" fill="none" stroke="#D4AF37" stroke-width="1.2" />
+      </g>
+
+  <!-- Typography -->
+  <text x="200" y="205" text-anchor="middle" font-family="'Cinzel', serif" font-size="12.5" font-weight="bold" fill="url(#acehGold)" letter-spacing="2.5">
+    ACEH SERAMBI MEKKAH
+  </text>
+  <text x="200" y="222" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" fill="#FFF3C4" opacity="0.85" letter-spacing="0.8">
+    Pinto Aceh &amp; Rencong Meukuta Alam
+  </text>
+</svg>

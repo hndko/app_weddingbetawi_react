@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .stroke-main { stroke: #F59E0B; stroke-width: 1.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .fill-main { fill: #F59E0B; }
+    </style>
+  </defs>
+  <polygon points="30,5 55,30 30,55 5,30" stroke="#F59E0B" stroke-width="1" fill="none" opacity="0.4" />
+      <circle cx="30" cy="30" r="5" fill="#4A154B" stroke="#F59E0B" stroke-width="1" />
+      <line x1="30" y1="5" x2="30" y2="55" stroke="#F59E0B" stroke-width="0.8" stroke-dasharray="2,2" opacity="0.5" />
+      <line x1="5" y1="30" x2="55" y2="30" stroke="#F59E0B" stroke-width="0.8" stroke-dasharray="2,2" opacity="0.5" />
+</svg>

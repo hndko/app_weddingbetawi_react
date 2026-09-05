@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="100%" height="100%">
+  <defs>
+    <linearGradient id="andalusiaBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#021810" />
+      <stop offset="100%" stop-color="#063826" />
+    </linearGradient>
+    <linearGradient id="andalusiaGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3C4" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="250" fill="url(#andalusiaBg)" />
+
+  <!-- Outer Frame -->
+  <rect x="14" y="14" width="372" height="222" rx="10" fill="none" stroke="url(#andalusiaGold)" stroke-width="2" opacity="0.85" />
+  <rect x="20" y="20" width="360" height="210" rx="8" fill="none" stroke="#ECFDF5" stroke-width="0.8" opacity="0.25" stroke-dasharray="4,4" />
+
+  <!-- Themed Cultural/Modern Artwork Motif -->
+  <!-- Alhambra Courtyard Tiered Fountain & Arabesque Arch -->
+      <g transform="translate(200, 110)">
+        <!-- Lobed Moorish Arch (Muqarnas scalloped outline) -->
+        <path d="M -50,45 L -50,5 C -50,-10 -40,-25 -25,-35 C -15,-42 -8,-45 0,-55 C 8,-45 15,-42 25,-35 C 40,-25 50,-10 50,5 L 50,45 Z" fill="#022417" stroke="#D4AF37" stroke-width="2.5" />
+        <!-- Generalife Marble Fountain Basin -->
+        <ellipse cx="0" cy="25" rx="35" ry="12" fill="#047857" stroke="#D4AF37" stroke-width="2" />
+        <ellipse cx="0" cy="23" rx="28" ry="8" fill="#064E3B" stroke="#ECFDF5" stroke-width="1" opacity="0.8" />
+        <!-- Central Spout Column -->
+        <rect x="-4" y="0" width="8" height="23" fill="#D4AF37" rx="2" />
+        <ellipse cx="0" cy="0" rx="14" ry="5" fill="#D4AF37" stroke="#ECFDF5" stroke-width="1" />
+        <!-- Dancing Water Jet Sprays -->
+        <path d="M 0,0 C -12,-20 -20,-10 -22,15" fill="none" stroke="#6EE7B7" stroke-width="1.5" stroke-linecap="round" />
+        <path d="M 0,0 C 12,-20 20,-10 22,15" fill="none" stroke="#6EE7B7" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="0" y1="0" x2="0" y2="-20" stroke="#ECFDF5" stroke-width="2" stroke-linecap="round" />
+        <circle cx="0" cy="-21" r="2.5" fill="#6EE7B7" />
+        <!-- Pomegranate (Granada) Emblem in Arch Peak -->
+        <circle cx="0" cy="-40" r="5" fill="#B91C1C" stroke="#D4AF37" stroke-width="1" />
+      </g>
+
+  <!-- Typography -->
+  <text x="200" y="205" text-anchor="middle" font-family="'Cinzel', serif" font-size="12.5" font-weight="bold" fill="url(#andalusiaGold)" letter-spacing="2.5">
+    AL-ANDALUS ALHAMBRA
+  </text>
+  <text x="200" y="222" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" fill="#ECFDF5" opacity="0.85" letter-spacing="0.8">
+    Pancuran Air Taman Generalife &amp; Muqarnas Granada
+  </text>
+</svg>

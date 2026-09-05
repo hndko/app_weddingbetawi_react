@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .stroke-main { stroke: #D4AF37; stroke-width: 1.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .fill-main { fill: #D4AF37; }
+    </style>
+  </defs>
+  <path d="M0,30 L30,0 L60,30 L30,60 Z" stroke="#D4AF37" stroke-width="1.2" fill="none" opacity="0.4" />
+      <path d="M15,30 C15,15 30,15 30,30 C30,45 45,45 45,30" stroke="#800000" stroke-width="1.5" fill="none" opacity="0.5" />
+      <circle cx="30" cy="30" r="3" fill="#D4AF37" opacity="0.6" />
+      <circle cx="0" cy="0" r="2" fill="#D4AF37" opacity="0.4" />
+      <circle cx="60" cy="60" r="2" fill="#D4AF37" opacity="0.4" />
+</svg>

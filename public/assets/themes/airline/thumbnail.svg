@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="100%" height="100%">
+  <defs>
+    <linearGradient id="airlineBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#061626" />
+      <stop offset="100%" stop-color="#0A2540" />
+    </linearGradient>
+    <linearGradient id="airlineGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3C4" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="250" fill="url(#airlineBg)" />
+
+  <!-- Outer Frame -->
+  <rect x="14" y="14" width="372" height="222" rx="10" fill="none" stroke="url(#airlineGold)" stroke-width="2" opacity="0.85" />
+  <rect x="20" y="20" width="360" height="210" rx="8" fill="none" stroke="#E0F2FE" stroke-width="0.8" opacity="0.25" stroke-dasharray="4,4" />
+
+  <!-- Themed Cultural/Modern Artwork Motif -->
+  <!-- Jetliner Plane Silhouette, Flight Arcs & Boarding Pass Stub -->
+      <g transform="translate(200, 110)">
+        <!-- Curved Flight Radar Trajectory Arc -->
+        <path d="M -80,45 C -40,10 0,-30 60,-50" fill="none" stroke="#0284C7" stroke-width="2" stroke-dasharray="4,4" opacity="0.7" />
+        <!-- Ascending Modern Jetliner Silhouette -->
+        <g transform="translate(60, -50) rotate(-35) scale(0.9)">
+          <path d="M 0,-25 L 5,-10 L 25,5 L 5,5 L 3,18 L 10,24 L 3,24 L 0,21 L -3,24 L -10,24 L -3,18 L -5,5 L -25,5 L -5,-10 Z" fill="#F8FAFC" stroke="#0284C7" stroke-width="1.5" />
+        </g>
+        <!-- Boarding Pass Card -->
+        <rect x="-70" y="-15" width="140" height="60" rx="6" fill="#0F2847" stroke="#0284C7" stroke-width="2" />
+        <line x1="30" y1="-15" x2="30" y2="45" stroke="#38BDF8" stroke-width="1" stroke-dasharray="3,3" opacity="0.6" />
+        <circle cx="30" cy="-15" r="5" fill="#061626" />
+        <circle cx="30" cy="45" r="5" fill="#061626" />
+        <!-- Boarding Pass Details -->
+        <text x="-50" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="bold" fill="#38BDF8">JKT</text>
+        <path d="M -24,2 L -12,2 M -16,-1 L -12,2 L -16,5" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" />
+        <text x="-4" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="bold" fill="#38BDF8">LOVE</text>
+        <text x="-50" y="20" font-family="sans-serif" font-size="6" fill="#94A3B8">FLIGHT: 2026</text>
+        <text x="-50" y="32" font-family="sans-serif" font-size="6" fill="#F59E0B" font-weight="bold">SEAT: 1A &amp; 1B</text>
+        <!-- Barcode Lines Right Side -->
+        <g transform="translate(42, -5)">
+          <line x1="0" y1="0" x2="0" y2="35" stroke="#E0E7FF" stroke-width="1.5" />
+          <line x1="4" y1="0" x2="4" y2="35" stroke="#E0E7FF" stroke-width="0.8" />
+          <line x1="7" y1="0" x2="7" y2="35" stroke="#E0E7FF" stroke-width="2.5" />
+          <line x1="12" y1="0" x2="12" y2="35" stroke="#E0E7FF" stroke-width="1.2" />
+          <line x1="16" y1="0" x2="16" y2="35" stroke="#E0E7FF" stroke-width="2" />
+        </g>
+      </g>
+
+  <!-- Typography -->
+  <text x="200" y="205" text-anchor="middle" font-family="'Cinzel', serif" font-size="12.5" font-weight="bold" fill="url(#airlineGold)" letter-spacing="2.5">
+    FIRST-CLASS BOARDING PASS
+  </text>
+  <text x="200" y="222" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" fill="#E0F2FE" opacity="0.85" letter-spacing="0.8">
+    Flight Love-2026: Destination Forever Together
+  </text>
+</svg>

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="100%" height="100%">
+  <defs>
+    <linearGradient id="moroccanBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1F0A02" />
+      <stop offset="100%" stop-color="#3B1705" />
+    </linearGradient>
+    <linearGradient id="moroccanGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3C4" />
+      <stop offset="50%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#C2410C" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="250" fill="url(#moroccanBg)" />
+
+  <!-- Outer Frame -->
+  <rect x="14" y="14" width="372" height="222" rx="10" fill="none" stroke="url(#moroccanGold)" stroke-width="2" opacity="0.85" />
+  <rect x="20" y="20" width="360" height="210" rx="8" fill="none" stroke="#FEF3C7" stroke-width="0.8" opacity="0.25" stroke-dasharray="4,4" />
+
+  <!-- Themed Cultural/Modern Artwork Motif -->
+  <!-- Moorish Horseshoe Arch & Brass Hanging Lantern & 8-Star Zellige -->
+      <g transform="translate(200, 110)">
+        <!-- Horseshoe Arch Silhouette -->
+        <path d="M -50,45 L -50,5 C -60,-15 -25,-55 0,-55 C 25,-55 60,-15 50,5 L 50,45 Z" fill="#140602" stroke="#C2410C" stroke-width="2.5" />
+        <path d="M -40,45 L -40,10 C -48,-10 -20,-45 0,-45 C 20,-45 48,-10 40,10 L 40,45 Z" fill="none" stroke="#D97706" stroke-width="1.2" opacity="0.8" />
+        <!-- Moroccan Brass Filigree Hanging Lantern -->
+        <g transform="translate(0, -10)">
+          <!-- Hanging Chain -->
+          <line x1="0" y1="-35" x2="0" y2="-15" stroke="#D97706" stroke-width="1.5" />
+          <!-- Lantern Top Cap -->
+          <polygon points="0,-18 12,-10 -12,-10" fill="#D97706" />
+          <!-- Glass Body -->
+          <polygon points="-14,-10 14,-10 10,15 -10,15" fill="#0284C7" fill-opacity="0.35" stroke="#D97706" stroke-width="1.5" />
+          <!-- Star Flame Core -->
+          <circle cx="0" cy="2" r="4" fill="#FEF3C7" />
+          <!-- Bottom Finial -->
+          <polygon points="-8,15 8,15 0,25" fill="#D97706" />
+          <circle cx="0" cy="27" r="2" fill="#D97706" />
+        </g>
+        <!-- 8-Pointed Zellige Star on Floor Base -->
+        <g transform="translate(0, 42) scale(0.6)">
+          <rect x="-12" y="-12" width="24" height="24" fill="#0284C7" stroke="#D97706" stroke-width="1.5" />
+          <rect x="-12" y="-12" width="24" height="24" fill="#C2410C" stroke="#D97706" stroke-width="1.5" transform="rotate(45)" />
+        </g>
+      </g>
+
+  <!-- Typography -->
+  <text x="200" y="205" text-anchor="middle" font-family="'Cinzel', serif" font-size="12.5" font-weight="bold" fill="url(#moroccanGold)" letter-spacing="2.5">
+    MOROCCAN RIAD &amp; ZELLIGE
+  </text>
+  <text x="200" y="222" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" fill="#FEF3C7" opacity="0.85" letter-spacing="0.8">
+    Mozaik Geometris Maroko &amp; Lentera Khas Marrakech
+  </text>
+</svg>

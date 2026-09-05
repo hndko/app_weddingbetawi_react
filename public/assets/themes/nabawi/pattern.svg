@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .stroke-main { stroke: #CA8A04; stroke-width: 1.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .fill-main { fill: #CA8A04; }
+    </style>
+  </defs>
+  <!-- Islamic 12-Star Rosette & Palm Canopy Motif -->
+      <circle cx="30" cy="30" r="15" stroke="#CA8A04" stroke-width="1" fill="none" opacity="0.4" />
+      <polygon points="30,12 34,22 45,22 36,28 40,38 30,32 20,38 24,28 15,22 26,22" stroke="#15803D" stroke-width="0.8" fill="none" opacity="0.6" />
+      <circle cx="30" cy="30" r="2.5" fill="#CA8A04" />
+</svg>

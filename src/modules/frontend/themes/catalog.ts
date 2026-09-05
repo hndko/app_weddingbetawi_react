@@ -171,6 +171,23 @@ export const THEME_CATALOG: ThemeMeta[] = [
     status: 'ready',
     favicon: '/assets/themes/netflix/favicon.svg',
   },
+  {
+    id: 'apple',
+    name: 'Apple iOS Bento Grid',
+    category: 'modern',
+    subtitle: 'Apple Ecosystem & Bento OS',
+    description: 'Konsep modern viral iOS & Bento Grid dengan Dynamic Island interaktif, Face ID Lock Screen unlock audio, Apple Wallet gift cards, dan iMessage chat bubbles.',
+    thumbnail: '/assets/themes/apple/thumbnail.svg',
+    previewColors: {
+      primary: '#007AFF',
+      secondary: '#E5E5EA',
+      accent: '#D4AF37',
+      bg: '#F2F2F7',
+    },
+    features: ['Dynamic Island Widget', 'Lock Screen Unlock Chime', 'Bento Grid Layout', 'Apple Wallet Digital Gift'],
+    status: 'ready',
+    favicon: '/assets/themes/apple/favicon.svg',
+  },
 ];
 
 

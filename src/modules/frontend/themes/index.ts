@@ -58,6 +58,11 @@ const NetflixOpeningCover = lazy(() => import('./netflix/OpeningCover').then(m =
 const NetflixInvitationContent = lazy(() => import('./netflix/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const NetflixAppFrame = lazy(() => import('./netflix/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
+// Lazy-loaded Apple iOS theme
+const AppleOpeningCover = lazy(() => import('./apple/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const AppleInvitationContent = lazy(() => import('./apple/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const AppleAppFrame = lazy(() => import('./apple/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
 export const THEMES: Record<string, ThemeDefinition> = {
   betawi: {
     meta: THEME_CATALOG[0],
@@ -146,6 +151,15 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: NetflixOpeningCover,
       InvitationContent: NetflixInvitationContent,
       AppFrame: NetflixAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  apple: {
+    meta: THEME_CATALOG[10],
+    components: {
+      OpeningCover: AppleOpeningCover,
+      InvitationContent: AppleInvitationContent,
+      AppFrame: AppleAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

@@ -25,6 +25,33 @@ export interface ThemeVisualTokens {
 }
 
 export const THEME_TOKENS: Record<string, ThemeVisualTokens> = {
+  // 🍏 Apple iOS Bento Grid (Titanium Light & iOS Glass)
+  apple: {
+    isDark: false,
+    bg: '#F2F2F7',
+    cardBg: 'rgba(255, 255, 255, 0.85)',
+    cardBorder: 'rgba(0, 0, 0, 0.08)',
+    textPrimary: '#1C1C1E',
+    textMuted: '#8E8E93',
+    primary: '#007AFF',
+    secondary: '#E5E5EA',
+    accent: '#D4AF37',
+    inputBg: 'rgba(255, 255, 255, 0.95)',
+    inputBorder: 'rgba(0, 0, 0, 0.1)',
+    inputText: '#1C1C1E',
+    btnPrimaryBg: '#007AFF',
+    btnPrimaryText: '#FFFFFF',
+    navBg: 'rgba(255, 255, 255, 0.88)',
+    navBorder: 'rgba(0, 0, 0, 0.08)',
+    navActive: '#007AFF',
+    navInactive: 'rgba(60, 60, 67, 0.5)',
+    floatingBtnBg: 'rgba(255, 255, 255, 0.92)',
+    floatingBtnBorder: 'rgba(0, 0, 0, 0.1)',
+    floatingBtnText: '#1C1C1E',
+    floatingBtnRing: 'rgba(0, 122, 255, 0.25)',
+    floatingBtnActiveText: '#007AFF',
+  },
+
   // 🎬 Netflix Cinematic Premiere (Dark OTT Streaming)
   netflix: {
     isDark: true,

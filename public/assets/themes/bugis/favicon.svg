@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="favBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5B0E1B" />
+      <stop offset="100%" stop-color="#2D060C" />
+    </linearGradient>
+    <linearGradient id="favGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#997A15" />
+    </linearGradient>
+  </defs>
+
+  <!-- Circular Base -->
+  <circle cx="32" cy="32" r="30" fill="url(#favBg)" stroke="url(#favGold)" stroke-width="2" />
+
+  <!-- Bosara Pedestal Base -->
+  <ellipse cx="32" cy="46" rx="20" ry="4" fill="url(#favGold)" />
+  <rect x="22" y="46" width="20" height="4" fill="#3D0812" stroke="url(#favGold)" stroke-width="0.8" />
+
+  <!-- Bosara Golden Dome Cover -->
+  <path d="M14 44 C14 26 24 16 32 14 C40 16 50 26 50 44 Z" fill="#6A1220" stroke="url(#favGold)" stroke-width="1.8" />
+  
+  <!-- Rib Lines -->
+  <path d="M32 14 L32 44" stroke="url(#favGold)" stroke-width="1" />
+  <path d="M32 14 C26 24 20 36 18 44" stroke="url(#favGold)" stroke-width="1" fill="none" />
+  <path d="M32 14 C38 24 44 36 46 44" stroke="url(#favGold)" stroke-width="1" fill="none" />
+
+  <!-- Gold Finial at top -->
+  <circle cx="32" cy="12" r="3" fill="url(#favGold)" />
+  <polygon points="32,6 30,12 34,12" fill="#FFE082" />
+</svg>

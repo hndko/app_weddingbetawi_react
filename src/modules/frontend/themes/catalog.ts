@@ -138,6 +138,23 @@ export const THEME_CATALOG: ThemeMeta[] = [
     favicon: '/assets/themes/batak/favicon.svg',
   },
   {
+    id: 'bugis',
+    name: 'Bugis-Makassar Royal Baju Bodo',
+    category: 'adat',
+    subtitle: 'Baruga Saoraja & Sutra Lipa Sabbe',
+    description: 'Kemegahan adat Bugis-Makassar berhias ornamen wadah Bosara renda emas, siluet atap Saoraja/Bola Soba, corak sutra Lipa Sabbe, dan aksara Lontara sakral.',
+    thumbnail: '/assets/themes/bugis/thumbnail.svg',
+    previewColors: {
+      primary: '#8B1E1E',
+      secondary: '#C59B27',
+      accent: '#D97706',
+      bg: '#FAF6F0',
+    },
+    features: ['Wadah Bosara Emas', 'Atap Saoraja Bangsawan', 'Taburan Bente & Pandan', 'Aksara Lontara Salama'],
+    status: 'ready',
+    favicon: '/assets/themes/bugis/favicon.svg',
+  },
+  {
     id: 'spotify',
     name: 'Spotify Interactive',
     category: 'modern',

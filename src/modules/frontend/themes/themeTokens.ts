@@ -322,6 +322,33 @@ export const THEME_TOKENS: Record<string, ThemeVisualTokens> = {
     floatingBtnActiveText: '#D4AF37',
   },
 
+  // 🏛️ Bugis-Makassar Royal Baju Bodo (Marun Sutra, Emas Saloko & Jingga Baju Bodo)
+  bugis: {
+    isDark: false,
+    bg: '#FAF6F0',
+    cardBg: 'rgba(255, 255, 255, 0.92)',
+    cardBorder: 'rgba(139, 30, 30, 0.2)',
+    textPrimary: '#28050B',
+    textMuted: '#5C1D24',
+    primary: '#8B1E1E',
+    secondary: '#C59B27',
+    accent: '#D97706',
+    inputBg: 'rgba(250, 246, 240, 0.85)',
+    inputBorder: 'rgba(139, 30, 30, 0.25)',
+    inputText: '#28050B',
+    btnPrimaryBg: '#8B1E1E',
+    btnPrimaryText: '#FFFFFF',
+    navBg: 'rgba(250, 246, 240, 0.92)',
+    navBorder: 'rgba(139, 30, 30, 0.2)',
+    navActive: '#8B1E1E',
+    navInactive: 'rgba(40, 5, 11, 0.45)',
+    floatingBtnBg: 'rgba(255, 255, 255, 0.95)',
+    floatingBtnBorder: 'rgba(139, 30, 30, 0.3)',
+    floatingBtnText: '#8B1E1E',
+    floatingBtnRing: 'rgba(217, 119, 6, 0.25)',
+    floatingBtnActiveText: '#D97706',
+  },
+
   // 🏮 Betawi Heritage (Default Klasik Sage, Terracotta & Emas)
   betawi: {
     isDark: false,

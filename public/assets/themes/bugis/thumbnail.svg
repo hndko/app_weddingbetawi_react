@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 533" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3A0810" />
+      <stop offset="50%" stop-color="#721422" />
+      <stop offset="100%" stop-color="#2D060C" />
+    </linearGradient>
+
+    <!-- Gold Gradients -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#997A15" />
+    </linearGradient>
+
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#D97706" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+
+    <!-- Lipa Sabbe Pattern -->
+    <pattern id="lipaPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+      <rect width="24" height="24" fill="none" stroke="#D4AF37" stroke-width="0.5" opacity="0.15" />
+      <line x1="0" y1="12" x2="24" y2="12" stroke="#F59E0B" stroke-width="0.5" opacity="0.2" />
+      <line x1="12" y1="0" x2="12" y2="24" stroke="#F59E0B" stroke-width="0.5" opacity="0.2" />
+      <rect x="10" y="10" width="4" height="4" fill="#D4AF37" opacity="0.2" />
+    </pattern>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="400" height="533" fill="url(#bgGrad)" />
+  <rect width="400" height="533" fill="url(#lipaPattern)" />
+
+  <!-- Outer Frame -->
+  <rect x="16" y="16" width="368" height="501" rx="12" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.8" />
+  <rect x="22" y="22" width="356" height="489" rx="8" fill="none" stroke="#F59E0B" stroke-width="0.7" stroke-dasharray="4 4" opacity="0.5" />
+
+  <!-- Corner Carvings (Baruga Filigree) -->
+  <g stroke="url(#goldGrad)" stroke-width="1.5" fill="none" opacity="0.7">
+    <path d="M22 45 C 35 45, 45 35, 45 22" />
+    <circle cx="34" cy="34" r="3" fill="#D4AF37" />
+    <path d="M378 45 C 365 45, 355 35, 355 22" />
+    <circle cx="366" cy="34" r="3" fill="#D4AF37" />
+    <path d="M22 488 C 35 488, 45 498, 45 511" />
+    <circle cx="34" cy="499" r="3" fill="#D4AF37" />
+    <path d="M378 488 C 365 488, 355 498, 355 511" />
+    <circle cx="366" cy="499" r="3" fill="#D4AF37" />
+  </g>
+
+  <!-- Saoraja Roof Silhouette at Top -->
+  <g transform="translate(200, 110)">
+    <!-- Roof Triangular Pediment -->
+    <polygon points="0,-60 -110,20 -90,20 -80,10 80,10 90,20 110,20" fill="#2A050A" stroke="url(#goldGrad)" stroke-width="2" />
+    
+    <!-- Timpa Laja (Tiered gables of nobility) -->
+    <line x1="-70" y1="5" x2="70" y2="5" stroke="url(#goldGrad)" stroke-width="1.5" />
+    <line x1="-50" y1="-12" x2="50" y2="-12" stroke="url(#goldGrad)" stroke-width="1.5" />
+    <line x1="-30" y1="-28" x2="30" y2="-28" stroke="url(#goldGrad)" stroke-width="1.5" />
+    <line x1="-12" y1="-44" x2="12" y2="-44" stroke="url(#goldGrad)" stroke-width="1.5" />
+
+    <!-- Roof Finial Horn / Anjong (Ornamen hiasan puncak atap Saoraja) -->
+    <path d="M0,-60 C -10,-80 -25,-85 -30,-80 C -20,-75 -10,-70 0,-60 C 10,-70 20,-75 30,-80 C 25,-85 10,-80 0,-60 Z" fill="url(#goldGrad)" />
+    <circle cx="0" cy="-60" r="4" fill="#FFE082" />
+  </g>
+
+  <!-- Bosara Ornament (Adat Cake Vessel with Golden Dome Cover) -->
+  <g transform="translate(200, 240)">
+    <!-- Glow aura -->
+    <circle cx="0" cy="0" r="65" fill="#F59E0B" opacity="0.15" />
+
+    <!-- Bosara Base Pedestal -->
+    <ellipse cx="0" cy="45" rx="65" ry="12" fill="#200408" stroke="url(#goldGrad)" stroke-width="2" />
+    <ellipse cx="0" cy="43" rx="58" ry="8" fill="url(#accentGrad)" opacity="0.6" />
+    <path d="M-40 45 L-50 65 L50 65 L40 45 Z" fill="#2A050B" stroke="url(#goldGrad)" stroke-width="1.5" />
+
+    <!-- Bosara Dome Cover (Tudung Saji Renda Segi Lima) -->
+    <path d="M-60 40 C-60 -10 -25 -40 0 -45 C25 -40 60 -10 60 40 Z" fill="url(#bgGrad)" stroke="url(#goldGrad)" stroke-width="2.5" />
+
+    <!-- Golden Lace Ribs on Bosara Dome -->
+    <path d="M0 -45 C-15 -10 -35 20 -40 40" stroke="url(#goldGrad)" stroke-width="1.2" fill="none" />
+    <path d="M0 -45 C15 -10 35 20 40 40" stroke="url(#goldGrad)" stroke-width="1.2" fill="none" />
+    <path d="M0 -45 L0 40" stroke="url(#goldGrad)" stroke-width="1.5" fill="none" stroke-dasharray="3 2" />
+
+    <!-- Diamond Embellishments -->
+    <polygon points="0,-15 8,-5 0,5 -8,-5" fill="url(#goldGrad)" />
+    <circle cx="0" cy="-5" r="2.5" fill="#FFE082" />
+    <circle cx="-25" cy="15" r="2.5" fill="#FFE082" />
+    <circle cx="25" cy="15" r="2.5" fill="#FFE082" />
+
+    <!-- Bosara Finial (Pucuk Bosara Kemilau) -->
+    <circle cx="0" cy="-48" r="6" fill="url(#goldGrad)" />
+    <polygon points="0,-58 -4,-48 4,-48" fill="#FFE082" />
+  </g>
+
+  <!-- Lontara Sacred Inscription ᨔᨒᨆ (Salama') -->
+  <g transform="translate(200, 345)" text-anchor="middle">
+    <rect x="-80" y="-18" width="160" height="32" rx="16" fill="#1C0306" stroke="url(#goldGrad)" stroke-width="1" opacity="0.8" />
+    <text y="4" font-family="'Times New Roman', serif" font-size="14" fill="#FFE082" letter-spacing="3">ᨔ ᨒ ᨆ • SALAMA'</text>
+  </g>
+
+  <!-- Title & Cultural Badges -->
+  <g transform="translate(200, 415)" text-anchor="middle">
+    <text y="0" font-family="'Georgia', serif" font-size="20" font-weight="bold" fill="#FAF6F0" letter-spacing="1">
+      BUGIS - MAKASSAR
+    </text>
+    <text y="24" font-family="'Georgia', serif" font-size="13" font-weight="600" fill="#F59E0B" letter-spacing="2">
+      ROYAL BAJU BODO
+    </text>
+    <line x1="-90" y1="36" x2="90" y2="36" stroke="url(#goldGrad)" stroke-width="1" />
+    <circle cx="0" cy="36" r="3" fill="#FFE082" />
+    <text y="54" font-family="sans-serif" font-size="10" fill="#E2D9CC" letter-spacing="2">
+      BARUGA SAORAJA • SUTRA LIPPA SABBE
+    </text>
+  </g>
+</svg>

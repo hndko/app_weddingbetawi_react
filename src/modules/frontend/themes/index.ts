@@ -68,6 +68,11 @@ const InstagramOpeningCover = lazy(() => import('./instagram/OpeningCover').then
 const InstagramInvitationContent = lazy(() => import('./instagram/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const InstagramAppFrame = lazy(() => import('./instagram/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
+// Lazy-loaded Bugis-Makassar theme
+const BugisOpeningCover = lazy(() => import('./bugis/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const BugisInvitationContent = lazy(() => import('./bugis/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const BugisAppFrame = lazy(() => import('./bugis/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
 export const THEMES: Record<string, ThemeDefinition> = {
   betawi: {
     meta: THEME_CATALOG[0],
@@ -141,8 +146,17 @@ export const THEMES: Record<string, ThemeDefinition> = {
       MusicPlayer: SharedMusicPlayer,
     },
   },
-  spotify: {
+  bugis: {
     meta: THEME_CATALOG[8],
+    components: {
+      OpeningCover: BugisOpeningCover,
+      InvitationContent: BugisInvitationContent,
+      AppFrame: BugisAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  spotify: {
+    meta: THEME_CATALOG[9],
     components: {
       OpeningCover: SpotifyOpeningCover,
       InvitationContent: SpotifyInvitationContent,
@@ -151,7 +165,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   netflix: {
-    meta: THEME_CATALOG[9],
+    meta: THEME_CATALOG[10],
     components: {
       OpeningCover: NetflixOpeningCover,
       InvitationContent: NetflixInvitationContent,
@@ -160,7 +174,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   apple: {
-    meta: THEME_CATALOG[10],
+    meta: THEME_CATALOG[11],
     components: {
       OpeningCover: AppleOpeningCover,
       InvitationContent: AppleInvitationContent,
@@ -169,7 +183,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   instagram: {
-    meta: THEME_CATALOG[11],
+    meta: THEME_CATALOG[12],
     components: {
       OpeningCover: InstagramOpeningCover,
       InvitationContent: InstagramInvitationContent,

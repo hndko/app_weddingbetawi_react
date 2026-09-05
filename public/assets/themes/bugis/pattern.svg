@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="goldLine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#997A15" />
+    </linearGradient>
+  </defs>
+
+  <!-- Lipa Sabbe Diamond and Grid Weave -->
+  <!-- Outer Checkered Grid -->
+  <rect x="0" y="0" width="64" height="64" fill="none" stroke="url(#goldLine)" stroke-width="0.75" stroke-opacity="0.3" />
+  <line x1="32" y1="0" x2="32" y2="64" stroke="url(#goldLine)" stroke-width="0.5" stroke-opacity="0.2" stroke-dasharray="2 2" />
+  <line x1="0" y1="32" x2="64" y2="32" stroke="url(#goldLine)" stroke-width="0.5" stroke-opacity="0.2" stroke-dasharray="2 2" />
+
+  <!-- Center Diamond Motif (Balo Renngi / Balo Tettong) -->
+  <polygon points="32,8 56,32 32,56 8,32" fill="none" stroke="url(#goldLine)" stroke-width="1" stroke-opacity="0.45" />
+  <polygon points="32,16 48,32 32,48 16,32" fill="none" stroke="#D97706" stroke-width="0.6" stroke-opacity="0.3" />
+  
+  <!-- Center Accent Star -->
+  <circle cx="32" cy="32" r="2.5" fill="#FFE082" fill-opacity="0.5" />
+  
+  <!-- Corner Triangles / Diamond Points -->
+  <polygon points="0,0 8,0 0,8" fill="url(#goldLine)" fill-opacity="0.25" />
+  <polygon points="64,0 56,0 64,8" fill="url(#goldLine)" fill-opacity="0.25" />
+  <polygon points="0,64 8,64 0,56" fill="url(#goldLine)" fill-opacity="0.25" />
+  <polygon points="64,64 56,64 64,56" fill="url(#goldLine)" fill-opacity="0.25" />
+</svg>

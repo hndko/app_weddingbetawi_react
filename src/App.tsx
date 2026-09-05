@@ -5,6 +5,7 @@ import { resolveTheme } from './modules/frontend/themes';
 import { Panel as AdminPanel } from './modules/backend/Panel';
 import { SEO } from './modules/frontend/shared/components/SEO';
 import { MusicPlayer as DefaultMusicPlayer } from './modules/frontend/shared/components/MusicPlayer';
+import { GuestQRPassFloatingButton } from './modules/frontend/shared/components/GuestQRPassFloatingButton';
 
 export function navigateTo(path: string) {
   if (window.location.pathname !== path) {
@@ -136,6 +137,7 @@ function AppContent({ currentPath }: { currentPath: string }) {
             )}
           </AnimatePresence>
           <MusicPlayer isOpened={isOpened} />
+          <GuestQRPassFloatingButton isOpened={isOpened} />
         </div>
       </div>
     </>

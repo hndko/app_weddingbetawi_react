@@ -6,7 +6,7 @@ import {
   MapPin, Search, RotateCcw, User, KeyRound, Globe, FileText, CheckCircle2, 
   Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
   ArrowUpRight, ShieldCheck, Sparkles, BookOpen, Upload, UserPlus, 
-  FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette
+  FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette, QrCode
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
@@ -16,6 +16,7 @@ import { Login } from '../auth/Login';
 import { DragDropUpload } from './components/DragDropUpload';
 import { EventScheduleEditor } from './components/EventScheduleEditor';
 import { ThemeSelector } from './components/ThemeSelector';
+import { ReceptionCheckin } from './components/ReceptionCheckin';
 import * as XLSX from 'xlsx';
 import { APP_VERSION } from '../../version';
 
@@ -76,7 +77,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   });
 
   // Modern Dashboard Navigation State
-  const [activeMenu, setActiveMenu] = useState<'overview' | 'generator' | 'config' | 'rsvps' | 'wishes'>('overview');
+  const [activeMenu, setActiveMenu] = useState<'overview' | 'reception' | 'generator' | 'config' | 'rsvps' | 'wishes'>('overview');
   const [configSubTab, setConfigSubTab] = useState<'theme' | 'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'seo'>('theme');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -904,6 +905,7 @@ Wassalamu'alaikum Wr. Wb.`;
               </div>
               <h1 className="text-sm sm:text-base font-heading font-bold text-text-dark leading-none mt-0.5">
                 {activeMenu === 'overview' && 'Ringkasan Dashboard'}
+                {activeMenu === 'reception' && 'Meja Resepsi & Check-in Tamu'}
                 {activeMenu === 'generator' && 'WhatsApp Link Generator'}
                 {activeMenu === 'config' && 'Kelola Konten Undangan'}
                 {activeMenu === 'rsvps' && 'Buku Tamu & RSVP'}
@@ -997,6 +999,26 @@ Wassalamu'alaikum Wr. Wb.`;
                   <LayoutDashboard size={16} />
                   <span>Ringkasan Dashboard</span>
                 </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveMenu('reception')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeMenu === 'reception'
+                    ? 'bg-sage-dark text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <QrCode size={16} />
+                  <span>Meja Resepsi</span>
+                </div>
+                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                  activeMenu === 'reception' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800'
+                }`}>
+                  Hari-H
+                </span>
               </button>
 
               <button
@@ -1119,6 +1141,21 @@ Wassalamu'alaikum Wr. Wb.`;
                   >
                     <LayoutDashboard size={16} />
                     <span>Ringkasan Dashboard</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveMenu('reception'); setIsMobileSidebarOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold ${
+                      activeMenu === 'reception' ? 'bg-sage-dark text-white' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <QrCode size={16} />
+                      <span>Meja Resepsi</span>
+                    </div>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
+                      Hari-H
+                    </span>
                   </button>
                   <button
                     type="button"
@@ -1324,7 +1361,19 @@ Wassalamu'alaikum Wr. Wb.`;
               {/* Quick Action Shortcuts Grid */}
               <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col gap-3">
                 <h3 className="font-heading text-sm font-bold text-text-dark">Aksi Cepat</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setActiveMenu('reception')}
+                    className="p-3.5 rounded-xl border border-amber-300 hover:border-amber-500 bg-amber-50/40 hover:bg-amber-100/40 transition-all text-left flex flex-col gap-2 cursor-pointer group"
+                  >
+                    <QrCode size={18} className="text-amber-700 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <span className="block text-xs font-bold text-gray-800">Meja Resepsi</span>
+                      <span className="text-[11px] text-amber-800/80 font-medium">Scan QR Hari-H</span>
+                    </div>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => setActiveMenu('generator')}
@@ -1453,7 +1502,18 @@ Wassalamu'alaikum Wr. Wb.`;
           )}
 
           {/* ========================================================================= */}
-          {/* MENU 2: GENERATOR & BUKU TAMU WHATSAPP (IMPORT & BULK SPREADSHEET) */}
+          {/* MENU 2: MEJA RESEPSI (QR SCANNER & CHECK-IN HARI-H) */}
+          {/* ========================================================================= */}
+          {activeMenu === 'reception' && (
+            <ReceptionCheckin
+              guests={guests}
+              rsvps={rsvps}
+              showToast={showToast}
+            />
+          )}
+
+          {/* ========================================================================= */}
+          {/* MENU 3: GENERATOR & BUKU TAMU WHATSAPP (IMPORT & BULK SPREADSHEET) */}
           {/* ========================================================================= */}
           {activeMenu === 'generator' && (
             <div className="flex flex-col gap-6">

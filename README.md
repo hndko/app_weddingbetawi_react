@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.16.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.17.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -210,28 +210,37 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
   - Rasio Kehadiran visual (*Progress Bar* persentase Hadir vs Tidak Hadir).
   - Tombol jalan pintas cepat (*Quick Action Shortcuts*).
   - Feed aktivitas interaksi terbaru (*Live Recent Feeds* untuk RSVP & Doa Tamu).
-- **Menu 2: Generator & Manajemen Tamu WhatsApp (Import & Bulk Management)**:
+- **Menu 2: Meja Resepsi & Scanner QR Pass Hari-H (v1.17.0)**:
+  - **Pemindai Kamera Langsung**: Pemindai kamera performa tinggi murni sisi klien via `jsQR` dengan animasi laser pemindai, tombol sakelar on/off hemat baterai, dan toggle kamera depan/belakang.
+  - **Synthesizer Umpan Balik Audio (Web Audio API)**: Nada *beep* harmonis 880Hz saat pindai sukses dan nada peringatan ganda jika tamu terdeteksi sudah pernah check-in sebelumnya (*zero external audio file*).
+  - **Deteksi Anti-Duplikasi Pintar**: Mencegah kecurangan klaim suvenir ganda atau check-in dobel dengan menampilkan riwayat jam check-in sebelumnya.
+  - **Pencarian In-Memory & Check-In Manual**: Opsi pencarian cepat nama/nomor tamu jika tamu kehabisan baterai ponsel atau tidak membawa QR pass, lengkap dengan tombol check-in manual 1-klik.
+  - **Modal Konfirmasi Check-In Tamu**: Penyesuaian jumlah pax aktual yang hadir (+/- stepper), tombol sakelar penyerahan paket suvenir, dan pencatatan zona/nomor meja tamu.
+  - **4 Kartu KPI Real-Time Meja Resepsi**: Tamu Check-In, Total Pax Fisik Hadir, Suvenir Diberikan, dan Estimasi Tamu Belum Hadir.
+  - **Riwayat Kedatangan & Ekspor CSV**: Tabel log kedatangan berpenomoran otomatis 1-indexed (`#`), pencarian log instan, dan tombol unduh rekap CSV berformat UTF-8 BOM untuk pelaporan pasca acara.
+  - **Tiket Digital Tamu (E-Ticket & QR Pass)**: Tombol tiket mengambang dan tombol seksi RSVP pada sisi tamu yang menampilkan kartu tiket mewah berornamen emas, kode tiket unik, jumlah pax, QR Code resolusi tinggi, serta fitur unduh tiket langsung sebagai gambar PNG ke galeri ponsel via Canvas API.
+- **Menu 3: Generator & Manajemen Tamu WhatsApp (Import & Bulk Management)**:
   - **Dukungan Multi-Format Impor**: Mengimpor ratusan tamu sekaligus dari file **Excel (.xlsx, .xls)**, file **CSV (.csv, .txt)**, maupun **Salin-Tempel Teks Multiline**.
   - **Sinkronisasi Cloud Firestore (`guests`)**: Data daftar tamu dan status pengiriman pesan tersimpan permanen di cloud sehingga pengantin dapat mengimpor via laptop dan mengirim pesan via smartphone.
   - **Direct WhatsApp Blasting**: Tombol kirim pesan 1-klik yang otomatis membuka chat WhatsApp langsung ke nomor tujuan (dengan sanitasi format internasional `628...`) dan mengubah status menjadi *Sudah Dikirim*.
   - **Statistik & Filter Pengiriman**: 3 Kartu indikator (Total Tamu, Belum Dikirim, Sudah Dikirim), filter status dinamis, dan live in-memory search.
   - **Unduh Template CSV**: Format berkas spreadsheet standar yang siap diisi dan diunggah ulang.
   - **Mode Cepat (Generator Tunggal)**: Opsi pembuatan link personal dadakan untuk satu nama tamu secara instan.
-- **Menu 3: Manajemen Konten Terpartisi (Sub-Tabs)**: 
+- **Menu 4: Manajemen Konten Terpartisi (Sub-Tabs)**: 
   - Tab pill rapi untuk Tema Desain, Mempelai, Acara & Lokasi, Galeri Foto, Kisah Cinta, Musik & Hadiah/QRIS, serta SEO & Metadata dengan bilah simpan melayang (*sticky action bar*).
-  - **Arsitektur Multi-Tema & Separasi Budaya Terisolasi (v1.14.0)**:
-    - *Isolasi Ornamen Budaya 100%*: Seksi visual budaya (Hero, Intro, Profil Mempelai, Penutup) diisolasi penuh per tema tanpa pencemaran silang (Tema Minimalis bebas 100% dari ornamen adat seperti Monas, Ondel-ondel, Wayang, atau Siger).
-    - *Ornamen Budaya & Gaya Autentik Mandiri*:
-      - **Betawi Heritage**: Siluet Monas, Ondel-ondel beranimasi, dan Rumah Kebaya.
-      - **Javanese Royal Kraton**: Gunungan Wayang Mas sakral, Pendopo Joglo Keraton megah, dan ukiran sulur kencana keraton (*Javanese Filigree*).
-      - **Sundanese Parahyangan**: Mahkota Siger Sunda 7 pucuk kembang tanjung emas, untaian ronce melati suci (*FloatingJasmineRonce*), gerbang lengkung bambu Priangan (*PrianganArch*), dan ukiran sudut Kasundaan beranimasi lembut (*AnimatedSundaneseFiligree*).
-      - **Modern Botanical Minimalist**: Cabang daun eucalyptus & olive sprig halus (*BotanicalEucalyptus*), lengkung geometris modern (*MinimalistArch*), dedaunan melayang halus (*FloatingBotanicalLeaves*), dan aksen sudut garis tipis simetris (*MinimalistCornerAccent*).
-    - *Favicon & Meta Theme-Color Dinamis*: Favicon peramban otomatis berganti (Inisial Serif untuk Minimalist, Mahkota Siger untuk Sunda, Wayang Emas untuk Jawa, Ornamen Adat untuk Betawi) dan `meta theme-color` menyesuaikan palet tema aktif.
+  - **Arsitektur Multi-Tema & Separasi Budaya Terisolasi (v1.16.0)**:
+    - *Isolasi Ornamen Budaya 100%*: Seksi visual budaya (Hero, Intro, Profil Mempelai, Penutup) diisolasi penuh per tema tanpa pencemaran silang.
+    - *Tema Siap Pakai (Ready)*:
+      - **Betawi Heritage** (`betawi`): Siluet Monas, Ondel-ondel interaktif, Rumah Kebaya.
+      - **Javanese Royal Kraton** (`jawa`): Gunungan Wayang Mas sakral, Pendopo Joglo Keraton.
+      - **Sundanese Parahyangan** (`sunda`): Mahkota Siger Sunda, ronce melati, gerbang bambu Priangan.
+      - **Modern Botanical Minimalist** (`minimalist`): Daun eucalyptus, lengkung geometris modern.
+      - **Islamic Arabian Garden** (`islamic`): Kubah masjid Nabawi, ornamen bintang 8-point rub el hizb.
+      - **Minangkabau Royal Songket** (`minang`): Rumah Gadang gonjong megah, tabir pelaminan emas Baralek Gadang.
+    - *Favicon & Meta Theme-Color Dinamis*: Favicon peramban otomatis berganti dan `meta theme-color` menyesuaikan palet tema aktif.
     - *Centralized Theme Registry*: Standarisasi kontrak antarmuka tema untuk skalabilitas tanpa batas.
-    - *Tema Siap Pakai*: **Betawi Heritage** (`betawi`), **Javanese Royal Kraton** (`jawa`), **Sundanese Parahyangan** (`sunda`), dan **Modern Botanical Minimalist** (`minimalist`).
-    - *Katalog Roadmap*: Islamic Arabian Garden.
     - *Pemilih Tema Visual*: Pratinjau palet warna tema, badge kategori gaya, dan tombol aktivasi 1-klik yang tersinkronisasi ke Firestore.
-    - *Demo URL Preview*: Uji coba instan dengan parameter query `?theme=minimalist`, `?theme=sunda`, `?theme=jawa`, atau `?theme=betawi`.
+    - *Demo URL Preview*: Uji coba instan dengan parameter query `?theme=minang`, `?theme=islamic`, `?theme=minimalist`, `?theme=sunda`, `?theme=jawa`, atau `?theme=betawi`.
   - **Modal Lightbox Slider Berkas Terunggah**: Kartu pratinjau foto dapat diklik untuk membuka foto penuh dalam modal Lightbox interaktif berlatar gelap & blur, tombol geser Kiri/Kanan, counter foto, dan shortcut keyboard (`ArrowLeft`, `ArrowRight`, `Escape`).
   - **Reorder Timeline Kisah Cinta (Tombol Naik & Turun)**: Pengaturan kronologi momen kisah cinta fleksibel dengan tombol **Naik (`<ArrowUp />`)** dan **Turun (`<ArrowDown />`)** di samping penomoran dinamis (`#1`, `#2`, dst.), mengeliminasi keharusan menghapus dan mengetik ulang jika terjadi kesalahan urutan.
   - **Pemilih Tanggal & Waktu Interaktif (Date & Time Picker)**:
@@ -239,8 +248,8 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
     - Jadwal Akad & Resepsi menggunakan `<input type="date">` cerdas yang otomatis mengekstrak nama Hari Indonesia (misal: *Minggu*) dan penanggalan formal (misal: *20 September 2026*).
     - Pemilih jam terstruktur: Jam Mulai, Jam Selesai, centang *Sampai Selesai*, dan selector Zona Waktu (*WIB, WITA, WIT*) yang otomatis merangkai teks standar (misal: *08:00 - 10:00 WIB* atau *08:00 WIB - Selesai*), dengan toggle input kustom teks untuk acara khusus (*"Ba'da Isya"*).
     - Tombol Sinkronisasi Kilat: 1-klik untuk menyelaraskan tanggal countdown ke seluruh sesi acara dan menyamakan jadwal/tempat Resepsi dengan Akad.
-- **Menu 4: Buku Tamu RSVP & Export CSV**: Daftar konfirmasi kehadiran dengan pencarian latar *real-time*, penomoran urut otomatis 1-indexed (`#`), dan tombol **Export ke Excel (CSV)** berformat UTF-8 BOM.
-- **Menu 5: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan dan dialog hapus SweetAlert2.
+- **Menu 5: Buku Tamu RSVP & Export CSV**: Daftar konfirmasi kehadiran dengan pencarian latar *real-time*, penomoran urut otomatis 1-indexed (`#`), dan tombol **Export ke Excel (CSV)** berformat UTF-8 BOM.
+- **Menu 6: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan dan dialog hapus SweetAlert2.
 - **Penerapan Penuh 8 Pilar UI/UX Interaktif (`interactive-ux-standards`)**:
   1. *Toast Alerts*: Umpan balik status sukses dan error mengambang yang ramah pengguna (auto-dismiss 3,5 detik).
   2. *SweetAlert2 Confirmation Modals*: Dialog konfirmasi hapus data dengan badge bahaya dan tombol *Icon + Text*.

@@ -78,7 +78,50 @@ Modul ini adalah beranda dasbor yang memberikan gambaran umum seketika tentang k
 
 ---
 
-## 🔗 6. Modul Generator & Manajemen Tamu WhatsApp (Menu 2)
+## 🎟️ 6. Modul Meja Resepsi & Scanner QR Pass Hari-H (Menu 2)
+
+Modul ini adalah **alat operasional inti pada hari pelaksanaan resepsi (*killer feature*)** untuk meja penerimaan tamu:
+
+```mermaid
+graph LR
+    A["Tamu Tunjukkan QR Pass di HP"] --> B["Resepsionis Pindai Kamera / Cari Nama"]
+    B --> C["Audio Beep Konfirmasi (Web Audio API)"]
+    C --> D["Pop-up: Cek Pax (+/-) & Berikan Suvenir"]
+    D --> E["Counter Hadir & Suvenir Bertambah Real-Time!"]
+```
+
+### A. Fitur Meja Resepsi:
+1. **Pemindai Kamera Instan**:
+   - Arahkan kamera ponsel/laptop resepsionis ke layar ponsel tamu.
+   - Deteksi QR code super cepat murni sisi klien via `jsQR`.
+   - Tombol pengalih **Kamera Depan / Belakang** dan tombol **Nyalakan / Matikan Kamera** untuk menghemat baterai perangkat resepsionis.
+2. **Umpan Balik Audio (Web Audio API Synthesizer)**:
+   - Suara *beep* harmonis frekuensi 880Hz saat scan berhasil (*zero file audio eksternal*).
+   - Nada peringatan ganda jika tamu terdeteksi **sudah pernah check-in sebelumnya** (*mencegah kecurangan klaim suvenir ganda*).
+3. **Pencarian In-Memory & Check-In Manual**:
+   - Jika baterai ponsel tamu habis atau tidak membawa QR pass, ketik nama atau nomor WhatsApp tamu di kotak pencarian manual.
+   - Tombol 1-klik **"Check-in"** langsung membuka modal konfirmasi.
+4. **Modal Konfirmasi Check-In Tamu**:
+   - Stepper jumlah pax fisik yang hadir (`-` / `+`).
+   - Sakelar status penyerahan paket suvenir (*Centang: Suvenir Diserahkan*).
+   - Pencatatan zona/nomor meja tamu (*opsional, misal: "Meja VIP 1"*).
+5. **4 Kartu KPI Real-Time**:
+   - **Tamu Check-In**: Total undangan yang tiba di lokasi fisik.
+   - **Total Pax Hadir**: Total fisik orang yang berada di dalam ballroom.
+   - **Suvenir Diberikan**: Total paket suvenir yang telah diserahkan.
+   - **Belum Hadir**: Estimasi tamu yang belum memindai tiket.
+6. **Riwayat Kedatangan & Unduh Rekap CSV**:
+   - Tabel berpenomoran urut otomatis `#` (1-indexed), jam kedatangan presisi, dan metode masuk (*Scan QR* / *Manual*).
+   - Tombol **"Unduh CSV Rekap"** berformat UTF-8 BOM untuk laporan pertanggungjawaban keluarga pasca resepsi.
+
+### B. Tiket Digital & QR Pass Sisi Tamu:
+- Tamu yang membuka undangan (baik via link WhatsApp `?to=Nama` maupun setelah mengisi formulir RSVP) memiliki tombol mengambang emas dan tombol di seksi RSVP: **"🎟️ Buka E-Ticket & QR Guest Pass"**.
+- Menampilkan kartu tiket elegan berornamen emas, nama tamu, kode tiket unik (misal: `WDG-CF46B1`), jumlah pax, dan QR Code resolusi tinggi.
+- Tombol **"Simpan Tiket ke HP (PNG)"**: Mengonversi tiket menjadi berkas gambar beresolusi tinggi langsung ke galeri foto tamu via Canvas API tanpa internet.
+
+---
+
+## 🔗 7. Modul Generator & Manajemen Tamu WhatsApp (Menu 3)
 
 Modul ini adalah pusat pengelolaan penyebaran undangan kepada keluarga, kerabat, dan sahabat secara personal. Dilengkapi dukungan impor massal dari file spreadsheet dan sinkronisasi cloud Firestore.
 
@@ -124,7 +167,7 @@ graph LR
 
 ---
 
-## ✏️ 7. Modul Manajemen Konten Website (Menu 3)
+## ✏️ 8. Modul Manajemen Konten Website (Menu 4)
 
 Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda kapan saja secara *real-time*. Konten diatur dalam sub-tab rapi:
 
@@ -175,7 +218,7 @@ Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda k
 
 ---
 
-## 📋 8. Modul Buku Tamu RSVP & Export CSV (Menu 4)
+## 📋 9. Modul Buku Tamu RSVP & Export CSV (Menu 5)
 
 Menu ini menyediakan rekapitulasi interaktif konfirmasi kehadiran:
 1. **Pencarian Real-Time**: Kolom pencarian cepat di latar belakang tanpa mengubah URL peramban, dilengkapi tombol reset instan.
@@ -185,7 +228,7 @@ Menu ini menyediakan rekapitulasi interaktif konfirmasi kehadiran:
 
 ---
 
-## 💬 9. Modul Moderasi Ucapan Doa (Menu 5)
+## 💬 10. Modul Moderasi Ucapan Doa (Menu 6)
 
 Dinding ucapan doa restu tamu diperbarui secara otomatis secara *real-time*:
 1. **Pencarian Cepat Ucapan**: Mempermudah pencarian nama tamu atau isi doa tertentu.
@@ -194,7 +237,7 @@ Dinding ucapan doa restu tamu diperbarui secara otomatis secara *real-time*:
 
 ---
 
-## ❓ 10. Tanya Jawab Umum (FAQ)
+## ❓ 11. Tanya Jawab Umum (FAQ)
 
 ### T: Apakah musik otomatis berputar saat tamu pertama kali membuka website?
 **J:** Kebijakan peramban modern (Chrome, Safari, iOS) melarang suara berputar otomatis (*autoplay*) sebelum ada interaksi fisik dari pengguna. Oleh sebab itu, aplikasi menyediakan gerbang **Opening Cover** dengan tombol *"Buka Undangan"*. Saat tamu mengetuk tombol tersebut, musik akan langsung berputar secara mulus.

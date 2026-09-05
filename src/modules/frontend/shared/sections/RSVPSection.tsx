@@ -3,7 +3,8 @@ import { motion } from 'motion/react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../../../lib/firebase';
 import { useGuestName } from '../../../../hooks/useGuestName';
-import { AlertCircle, User, Users, CheckCircle2, MessageSquare, Send, RotateCcw, Loader2 } from 'lucide-react';
+import { AlertCircle, User, Users, CheckCircle2, MessageSquare, Send, RotateCcw, Loader2, QrCode } from 'lucide-react';
+import { GuestQRPassModal } from '../components/GuestQRPassModal';
 
 export function RSVPSection() {
   const defaultGuestName = useGuestName();
@@ -14,6 +15,7 @@ export function RSVPSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isPassModalOpen, setIsPassModalOpen] = useState(false);
 
   useEffect(() => {
     if (defaultGuestName && defaultGuestName !== 'Tamu Undangan') {
@@ -149,17 +151,39 @@ export function RSVPSection() {
                 </>
               )}
             </button>
+
+            <div className="pt-2 text-center">
+              <button
+                type="button"
+                onClick={() => setIsPassModalOpen(true)}
+                className="text-[11px] text-sage-dark font-medium hover:underline inline-flex items-center gap-1.5 cursor-pointer"
+              >
+                <QrCode size={13} />
+                <span>Lihat / Unduh E-Ticket QR Anda</span>
+              </button>
+            </div>
           </form>
         ) : (
-          <div className="py-8 text-center flex flex-col items-center">
-            <div className="w-16 h-16 bg-sage-50 rounded-full flex items-center justify-center mx-auto mb-4 text-sage border border-sage/20">
-              <CheckCircle2 size={32} />
+          <div className="py-6 text-center flex flex-col items-center">
+            <div className="w-14 h-14 bg-sage-50 rounded-full flex items-center justify-center mx-auto mb-3 text-sage border border-sage/20">
+              <CheckCircle2 size={28} />
             </div>
-            <h4 className="font-heading text-xl text-text-dark mb-2">Terima Kasih</h4>
-            <p className="text-xs text-text-dark/60 leading-relaxed mb-6">
+            <h4 className="font-heading text-xl text-text-dark mb-1">Terima Kasih</h4>
+            <p className="text-xs text-text-dark/60 leading-relaxed mb-5">
               Konfirmasi kehadiran Anda telah tersimpan di sistem kami.
             </p>
+
             <button
+              type="button"
+              onClick={() => setIsPassModalOpen(true)}
+              className="w-full bg-sage text-white py-3 px-4 rounded-full text-xs font-semibold hover:bg-sage-dark transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-98 mb-3"
+            >
+              <QrCode size={15} />
+              <span>Buka E-Ticket & QR Guest Pass</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setIsSubmitted(false)}
               className="text-xs text-sage-dark hover:underline flex items-center gap-1.5 font-semibold cursor-pointer"
             >
@@ -168,6 +192,13 @@ export function RSVPSection() {
             </button>
           </div>
         )}
+
+        <GuestQRPassModal
+          isOpen={isPassModalOpen}
+          onClose={() => setIsPassModalOpen(false)}
+          guestName={name || defaultGuestName}
+          guestPax={guestCount}
+        />
       </motion.div>
     </section>
   );

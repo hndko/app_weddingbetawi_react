@@ -84,6 +84,11 @@ export interface RSVPResponse {
   guestCount: number;
   notes: string;
   createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+  checkedIn?: boolean;
+  checkInTime?: string;
+  actualPax?: number;
+  souvenirClaimed?: boolean;
+  tableNumber?: string;
 }
 
 export interface GuestInvitation {
@@ -92,6 +97,24 @@ export interface GuestInvitation {
   phone?: string;
   status: 'pending' | 'sent';
   sentAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+  createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+  checkedIn?: boolean;
+  checkInTime?: string;
+  actualPax?: number;
+  souvenirClaimed?: boolean;
+  tableNumber?: string;
+}
+
+export interface CheckInRecord {
+  id?: string;
+  guestId?: string;
+  name: string;
+  checkInTime: string;
+  actualPax: number;
+  souvenirClaimed: boolean;
+  tableNumber?: string;
+  source: 'qr_scan' | 'manual';
+  notes?: string;
   createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
 }
 

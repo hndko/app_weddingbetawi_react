@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.26.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.27.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -262,6 +262,25 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 - **Checklist Kesiapan Logistik Hari-H**: Tombol centang 1-klik untuk memantau status persiapan vendor dan barang bawaan.
 - **Ekspor Rekapitulasi CSV (UTF-8 BOM)**: Unduh seluruh data finansial dan status vendor ke file spreadsheet untuk pelaporan bendahara dan keluarga.
 - **Redesain Estetika Light Theme Selaras Admin Panel (v1.22.1)**: Mengadopsi palet warna *warm light* terpadu (`bg-[#fcfaf7]`), kartu putih dengan aksen *sage green* & *warm gold*, badge kategori pastel lembut, tipografi berkejelasan tinggi, tabel data bersih dengan efek *hover*, serta modal form dan konfirmasi SweetAlert2 bernuansa terang elegan.
+
+### 🎮 Wedding Trivia Quiz & Mini Games ("Seberapa Kenal Kamu dengan Mempelai?") (v1.27.0)
+- **Permainan Interaktif Smartphone Tamu**: Tamu undangan dapat menguji seberapa dalam mereka mengenal kedua mempelai melalui mini kuis seru berisi pertanyaan seputar pertemuan pertama, momen kencan lucu, hingga rahasia cinta kedua mempelai.
+- **Synthesizer Efek Suara Web Audio API**:
+  - Nada benar (*Correct Chime* arpeggio C6-G6) dan nada salah (*Wrong Buzz* F3-C3) instan saat memilih jawaban.
+  - Terompet kemenangan (*Victory Fanfare* akor C5-E5-G5-C6 crescendo) saat kuis selesai (*zero external MP3 file*).
+- **Lencana Predikat Juara & Confetti Burst**:
+  - Skor 100%: 🏆 *Sahabat Sejati (Bestie Abadi)*
+  - Skor 80%: 🌟 *Sahabat Dekat Pengantin*
+  - Skor 60%: 💖 *Kolega Kompak & Suportif*
+  - Skor <60%: 😄 *Yuk Ngobrol & Akrabin Lagi di Resepsi!*
+- **Tantang Teman via WhatsApp**: Tombol bagikan ke WhatsApp dengan template pesan tantangan seru yang memuat skor, persentase, gelar juara, dan tautan undangan personal.
+- **Papan Peringkat Real-Time (Live Leaderboard)**: Papan skor tamu real-time Firestore (`wedding_trivia_scores`) berhias medali emas 🥇, perak 🥈, dan perunggu 🥉.
+- **Manajemen Bank Soal & Skor di Admin Panel (`/modules`)**:
+  - 4 Kartu KPI: Total Soal Aktif, Tamu Bermain, Rata-Rata Skor, dan Skor Sempurna (100%).
+  - Bank soal interaktif: tambah/ubah/hapus pertanyaan, kunci jawaban, dan ulasan fakta seru.
+  - Tombol **"Muat 5 Soal Default Trivia"** (1-klik inisialisasi batch Firestore).
+  - Ekspor seluruh nilai kuis tamu ke CSV (UTF-8 BOM).
+- **Aksesibilitas Ganda & Netral Budaya**: Tersedia via tombol mengambang gamepad (`TriviaFloatingButton`) dan kartu seksi undangan (`TriviaQuizSection`) yang kompatibel di seluruh 10 tema undangan aktif.
 
 ### 🎬 Tema Netflix Cinematic Premiere ("The Wedding Premiere") (v1.26.0)
 - **Konsep Serial Streaming OTT Populer**: Mengadaptasi identitas visual bioskop streaming OTT global Netflix bertema gelap pekat (`#141414`) dengan aksen merah ikonis Netflix Red (`#E50914`), badge rating match 99%, dan kartu video sinematik.

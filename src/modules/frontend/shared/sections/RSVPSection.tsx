@@ -8,6 +8,9 @@ import { AlertCircle, User, Users, CheckCircle2, MessageSquare, Send, RotateCcw,
 const GuestQRPassModal = lazy(() => 
   import('../components/GuestQRPassModal').then(m => ({ default: m.GuestQRPassModal }))
 );
+const TriviaQuizSection = lazy(() => 
+  import('./TriviaQuizSection').then(m => ({ default: m.TriviaQuizSection }))
+);
 
 export function RSVPSection() {
   const defaultGuestName = useGuestName();
@@ -207,6 +210,11 @@ export function RSVPSection() {
           </Suspense>
         )}
       </motion.div>
+
+      {/* Interactive Wedding Trivia Mini Game */}
+      <Suspense fallback={null}>
+        <TriviaQuizSection />
+      </Suspense>
     </section>
   );
 }

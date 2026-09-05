@@ -5,6 +5,7 @@ import { resolveTheme } from './modules/frontend/themes';
 import { SEO } from './modules/frontend/shared/components/SEO';
 import { MusicPlayer as DefaultMusicPlayer } from './modules/frontend/shared/components/MusicPlayer';
 import { GuestQRPassFloatingButton } from './modules/frontend/shared/components/GuestQRPassFloatingButton';
+import { TriviaFloatingButton } from './modules/frontend/shared/components/TriviaFloatingButton';
 
 // Lazy-loaded route components for high performance and zero-overhead code splitting
 const AdminPanel = lazy(() => 
@@ -170,6 +171,7 @@ function AppContent({ currentPath }: { currentPath: string }) {
             </AnimatePresence>
             <MusicPlayer isOpened={isOpened} />
             <GuestQRPassFloatingButton isOpened={isOpened} />
+            <TriviaFloatingButton isOpened={isOpened} />
           </Suspense>
         </div>
       </div>

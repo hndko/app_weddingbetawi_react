@@ -172,3 +172,26 @@ export interface WeddingTable {
   createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
   updatedAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
 }
+
+export interface TriviaQuestion {
+  id?: string;
+  question: string;
+  options: string[]; // 4 pilihan jawaban
+  correctAnswerIndex: number; // 0..3
+  explanation?: string; // Fakta seru setelah menjawab
+  order: number;
+  createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+  updatedAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+}
+
+export interface TriviaScore {
+  id?: string;
+  guestName: string;
+  score: number; // Jumlah jawaban benar (e.g. 5)
+  totalQuestions: number; // Total soal (e.g. 5)
+  percentage: number; // 0 - 100
+  title: string; // Gelar predikat (e.g. "Sahabat Sejati 100% 🏆")
+  timeSpentSeconds?: number;
+  createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+}
+

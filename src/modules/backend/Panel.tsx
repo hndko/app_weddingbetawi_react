@@ -7,7 +7,7 @@ import {
   Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
   ArrowUpRight, ShieldCheck, Sparkles, BookOpen, Upload, UserPlus, 
   FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette, QrCode, Tv,
-  Wallet, Armchair
+  Wallet, Armchair, Gamepad2
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
@@ -20,6 +20,7 @@ import { ThemeSelector } from './components/ThemeSelector';
 import { ReceptionCheckin } from './components/ReceptionCheckin';
 import { BudgetVendorTracker } from './components/BudgetVendorTracker';
 import { SeatingChartManager } from './components/SeatingChartManager';
+import { TriviaQuizManager } from './components/TriviaQuizManager';
 import { APP_VERSION } from '../../version';
 
 export interface PanelProps {
@@ -79,7 +80,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   });
 
   // Modern Dashboard Navigation State
-  const [activeMenu, setActiveMenu] = useState<'overview' | 'reception' | 'seating' | 'generator' | 'config' | 'budget' | 'rsvps' | 'wishes'>('overview');
+  const [activeMenu, setActiveMenu] = useState<'overview' | 'reception' | 'seating' | 'generator' | 'config' | 'budget' | 'trivia' | 'rsvps' | 'wishes'>('overview');
   const [configSubTab, setConfigSubTab] = useState<'theme' | 'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'seo'>('theme');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -913,6 +914,7 @@ Wassalamu'alaikum Wr. Wb.`;
                 {activeMenu === 'generator' && 'WhatsApp Link Generator'}
                 {activeMenu === 'config' && 'Kelola Konten Undangan'}
                 {activeMenu === 'budget' && 'Wedding Budget & Checklist Vendor'}
+                {activeMenu === 'trivia' && 'Wedding Trivia & Games'}
                 {activeMenu === 'rsvps' && 'Buku Tamu & RSVP'}
                 {activeMenu === 'wishes' && 'Doa & Ucapan Restu'}
               </h1>
@@ -1093,6 +1095,21 @@ Wassalamu'alaikum Wr. Wb.`;
 
               <button
                 type="button"
+                onClick={() => setActiveMenu('trivia')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeMenu === 'trivia'
+                    ? 'bg-sage-dark text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Gamepad2 size={16} />
+                  <span>Wedding Trivia</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setActiveMenu('rsvps')}
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   activeMenu === 'rsvps'
@@ -1241,6 +1258,16 @@ Wassalamu'alaikum Wr. Wb.`;
                   >
                     <Wallet size={16} />
                     <span>Budget & Vendor</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveMenu('trivia'); setIsMobileSidebarOpen(false); }}
+                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold cursor-pointer ${
+                      activeMenu === 'trivia' ? 'bg-sage-dark text-white' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Gamepad2 size={16} />
+                    <span>Wedding Trivia & Games</span>
                   </button>
                   <button
                     type="button"
@@ -1460,6 +1487,18 @@ Wassalamu'alaikum Wr. Wb.`;
                     <div>
                       <span className="block text-xs font-bold text-gray-800">Budget & Vendor</span>
                       <span className="text-[11px] text-emerald-800/80 font-medium">Finansial & Logistik</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveMenu('trivia')}
+                    className="p-3.5 rounded-xl border border-amber-200 hover:border-amber-400 bg-amber-50/40 hover:bg-amber-100/40 transition-all text-left flex flex-col gap-2 cursor-pointer group"
+                  >
+                    <Gamepad2 size={18} className="text-amber-700 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <span className="block text-xs font-bold text-gray-800">Wedding Trivia</span>
+                      <span className="text-[11px] text-amber-800/80 font-medium">Soal & Skor Tamu</span>
                     </div>
                   </button>
 
@@ -2812,6 +2851,13 @@ Wassalamu'alaikum Wr. Wb.`;
           {/* ========================================================================= */}
           {activeMenu === 'budget' && (
             <BudgetVendorTracker onNotify={(msg, type) => showToast(type, msg)} />
+          )}
+
+          {/* ========================================================================= */}
+          {/* MENU: WEDDING TRIVIA & MINI GAMES */}
+          {/* ========================================================================= */}
+          {activeMenu === 'trivia' && (
+            <TriviaQuizManager onNotify={(msg, type) => showToast(type, msg)} />
           )}
 
           {/* ========================================================================= */}

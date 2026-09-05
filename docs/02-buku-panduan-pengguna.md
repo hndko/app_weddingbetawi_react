@@ -379,7 +379,35 @@ graph LR
 
 ---
 
-## ❓ 14. Tanya Jawab Umum (FAQ)
+## 🎮 14. Modul Wedding Trivia Quiz & Mini Games (Menu 9)
+
+Modul ini adalah pusat pengelolaan permainan interaktif seputar kedua mempelai yang dapat dimainkan oleh tamu undangan langsung dari ponsel cerdas mereka, tersinkronisasi langsung via Firestore pada koleksi `wedding_trivia_questions` dan `wedding_trivia_scores`.
+
+### A. Fitur & Pengaturan Dasbor Trivia:
+1. **4 Kartu Indikator KPI Real-Time**:
+   - **Total Soal Aktif**: Jumlah pertanyaan trivia yang siap dijawab oleh tamu undangan.
+   - **Tamu Bermain**: Total sesi permainan kuis yang telah diselesaikan oleh para tamu.
+   - **Rata-Rata Skor**: Nilai rata-rata persentase kebenaran jawaban tamu (misal: `84%`).
+   - **Skor Sempurna (100%)**: Jumlah tamu yang berhasil menjawab seluruh soal dengan benar tanpa salah.
+2. **Bank Soal Kuis (Tab 1)**:
+   - Tombol **"+ Tambah Pertanyaan"**: Membuka modal formulir untuk menulis teks soal, 4 pilihan ganda (A/B/C/D), penandaan kunci jawaban benar, ulasan fakta seru pengantin, dan urutan soal.
+   - Tombol **"Muat 5 Soal Default Trivia"**: Memuat instan 5 set pertanyaan romantis & lucu siap pakai ke cloud Firestore.
+   - Aksi **Ubah** dan **Hapus** soal dilengkapi dialog konfirmasi SweetAlert.
+3. **Papan Skor Tamu & Live Leaderboard (Tab 2)**:
+   - Menampilkan daftar peringkat skor seluruh tamu secara *real-time*.
+   - Medali emas 🥇, perak 🥈, dan perunggu 🥉 untuk 3 tamu dengan skor tertinggi.
+   - Pencarian instan in-memory nama tamu atau predikat juara tanpa mengubah URL.
+   - Tombol **"Unduh Rekap CSV"**: Mengunduh seluruh rekapitulasi nilai kuis ke format spreadsheet CSV UTF-8 BOM.
+
+### B. Pengalaman Tamu di Sisi Undangan (Guest Side):
+- **Tombol Gamepad Mengambang (`TriviaFloatingButton`)**: Tombol aksi mengambang berikon stik game di sisi kiri layar dengan notifikasi titik menyala.
+- **Seksi Undangan (`TriviaQuizSection`)**: Kartu ajakan bermain di alur halaman undangan setelah seksi konfirmasi RSVP.
+- **Synthesizer Audio Web Audio API**: Efek suara nada benar (*chime*), nada salah (*buzz*), dan terompet kemenangan (*fanfare*) tanpa unduhan berkas audio eksternal.
+- **Tantangan WhatsApp**: Tombol instan untuk membagikan skor ke grup/chat WhatsApp dengan pesan tantangan seru bagi rekan-rekan tamu lainnya.
+
+---
+
+## ❓ 15. Tanya Jawab Umum (FAQ)
 
 ### T: Apakah musik otomatis berputar saat tamu pertama kali membuka website?
 **J:** Kebijakan peramban modern (Chrome, Safari, iOS) melarang suara berputar otomatis (*autoplay*) sebelum ada interaksi fisik dari pengguna. Oleh sebab itu, aplikasi menyediakan gerbang **Opening Cover** dengan tombol *"Buka Undangan"*. Saat tamu mengetuk tombol tersebut, musik akan langsung berputar secara mulus.

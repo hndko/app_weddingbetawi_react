@@ -84,3 +84,13 @@ export interface RSVPResponse {
   notes: string;
   createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
 }
+
+export interface GuestInvitation {
+  id?: string;
+  name: string;
+  phone?: string;
+  status: 'pending' | 'sent';
+  sentAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+  createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+}
+

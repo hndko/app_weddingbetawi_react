@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.5.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.6.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -202,7 +202,7 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 ### 📱 Navigasi Cepat (Floating Bottom Bar)
 - Menu navigasi bawah mengambang dengan indikator *ScrollSpy* yang mendeteksi seksi yang sedang aktif secara otomatis.
 
-### 🔐 Admin Dashboard Responsif & Standar UI/UX Interaktif (v1.5.0)
+### 🔐 Admin Dashboard Responsif & Standar UI/UX Interaktif (v1.6.0)
 - **Arsitektur Dashboard Modern**: Tata letak modular di `/modules` dengan Sidebar desktop (expand/collapse), Mobile Slide-over Drawer (hamburger toggle), Topbar dengan breadcrumb navigasi dinamis, dan tombol pintas Live Preview.
 - **Menu 1: Dashboard Overview (Ringkasan Real-Time)**:
   - Banner hitung mundur hari-H pernikahan interaktif.
@@ -210,7 +210,13 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
   - Rasio Kehadiran visual (*Progress Bar* persentase Hadir vs Tidak Hadir).
   - Tombol jalan pintas cepat (*Quick Action Shortcuts*).
   - Feed aktivitas interaksi terbaru (*Live Recent Feeds* untuk RSVP & Doa Tamu).
-- **Menu 2: Generator Link WhatsApp 1-Klik**: Pembuatan tautan undangan kustom nama tamu serta integrasi langsung kirim pesan ke WhatsApp atau salin tautan.
+- **Menu 2: Generator & Manajemen Tamu WhatsApp (Import & Bulk Management)**:
+  - **Dukungan Multi-Format Impor**: Mengimpor ratusan tamu sekaligus dari file **Excel (.xlsx, .xls)**, file **CSV (.csv, .txt)**, maupun **Salin-Tempel Teks Multiline**.
+  - **Sinkronisasi Cloud Firestore (`guests`)**: Data daftar tamu dan status pengiriman pesan tersimpan permanen di cloud sehingga pengantin dapat mengimpor via laptop dan mengirim pesan via smartphone.
+  - **Direct WhatsApp Blasting**: Tombol kirim pesan 1-klik yang otomatis membuka chat WhatsApp langsung ke nomor tujuan (dengan sanitasi format internasional `628...`) dan mengubah status menjadi *Sudah Dikirim*.
+  - **Statistik & Filter Pengiriman**: 3 Kartu indikator (Total Tamu, Belum Dikirim, Sudah Dikirim), filter status dinamis, dan live in-memory search.
+  - **Unduh Template CSV**: Format berkas spreadsheet standar yang siap diisi dan diunggah ulang.
+  - **Mode Cepat (Generator Tunggal)**: Opsi pembuatan link personal dadakan untuk satu nama tamu secara instan.
 - **Menu 3: Manajemen Konten Terpartisi (Sub-Tabs)**: Tab pill rapi untuk Mempelai, Acara & Lokasi, Galeri Foto, Kisah Cinta, Musik & Hadiah/QRIS, serta SEO & Metadata dengan bilah simpan melayang (*sticky action bar*).
 - **Menu 4: Buku Tamu RSVP & Export CSV**: Daftar konfirmasi kehadiran dengan pencarian latar *real-time*, penomoran urut otomatis 1-indexed (`#`), dan tombol **Export ke Excel (CSV)** berformat UTF-8 BOM.
 - **Menu 5: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan dan dialog hapus SweetAlert2.

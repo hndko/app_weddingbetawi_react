@@ -78,29 +78,49 @@ Modul ini adalah beranda dasbor yang memberikan gambaran umum seketika tentang k
 
 ---
 
-## 🔗 6. Modul Generator Link Tamu & Pesan WhatsApp (Menu 2)
+## 🔗 6. Modul Generator & Manajemen Tamu WhatsApp (Menu 2)
 
-Modul ini digunakan saat Anda siap menyebarkan undangan ke keluarga dan sahabat.
+Modul ini adalah pusat pengelolaan penyebaran undangan kepada keluarga, kerabat, dan sahabat secara personal. Dilengkapi dukungan impor massal dari file spreadsheet dan sinkronisasi cloud Firestore.
 
 ```mermaid
 graph LR
-    A["Ketik Nama Tamu (cth: 'Bpk. Ahmad & Keluarga')"] --> B["Link Khusus Terbuat Otomatis"]
-    B --> C["Pilih Aksi: Salin Link / Salin Teks WA / Klik Tombol WhatsApp"]
-    D["WhatsApp Terbuka Langsung dengan Format Pesan Cantik"]
+    A["File Excel / CSV / Salin-Tempel Teks"] --> B["Impor ke Cloud Firestore"]
+    B --> C["Tabel Tamu Terorganisir (Filter & Live Search)"]
+    C --> D["1-Klik Kirim WhatsApp (Otomatis Catat Status 'Sudah Dikirim')"]
 ```
 
-### Langkah-Langkah:
-1. Masuk ke Dasbor Admin, pilih menu **"Link Tamu & WA"** (Menu 2).
-2. Pada kolom **Nama Tamu Undangan**, ketikkan nama tamu yang ingin Anda undang.
-   - *Contoh format santai*: `Budi Santoso`
-   - *Contoh format formal*: `Bapak Dr. H. Faisal, M.Si & Keluarga`
-3. Sistem secara otomatis membuat:
-   - **Link Khusus**: Berisi parameter `?to=...` yang memastikan nama tamu tersebut muncul di sampul depan undangan.
-   - **Template Pesan WhatsApp**: Pesan sopan berformat islami dan rapi yang langsung memuat nama tamu serta tautan undangan.
-4. **Pilih Metode Pembagian:**
-   - **Klik "Kirim via WhatsApp"**: Peramban akan otomatis membuka aplikasi WhatsApp dengan teks pesan yang sudah terisi. Anda tinggal memilih kontak tujuan dan klik kirim.
-   - **Salin Teks WA**: Klik tombol *"Salin Teks WA"* jika ingin mengedit atau menempelkan pesan ke aplikasi chat lain.
-   - **Salin URL**: Hanya menyalin tautan website singkatnya saja.
+### A. Impor Massal dari File Excel / CSV
+1. Masuk ke Dasbor Admin, pilih menu **"Generator Link WA"** (Menu 2).
+2. Klik tombol **"Template CSV"** jika ingin mengunduh contoh susunan kolom yang benar.
+3. Siapkan file Excel (`.xlsx`, `.xls`) atau CSV (`.csv`) dengan dua kolom:
+   - **Nama Tamu** (Wajib): misal *Bapak Dr. H. Faisal, M.Si & Keluarga*.
+   - **Nomor WhatsApp** (Opsional): format lokal `0812...` atau internasional `62812...`.
+4. Klik tombol **"Impor Tamu"**.
+5. Tarik atau pilih file spreadsheet Anda. Sistem akan memindai baris data dan menampilkan kotak pratinjau daftar tamu.
+6. Klik **"Simpan & Impor Tamu"**. Ratusan data tamu akan tersimpan otomatis ke cloud Firestore secara instan.
+
+### B. Impor Cepat via Salin-Tempel Teks (Multiline)
+1. Pada modal impor, pilih tab **"Salin-Tempel Teks (Multiline)"**.
+2. Ketik atau tempelkan daftar nama tamu (satu nama per baris atau dengan format `Nama, Nomor WA`):
+   ```text
+   Bapak Dr. H. Faisal, 081234567890
+   Ibu Hj. Siti Rahmawati, 085712345678
+   Budi Santoso & Rekan
+   ```
+3. Klik **"Periksa & Tampilkan Pratinjau"**, lalu klik **"Simpan & Impor Tamu"**.
+
+### C. Mengirim Undangan via WhatsApp & Pemantauan Status
+1. **Kirim WhatsApp 1-Klik**: Klik ikon pesawat kertas/bagikan (`Share2`) pada baris tamu:
+   - Jika nomor WhatsApp terisi, peramban akan langsung membuka obrolan chat ke nomor tamu tersebut beserta template pesan islami yang dipersonalisasi.
+   - Jika nomor WhatsApp kosong, peramban membuka pemilih kontak WhatsApp.
+   - Status pengiriman secara otomatis berubah dari **"Belum Dikirim"** menjadi **"Sudah Dikirim"**.
+2. **Filter & Pencarian Cepat**:
+   - Gunakan filter pill *Semua*, *Belum Terkirim*, atau *Sudah Terkirim* untuk memilah tamu yang belum sempat dihubungi.
+   - Gunakan kotak pencarian live untuk mencari nama tamu secara seketika.
+3. **Aksi Cepat Lainnya**:
+   - Salin link personal atau salin teks pesan WhatsApp perorangan.
+   - Klik ikon centang untuk mengubah status terkirim secara manual kapan saja.
+   - Klik tombol **"Generator Cepat"** di pojok kanan atas untuk membuat link personal dadakan bagi 1 tamu tanpa perlu mengimpor.
 
 ---
 

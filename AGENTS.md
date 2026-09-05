@@ -164,7 +164,7 @@ Sebelum menyatakan tugas selesai atau melakukan commit, AI Assistant WAJIB melak
 ---
 
 ### 🏷️ 8. Aturan Versioning Aplikasi (Semantic Versioning - SemVer)
-Setiap pengerjaan peningkatan kode, perbaikan bug, atau penambahan fitur baru **WAJIB** menaikkan penomoran versi aplikasi (`MAJOR.MINOR.PATCH`) di file `package.json`, `composer.json` (jika ada pada stack terkait), `README.md`, dan `AGENTS.md`:
+Setiap pengerjaan peningkatan kode, perbaikan bug, atau penambahan fitur baru **WAJIB** menaikkan penomoran versi aplikasi (`MAJOR.MINOR.PATCH`) di file `package.json`, `src/version.ts`, `composer.json` (jika ada pada stack terkait), `README.md`, dan `AGENTS.md`:
 
 - **MAJOR (`X.0.0`)**: Naik saat ada perubahan besar yang tidak kompatibel dengan versi sebelumnya (*breaking changes*).
 - **MINOR (`1.X.0`)**: Naik saat ada penambahan fitur baru yang aman dan kompatibel dengan versi sebelumnya.
@@ -214,6 +214,6 @@ Sebelum AI Assistant mengakhiri sesi pengerjaan tugas, lakukan pengecekan beriku
 - [ ] Berkas `.env` dan `.env.example` 100% konsisten dalam kunci, urutan, dan penamaan (Pilar 3).
 - [ ] Menjalankan verifikasi tipe `tsc --noEmit` / `npm run lint` dan lulus 100%.
 - [ ] Menjalankan uji kompilasi `npm run build` dan sukses menghasilkan `dist/`.
-- [ ] Versi SemVer dinaikkan di `package.json`, `README.md`, dan `AGENTS.md` (Pilar 8).
+- [ ] Versi SemVer dinaikkan di `package.json`, `src/version.ts`, `README.md`, dan `AGENTS.md` (Pilar 8).
 - [ ] Dokumentasi `README.md` dan `AGENTS.md` tersinkronisasi dengan perubahan terbaru (Pilar 10).
 - [ ] Melakukan Git commit dengan format *Conventional Commits* dan melakukan push ke repositori GitHub (Pilar 9).

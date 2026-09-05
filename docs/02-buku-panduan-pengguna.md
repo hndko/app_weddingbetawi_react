@@ -220,7 +220,39 @@ Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda k
 
 ---
 
-## 📋 9. Modul Buku Tamu RSVP & Export CSV (Menu 5)
+## 💰 9. Modul Wedding Budget & Checklist Vendor Tracker (Menu 5)
+
+Modul ini adalah pusat pengelolaan anggaran finansial pernikahan dan pemantauan koordinasi vendor bagi kedua calon mempelai beserta keluarga. Dilengkapi sinkronisasi cloud real-time Firestore pada koleksi `wedding_expenses`.
+
+```mermaid
+graph LR
+    A["Target Anggaran & Rencana Pos"] --> B["Kontrak Vendor Aktual"]
+    B --> C["Pencatatan DP & Pelunasan"]
+    C --> D["Kalkulasi Sisa Tagihan Otomatis"]
+    D --> E["Checklist Kesiapan Hari-H & Kontak WA"]
+```
+
+### A. 4 Kartu Indikator KPI Finansial Real-Time:
+1. **Target Anggaran**: Total akumulasi batas biaya yang direncanakan oleh kedua keluarga pengantin.
+2. **Kontrak Aktual**: Total kesepakatan nilai kontrak riil dengan vendor, dilengkapi notifikasi penghematan atau selisih lebih.
+3. **Telah Dibayar (DP / Lunas)**: Total rupiah yang telah ditransfer beserta persentase pemenuhan anggaran.
+4. **Sisa Tagihan Pelunasan**: Total kewajiban finansial yang masih harus dilunasi menjelang hari-H pernikahan.
+
+### B. Fitur & Kemudahan Operasional:
+1. **10 Template Pos Anggaran Nusantara (1-Klik)**:
+   - Jika data masih kosong, klik tombol **"Muat Template Standar"** untuk memuat 10 pos pengeluaran umum pernikahan adat Nusantara secara otomatis (Venue, Katering, MUA/Busana, Dekorasi, Foto/Video, Sound/MC, Souvenir/Undangan, Cincin/Mahar, Tenda/Genset, dan Perlengkapan Adat).
+2. **Kontak Cepat WhatsApp Vendor**:
+   - Nomor WhatsApp vendor yang tersimpan dapat langsung diklik untuk membuka chat WhatsApp (`wa.me/62...`) tanpa perlu menyimpan kontak secara manual di buku telepon HP.
+3. **Checklist Kesiapan Logistik Hari-H**:
+   - Tombol kotak centang pada setiap baris untuk menandai pos atau barang yang sudah siap 100% menjelang acara.
+4. **Filter Cerdas & Pencarian In-Memory**:
+   - Saring pos pengeluaran berdasarkan kategori (Venue, Katering, Rias, Dekor, dll.) atau status pembayaran (*Belum Bayar, DP Terbayar, Lunas*), serta pencarian nama vendor/catatan secara instan.
+5. **Ekspor Rekapitulasi Anggaran ke CSV (UTF-8 BOM)**:
+   - Tombol **"Export CSV"** untuk mengunduh seluruh data anggaran ke dalam berkas spreadsheet yang rapi dan terstruktur untuk pelaporan bendahara keluarga.
+
+---
+
+## 📋 10. Modul Buku Tamu RSVP & Export CSV (Menu 6)
 
 Menu ini menyediakan rekapitulasi interaktif konfirmasi kehadiran:
 1. **Pencarian Real-Time**: Kolom pencarian cepat di latar belakang tanpa mengubah URL peramban, dilengkapi tombol reset instan.
@@ -230,7 +262,7 @@ Menu ini menyediakan rekapitulasi interaktif konfirmasi kehadiran:
 
 ---
 
-## 💬 10. Modul Moderasi Ucapan Doa (Menu 6)
+## 💬 11. Modul Moderasi Ucapan Doa (Menu 7)
 
 Dinding ucapan doa restu tamu diperbarui secara otomatis secara *real-time*:
 1. **Pencarian Cepat Ucapan**: Mempermudah pencarian nama tamu atau isi doa tertentu.
@@ -239,7 +271,7 @@ Dinding ucapan doa restu tamu diperbarui secara otomatis secara *real-time*:
 
 ---
 
-## 📺 11. Layar Proyektor LED Panggung Hari-H / Live Wishes Screen (`/live`)
+## 📺 12. Layar Proyektor LED Panggung Hari-H / Live Wishes Screen (`/live`)
 
 Fitur ini dirancang khusus untuk memproyeksikan doa restu para tamu secara langsung (*real-time*) di layar videotron LED panggung ballroom pernikahan atau layar proyektor besar di venue acara.
 
@@ -292,7 +324,7 @@ graph LR
 
 ---
 
-## ❓ 12. Tanya Jawab Umum (FAQ)
+## ❓ 13. Tanya Jawab Umum (FAQ)
 
 ### T: Apakah musik otomatis berputar saat tamu pertama kali membuka website?
 **J:** Kebijakan peramban modern (Chrome, Safari, iOS) melarang suara berputar otomatis (*autoplay*) sebelum ada interaksi fisik dari pengguna. Oleh sebab itu, aplikasi menyediakan gerbang **Opening Cover** dengan tombol *"Buka Undangan"*. Saat tamu mengetuk tombol tersebut, musik akan langsung berputar secara mulus.

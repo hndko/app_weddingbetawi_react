@@ -6,7 +6,8 @@ import {
   MapPin, Search, RotateCcw, User, KeyRound, Globe, FileText, CheckCircle2, 
   Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
   ArrowUpRight, ShieldCheck, Sparkles, BookOpen, Upload, UserPlus, 
-  FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette, QrCode, Tv
+  FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette, QrCode, Tv,
+  Wallet
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
@@ -17,6 +18,7 @@ import { DragDropUpload } from './components/DragDropUpload';
 import { EventScheduleEditor } from './components/EventScheduleEditor';
 import { ThemeSelector } from './components/ThemeSelector';
 import { ReceptionCheckin } from './components/ReceptionCheckin';
+import { BudgetVendorTracker } from './components/BudgetVendorTracker';
 import { APP_VERSION } from '../../version';
 
 export interface PanelProps {
@@ -76,7 +78,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   });
 
   // Modern Dashboard Navigation State
-  const [activeMenu, setActiveMenu] = useState<'overview' | 'reception' | 'generator' | 'config' | 'rsvps' | 'wishes'>('overview');
+  const [activeMenu, setActiveMenu] = useState<'overview' | 'reception' | 'generator' | 'config' | 'budget' | 'rsvps' | 'wishes'>('overview');
   const [configSubTab, setConfigSubTab] = useState<'theme' | 'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'seo'>('theme');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -908,6 +910,7 @@ Wassalamu'alaikum Wr. Wb.`;
                 {activeMenu === 'reception' && 'Meja Resepsi & Check-in Tamu'}
                 {activeMenu === 'generator' && 'WhatsApp Link Generator'}
                 {activeMenu === 'config' && 'Kelola Konten Undangan'}
+                {activeMenu === 'budget' && 'Wedding Budget & Checklist Vendor'}
                 {activeMenu === 'rsvps' && 'Buku Tamu & RSVP'}
                 {activeMenu === 'wishes' && 'Doa & Ucapan Restu'}
               </h1>
@@ -1053,6 +1056,21 @@ Wassalamu'alaikum Wr. Wb.`;
 
               <button
                 type="button"
+                onClick={() => setActiveMenu('budget')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeMenu === 'budget'
+                    ? 'bg-sage-dark text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Wallet size={16} />
+                  <span>Budget & Vendor</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setActiveMenu('rsvps')}
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   activeMenu === 'rsvps'
@@ -1170,12 +1188,22 @@ Wassalamu'alaikum Wr. Wb.`;
                   <button
                     type="button"
                     onClick={() => { setActiveMenu('config'); setIsMobileSidebarOpen(false); }}
-                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold ${
+                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold cursor-pointer ${
                       activeMenu === 'config' ? 'bg-sage-dark text-white' : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     <SlidersHorizontal size={16} />
                     <span>Kelola Undangan</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveMenu('budget'); setIsMobileSidebarOpen(false); }}
+                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold cursor-pointer ${
+                      activeMenu === 'budget' ? 'bg-sage-dark text-white' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Wallet size={16} />
+                    <span>Budget & Vendor</span>
                   </button>
                   <button
                     type="button"
@@ -1361,7 +1389,7 @@ Wassalamu'alaikum Wr. Wb.`;
               {/* Quick Action Shortcuts Grid */}
               <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col gap-3">
                 <h3 className="font-heading text-sm font-bold text-text-dark">Aksi Cepat</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5">
                   <button
                     type="button"
                     onClick={() => setActiveMenu('reception')}
@@ -1371,6 +1399,18 @@ Wassalamu'alaikum Wr. Wb.`;
                     <div>
                       <span className="block text-xs font-bold text-gray-800">Meja Resepsi</span>
                       <span className="text-[11px] text-amber-800/80 font-medium">Scan QR Hari-H</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveMenu('budget')}
+                    className="p-3.5 rounded-xl border border-emerald-200 hover:border-emerald-400 bg-emerald-50/40 hover:bg-emerald-100/40 transition-all text-left flex flex-col gap-2 cursor-pointer group"
+                  >
+                    <Wallet size={18} className="text-emerald-700 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <span className="block text-xs font-bold text-gray-800">Budget & Vendor</span>
+                      <span className="text-[11px] text-emerald-800/80 font-medium">Finansial & Logistik</span>
                     </div>
                   </button>
 
@@ -2712,7 +2752,14 @@ Wassalamu'alaikum Wr. Wb.`;
           )}
 
           {/* ========================================================================= */}
-          {/* MENU 4: BUKU TAMU & RSVP */}
+          {/* MENU 5: WEDDING BUDGET & VENDOR TRACKER */}
+          {/* ========================================================================= */}
+          {activeMenu === 'budget' && (
+            <BudgetVendorTracker onNotify={(msg, type) => showToast(type, msg)} />
+          )}
+
+          {/* ========================================================================= */}
+          {/* MENU 6: BUKU TAMU & RSVP */}
           {/* ========================================================================= */}
           {activeMenu === 'rsvps' && (
             <div className="flex flex-col gap-5">

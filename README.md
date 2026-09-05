@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.20.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.21.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -216,6 +216,15 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
   - Jika tidak ada ucapan baru, daftar ucapan bergulir otomatis per halaman (*carousel*) secara halus.
   - Operator panggung dapat mengontrol kecepatan transisi (Cepat 4s, Normal 7s, Lambat 10s, Jeda), tombol *Fullscreen* (F11), dan tombol *Mute/Unmute* nada audio melalui bilah kontrol bawah mengambang yang otomatis bersembunyi setelah 3,5 detik kursor tidak bergerak.
 
+### 💰 Wedding Budget & Checklist Vendor Tracker (v1.21.0)
+- **Dasbor Finansial Real-Time**: 4 Kartu KPI finansial: Target Anggaran, Kontrak Aktual, Terbayar/DP, dan Sisa Tagihan Pelunasan yang tersinkronisasi langsung via Firestore listener.
+- **Kalkulasi Selisih & Efisiensi Otomatis**: Mendeteksi otomatis apakah kontrak berada di bawah anggaran (*hemat*) atau melebihi estimasi rencana (*over-budget*).
+- **Progress Bar Realisasi**: Indikator visual persentase pelunasan anggaran dan counter rasio kesiapan logistik hari-H.
+- **Manajemen Vendor & 1-Klik Chat WhatsApp**: Integrasi kontak nomor WhatsApp vendor yang otomatis membuka obrolan chat perorangan dengan format internasional `wa.me/62...`.
+- **10 Template Pos Anggaran Nusantara (1-Klik)**: Pemuatan instan 10 pos biaya pernikahan adat Nusantara (Sewa Venue, Katering, MUA/Busana, Dekorasi, Foto & Video Sinematik, Sound & MC, Souvenir & Undangan, Cincin Kawin & Mahar, Tenda & Genset, Seserahan & Perlengkapan Adat).
+- **Checklist Kesiapan Logistik Hari-H**: Tombol centang 1-klik untuk memantau status persiapan vendor dan barang bawaan.
+- **Ekspor Rekapitulasi CSV (UTF-8 BOM)**: Unduh seluruh data finansial dan status vendor ke file spreadsheet untuk pelaporan bendahara dan keluarga.
+
 ### 🛕 Tema Balinese Royal Temple (Adat Pawiwahan Ageng Bali) (v1.20.0)
 - **Kemegahan Pura & Arsitektur Tradisional Bali**: Menghadirkan siluet Gapura Candi Bentar bertingkat, payung Tedung Agung upacara kembar, penjor emas melengkung, serta motif relief ukiran Patra Punggel.
 - **Salam Tradisional & Sloka Rgveda**: Pembuka salam sakral *"Om Swastyastu"* berlatar piringan surya mandala emas, serta kutipan suci pernikahan Hindu Dharma (*Rgveda Mandala X Sukta 85 Sloka 42*) yang sarat berkah keharmonisan keluarga (*Grhastha Ashrama*).
@@ -283,8 +292,15 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
     - Jadwal Akad & Resepsi menggunakan `<input type="date">` cerdas yang otomatis mengekstrak nama Hari Indonesia (misal: *Minggu*) dan penanggalan formal (misal: *20 September 2026*).
     - Pemilih jam terstruktur: Jam Mulai, Jam Selesai, centang *Sampai Selesai*, dan selector Zona Waktu (*WIB, WITA, WIT*) yang otomatis merangkai teks standar (misal: *08:00 - 10:00 WIB* atau *08:00 WIB - Selesai*), dengan toggle input kustom teks untuk acara khusus (*"Ba'da Isya"*).
     - Tombol Sinkronisasi Kilat: 1-klik untuk menyelaraskan tanggal countdown ke seluruh sesi acara dan menyamakan jadwal/tempat Resepsi dengan Akad.
-- **Menu 5: Buku Tamu RSVP & Export CSV**: Daftar konfirmasi kehadiran dengan pencarian latar *real-time*, penomoran urut otomatis 1-indexed (`#`), dan tombol **Export ke Excel (CSV)** berformat UTF-8 BOM.
-- **Menu 6: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan, dialog hapus SweetAlert2, serta tombol akses cepat **"Buka Layar Proyektor Panggung"** (`/live`).
+- **Menu 5: Wedding Budget & Checklist Vendor Tracker (v1.21.0)**:
+  - **Dasbor Finansial Terpusat**: 4 Kartu KPI real-time (Target Anggaran, Kontrak Aktual, Telah Dibayar/DP, dan Sisa Tagihan Pelunasan).
+  - **Status & Realisasi Pembayaran**: Progress bar persentase pembayaran terbayar, badge status *Lunas*, *DP Terbayar*, dan *Belum Bayar*.
+  - **Manajemen Vendor & Kontak Cepat WhatsApp**: Kategori pos (Venue, Katering, MUA, Dekorasi, Foto, Hiburan, Souvenir, Cincin, Logistik), nama vendor, tanggal jatuh tempo, dan tombol 1-klik chat WhatsApp via `wa.me/62...`.
+  - **Checklist Kesiapan Logistik Hari-H**: Tombol centang 1-klik untuk menandai kesiapan vendor dan logistik.
+  - **10 Template Pos Anggaran Nusantara (1-Klik)**: Tombol pemuatan otomatis 10 pos biaya umum pernikahan adat Nusantara.
+  - **Export Rekap Anggaran (CSV UTF-8 BOM)**: Unduh seluruh rincian anggaran, kontrak, dan sisa pembayaran ke berkas Excel.
+- **Menu 6: Buku Tamu RSVP & Export CSV**: Daftar konfirmasi kehadiran dengan pencarian latar *real-time*, penomoran urut otomatis 1-indexed (`#`), dan tombol **Export ke Excel (CSV)** berformat UTF-8 BOM.
+- **Menu 7: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan, dialog hapus SweetAlert2, serta tombol akses cepat **"Buka Layar Proyektor Panggung"** (`/live`).
 - **Penerapan Penuh 8 Pilar UI/UX Interaktif (`interactive-ux-standards`)**:
   1. *Toast Alerts*: Umpan balik status sukses dan error mengambang yang ramah pengguna (auto-dismiss 3,5 detik).
   2. *SweetAlert2 Confirmation Modals*: Dialog konfirmasi hapus data dengan badge bahaya dan tombol *Icon + Text*.

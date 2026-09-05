@@ -118,3 +118,32 @@ export interface CheckInRecord {
   createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
 }
 
+export type ExpenseCategory =
+  | 'venue'
+  | 'catering'
+  | 'attire_mua'
+  | 'decoration'
+  | 'photography'
+  | 'entertainment_mc'
+  | 'invitation_souvenir'
+  | 'rings_dowry'
+  | 'logistics_other';
+
+export type PaymentStatus = 'unpaid' | 'partial' | 'paid';
+
+export interface WeddingExpense {
+  id?: string;
+  category: ExpenseCategory;
+  title: string;
+  estimatedCost: number;
+  actualCost: number;
+  paidAmount: number;
+  paymentStatus: PaymentStatus;
+  vendorName?: string;
+  vendorPhone?: string;
+  dueDate?: string;
+  notes?: string;
+  isCompleted?: boolean;
+  createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+  updatedAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+}

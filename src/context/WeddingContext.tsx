@@ -44,10 +44,14 @@ export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           banks: data.banks || (data.bank ? [data.bank] : defaultConfig.banks),
           gallery: data.gallery || defaultConfig.gallery,
           loveStory: data.loveStory || defaultConfig.loveStory,
-          musicUrl: data.musicUrl || defaultConfig.musicUrl,
-          music: data.music || {
-            playlist: data.musicUrl ? [{ url: data.musicUrl }] : defaultConfig.music!.playlist,
-            mode: 'repeat-all'
+          musicUrl: data.musicUrl || (data.music?.playlist?.[0]?.url) || defaultConfig.musicUrl,
+          music: {
+            playlist: (data.music?.playlist && data.music.playlist.length > 0)
+              ? data.music.playlist
+              : (data.musicUrl ? [{ url: data.musicUrl }] : defaultConfig.music!.playlist),
+            mode: (data.music?.mode && ['repeat-all', 'repeat-one', 'shuffle', 'linear'].includes(data.music.mode))
+              ? data.music.mode
+              : 'repeat-all',
           },
           seo: { ...defaultConfig.seo, ...(data.seo || {}) },
         });

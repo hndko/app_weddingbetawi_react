@@ -7,7 +7,7 @@ import {
   Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
   ArrowUpRight, ShieldCheck, Sparkles, BookOpen, Upload, UserPlus, 
   FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette, QrCode, Tv,
-  Wallet, Armchair, Gamepad2
+  Wallet, Armchair, Gamepad2, Repeat, Repeat1, Shuffle, ListMusic
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
@@ -2586,31 +2586,88 @@ Wassalamu'alaikum Wr. Wb.`;
                         <span>Lagu Latar & Playlist</span>
                       </h3>
 
-                      <div>
-                        <label className="block text-gray-600 mb-1 font-medium">Mode Pemutaran Audio</label>
-                        <select
-                          value={formData.music?.mode || 'repeat-all'}
-                          onChange={(e) => setFormData({ 
-                            ...formData, 
-                            music: { ...formData.music!, mode: e.target.value as 'repeat-all' | 'repeat-one' | 'shuffle' | 'linear' } 
-                          })}
-                          className="w-full border border-gray-300 rounded-xl px-3 py-2 bg-white focus:ring-2 focus:ring-sage cursor-pointer"
-                        >
-                          <option value="repeat-all">Ulangi Semua (Repeat All)</option>
-                          <option value="repeat-one">Ulangi Satu Lagu (Repeat One)</option>
-                          <option value="shuffle">Acak (Shuffle)</option>
-                          <option value="linear">Sekali Jalan (Linear)</option>
-                        </select>
+                      {/* Audio Playback Mode */}
+                      <div className="flex flex-col gap-2">
+                        <label className="block text-gray-600 font-medium">Mode Pemutaran Audio</label>
+                        <div className="relative flex items-center">
+                          <div className="absolute left-3 text-sage-dark pointer-events-none flex items-center">
+                            {(formData.music?.mode || 'repeat-all') === 'repeat-all' && <Repeat size={15} />}
+                            {(formData.music?.mode || 'repeat-all') === 'repeat-one' && <Repeat1 size={15} />}
+                            {(formData.music?.mode || 'repeat-all') === 'shuffle' && <Shuffle size={15} />}
+                            {(formData.music?.mode || 'repeat-all') === 'linear' && <ListMusic size={15} />}
+                          </div>
+                          <select
+                            value={formData.music?.mode || 'repeat-all'}
+                            onChange={(e) => {
+                              const newMode = e.target.value as 'repeat-all' | 'repeat-one' | 'shuffle' | 'linear';
+                              const currentList = formData.music?.playlist?.length 
+                                ? formData.music.playlist 
+                                : (formData.musicUrl ? [{ url: formData.musicUrl }] : (weddingConfig.music?.playlist || []));
+                              setFormData({ 
+                                ...formData, 
+                                music: { 
+                                  mode: newMode,
+                                  playlist: currentList,
+                                },
+                                musicUrl: currentList[0]?.url || formData.musicUrl || '',
+                              });
+                            }}
+                            className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:ring-2 focus:ring-sage cursor-pointer text-xs font-medium"
+                          >
+                            <option value="repeat-all">Ulangi Semua (Repeat All)</option>
+                            <option value="repeat-one">Ulangi Satu Lagu (Repeat One)</option>
+                            <option value="shuffle">Acak (Shuffle)</option>
+                            <option value="linear">Sekali Jalan (Linear)</option>
+                          </select>
+                        </div>
+
+                        {/* Interactive Mode Explanation Card */}
+                        <div className="rounded-xl border border-sage/30 bg-sage/5 p-3 text-[11px] text-gray-600 flex items-start gap-2.5">
+                          <div className="p-1.5 rounded-lg bg-sage/20 text-sage-dark shrink-0 mt-0.5">
+                            {(formData.music?.mode || 'repeat-all') === 'repeat-all' && <Repeat size={14} />}
+                            {(formData.music?.mode || 'repeat-all') === 'repeat-one' && <Repeat1 size={14} />}
+                            {(formData.music?.mode || 'repeat-all') === 'shuffle' && <Shuffle size={14} />}
+                            {(formData.music?.mode || 'repeat-all') === 'linear' && <ListMusic size={14} />}
+                          </div>
+                          <div className="flex-1 leading-relaxed">
+                            <div className="font-semibold text-text-dark flex items-center gap-1.5">
+                              <span>
+                                {(formData.music?.mode || 'repeat-all') === 'repeat-all' && 'Ulangi Semua (Repeat All)'}
+                                {(formData.music?.mode || 'repeat-all') === 'repeat-one' && 'Ulangi Satu Lagu (Repeat One)'}
+                                {(formData.music?.mode || 'repeat-all') === 'shuffle' && 'Acak (Shuffle)'}
+                                {(formData.music?.mode || 'repeat-all') === 'linear' && 'Sekali Jalan (Linear)'}
+                              </span>
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-sage/20 text-sage-dark font-mono">Aktif</span>
+                            </div>
+                            <p className="mt-0.5 text-gray-500">
+                              {(formData.music?.mode || 'repeat-all') === 'repeat-all' && 'Memutar seluruh daftar lagu secara berurutan, lalu otomatis berulang kembali ke lagu pertama tanpa henti.'}
+                              {(formData.music?.mode || 'repeat-all') === 'repeat-one' && 'Memutar dan mengulang satu lagu yang sedang aktif terus menerus tanpa berganti ke lagu lain.'}
+                              {(formData.music?.mode || 'repeat-all') === 'shuffle' && 'Memutar lagu-lagu dalam playlist secara acak terus menerus untuk pengalaman audio yang bervariasi.'}
+                              {(formData.music?.mode || 'repeat-all') === 'linear' && 'Memutar daftar lagu berurutan satu kali dari awal hingga akhir, kemudian berhenti otomatis setelah lagu terakhir selesai.'}
+                            </p>
+                          </div>
+                        </div>
                       </div>
 
+                      {/* Playlist Tracks */}
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center justify-between">
                           <label className="block text-gray-600 font-medium">Daftar Link Lagu YouTube</label>
                           <button
                             type="button"
                             onClick={() => {
-                              const newPlaylist = [...(formData.music?.playlist || []), { url: '' }];
-                              setFormData({ ...formData, music: { ...formData.music!, mode: formData.music?.mode || 'repeat-all', playlist: newPlaylist } });
+                              const currentList = formData.music?.playlist?.length 
+                                ? formData.music.playlist 
+                                : (formData.musicUrl ? [{ url: formData.musicUrl }] : []);
+                              const newPlaylist = [...currentList, { url: '' }];
+                              setFormData({ 
+                                ...formData, 
+                                music: { 
+                                  mode: formData.music?.mode || 'repeat-all', 
+                                  playlist: newPlaylist 
+                                },
+                                musicUrl: newPlaylist[0]?.url || formData.musicUrl || '',
+                              });
                             }}
                             className="text-sage-dark hover:underline flex items-center gap-1 font-semibold cursor-pointer"
                           >
@@ -2626,9 +2683,16 @@ Wassalamu'alaikum Wr. Wb.`;
                                 type="text"
                                 value={track.url}
                                 onChange={(e) => {
-                                  const newPlaylist = [...(formData.music?.playlist || [])];
-                                  newPlaylist[idx] = { url: e.target.value };
-                                  setFormData({ ...formData, music: { ...formData.music!, playlist: newPlaylist } });
+                                  const currentList = [...(formData.music?.playlist || (formData.musicUrl ? [{url: formData.musicUrl}] : []))];
+                                  currentList[idx] = { url: e.target.value };
+                                  setFormData({ 
+                                    ...formData, 
+                                    music: { 
+                                      mode: formData.music?.mode || 'repeat-all',
+                                      playlist: currentList 
+                                    },
+                                    musicUrl: currentList[0]?.url || '',
+                                  });
                                 }}
                                 className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-gray-50 focus:bg-white font-mono text-[11px] focus:ring-1 focus:ring-sage"
                                 placeholder="https://www.youtube.com/watch?v=..."
@@ -2637,8 +2701,15 @@ Wassalamu'alaikum Wr. Wb.`;
                             <button
                               type="button"
                               onClick={() => {
-                                const newPlaylist = (formData.music?.playlist || []).filter((_, i) => i !== idx);
-                                setFormData({ ...formData, music: { ...formData.music!, playlist: newPlaylist } });
+                                const currentList = (formData.music?.playlist || (formData.musicUrl ? [{url: formData.musicUrl}] : [])).filter((_, i) => i !== idx);
+                                setFormData({ 
+                                  ...formData, 
+                                  music: { 
+                                    mode: formData.music?.mode || 'repeat-all',
+                                    playlist: currentList 
+                                  },
+                                  musicUrl: currentList[0]?.url || '',
+                                });
                               }}
                               className="text-gray-400 hover:text-red-500 p-2 shrink-0 bg-gray-50 hover:bg-red-50 border border-gray-200 rounded-lg transition-colors cursor-pointer"
                               title="Hapus lagu ini"

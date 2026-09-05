@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.36.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.36.1-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -195,6 +195,16 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 ---
 
 ## ✨ Fitur Utama
+
+### 🎵 Sinkronisasi Mutlak Mode Pemutaran Audio & Engine Playlist (v1.36.1)
+- **4 Mode Pemutaran Audio Responsif**: Sinkronisasi penuh antara Panel Admin Modules dan Audio Engine klien:
+  - *Repeat All (Ulangi Semua)*: Mengulang seluruh daftar lagu di playlist secara berurutan tanpa henti (termasuk penanganan loop otomatis untuk single track).
+  - *Repeat One (Ulangi Satu Lagu)*: Mengulang satu lagu aktif secara terus-menerus tanpa berpindah track.
+  - *Shuffle (Acak)*: Memutar lagu-lagu di playlist secara acak tanpa mengulang lagu yang sama berturut-turut.
+  - *Linear (Sekali Jalan)*: Memutar urutan playlist satu kali dari awal hingga akhir, lalu berhenti otomatis setelah lagu terakhir selesai.
+- **Transisi Mulus YouTube IFrame API**: Menggunakan `loadVideoById` pada instance player aktif tanpa merusak DOM iframe, mencegah pemblokiran autoplay oleh browser seluler (iOS Safari & Android Chrome).
+- **Indikator Badge Mode Interaktif**: Floating button musik kini dilengkapi mini-badge ikon mode pemutaran (`Repeat`, `Repeat1`, `Shuffle`, `ListMusic`) serta *tooltip* informatif yang mencerminkan pilihan aktif dari Admin Panel.
+- **Normalisasi Data Firestore**: Penanganan fallback otomatis untuk struktur `weddingConfig.music` agar konfigurasi mode dan playlist selalu tersimpan dan termuat secara utuh.
 
 ### 🦅 Tema Dayak Kenyah Borneo & ⚡ Cyberpunk 2077 Night City (v1.36.0)
 - **Total 20 Tema Siap Pakai**: Menembus 20 variasi tema pernikahan digital yang kaya budaya adat Nusantara dan konsep modern futuristik.

@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import { ThemeDefinition } from './types';
+import { ThemeDefinition, ThemeMeta } from './types';
 import { MusicPlayer as SharedMusicPlayer } from '../shared/components/MusicPlayer';
 import { THEME_CATALOG } from './catalog';
 
@@ -22,6 +22,11 @@ const JawaAppFrame = lazy(() => import('./jawa/decorations/AppFrame').then(m => 
 const SundaOpeningCover = lazy(() => import('./sunda/OpeningCover').then(m => ({ default: m.OpeningCover })));
 const SundaInvitationContent = lazy(() => import('./sunda/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const SundaAppFrame = lazy(() => import('./sunda/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
+// Lazy-loaded Sunda Maroon theme
+const SundaMaroonOpeningCover = lazy(() => import('./sunda_maroon/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const SundaMaroonInvitationContent = lazy(() => import('./sunda_maroon/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const SundaMaroonAppFrame = lazy(() => import('./sunda_maroon/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
 // Lazy-loaded Minimalist theme
 const MinimalistOpeningCover = lazy(() => import('./minimalist/OpeningCover').then(m => ({ default: m.OpeningCover })));
@@ -108,9 +113,15 @@ const CyberpunkOpeningCover = lazy(() => import('./cyberpunk/OpeningCover').then
 const CyberpunkInvitationContent = lazy(() => import('./cyberpunk/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const CyberpunkAppFrame = lazy(() => import('./cyberpunk/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
+const getThemeMeta = (id: string): ThemeMeta => {
+  const meta = THEME_CATALOG.find(t => t.id === id);
+  if (!meta) throw new Error(`Theme metadata not found for ID: ${id}`);
+  return meta;
+};
+
 export const THEMES: Record<string, ThemeDefinition> = {
   betawi: {
-    meta: THEME_CATALOG[0],
+    meta: getThemeMeta('betawi'),
     components: {
       OpeningCover: BetawiOpeningCover,
       InvitationContent: BetawiInvitationContent,
@@ -119,7 +130,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   jawa: {
-    meta: THEME_CATALOG[1],
+    meta: getThemeMeta('jawa'),
     components: {
       OpeningCover: JawaOpeningCover,
       InvitationContent: JawaInvitationContent,
@@ -128,7 +139,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   sunda: {
-    meta: THEME_CATALOG[2],
+    meta: getThemeMeta('sunda'),
     components: {
       OpeningCover: SundaOpeningCover,
       InvitationContent: SundaInvitationContent,
@@ -136,8 +147,17 @@ export const THEMES: Record<string, ThemeDefinition> = {
       MusicPlayer: SharedMusicPlayer,
     },
   },
+  sunda_maroon: {
+    meta: getThemeMeta('sunda_maroon'),
+    components: {
+      OpeningCover: SundaMaroonOpeningCover,
+      InvitationContent: SundaMaroonInvitationContent,
+      AppFrame: SundaMaroonAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
   minimalist: {
-    meta: THEME_CATALOG[3],
+    meta: getThemeMeta('minimalist'),
     components: {
       OpeningCover: MinimalistOpeningCover,
       InvitationContent: MinimalistInvitationContent,
@@ -146,7 +166,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   islamic: {
-    meta: THEME_CATALOG[4],
+    meta: getThemeMeta('islamic'),
     components: {
       OpeningCover: IslamicOpeningCover,
       InvitationContent: IslamicInvitationContent,
@@ -155,7 +175,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   minang: {
-    meta: THEME_CATALOG[5],
+    meta: getThemeMeta('minang'),
     components: {
       OpeningCover: MinangOpeningCover,
       InvitationContent: MinangInvitationContent,
@@ -164,7 +184,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   bali: {
-    meta: THEME_CATALOG[6],
+    meta: getThemeMeta('bali'),
     components: {
       OpeningCover: BaliOpeningCover,
       InvitationContent: BaliInvitationContent,
@@ -173,7 +193,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   batak: {
-    meta: THEME_CATALOG[7],
+    meta: getThemeMeta('batak'),
     components: {
       OpeningCover: BatakOpeningCover,
       InvitationContent: BatakInvitationContent,
@@ -182,7 +202,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   bugis: {
-    meta: THEME_CATALOG[8],
+    meta: getThemeMeta('bugis'),
     components: {
       OpeningCover: BugisOpeningCover,
       InvitationContent: BugisInvitationContent,
@@ -191,7 +211,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   palembang: {
-    meta: THEME_CATALOG[9],
+    meta: getThemeMeta('palembang'),
     components: {
       OpeningCover: PalembangOpeningCover,
       InvitationContent: PalembangInvitationContent,
@@ -200,7 +220,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   spotify: {
-    meta: THEME_CATALOG[10],
+    meta: getThemeMeta('spotify'),
     components: {
       OpeningCover: SpotifyOpeningCover,
       InvitationContent: SpotifyInvitationContent,
@@ -209,7 +229,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   netflix: {
-    meta: THEME_CATALOG[11],
+    meta: getThemeMeta('netflix'),
     components: {
       OpeningCover: NetflixOpeningCover,
       InvitationContent: NetflixInvitationContent,
@@ -218,7 +238,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   apple: {
-    meta: THEME_CATALOG[12],
+    meta: getThemeMeta('apple'),
     components: {
       OpeningCover: AppleOpeningCover,
       InvitationContent: AppleInvitationContent,
@@ -227,7 +247,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   instagram: {
-    meta: THEME_CATALOG[13],
+    meta: getThemeMeta('instagram'),
     components: {
       OpeningCover: InstagramOpeningCover,
       InvitationContent: InstagramInvitationContent,
@@ -236,7 +256,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   vintage: {
-    meta: THEME_CATALOG[14],
+    meta: getThemeMeta('vintage'),
     components: {
       OpeningCover: VintageOpeningCover,
       InvitationContent: VintageInvitationContent,
@@ -245,7 +265,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   toraja: {
-    meta: THEME_CATALOG[15],
+    meta: getThemeMeta('toraja'),
     components: {
       OpeningCover: TorajaOpeningCover,
       InvitationContent: TorajaInvitationContent,
@@ -254,7 +274,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   arcade: {
-    meta: THEME_CATALOG[16],
+    meta: getThemeMeta('arcade'),
     components: {
       OpeningCover: ArcadeOpeningCover,
       InvitationContent: ArcadeInvitationContent,
@@ -263,7 +283,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   royal: {
-    meta: THEME_CATALOG[17],
+    meta: getThemeMeta('royal'),
     components: {
       OpeningCover: RoyalOpeningCover,
       InvitationContent: RoyalInvitationContent,
@@ -272,7 +292,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   dayak: {
-    meta: THEME_CATALOG[18],
+    meta: getThemeMeta('dayak'),
     components: {
       OpeningCover: DayakOpeningCover,
       InvitationContent: DayakInvitationContent,
@@ -281,7 +301,7 @@ export const THEMES: Record<string, ThemeDefinition> = {
     },
   },
   cyberpunk: {
-    meta: THEME_CATALOG[19],
+    meta: getThemeMeta('cyberpunk'),
     components: {
       OpeningCover: CyberpunkOpeningCover,
       InvitationContent: CyberpunkInvitationContent,

@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.39.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.40.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -260,7 +260,22 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 ### 📱 Navigasi Cepat (Floating Bottom Bar)
 - Menu navigasi bawah mengambang dengan indikator *ScrollSpy* yang mendeteksi seksi yang sedang aktif secara otomatis.
 
-### 🎨 Katalog Tema & Desain Undangan Lengkap (Suite 34 Tema: 20 Siap Pakai & 14 Segera Hadir) (v1.39.0)
+### 👑 Tema Sundanese Royal Maroon (Adat Sunda Beludru Maroon & Aksen Emas) (v1.40.0)
+- **Konsep Ningrat Beludru Maroon & Siger Sunda Emas**:
+  - Varian tema adat Sunda kedua yang mengusung palet warna mewah merah maroon ningrat (`#7B1122`, `#800020`, `#3D0B0F`), menggantikan seluruh palet hijau tanpa mengubah kemewahan aksen emas berkilau (`#D4AF37`, `#F5E6A3`, `#E6D5B8`).
+  - Dilengkapi ornamen mahkota Siger Sunda 7 pucuk kembang tanjung dengan batu permata delima merah (*ruby stone accents*).
+- **Adaptasi Bahasa Indonesia yang Santun & Elegan**:
+  - Judul sampul dan pembuka: Menggunakan bahasa universal `THE WEDDING CELEBRATION` berpadu aksen emas `Wilujeng Sumping`.
+  - Teks label tamu: Menggunakan format formal bahasa Indonesia `Kepada Yth. Bapak/Ibu/Saudara/i:` (menggantikan teks lokal Parahyangan).
+  - Tombol aksi sampul: `Buka Undangan` dengan ikon amplop emas `<MailOpen />`.
+  - Sambutan dan pengantar: Pembuka formal bahasa Indonesia dengan salam `Sampurasun • Wilujeng Sumping` serta permohonan rahmat dan ridho Allah SWT.
+  - Profil mempelai: Label `Mempelai Pria` dan `Mempelai Wanita` dengan penghubung ampersand elegan `&`.
+  - Doa penutup: Salam formal `Hatur Nuhun • Terima Kasih` yang memadukan kesantunan adat Priangan dengan bahasa Indonesia resmi.
+- **Suite Aset Luring Mandiri & Animasi Tematik**:
+  - Paket aset lokal SVG vektor mandiri di `public/assets/themes/sunda_maroon/`: `thumbnail.svg`, `pattern.svg`, dan `favicon.svg`.
+  - Dekorasi animasi: `FloatingJasmineRonce` (kelopak ronce melati putih suci dan serpihan emas melayang) serta `AnimatedSundaneseFiligree` pada sudut bingkai `AppFrame`.
+
+### 🎨 Katalog Tema & Desain Undangan Lengkap (Suite 35 Tema: 21 Siap Pakai & 14 Segera Hadir) (v1.40.0)
 - **Ekspansi Katalog Tema Menjadi 34 Tema**:
   Menyajikan kurasi 14 tema baru berstatus *"Segera Hadir"* dengan visual thumbnail SVG vektor mandiri luring (*zero external CDN dependencies*), palet warna tematik 4-titik, daftar fitur unggulan, dan kartu katalog interaktif:
   - **Adat Nusantara (+5 Tema Baru, Total 14 Adat)**:

@@ -17,6 +17,7 @@ import { Login } from '../auth/Login';
 import { DragDropUpload } from './components/DragDropUpload';
 import { EventScheduleEditor } from './components/EventScheduleEditor';
 import { ThemeSelector } from './components/ThemeSelector';
+import { THEME_CATALOG } from '../frontend/themes/catalog';
 import { ReceptionCheckin } from './components/ReceptionCheckin';
 import { BudgetVendorTracker } from './components/BudgetVendorTracker';
 import { SeatingChartManager } from './components/SeatingChartManager';
@@ -266,8 +267,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
       setSaveSuccess(true);
       showToast('success', 'Perubahan berhasil disimpan ke Firestore!');
       setTimeout(() => setSaveSuccess(false), 3000);
-    } catch (err) {
-      console.error('Failed to save config:', err);
+    } catch {
       showToast('error', 'Gagal menyimpan perubahan ke Firestore.');
     } finally {
       setIsSaving(false);
@@ -2315,11 +2315,11 @@ Wassalamu'alaikum Wr. Wb.`;
                     currentThemeId={formData.theme || 'betawi'}
                     onSelectTheme={(themeId) => {
                       setFormData({ ...formData, theme: themeId });
+                      const selectedMeta = THEME_CATALOG.find((t) => t.id === themeId);
+                      const themeName = selectedMeta?.name || themeId;
                       showToast(
                         'success',
-                        `Tema berhasil diubah ke ${
-                          themeId === 'jawa' ? 'Javanese Royal Kraton' : 'Betawi Heritage'
-                        }! Tekan tombol Simpan Perubahan di bawah.`
+                        `Tema berhasil dipilih: ${themeName}! Tekan tombol Simpan Perubahan di bawah.`
                       );
                     }}
                   />

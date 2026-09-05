@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .stroke-gold { stroke: #D4AF37; stroke-width: 1.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .stroke-maroon { stroke: #7B1122; stroke-width: 1; fill: none; }
+      .fill-gold { fill: #D4AF37; }
+      .fill-maroon { fill: #7B1122; }
+    </style>
+  </defs>
+  <!-- Background Diamond Grid -->
+  <path d="M0,30 L30,0 L60,30 L30,60 Z" class="stroke-gold" opacity="0.4" />
+  <path d="M10,30 L30,10 L50,30 L30,50 Z" class="stroke-maroon" opacity="0.35" />
+
+  <!-- Center Priangan Rosette -->
+  <circle cx="30" cy="30" r="4" class="fill-maroon" stroke="#D4AF37" stroke-width="0.8" opacity="0.8" />
+  <circle cx="30" cy="30" r="1.5" class="fill-gold" />
+
+  <!-- Corner Dots -->
+  <circle cx="0" cy="0" r="2" class="fill-gold" opacity="0.5" />
+  <circle cx="60" cy="0" r="2" class="fill-gold" opacity="0.5" />
+  <circle cx="0" cy="60" r="2" class="fill-gold" opacity="0.5" />
+  <circle cx="60" cy="60" r="2" class="fill-gold" opacity="0.5" />
+</svg>

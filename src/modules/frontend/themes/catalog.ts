@@ -53,6 +53,23 @@ export const THEME_CATALOG: ThemeMeta[] = [
     favicon: '/assets/themes/sunda/favicon.svg',
   },
   {
+    id: 'sunda_maroon',
+    name: 'Sundanese Royal Maroon',
+    category: 'adat',
+    subtitle: 'Adat Sunda Elegan Beludru Maroon & Aksen Emas',
+    description: 'Keanggunan mahkota Siger Sunda berbalut beludru merah maroon ningrat, ronce melati harum, sentuhan bahasa Indonesia yang santun, dan aksen emas berkilau.',
+    thumbnail: '/assets/themes/sunda_maroon/thumbnail.svg',
+    previewColors: {
+      primary: '#7B1122',
+      secondary: '#E6D5B8',
+      accent: '#D4AF37',
+      bg: '#FAF5F5',
+    },
+    features: ['Mahkota Siger Sunda Emas', 'Beludru Maroon & Gold', 'Wilujeng Sumping Siger', 'Gerbang Bambu Priangan'],
+    status: 'ready',
+    favicon: '/assets/themes/sunda_maroon/favicon.svg',
+  },
+  {
     id: 'minimalist',
     name: 'Modern Botanical Minimalist',
     category: 'modern',

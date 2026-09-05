@@ -187,6 +187,33 @@ export const THEME_TOKENS: Record<string, ThemeVisualTokens> = {
     floatingBtnActiveText: '#D4AF37',
   },
 
+  // 👑 Sundanese Royal Maroon (Velvet Maroon & Royal Gold Siger)
+  sunda_maroon: {
+    isDark: false,
+    bg: '#FAF5F5',
+    cardBg: 'rgba(255, 255, 255, 0.9)',
+    cardBorder: 'rgba(123, 17, 34, 0.22)',
+    textPrimary: '#2D080C',
+    textMuted: '#6B3138',
+    primary: '#7B1122',
+    secondary: '#E6D5B8',
+    accent: '#D4AF37',
+    inputBg: 'rgba(250, 245, 245, 0.85)',
+    inputBorder: 'rgba(123, 17, 34, 0.25)',
+    inputText: '#2D080C',
+    btnPrimaryBg: '#7B1122',
+    btnPrimaryText: '#FFFFFF',
+    navBg: 'rgba(255, 255, 255, 0.92)',
+    navBorder: 'rgba(123, 17, 34, 0.2)',
+    navActive: '#7B1122',
+    navInactive: 'rgba(45, 8, 12, 0.45)',
+    floatingBtnBg: 'rgba(255, 255, 255, 0.95)',
+    floatingBtnBorder: 'rgba(123, 17, 34, 0.3)',
+    floatingBtnText: '#7B1122',
+    floatingBtnRing: 'rgba(123, 17, 34, 0.2)',
+    floatingBtnActiveText: '#D4AF37',
+  },
+
   // 🌿 Modern Botanical Minimalist (Clean Slate & Eucalyptus)
   minimalist: {
     isDark: false,

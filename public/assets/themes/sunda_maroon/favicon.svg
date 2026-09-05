@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="favMaroonGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3C4" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#AA7C11" />
+    </linearGradient>
+  </defs>
+  <!-- Circle Dark Maroon Background -->
+  <circle cx="32" cy="32" r="30" fill="#2D080C" stroke="url(#favMaroonGold)" stroke-width="2.5" />
+
+  <!-- Siger Crown Silhouette -->
+  <path d="M 16,42 C 22,45 42,45 48,42 C 44,38 32,35 24,35 Z" fill="#7B1122" stroke="url(#favMaroonGold)" stroke-width="1.5" />
+  <path d="M 32,14 L 35,32 L 29,32 Z" fill="url(#favMaroonGold)" />
+  <circle cx="32" cy="13" r="3" fill="#FFF3C4" />
+  <path d="M 23,20 L 26,33 L 20,33 Z" fill="url(#favMaroonGold)" />
+  <circle cx="23" cy="19" r="2.5" fill="#FFF3C4" />
+  <path d="M 41,20 L 44,33 L 38,33 Z" fill="url(#favMaroonGold)" />
+  <circle cx="41" cy="19" r="2.5" fill="#FFF3C4" />
+
+  <!-- Center Ruby Dot -->
+  <circle cx="32" cy="38" r="3.5" fill="#7B1122" stroke="url(#favMaroonGold)" stroke-width="1.2" />
+  <circle cx="32" cy="38" r="1.5" fill="#FFF3C4" />
+</svg>

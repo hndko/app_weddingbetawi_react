@@ -143,9 +143,11 @@ Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda k
 ### C. Sub-Tab Galeri Foto
 * Tambahkan foto-foto pra-nikah (*prewedding*) melalui dropzone drag & drop atau URL langsung.
 * Dilengkapi daftar kartu pratinjau foto dan tombol hapus individual.
+* **Pratinjau Layar Penuh (Lightbox Slider)**: Klik kartu foto mana saja pada daftar berkas terunggah untuk membuka foto penuh berlatar gelap & blur. Anda dapat menggeser foto ke kiri/kanan menggunakan tombol navigasi atau tombol panah keyboard (`←` / `→`), serta menutupnya dengan tombol `Esc` atau ikon silang.
 
 ### D. Sub-Tab Kisah Cinta (Love Story)
 * Tambah, edit, atau hapus momen perjalanan asmara kedua mempelai dengan mengisi **Tahun**, **Judul Momen**, dan **Cerita Singkat**.
+* **Pengaturan Kronologi Fleksibel (Tombol Naik & Turun)**: Gunakan tombol **Naik** (`↑`) dan **Turun** (`↓`) di pojok kanan atas setiap kartu momen untuk memindahkan urutan cerita tanpa harus menghapus atau mengetik ulang. Penomoran urut (`#1`, `#2`, dst.) otomatis menyesuaikan.
 
 ### E. Sub-Tab Musik & Hadiah (Playlist & Digital Gift)
 * Masukkan URL playlist lagu dari **YouTube** atau tautan audio **Google Drive**.

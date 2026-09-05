@@ -6,7 +6,7 @@ import {
   MapPin, Search, RotateCcw, User, KeyRound, Globe, FileText, CheckCircle2, 
   Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
   ArrowUpRight, ShieldCheck, Sparkles, BookOpen, Upload, UserPlus, 
-  FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck
+  FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
@@ -263,6 +263,17 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleMoveStory = (idx: number, direction: 'up' | 'down') => {
+    const list = [...(formData.loveStory || [])];
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+    const temp = list[idx];
+    list[idx] = list[targetIdx];
+    list[targetIdx] = temp;
+    setFormData({ ...formData, loveStory: list });
+    showToast('success', `Momen cerita dipindahkan ke posisi #${targetIdx + 1}`);
   };
 
   const requestDeleteWish = (wish: Wish) => {
@@ -2193,66 +2204,117 @@ Wassalamu'alaikum Wr. Wb.`;
                     </div>
 
                     <div className="flex flex-col gap-3">
-                      {(formData.loveStory || []).map((story, idx) => (
-                        <div key={idx} className="bg-gray-50/70 border border-gray-200 rounded-2xl p-4 flex flex-col gap-2.5 relative">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newArr = [...(formData.loveStory || [])];
-                              newArr.splice(idx, 1);
-                              setFormData({ ...formData, loveStory: newArr });
-                            }}
-                            className="absolute top-3 right-3 text-gray-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-white transition-colors cursor-pointer"
-                            title="Hapus bagian cerita ini"
-                            aria-label="Hapus bagian cerita ini"
-                          >
-                            <Trash2 size={15} />
-                          </button>
+                      {(formData.loveStory || []).map((story, idx) => {
+                        const totalStories = (formData.loveStory || []).length;
+                        return (
+                          <div key={idx} className="bg-gray-50/70 border border-gray-200 rounded-2xl p-4 flex flex-col gap-3 relative shadow-2xs">
+                            {/* Card Header with Reorder buttons & Delete button */}
+                            <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
+                              <div className="flex items-center gap-2">
+                                <span className="w-6 h-6 rounded-lg bg-sage/20 text-sage-dark font-bold text-xs flex items-center justify-center">
+                                  #{idx + 1}
+                                </span>
+                                <span className="text-xs font-semibold text-gray-700">
+                                  {story.title ? story.title : `Momen Cerita #${idx + 1}`}
+                                </span>
+                              </div>
 
-                          <div className="relative flex items-center pr-10 text-xs">
-                            <Calendar className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                            <input
-                              type="text"
-                              placeholder="Tahun / Momen (mis. 2021 atau Pertemuan Pertama)"
-                              value={story.year}
-                              onChange={(e) => {
-                                const newArr = [...(formData.loveStory || [])];
-                                newArr[idx] = { ...story, year: e.target.value };
-                                setFormData({ ...formData, loveStory: newArr });
-                              }}
-                              className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage"
-                            />
+                              <div className="flex items-center gap-1">
+                                {/* Button Move Up */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveStory(idx, 'up')}
+                                  disabled={idx === 0}
+                                  className={`p-1.5 rounded-lg border border-gray-200 bg-white transition-colors ${
+                                    idx === 0
+                                      ? 'opacity-30 cursor-not-allowed text-gray-300'
+                                      : 'text-gray-600 hover:text-sage-dark hover:border-sage/50 cursor-pointer shadow-2xs'
+                                  }`}
+                                  title="Pindahkan ke atas (sebelumnya)"
+                                  aria-label={`Pindahkan cerita #${idx + 1} ke atas`}
+                                >
+                                  <ArrowUp size={13} />
+                                </button>
+
+                                {/* Button Move Down */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveStory(idx, 'down')}
+                                  disabled={idx === totalStories - 1}
+                                  className={`p-1.5 rounded-lg border border-gray-200 bg-white transition-colors ${
+                                    idx === totalStories - 1
+                                      ? 'opacity-30 cursor-not-allowed text-gray-300'
+                                      : 'text-gray-600 hover:text-sage-dark hover:border-sage/50 cursor-pointer shadow-2xs'
+                                  }`}
+                                  title="Pindahkan ke bawah (berikutnya)"
+                                  aria-label={`Pindahkan cerita #${idx + 1} ke bawah`}
+                                >
+                                  <ArrowDown size={13} />
+                                </button>
+
+                                {/* Button Delete */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newArr = [...(formData.loveStory || [])];
+                                    newArr.splice(idx, 1);
+                                    setFormData({ ...formData, loveStory: newArr });
+                                    showToast('success', 'Momen cerita berhasil dihapus');
+                                  }}
+                                  className="p-1.5 rounded-lg border border-gray-200 bg-white text-gray-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-colors cursor-pointer shadow-2xs ml-1"
+                                  title="Hapus bagian cerita ini"
+                                  aria-label={`Hapus cerita #${idx + 1}`}
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="relative flex items-center text-xs">
+                              <Calendar className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                              <input
+                                type="text"
+                                placeholder="Tahun / Momen (mis. 2021 atau Pertemuan Pertama)"
+                                value={story.year}
+                                onChange={(e) => {
+                                  const newArr = [...(formData.loveStory || [])];
+                                  newArr[idx] = { ...story, year: e.target.value };
+                                  setFormData({ ...formData, loveStory: newArr });
+                                }}
+                                className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage"
+                              />
+                            </div>
+                            <div className="relative flex items-center text-xs">
+                              <BookOpen className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
+                              <input
+                                type="text"
+                                placeholder="Judul Momen (mis. Awal Berjumpa)"
+                                value={story.title}
+                                onChange={(e) => {
+                                  const newArr = [...(formData.loveStory || [])];
+                                  newArr[idx] = { ...story, title: e.target.value };
+                                  setFormData({ ...formData, loveStory: newArr });
+                                }}
+                                className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage font-medium"
+                              />
+                            </div>
+                            <div className="relative flex text-xs">
+                              <MessageSquare className="absolute left-2.5 top-2 text-gray-400 pointer-events-none" size={14} />
+                              <textarea
+                                placeholder="Tuliskan deskripsi cerita singkat..."
+                                value={story.description}
+                                onChange={(e) => {
+                                  const newArr = [...(formData.loveStory || [])];
+                                  newArr[idx] = { ...story, description: e.target.value };
+                                  setFormData({ ...formData, loveStory: newArr });
+                                }}
+                                rows={3}
+                                className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage resize-none"
+                              />
+                            </div>
                           </div>
-                          <div className="relative flex items-center text-xs">
-                            <BookOpen className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                            <input
-                              type="text"
-                              placeholder="Judul Momen (mis. Awal Berjumpa)"
-                              value={story.title}
-                              onChange={(e) => {
-                                const newArr = [...(formData.loveStory || [])];
-                                newArr[idx] = { ...story, title: e.target.value };
-                                setFormData({ ...formData, loveStory: newArr });
-                              }}
-                              className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage font-medium"
-                            />
-                          </div>
-                          <div className="relative flex text-xs">
-                            <MessageSquare className="absolute left-2.5 top-2 text-gray-400 pointer-events-none" size={14} />
-                            <textarea
-                              placeholder="Tuliskan deskripsi cerita singkat..."
-                              value={story.description}
-                              onChange={(e) => {
-                                const newArr = [...(formData.loveStory || [])];
-                                newArr[idx] = { ...story, description: e.target.value };
-                                setFormData({ ...formData, loveStory: newArr });
-                              }}
-                              rows={3}
-                              className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:ring-1 focus:ring-sage resize-none"
-                            />
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}

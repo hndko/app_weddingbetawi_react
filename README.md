@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.7.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.8.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -202,7 +202,7 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 ### 📱 Navigasi Cepat (Floating Bottom Bar)
 - Menu navigasi bawah mengambang dengan indikator *ScrollSpy* yang mendeteksi seksi yang sedang aktif secara otomatis.
 
-### 🔐 Panel Modules Responsif & Standar UI/UX Interaktif (v1.7.0)
+### 🔐 Panel Modules Responsif & Standar UI/UX Interaktif (v1.8.0)
 - **Arsitektur Dashboard Modern**: Tata letak modular di `/modules` dengan Sidebar desktop (expand/collapse), Mobile Slide-over Drawer (hamburger toggle), Topbar dengan breadcrumb navigasi dinamis, dan tombol pintas Live Preview.
 - **Menu 1: Dashboard Overview (Ringkasan Real-Time)**:
   - Banner hitung mundur hari-H pernikahan interaktif.
@@ -219,6 +219,8 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
   - **Mode Cepat (Generator Tunggal)**: Opsi pembuatan link personal dadakan untuk satu nama tamu secara instan.
 - **Menu 3: Manajemen Konten Terpartisi (Sub-Tabs)**: 
   - Tab pill rapi untuk Mempelai, Acara & Lokasi, Galeri Foto, Kisah Cinta, Musik & Hadiah/QRIS, serta SEO & Metadata dengan bilah simpan melayang (*sticky action bar*).
+  - **Modal Lightbox Slider Berkas Terunggah**: Kartu pratinjau foto dapat diklik untuk membuka foto penuh dalam modal Lightbox interaktif berlatar gelap & blur, tombol geser Kiri/Kanan, counter foto, dan shortcut keyboard (`ArrowLeft`, `ArrowRight`, `Escape`).
+  - **Reorder Timeline Kisah Cinta (Tombol Naik & Turun)**: Pengaturan kronologi momen kisah cinta fleksibel dengan tombol **Naik (`<ArrowUp />`)** dan **Turun (`<ArrowDown />`)** di samping penomoran dinamis (`#1`, `#2`, dst.), mengeliminasi keharusan menghapus dan mengetik ulang jika terjadi kesalahan urutan.
   - **Pemilih Tanggal & Waktu Interaktif (Date & Time Picker)**:
     - Target Countdown menggunakan `<input type="datetime-local">` yang otomatis menghasilkan format ISO 8601 dengan offset zona waktu (`+07:00`) tanpa ketik manual.
     - Jadwal Akad & Resepsi menggunakan `<input type="date">` cerdas yang otomatis mengekstrak nama Hari Indonesia (misal: *Minggu*) dan penanggalan formal (misal: *20 September 2026*).

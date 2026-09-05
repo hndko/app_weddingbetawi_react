@@ -119,10 +119,13 @@ graph LR
    - Tabel berpenomoran urut otomatis `#` (1-indexed), jam kedatangan presisi, dan metode masuk (*Scan QR* / *Manual*).
    - Tombol **"Unduh CSV Rekap"** berformat UTF-8 BOM untuk laporan pertanggungjawaban keluarga pasca resepsi.
 
-### B. Tiket Digital & QR Pass Sisi Tamu:
+### B. Tiket Digital & E-Ticket QR Pass (v1.37.0):
 - Tamu yang membuka undangan (baik via link WhatsApp `?to=Nama` maupun setelah mengisi formulir RSVP) memiliki tombol mengambang emas dan tombol di seksi RSVP: **"🎟️ Buka E-Ticket & QR Guest Pass"**.
-- Menampilkan kartu tiket elegan berornamen emas, nama tamu, kode tiket unik (misal: `WDG-CF46B1`), jumlah pax, dan QR Code resolusi tinggi.
-- Tombol **"Simpan Tiket ke HP (PNG)"**: Mengonversi tiket menjadi berkas gambar beresolusi tinggi langsung ke galeri foto tamu via Canvas API tanpa internet.
+- Menampilkan kartu tiket elegan berornamen emas, inisial monogram mempelai, nama tamu personal, kode tiket unik (misal: `WDG-CF46B1`), jumlah pax, zona nomor meja (*seating*), dan QR Code kontras tinggi.
+- **Dua Opsi Format Unduhan Cepat (Dual Export Suite)**:
+  1. **Simpan Gambar HD (PNG)**: Mengonversi tiket menjadi berkas gambar beresolusi tinggi (1200x1850 px) langsung ke galeri foto smartphone tamu via Canvas API tanpa internet.
+  2. **Unduh Tiket PDF (Siap Cetak)**: Menghasilkan dokumen PDF ukuran A6 Portrait yang terformat rapi dan presisi via `jsPDF` untuk kemudahan pencetakan fisik atau arsip digital.
+- **Akses Tiket di Seluruh Layar**: Tombol unduh PNG dan PDF tersedia pada sisi tamu (`GuestQRPassModal`), panel pengelola tamu (`Panel.tsx`), dan meja resepsi resepsionis (`ReceptionCheckin.tsx`).
 
 ---
 
@@ -189,10 +192,22 @@ Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda k
 * Masukkan **Nama Gedung / Masjid**, **Alamat Lengkap**, dan **Tautan Google Maps**.
 * **Integrasi Kalender Tamu Otomatis**: Setiap perubahan jadwal Akad & Resepsi langsung memperbarui data tombol *"Simpan ke Kalender"* di kartu acara publik, memungkinkan tamu mengimpor jadwal ke **Google Calendar** atau **Apple Calendar / iCal (.ics)** dengan alarm pengingat H-1 dan 1 Jam sebelum acara.
 
-### C. Sub-Tab Galeri Foto
-* Tambahkan foto-foto pra-nikah (*prewedding*) melalui dropzone drag & drop atau URL langsung.
-* Dilengkapi daftar kartu pratinjau foto dan tombol hapus individual.
-* **Pratinjau Layar Penuh (Lightbox Slider)**: Klik kartu foto mana saja pada daftar berkas terunggah untuk membuka foto penuh berlatar gelap & blur. Anda dapat menggeser foto ke kiri/kanan menggunakan tombol navigasi atau tombol panah keyboard (`←` / `→`), serta menutupnya dengan tombol `Esc` atau ikon silang.
+### C. Sub-Tab Galeri Foto & Pilihan Konsep Tata Letak (v1.38.0)
+* **Unggah Foto Galeri**: Tambahkan foto-foto pra-nikah (*prewedding*) melalui dropzone drag & drop interaktif atau URL langsung. Dilengkapi kartu pratinjau foto dan tombol hapus individual.
+* **4 Pilihan Konsep Tata Letak Galeri (Visual Card Selector)**:
+  Pengantin dapat memilih konsep tampilan galeri foto di halaman undangan melalui kartu pemilih visual:
+  1. **Editorial Asymmetric (`editorial`)** *(Default Populer)*:
+     - Tata letak asimetris dinamis bergaya majalah *high-fashion* dengan ritme berulang yang elegan (1 foto portrait rasio 4/5, 2 foto kotak rasio 1:1, dan 1 foto landscape rasio 3/2).
+     - Mendukung jumlah foto tanpa batas (*infinite repeating loop*).
+  2. **Modern Masonry (`masonry`)** *(Rekomendasi)*:
+     - Grid 2-kolom bertingkat ala *Pinterest* yang mempertahankan proporsi asli foto tanpa terpotong (*aspect-ratio preservation*).
+     - Dilengkapi animasi pemuatan bertahap (*staggered entrance*).
+  3. **Interactive Carousel / 3D Slider (`carousel`)** *(Interaktif)*:
+     - Slider horizontal *swipeable* dengan kartu tengah membesar (*scale-up effect*), tombol panah navigasi, deretan *thumbnail strip* di bagian bawah, dan titik indikator dot adaptif tema.
+  4. **Polaroid Stack (`polaroid`)** *(Artistik)*:
+     - Gaya cetak foto polaroid klasik berbingkai putih dengan bayangan realistis, efek rotasi kemiringan acak halus (-2° s/d +2°), hiasan selotip artistik (*washi tape*), dan penomoran momen manis.
+* **Pratinjau Layar Penuh (Universal Fullscreen Lightbox)**:
+  Setiap foto pada seluruh 4 pilihan layout dapat diklik oleh tamu untuk membuka modal Lightbox resolusi tinggi dengan tombol geser Kiri/Kanan, nomor urut foto, dan pintasan keyboard (`←`, `→`, `Esc`).
 
 ### D. Sub-Tab Kisah Cinta (Love Story)
 * Tambah, edit, atau hapus momen perjalanan asmara kedua mempelai dengan mengisi **Tahun**, **Judul Momen**, dan **Cerita Singkat**.
@@ -206,30 +221,62 @@ Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda k
 ### F. Sub-Tab SEO & Metadata
 * **Judul Halaman**, **Deskripsi Singkat**, dan **Foto Thumbnail Preview** saat dibagikan ke WhatsApp dan media sosial.
 
-### G. Sub-Tab Tema Desain (Multi-Theme Engine)
-* **Katalog Tema Desain**: Pilih nuansa visual undangan dari berbagai konsep adat dan modern Nusantara:
-  - **Betawi Heritage** (*Adat Tradisional*): Motif Gigi Balang, siluet Ondel-ondel, rumah Kebaya, palet Sage Green & Warm Gold.
-  - **Javanese Royal Kraton** (*Adat Tradisional*): Ornamen Gunungan Wayang Kulit autentik, pembuka Serat Ulem Pawiwahan Ageng, bingkai ukiran emas, palet Forest Green & Burnished Gold.
-  - **Sundanese Parahyangan** (*Adat Tradisional*): Ornamen Mahkota Siger Sunda kembang tanjung emas, ronce melati untun suci, gerbang lengkung bambu Priangan, palet Parahyangan Forest Green & Soft Champagne Gold.
-  - **Modern Botanical Minimalist** (*Modern & Intimate*): Cabang daun eucalyptus & olive sprig halus, garis lengkung geometris modern, palet Slate Charcoal, Soft Sage & Off-White.
-  - **Islamic Arabian Garden** (*Nuansa Islami & Sakral*): Ornamen lengkungan kubah Moorish / Arabesque Arch, bintang 8-sudut Rub el Hizb, bulan sabit Hilal bercahaya, doa QS. Ar-Rum: 21, palet Midnight Oasis, Arabian Teal & Royal Arabesque Gold.
-  - **Minangkabau Royal Songket** (*Adat Tradisional*): Ornamen atap Rumah Gadang Gonjong megah, mahkota Suntiang emas bertingkat, ukiran Pucuak Rebung, pepatah Adat Basandi Syarak, palet Royal Crimson Maroon & Antique Songket Gold.
-  - **Balinese Royal Temple** (*Adat Tradisional*): Ornamen Gapura Candi Bentar pura, payung Tedung Agung, penjor emas, ukiran Patra Punggel, kelopak Bunga Jepun (Kamboja) melayang, sloka Rgveda 10.85.42, salam Om Swastyastu & Matur Suksma, palet Sandstone Gold & Deep Brick Stone.
-  - **Batak Toba Royal Gorga** (*Adat Tradisional*): Ornamen ukiran Gorga Simeol-meol & Boraspati sakral, siluet Ruma Bolon dengan puncak tanduk kerbau, motif tenun Ulos Sadum, salam Horas Jala Gabe, palet Tolu Bolit merah marun, arang, dan emas tenun.
-  - **Bugis-Makassar Royal Baju Bodo** (*Adat Tradisional*): Ornamen wadah kue adat Bosara renda emas, siluet atap istana Saoraja / Bola Soba berhias timpa laja, corak tenun sutra Lipa Sabbe, aksara sakral Lontara Salama', taburan bente & irisan daun pandan wangi berkat malam Mappacci, palet Marun Sutra Baruga, Emas Saloko, dan Jingga Terakota.
-  - **Palembang Sriwijaya Songket Aesan Gede** (*Adat Tradisional*): Kemegahan kerajaan Sriwijaya berhias Mahkota Kesuhun Aesan Gede bertingkat dengan kembang goyang emas, ornamen kalung Teratai Dada, atap Rumah Limas berhias simbar tanduk kambing, kain Songket Lepus benang emas murni, taburan bunga Cempaka & Melati suci, palet Marun Sriwijaya, Emas Songket Lepus, dan Kuning Cempaka.
-  - **Spotify Interactive** (*Modern & Viral*): Konsep pemutar musik streaming Spotify dengan piringan hitam vinyl berputar 360°, lencana Verified Newlyweds, timeline kisah cinta berformat Album Tracklist, partikel not balok melayang, dan palet gelap Spotify Slate & Neon Green.
-  - **Netflix Cinematic Premiere** (*Modern & Viral*): Konsep serial streaming OTT Netflix / The Wedding Premiere dengan efek suara sinematik "Ta-Dum!" (Web Audio API Synthesizer), billboard film 99% Match, rangkaian acara format Episode 1 & 2, profil Bintang Utama & Produser (Cast & Crew), dan palet Netflix Black `#141414` & Netflix Red `#E50914`.
-  - **Apple iOS Bento Grid** (*Modern & Viral*): Konsep modern ekosistem Apple iOS & Bento Grid dengan Dynamic Island interaktif (live wedding countdown & love battery), sampul pembuka iOS Lock Screen dengan jam digital besar, notifikasi masuk, dan suara buka kunci mekanik, kartu amplop digital bergaya Apple Wallet dengan chip EMV dan nada lonceng sukses, serta konfirmasi RSVP & doa restu berformat balon obrolan iMessage.
-  - **Instagram Stories & Reels** (*Modern & Viral*): Konsep modern viral Instagram Stories berformat 9:16 vertikal imersif dengan progress bar tersegmentasi, avatar ring gradien Close Friends, stiker countdown live, RSVP polling interaktif, stiker musik berequalizer, dan efek reaksi hati melayang double-tap.
-  - **Vintage Newspaper Gazette** (*Modern & Editorial*): Konsep surat kabar cetak broadsheet klasik tahun 1920-an "The Wedding Gazette" berbalut kertas koran antik, masthead retro, stempel pos berputar, headline berita pernikahan, tata letak multi-kolom editorial, dan efek audio mesin tik mekanik & lonceng ganti baris (*typewriter mechanical clack & return bell*).
-* **Filter Kategori Tema**: Saring katalog berdasarkan tab *Semua*, *Adat Tradisional*, *Modern Minimalist*, atau *Nuansa Islami*.
-* **Titik Palet Warna Interaktif**: Setiap kartu tema memperlihatkan 3 warna khas tema tersebut.
-* **1-Klik Ganti Tema**: Klik tombol **"Gunakan Tema Ini"** untuk beralih tema seketika ke seluruh tamu secara instan tanpa perlu memprogram ulang.
-* **Tautan Pratinjau Langsung**: Klik tautan *"Coba Pratinjau Langsung (Demo)"* untuk melihat tampilan tema via parameter URL khusus (contoh: `?theme=jawa`) tanpa mengubah tema utama pengantin.
+### G. Sub-Tab Tema Desain (Suite 34 Tema: 20 Siap Pakai & 14 Segera Hadir) (v1.39.0)
+Panel Admin menyediakan katalog tema paling komprehensif dengan total **34 tema** (20 siap pakai dan 14 segera hadir) yang mencakup berbagai konsep adat Nusantara, modern pop culture, dan nuansa islami syar'i:
+
+#### 1. Tema Siap Pakai (Status `ready` - 20 Tema):
+* **Adat Tradisional Nusantara (9 Tema)**:
+  - **Betawi Heritage** (`betawi`): Ornamen Gigi Balang, siluet Ondel-ondel, arsitektur Rumah Kebaya, bunga melayang.
+  - **Javanese Royal Kraton** (`jawa`): Ornamen Gunungan Wayang Kulit autentik, pembuka Serat Ulem Pawiwahan Ageng, ukiran keraton emas.
+  - **Sundanese Parahyangan** (`sunda`): Mahkota Siger Sunda kembang tanjung, ronce melati suci, gerbang lengkung bambu Priangan.
+  - **Minangkabau Royal Songket** (`minang`): Atap Rumah Gadang Gonjong, mahkota Suntiang emas bertingkat, ukiran Pucuak Rebung.
+  - **Balinese Royal Temple** (`bali`): Gapura Candi Bentar, payung Tedung Agung, penjor emas, ukiran Patra Punggel, kelopak Bunga Jepun melayang.
+  - **Batak Toba Royal Gorga** (`batak`): Ukiran Gorga Simeol-meol & Boraspati sakral, siluet Ruma Bolon tanduk kerbau, tenun Ulos Sadum.
+  - **Bugis-Makassar Royal Baju Bodo** (`bugis`): Wadah kue adat Bosara emas, istana Saoraja timpa laja, corak tenun sutra Lipa Sabbe, aksara Lontara.
+  - **Palembang Sriwijaya Songket Aesan Gede** (`palembang`): Mahkota Kesuhun Aesan Gede, kalung Teratai Dada, Rumah Limas simbar tanduk kambing, kain Songket Lepus benang emas murni.
+  - **Toraja Tongkonan Royal Heritage** (`toraja`): Atap melengkung perahu Rumah Adat Tongkonan, kepala kerbau Tedong Bonga emas, ukiran Pa'teddong mistis.
+  - **Dayak Kenyah Borneo** (`dayak`): Perisai sakral Talawang, bulu burung Enggang, sulur Kenyah Aso Naga, dan petikan musik Sape'.
+* **Modern Minimalist & Pop Culture (9 Tema)**:
+  - **Modern Botanical Minimalist** (`minimalist`): Dedaunan eucalyptus cat air, tipografi serif bersih, tata letak lapang tanpa sekat.
+  - **Vintage Newspaper Gazette** (`vintage`): Surat kabar broadsheet antik tahun 1920-an, masthead retro, stempel pos, dan efek audio mesin tik.
+  - **Netflix Cinematic Premiere** (`netflix`): Serial streaming OTT, intro audio "Ta-Dum!", billboard 99% Match, rangkaian Episode 1 & 2.
+  - **Spotify Interactive** (`spotify`): Pemutar musik streaming, piringan hitam vinyl berputar 360°, album tracklist, not balok melayang.
+  - **Instagram Stories & Reels** (`instagram`): Antarmuka 9:16 vertikal imersif, progress bar segmen, polling RSVP, stiker audio, efek tap hati.
+  - **Apple iOS Bento Grid** (`apple`): Ekosistem iOS Bento Grid, Dynamic Island, Lock Screen jam besar, kartu Apple Wallet, balon iMessage.
+  - **Arcade Retro 8-Bit Gaming** (`arcade`): Video game retro 8-bit/16-bit, dialog RPG Player 1 & 2 Co-Op, Love Bar, chiptune sintetis.
+  - **Royal Decree & Wax Seal** (`royal`): Titah kerajaan abad pertengahan, gulungan perkamen antik, stempel segel lilin merah 3D, harpa magis.
+  - **Cyberpunk Neo-Jakarta** (`cyberpunk`): Cyberpunk Night City, sirkuit neon cyan/magenta, HUD biometrik kuantum, efek digital glitch dinamis.
+* **Syar'i / Islami (1 Tema)**:
+  - **Islamic Arabian Garden** (`islamic`): Lengkungan kubah Moorish / Arabesque Arch, bintang 8-sudut Rub el Hizb, kaligrafi Bismillah.
+
+#### 2. Tema Segera Hadir (Status `coming_soon` - 14 Tema):
+* **Adat Nusantara (+5 Tema)**:
+  - **Aceh Serambi Mekkah** (`aceh`): Pinto Aceh geometris, Kupiah Meukeutop emas, sulur Awan Siweueh.
+  - **Banjar Baamar Galung** (`banjar`): Mahkota Baamar Galung kemilau intan Martapura, Rumah Bubungan Tinggi.
+  - **Melayu Riau Teluk Belanga** (`melayu`): Tenun songket Siak benang emas, hiasan atap Selembayung, kuning diraja.
+  - **Sasak Lombok Bale Tani** (`sasak`): Kain tenun ikat Subahnale khas Sade, lumbung tradisional Bale Tani, siluet Gunung Rinjani.
+  - **Papua Cenderawasih Paradise** (`papua`): Mahkota bulu Cenderawasih, ukiran kayu Asmat magis, noken, zamrud Raja Ampat.
+* **Modern & Pop Culture (+5 Tema)**:
+  - **IMAX Cinema Premiere** (`cinema`): Tiket gala premiere barcode robek, sorotan spotlight premiere Hollywood.
+  - **First-Class Boarding Pass** (`airline`): Format boarding pass maskapai first-class IATA, paspor visa cinta, radar rute.
+  - **Romantic Anime & Manga Panel** (`anime`): Estetika manga & anime Jepang, guguran sakura, langit senja Makoto Shinkai.
+  - **Glassmorphism Aurora Hologram** (`glassmorphism`): Frosted glass tembus pandang, pembiasan prisma pelangi aurora borealis.
+  - **Retro 80s Synthwave & Neon** (`synthwave`): Wireframe 3D outrun, matahari terbenam neon bergaris, palem neon 80-an.
+* **Syar'i / Islami (+4 Tema)**:
+  - **Ottoman Empire Istanbul** (`ottoman`): Keramik Iznik biru pirus, kaligrafi Thuluth emas, kubah Hagia Sophia, bulan sabit kembar.
+  - **Moroccan Riad & Zellige** (`moroccan`): Mozaik geometris Zellige terakota, lengkungan tapal kuda Moorish, lentera Marrakech.
+  - **Al-Andalus Granada Alhambra** (`andalusia`): Relief plafon Muqarnas, air mancur marmer Generalife Alhambra, daun zaitun.
+  - **Madinah Nabawi Serenity** (`nabawi`): Siluet Kubah Hijau (Green Dome), pilar marmer putih Rawdah, payung hidrolik mekar.
+
+#### 3. Interaktivitas Katalog Tema:
+* **Filter Kategori Tema**: Saring katalog dengan tombol tab *Semua Gaya*, *Adat Nusantara*, *Modern*, atau *Syar'i / Islami*.
+* **Titik Palet Warna Interaktif**: Setiap kartu tema memperlihatkan 4 titik warna khas (`primary`, `secondary`, `accent`, `bg`).
+* **1-Klik Ganti Tema**: Klik tombol **"Aktifkan Tema"** pada tema yang berstatus *ready* untuk mengaktifkan tema secara instan.
+* **Tautan Pratinjau Langsung**: Klik ikon tautan eksternal untuk menguji coba tampilan tema via URL query parameter (misal: `?theme=dayak` atau `?theme=cyberpunk`) tanpa mengubah tema utama pengantin.
+* **Proteksi Tema Coming Soon**: Tema berstatus *coming soon* menampilkan badge status jam (*"Segera Hadir"*), menonaktifkan tombol aktivasi, dan menyembunyikan pratinjau live secara elegan.
 
 > [!IMPORTANT]
-> Selalu tekan tombol **"Simpan Perubahan"** pada bilah aksi mengambang (*sticky save bar*) di bagian bawah setelah mengubah data.
+> Selalu tekan tombol **"Simpan ke Firestore"** pada bilah aksi mengambang (*sticky save bar*) di bagian bawah setelah selesai memilih tema atau mengedit data.
 
 ---
 

@@ -39,6 +39,7 @@ graph TD
 app_weddingbetawi_react/
 ├── docs/                       # Dokumentasi resmi proyek & blueprint skema Firestore
 ├── public/                     # Aset publik statis (favicon, robots.txt, sitemap.xml, webmanifest)
+│   └── assets/themes/{theme_id}/ # Paket aset luring mandiri (thumbnail.svg, pattern.svg, favicon.svg)
 ├── src/
 │   ├── modules/                # Arsitektur Modular Berbasis Domain (Lowercase Standard)
 │   │   ├── auth/
@@ -47,16 +48,24 @@ app_weddingbetawi_react/
 │   │   │   ├── components/     # Komponen sub-modul admin (ThemeSelector, DragDropUpload, dsb.)
 │   │   │   └── Panel.tsx       # Dasbor pengelolaan lengkap (Overview, Tamu WA, Konten, RSVP, Doa)
 │   │   └── frontend/
-│   │       ├── shared/         # Komponen & Seksi domain bersama lintas tema
+│   │       ├── shared/         # Komponen & Seksi domain bersama lintas tema (100% netral budaya)
 │   │       │   ├── components/ # BottomNavigation, MusicPlayer, SEO
 │   │       │   └── sections/   # Seksi netral (RSVP, Wishes, Countdown, Event, Gallery, dsb.)
-│   │       └── themes/         # Multi-Theme Architecture Engine
-│   │           ├── betawi/     # Adapter tema Betawi Heritage (OpeningCover, Invitation, decor)
-│   │           ├── jawa/       # Adapter tema Javanese Royal Kraton (Gunungan, Pawiwahan, decor)
-│   │           ├── sunda/      # Adapter tema Sundanese Parahyangan (Mahkota Siger, Priangan, decor)
-│   │           ├── minimalist/ # Adapter tema Modern Botanical Minimalist (Eucalyptus, decor)
-│   │           ├── islamic/    # Adapter tema Islamic Arabian Garden (Arabesque Arch, Hilal, decor)
-│   │           ├── minang/     # Adapter tema Minangkabau Royal Songket (Suntiang, Gonjong, decor)
+│   │       └── themes/         # Multi-Theme Architecture Engine (34 Tema: 20 Ready & 14 Coming Soon)
+│   │           ├── betawi/     # Adapter tema Betawi Heritage
+│   │           ├── jawa/       # Adapter tema Javanese Royal Kraton
+│   │           ├── sunda/      # Adapter tema Sundanese Parahyangan
+│   │           ├── minimalist/ # Adapter tema Modern Botanical Minimalist
+│   │           ├── islamic/    # Adapter tema Islamic Arabian Garden
+│   │           ├── minang/     # Adapter tema Minangkabau Royal Songket
+│   │           ├── bali/       # Adapter tema Balinese Royal Temple
+│   │           ├── batak/      # Adapter tema Batak Toba Royal Gorga
+│   │           ├── bugis/      # Adapter tema Bugis-Makassar Royal Baju Bodo
+│   │           ├── palembang/  # Adapter tema Palembang Sriwijaya Songket
+│   │           ├── toraja/     # Adapter tema Toraja Tongkonan Heritage
+│   │           ├── dayak/      # Adapter tema Dayak Kenyah Borneo
+│   │           ├── ...         # Adapter tema modern (spotify, netflix, apple, arcade, cyberpunk, dll.)
+│   │           ├── catalog.ts  # Katalog meta 34 tema (metadata, warna, fitur, status)
 │   │           ├── index.ts    # Centralized Registry (THEMES, resolveTheme, THEME_CATALOG)
 │   │           └── types.ts    # ThemeMeta & ThemeDefinition interface contracts
 │   ├── context/
@@ -69,11 +78,13 @@ app_weddingbetawi_react/
 │   ├── lib/
 │   │   └── firebase.ts         # Inisialisasi Firebase Client App & Firestore instance
 │   ├── utils/
-│   │   └── cn.ts               # Utility fungsi penggabung clsx dan twMerge
+│   │   ├── cn.ts               # Utility fungsi penggabung clsx dan twMerge
+│   │   └── digitalPassGenerator.ts # Generator tiket PNG HD & PDF via jsPDF (v1.37.0)
 │   ├── App.tsx                 # Root component aplikasi & router switch
 │   ├── index.css               # Styling tema Tailwind CSS v4 (@theme tokens)
 │   ├── main.tsx                # Titik masuk aplikasi (DOM root mount)
 │   ├── types.ts                # Deklarasi tipe data TypeScript (strict typing)
+│   ├── version.ts              # Single source of truth versi aplikasi (v1.39.0)
 │   └── vite-env.d.ts           # Deklarasi tipe variabel lingkungan Vite (ImportMetaEnv)
 ├── .env.example                # Template variabel lingkungan
 ├── firestore.rules             # Berkas aturan keamanan database Firestore
@@ -173,7 +184,7 @@ Proyek mematuhi prinsip keamanan web modern:
    - Karakter nama tamu dari parameter URL di-*decode* secara aman dan dirender sebagai teks murni oleh React virtual DOM.
 2. **Pencegahan Pengindeksan Halaman Admin oleh Mesin Pencari**:
    - Berkas [`public/robots.txt`](../public/robots.txt) memuat aturan `Disallow: /login`, `Disallow: /modules`, dan `Disallow: /admin`.
-   - Komponen [`SEO.tsx`](../src/components/SEO.tsx) menyematkan tag `<meta name="robots" content="noindex, nofollow" />` pada rute `/login` dan `/modules`.
+   - Komponen [`SEO.tsx`](../src/modules/frontend/shared/components/SEO.tsx) menyematkan tag `<meta name="robots" content="noindex, nofollow" />` pada rute `/login` dan `/modules`.
 3. **Penyembunyian & Proteksi Rute Admin**:
    - Rute admin tidak diekspos melalui tautan publik.
    - Pintu masuk dilindungi gerbang verifikasi passcode (`/login`) dan validasi sesi di peramban (`sessionStorage`) sebelum menampilkan dasbor `/modules`.
@@ -182,7 +193,43 @@ Proyek mematuhi prinsip keamanan web modern:
 
 ---
 
-## 🧼 6. Standar Kerapian Kode (*Clean Code Standards*)
+## 🎭 6. Arsitektur Multi-Tema & Protokol Aset Luring (AGENTS.md Pilar 2)
+
+Proyek mengadopsi arsitektur multi-tema modular terstandarisasi dengan **34 tema** (20 siap pakai dan 14 segera hadir):
+
+### A. Kontrak Interface Tema (`src/modules/frontend/themes/types.ts`)
+```typescript
+export interface ThemeMeta {
+  id: string;
+  name: string;
+  category: 'adat' | 'modern' | 'islami';
+  subtitle: string;
+  description: string;
+  thumbnail: string;
+  previewColors: ThemeColors;
+  features: string[];
+  status: 'ready' | 'coming_soon';
+  favicon?: string;
+}
+```
+
+### B. Lifecycle Status Tema (`ready` vs `coming_soon`)
+- **`status: 'ready'`**: Tema memiliki adapter lengkap (`OpeningCover`, `InvitationContent`, `AppFrame`, dekorasi partikel melayang) dan dapat diaktifkan oleh pengantin via tombol **"Aktifkan Tema"** di Admin Panel atau diakses via query parameter `?theme={id}`.
+- **`status: 'coming_soon'`**: Tema berstatus kurasi masa depan. Pada UI `ThemeSelector.tsx`, kartu tema menampilkan badge `<Clock /> Segera Hadir`, tombol aktivasi dinonaktifkan (`disabled`), dan tautan live demo disembunyikan untuk menjaga ekspektasi pengguna.
+
+### C. Standar Paket Aset Default Luring Tema (Pilar 2 Rule 7)
+Setiap tema pada `THEME_CATALOG` (`src/modules/frontend/themes/catalog.ts`) **WAJIB** menyediakan paket aset lokal mandiri di `public/assets/themes/{theme_id}/`:
+- `thumbnail.svg` (Ukuran viewBox `400x250`, ilustrasi motif khas budaya/modern, palet warna, nama, dan subtitle).
+- `pattern.svg` (Ukuran viewBox `60x60`, pola seamless tile budaya).
+- `favicon.svg` (Ukuran viewBox `64x64`, ikon monogram bulat).
+- **Invarian Nol Dependensi**: DILARANG mengandalkan CDN pihak ketiga untuk aset visual tema agar aplikasi tetap dapat diakses secara luring (*zero external network download*).
+
+### D. Invarian Netralitas Budaya pada Layer Bersama (Pilar 2 Rule 6)
+Direktori `src/modules/frontend/shared/` mengisolasi komponen bersama (`BottomNavigation`, `MusicPlayer`, `SEO`) dan seksi domain bersama (`RSVP`, `Wishes`, `Countdown`, `Event`, `Gallery`, `Location`, `LoveStory`, `WeddingGift`). Seluruh berkas pada layer ini **WAJIB 100% netral budaya** (*culturally agnostic*) tanpa mengimpor ornamen adat spesifik.
+
+---
+
+## 🧼 7. Standar Kerapian Kode (*Clean Code Standards*)
 
 1. **Zero `any` Typing**:
    - Seluruh variabel, antarmuka, dan state wajib memiliki tipe yang eksplisit. Variabel lingkungan diatur melalui [`src/vite-env.d.ts`](../src/vite-env.d.ts).
@@ -193,7 +240,7 @@ Proyek mematuhi prinsip keamanan web modern:
 
 ---
 
-## 🚀 7. Panduan Menambahkan Seksi / Fitur Baru (8 Langkah)
+## 🚀 8. Panduan Menambahkan Seksi / Fitur Baru (8 Langkah)
 
 Jika Anda ingin menambahkan seksi baru (misalnya: *Seksi Protokol Kesehatan* atau *Seksi Live Streaming*):
 
@@ -205,25 +252,25 @@ sequenceDiagram
     participant DB as Firestore Schema
     participant Ctx as WeddingContext.tsx
     participant UI as NewSection.tsx
-    participant Admin as AdminPanel.tsx
-    participant Inv as InvitationContent.tsx
+    participant Admin as Panel.tsx
+    participant Inv as Theme Adapter
     participant Test as TypeCheck & Build
 
     Dev->>Type: 1. Definisikan tipe antarmuka fitur baru
     Dev->>DB: 2. Tambahkan properti pada dokumen konfigurasi
     Dev->>Ctx: 3. Sinkronkan default fallback state
     Dev->>UI: 4. Buat komponen seksi presentasi visual
-    Dev->>Admin: 5. Tambahkan form input di AdminPanel.tsx
-    Dev->>Inv: 6. Daftarkan komponen via React.lazy & Suspense
-    Dev->>Test: 7. Jalankan tsc --noEmit & npm run build
-    Dev->>Dev: 8. Commit dengan pesan feat: ...
+    Dev->>Admin: 5. Tambahkan form input di Panel.tsx
+    Dev->>Inv: 6. Daftarkan komponen di seksi bersama / tema
+    Dev->>Test: 7. Jalankan npm run lint & npm run build
+    Dev->>Dev: 8. Commit dengan format Conventional Commits
 ```
 
 1. **Langkah 1 (Type Definition)**: Tambahkan properti baru di [`src/types.ts`](../src/types.ts) pada antarmuka `WeddingConfig`.
 2. **Langkah 2 (Default Data)**: Berikan nilai default pada [`src/data/config.ts`](../src/data/config.ts).
 3. **Langkah 3 (Context Sync)**: Pastikan fallback spread operator di [`src/context/WeddingContext.tsx`](../src/context/WeddingContext.tsx) memetakan field baru tersebut.
-4. **Langkah 4 (Component Section)**: Buat komponen presentasional baru di dalam folder `src/components/sections/`.
-5. **Langkah 5 (Admin Control)**: Tambahkan form input pengeditan di dalam tab Edit Data Website pada [`src/components/admin/AdminPanel.tsx`](../src/components/admin/AdminPanel.tsx).
-6. **Langkah 6 (Lazy Mount)**: Daftarkan komponen seksi baru di [`src/components/InvitationContent.tsx`](../src/components/InvitationContent.tsx) menggunakan `React.lazy()`.
+4. **Langkah 4 (Component Section)**: Buat komponen presentasional baru di dalam folder `src/modules/frontend/shared/sections/`.
+5. **Langkah 5 (Admin Control)**: Tambahkan form input pengeditan di dalam tab Edit Data Website pada [`src/modules/backend/Panel.tsx`](../src/modules/backend/Panel.tsx).
+6. **Langkah 6 (Lazy Mount)**: Daftarkan komponen seksi baru di adapter tema (`src/modules/frontend/themes/{id}/InvitationContent.tsx`) menggunakan `React.lazy()`.
 7. **Langkah 7 (Kompilasi & Verifikasi)**: Jalankan pengujian compiler dengan `npm run lint` dan `npm run build`.
-8. **Langkah 8 (Git Commit)**: Commit pekerjaan Anda menggunakan standar pesan konvensional (`git commit -m "feat: tambah seksi live streaming"`).
+8. **Langkah 8 (Git Commit)**: Commit pekerjaan Anda menggunakan standar pesan konvensional (`git commit -m "feat(module): deskripsi perubahan"`).

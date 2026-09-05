@@ -297,7 +297,7 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 - **Universal Fullscreen Lightbox**:
   - Setiap foto pada seluruh 4 pilihan layout dapat diklik untuk membuka modal Lightbox resolusi tinggi dengan navigasi Next/Prev, dukungan keyboard (*Escape, Left/Right Arrow*), tombol tutup cepat, dan penghitung nomor foto aktif.
 - **Thematic Adaptive Styling**:
-  - Indikator dot slider, border radius, bayangan kartu, dan kontras otomatis menyesuaikan token tema aktif dari 20 tema yang tersedia.
+  - Indikator dot slider, border radius, bayangan kartu, dan kontras otomatis menyesuaikan token tema aktif dari 34 tema dalam katalog.
 
 ### 🎫 Digital Pass & E-Ticket PDF Export Suite (v1.37.0)
 - **Ultra-Sharp High-Density Rendering (1200x1850 px, 300 DPI Equivalent)**:
@@ -310,7 +310,7 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
   - **Sisi Admin Panel (`Panel.tsx`)**: Tersedia tombol unduh PNG & PDF pada generator tautan tamu personal serta tombol aksi tabel icon-only di setiap baris daftar tamu undangan.
   - **Sisi Meja Resepsi (`ReceptionCheckin.tsx`)**: Akses unduh tiket pass instan dari daftar hasil pencarian cepat manual maupun dari tabel riwayat check-in untuk melayani tamu yang memerlukan slip fisik di lokasi acara.
 - **Thematic Adaptive Styling**:
-  - Secara cerdas mengadaptasi token warna primer (`tokens.primary`), latar belakang kartu, dan teks sesuai salah satu dari 20 tema desain aktif (Betawi, Jawa, Sunda, Minang, Bali, Batak, Dayak, Bugis, Modern Minimalist, Vintage Retro, Cyberpunk, Netflix, Spotify, dsb.).
+  - Secara cerdas mengadaptasi token warna primer (`tokens.primary`), latar belakang kartu, dan teks sesuai tema desain aktif (dari total 34 tema katalog).
 
 ### 📺 Live Wishes Stage Projector Screen (Layar LED Panggung Hari-H) (v1.18.0)
 - **Akses Mandiri Standalone**: Dapat dibuka melalui URL publik `/live` atau `/projector` tanpa memerlukan otentikasi login, serta tombol jalan pintas langsung dari Admin Panel (`/modules`).
@@ -507,18 +507,38 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
   - Tab pill rapi untuk Tema Desain, Mempelai, Acara & Lokasi, Galeri Foto, Kisah Cinta, Musik & Hadiah/QRIS, serta SEO & Metadata dengan bilah simpan melayang (*sticky action bar*).
   - **Arsitektur Multi-Tema & Separasi Budaya Terisolasi (v1.16.0)**:
     - *Isolasi Ornamen Budaya 100%*: Seksi visual budaya (Hero, Intro, Profil Mempelai, Penutup) diisolasi penuh per tema tanpa pencemaran silang.
-    - *Tema Siap Pakai (Ready)*:
-      - **Betawi Heritage** (`betawi`): Siluet Monas, Ondel-ondel interaktif, Rumah Kebaya.
-      - **Javanese Royal Kraton** (`jawa`): Gunungan Wayang Mas sakral, Pendopo Joglo Keraton.
-      - **Sundanese Parahyangan** (`sunda`): Mahkota Siger Sunda, ronce melati, gerbang bambu Priangan.
-      - **Modern Botanical Minimalist** (`minimalist`): Daun eucalyptus, lengkung geometris modern.
-      - **Islamic Arabian Garden** (`islamic`): Kubah masjid Nabawi, ornamen bintang 8-point rub el hizb.
-      - **Minangkabau Royal Songket** (`minang`): Rumah Gadang gonjong megah, tabir pelaminan emas Baralek Gadang.
-      - **Balinese Royal Temple** (`bali`): Gapura Candi Bentar, Penjor Emas, Payung Tedung Agung, ukiran Patra Punggel, sloka Rgveda 10.85.42, kelopak Bunga Jepun (Kamboja) melayang.
+    - *20 Tema Siap Pakai (Ready)*:
+      - **Adat Nusantara (10 Tema)**:
+        - `betawi`: **Betawi Heritage** — Gigi Balang, Ondel-ondel siluet, Rumah Kebaya.
+        - `jawa`: **Javanese Royal Kraton** — Gunungan Wayang Mas sakral, Serat Ulem Pawiwahan Ageng.
+        - `sunda`: **Sundanese Parahyangan** — Mahkota Siger Sunda, ronce melati, gerbang bambu Priangan.
+        - `minang`: **Minangkabau Royal Songket** — Rumah Gadang gonjong, mahkota Suntiang bertingkat, Pucuak Rebung.
+        - `bali`: **Balinese Royal Temple** — Gapura Candi Bentar, Penjor Emas, Tedung Agung, Bunga Jepun melayang.
+        - `batak`: **Batak Toba Royal Gorga** — Gorga Simeol-meol & Boraspati, Ruma Bolon, tenun Ulos Sadum.
+        - `bugis`: **Bugis-Makassar Royal Baju Bodo** — Wadah Bosara emas, Saoraja timpa laja, Lipa Sabbe, aksara Lontara.
+        - `palembang`: **Palembang Sriwijaya Songket** — Mahkota Kesuhun Aesan Gede, Teratai Dada, Rumah Limas.
+        - `toraja`: **Toraja Tongkonan Heritage** — Atap melengkung Tongkonan, Tedong Bonga, Pa'teddong mistis.
+        - `dayak`: **Dayak Kenyah Borneo** — Perisai Talawang, bulu Enggang, sulur Kenyah Aso Naga, musik Sape'.
+      - **Modern & Pop Culture (9 Tema)**:
+        - `minimalist`: **Modern Botanical Minimalist** — Dedaunan eucalyptus cat air, tipografi serif editorial.
+        - `vintage`: **Vintage Newspaper Gazette** — Broadsheet 1920-an, masthead retro, stempel pos, audio mesin tik.
+        - `netflix`: **Netflix Cinematic Premiere** — Serial OTT, intro Ta-Dum!, billboard 99% Match, Episode 1 & 2.
+        - `spotify`: **Spotify Interactive** — Pemutar vinyl 360°, badge Verified, album tracklist, not balok.
+        - `instagram`: **Instagram Stories & Reels** — Layar 9:16 vertikal imersif, progress bar segmen, stiker audio, tap hati.
+        - `apple`: **Apple iOS Bento Grid** — Dynamic Island, Lock Screen jam besar, kartu Apple Wallet, balon iMessage.
+        - `arcade`: **Arcade Retro 8-Bit Gaming** — Video game retro, RPG Player 1 & 2 Co-Op, Love Bar, chiptune sintetis.
+        - `royal`: **Royal Decree & Wax Seal** — Surat gulung perkamen antik, segel lilin merah 3D, harpa magis.
+        - `cyberpunk`: **Cyberpunk Neo-Jakarta** — Night City futuristic, sirkuit neon cyan/magenta, biometrik HUD.
+      - **Syar'i / Islami (1 Tema)**:
+        - `islamic`: **Islamic Arabian Garden** — Kubah Moorish / Arabesque Arch, bintang 8-sudut Rub el Hizb, kaligrafi Bismillah.
+    - *14 Tema Terkurasi Segera Hadir (Coming Soon)*:
+      - **Adat (+5)**: `aceh`, `banjar`, `melayu`, `sasak`, `papua`.
+      - **Modern (+5)**: `cinema`, `airline`, `anime`, `glassmorphism`, `synthwave`.
+      - **Islami (+4)**: `ottoman`, `moroccan`, `andalusia`, `nabawi`.
     - *Favicon & Meta Theme-Color Dinamis*: Favicon peramban otomatis berganti dan `meta theme-color` menyesuaikan palet tema aktif.
-    - *Centralized Theme Registry*: Standarisasi kontrak antarmuka tema untuk skalabilitas tanpa batas.
+    - *Centralized Theme Registry*: Standarisasi kontrak antarmuka tema (`types.ts` & `catalog.ts`) untuk skalabilitas 34 tema.
     - *Pemilih Tema Visual*: Pratinjau palet warna tema, badge kategori gaya, dan tombol aktivasi 1-klik yang tersinkronisasi ke Firestore.
-    - *Demo URL Preview*: Uji coba instan dengan parameter query `?theme=bali`, `?theme=minang`, `?theme=islamic`, `?theme=minimalist`, `?theme=sunda`, `?theme=jawa`, atau `?theme=betawi`.
+    - *Demo URL Preview*: Uji coba instan dengan parameter query `?theme={id}` (contoh: `?theme=dayak`, `?theme=cyberpunk`, `?theme=jawa`).
   - **Modal Lightbox Slider Berkas Terunggah**: Kartu pratinjau foto dapat diklik untuk membuka foto penuh dalam modal Lightbox interaktif berlatar gelap & blur, tombol geser Kiri/Kanan, counter foto, dan shortcut keyboard (`ArrowLeft`, `ArrowRight`, `Escape`).
   - **Reorder Timeline Kisah Cinta (Tombol Naik & Turun)**: Pengaturan kronologi momen kisah cinta fleksibel dengan tombol **Naik (`<ArrowUp />`)** dan **Turun (`<ArrowDown />`)** di samping penomoran dinamis (`#1`, `#2`, dst.), mengeliminasi keharusan menghapus dan mengetik ulang jika terjadi kesalahan urutan.
   - **Pemilih Tanggal & Waktu Interaktif (Date & Time Picker)**:

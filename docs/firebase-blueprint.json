@@ -14,7 +14,9 @@
         "gallery": { "type": "array", "description": "Gallery image URLs" },
         "bank": { "type": "map", "description": "Bank account details" },
         "loveStory": { "type": "array", "description": "Love story items" },
-        "musicUrl": { "type": "string", "description": "Background music YouTube URL" }
+        "musicUrl": { "type": "string", "description": "Background music YouTube URL" },
+        "theme": { "type": "string", "description": "Active theme ID (from 34 themes catalog)" },
+        "galleryLayout": { "type": "string", "description": "Gallery layout: editorial, masonry, carousel, or polaroid" }
       }
     },
     "wishes": {

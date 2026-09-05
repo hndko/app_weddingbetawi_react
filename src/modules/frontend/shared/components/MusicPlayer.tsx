@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { VolumeX, Music } from 'lucide-react';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
+import { useThemeTokens } from '../../themes';
 import { cn } from '../../../../utils/cn';
 
 declare global {
@@ -26,6 +27,7 @@ function getYouTubeVideoId(url: string): string | null {
 
 export function MusicPlayer({ isOpened }: MusicPlayerProps) {
   const { weddingConfig } = useWeddingConfig();
+  const { tokens } = useThemeTokens();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
@@ -310,12 +312,15 @@ export function MusicPlayer({ isOpened }: MusicPlayerProps) {
           type="button"
           onClick={togglePlay}
           className={cn(
-            "fixed md:absolute z-50 p-3 rounded-full shadow-lg border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center",
-            "bottom-[calc(85px+env(safe-area-inset-bottom))] right-5 md:right-6",
-            isPlaying 
-              ? "bg-white/95 text-sage-dark border-sage/40 backdrop-blur-md shadow-sage/25 ring-4 ring-sage/20" 
-              : "bg-white/95 text-gray-400 border-gray-200 backdrop-blur-md hover:text-gray-600"
+            "fixed md:absolute z-50 p-3 rounded-full shadow-lg border backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center",
+            "bottom-[calc(85px+env(safe-area-inset-bottom))] right-5 md:right-6"
           )}
+          style={{
+            backgroundColor: tokens.floatingBtnBg,
+            borderColor: tokens.floatingBtnBorder,
+            color: isPlaying ? tokens.floatingBtnActiveText : tokens.floatingBtnText,
+            boxShadow: isPlaying ? `0 0 0 4px ${tokens.floatingBtnRing}, 0 10px 25px -5px rgba(0,0,0,0.3)` : '0 8px 20px -4px rgba(0,0,0,0.15)',
+          }}
           aria-label={isPlaying ? "Jeda musik latar" : "Putar musik latar"}
           title={isPlaying ? "Jeda Musik" : "Putar Musik"}
         >

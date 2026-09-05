@@ -1,9 +1,11 @@
 import { Home, Heart, Calendar, Image as ImageIcon, MessageCircle, BookOpen } from 'lucide-react';
 import { useScrollSpy } from '../../../../hooks/useScrollSpy';
+import { useThemeTokens } from '../../themes';
 import { cn } from '../../../../utils/cn';
 
 export function BottomNavigation() {
   const activeId = useScrollSpy(['home', 'mempelai', 'cerita', 'acara', 'galeri', 'ucapan'], 100);
+  const { tokens, isDark } = useThemeTokens();
 
   const navItems = [
     { id: 'home', icon: Home, label: 'Home' },
@@ -23,7 +25,16 @@ export function BottomNavigation() {
 
   return (
     <div className="fixed md:absolute bottom-0 left-0 right-0 w-full flex justify-center z-[100] pb-[calc(16px+env(safe-area-inset-bottom))] px-4 pointer-events-none">
-      <div className="flex items-center justify-between bg-warm-white/92 backdrop-blur-xl border border-light-gray rounded-[24px] shadow-[0_8px_32px_-4px_rgba(0,0,0,0.1)] px-4 py-3 w-full max-w-[420px] pointer-events-auto overflow-x-auto no-scrollbar gap-4 sm:justify-between">
+      <div 
+        className={cn(
+          "flex items-center justify-between backdrop-blur-xl rounded-[24px] px-4 py-3 w-full max-w-[420px] pointer-events-auto overflow-x-auto no-scrollbar gap-4 sm:justify-between transition-colors duration-300",
+          isDark ? "shadow-[0_8px_32px_-4px_rgba(0,0,0,0.8)]" : "shadow-[0_8px_32px_-4px_rgba(0,0,0,0.1)]"
+        )}
+        style={{
+          backgroundColor: tokens.navBg,
+          border: `1px solid ${tokens.navBorder}`
+        }}
+      >
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeId === item.id || (!activeId && item.id === 'home');
@@ -33,16 +44,22 @@ export function BottomNavigation() {
               onClick={() => scrollTo(item.id)}
               className="flex flex-col items-center gap-1 group relative outline-none min-w-[44px]"
             >
-              <div className={cn(
-                "transition-colors duration-300",
-                isActive ? "text-sage pb-3" : "text-text-dark/40 group-hover:text-text-dark/60"
-              )}>
+              <div 
+                className="transition-colors duration-300"
+                style={{
+                  color: isActive ? tokens.navActive : tokens.navInactive,
+                  paddingBottom: isActive ? '12px' : '0px'
+                }}
+              >
                 <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
               </div>
-              <span className={cn(
-                "text-[9px] font-medium transition-all duration-300 absolute bottom-0 opacity-0 translate-y-2 whitespace-nowrap",
-                isActive && "opacity-100 translate-y-0 text-sage"
-              )}>
+              <span 
+                className={cn(
+                  "text-[9px] font-medium transition-all duration-300 absolute bottom-0 opacity-0 translate-y-2 whitespace-nowrap",
+                  isActive && "opacity-100 translate-y-0"
+                )}
+                style={{ color: tokens.navActive }}
+              >
                 {item.label}
               </span>
             </button>

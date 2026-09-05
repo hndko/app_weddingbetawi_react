@@ -5,6 +5,8 @@ import { THEME_CATALOG } from './catalog';
 
 export * from './types';
 export * from './catalog';
+export * from './themeTokens';
+export * from './ThemeContext';
 
 // Lazy-loaded Betawi theme
 const BetawiOpeningCover = lazy(() => import('./betawi/OpeningCover').then(m => ({ default: m.OpeningCover })));

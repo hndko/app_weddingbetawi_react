@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { WeddingProvider, useWeddingConfig } from './context/WeddingContext';
-import { resolveTheme } from './modules/frontend/themes';
+import { resolveTheme, ThemeProvider, getThemeTokens } from './modules/frontend/themes';
 import { SEO } from './modules/frontend/shared/components/SEO';
 import { MusicPlayer as DefaultMusicPlayer } from './modules/frontend/shared/components/MusicPlayer';
 import { GuestQRPassFloatingButton } from './modules/frontend/shared/components/GuestQRPassFloatingButton';
 import { TriviaFloatingButton } from './modules/frontend/shared/components/TriviaFloatingButton';
+import { cn } from './utils/cn';
 
 // Lazy-loaded route components for high performance and zero-overhead code splitting
 const AdminPanel = lazy(() => 
@@ -138,8 +139,10 @@ function AppContent({ currentPath }: { currentPath: string }) {
     MusicPlayer = DefaultMusicPlayer,
   } = activeTheme.components;
 
+  const tokens = getThemeTokens(activeTheme.meta.id);
+
   return (
-    <>
+    <ThemeProvider themeId={activeTheme.meta.id}>
       <SEO 
         title={seoTitle}
         description={seoDesc}
@@ -148,19 +151,31 @@ function AppContent({ currentPath }: { currentPath: string }) {
         siteName={siteName}
         image={seoImage}
         favicon={activeTheme.meta.favicon}
-        themeColor={activeTheme.meta.previewColors.bg}
+        themeColor={tokens.bg}
       />
       <div 
         className="relative min-h-screen w-full flex items-center justify-center font-body selection:bg-sage/30 transition-colors duration-500"
-        style={{ backgroundColor: activeTheme.meta.previewColors.bg }}
+        style={{ backgroundColor: tokens.bg }}
       >
         {/* Desktop background decoration */}
-        <div className="hidden md:block fixed inset-0 opacity-[0.03] pointer-events-none">
-          <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(var(--color-sage-dark) 2px, transparent 2px)', backgroundSize: '40px 40px' }}></div>
+        <div className="hidden md:block fixed inset-0 opacity-[0.05] pointer-events-none">
+          <div 
+            className="absolute top-0 left-0 w-full h-full" 
+            style={{ 
+              backgroundImage: `radial-gradient(${tokens.isDark ? 'rgba(255,255,255,0.4)' : 'var(--color-sage-dark)'} 2px, transparent 2px)`, 
+              backgroundSize: '40px 40px' 
+            }}
+          />
         </div>
         {/* Mobile App Container */}
-        <div className="relative w-full md:max-w-[430px] h-[100dvh] bg-warm-white md:min-h-[min(900px,calc(100vh-48px))] md:h-[min(900px,calc(100vh-48px))] md:rounded-[36px] shadow-2xl overflow-hidden flex flex-col md:border-8 border-white">
-          <Suspense fallback={<RouteLoadingSpinner bg={activeTheme.meta.previewColors.bg} text="Menyiapkan Tampilan..." />}>
+        <div 
+          className={cn(
+            "relative w-full md:max-w-[430px] h-[100dvh] md:min-h-[min(900px,calc(100vh-48px))] md:h-[min(900px,calc(100vh-48px))] md:rounded-[36px] shadow-2xl overflow-hidden flex flex-col md:border-8 transition-colors duration-500",
+            tokens.isDark ? "md:border-[#242424] shadow-black/80" : "md:border-white shadow-xl"
+          )}
+          style={{ backgroundColor: tokens.bg }}
+        >
+          <Suspense fallback={<RouteLoadingSpinner bg={tokens.bg} text="Menyiapkan Tampilan..." />}>
             <AppFrame />
             <AnimatePresence mode="wait">
               {!isOpened ? (
@@ -175,7 +190,7 @@ function AppContent({ currentPath }: { currentPath: string }) {
           </Suspense>
         </div>
       </div>
-    </>
+    </ThemeProvider>
   );
 }
 

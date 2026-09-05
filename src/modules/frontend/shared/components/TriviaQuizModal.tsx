@@ -10,6 +10,8 @@ import { db } from '../../../../lib/firebase';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { TriviaQuestion, TriviaScore } from '../../../../types';
 import { playCorrectSound, playWrongSound, playVictoryFanfare } from '../utils/triviaAudioSynthesizer';
+import { useThemeTokens } from '../../themes';
+import { cn } from '../../../../utils/cn';
 
 interface TriviaQuizModalProps {
   isOpen: boolean;
@@ -18,6 +20,7 @@ interface TriviaQuizModalProps {
 
 export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
   const { weddingConfig } = useWeddingConfig();
+  const { tokens } = useThemeTokens();
   const [activeTab, setActiveTab] = useState<'quiz' | 'leaderboard'>('quiz');
   const [gameState, setGameState] = useState<'intro' | 'playing' | 'result'>('intro');
 
@@ -306,22 +309,26 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
           <button
             type="button"
             onClick={() => setActiveTab('quiz')}
-            className={`flex-1 py-2 rounded-xl text-xs font-semibold tracking-wider flex items-center justify-center gap-2 transition-all ${
+            className={cn(
+              "flex-1 py-2 rounded-xl text-xs font-semibold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer",
               activeTab === 'quiz'
-                ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
-                : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
-            }`}
+                ? "shadow-lg"
+                : "bg-white/5 text-white/60 hover:text-white hover:bg-white/10"
+            )}
+            style={activeTab === 'quiz' ? { backgroundColor: tokens.primary, color: tokens.btnPrimaryText } : undefined}
           >
             <Gamepad2 size={14} /> Main Kuis
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('leaderboard')}
-            className={`flex-1 py-2 rounded-xl text-xs font-semibold tracking-wider flex items-center justify-center gap-2 transition-all ${
+            className={cn(
+              "flex-1 py-2 rounded-xl text-xs font-semibold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer",
               activeTab === 'leaderboard'
-                ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
-                : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
-            }`}
+                ? "shadow-lg"
+                : "bg-white/5 text-white/60 hover:text-white hover:bg-white/10"
+            )}
+            style={activeTab === 'leaderboard' ? { backgroundColor: tokens.primary, color: tokens.btnPrimaryText } : undefined}
           >
             <Trophy size={14} /> Papan Skor ({leaderboard.length})
           </button>
@@ -383,7 +390,8 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
                 <button
                   type="button"
                   onClick={handleStartGame}
-                  className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold rounded-2xl shadow-xl shadow-amber-500/25 flex items-center justify-center gap-2 tracking-wide transition-all transform active:scale-95"
+                  className="w-full py-3.5 font-bold rounded-2xl shadow-xl flex items-center justify-center gap-2 tracking-wide transition-all transform active:scale-95 cursor-pointer hover:opacity-90"
+                  style={{ backgroundColor: tokens.primary, color: tokens.btnPrimaryText }}
                 >
                   <Flame size={18} /> MULAI KUIS SEKARANG
                 </button>
@@ -397,11 +405,12 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
                 <div className="mb-4">
                   <div className="flex items-center justify-between text-xs text-white/60 mb-2 font-medium">
                     <span>Pertanyaan {currentIdx + 1} dari {totalQ}</span>
-                    <span className="text-amber-400 font-bold">Skor: {score}</span>
+                    <span className="font-bold" style={{ color: tokens.accent }}>Skor: {score}</span>
                   </div>
                   <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-amber-500 to-rose-500"
+                      className="h-full"
+                      style={{ backgroundColor: tokens.accent }}
                       initial={{ width: 0 }}
                       animate={{ width: `${((currentIdx + 1) / totalQ) * 100}%` }}
                       transition={{ duration: 0.3 }}
@@ -540,7 +549,11 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
                       type="button"
                       onClick={handleSaveScoreToLeaderboard}
                       disabled={isSavingScore}
-                      className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2 text-xs tracking-wider transition-colors disabled:opacity-50"
+                      className="w-full py-3 font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2 text-xs tracking-wider transition-all disabled:opacity-50 hover:opacity-90 active:scale-98 cursor-pointer"
+                      style={{
+                        backgroundColor: tokens.primary,
+                        color: tokens.btnPrimaryText
+                      }}
                     >
                       {isSavingScore ? (
                         <><Loader2 size={16} className="animate-spin" /> Menyimpan Skor...</>

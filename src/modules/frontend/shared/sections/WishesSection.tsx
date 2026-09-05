@@ -3,6 +3,8 @@ import { motion } from 'motion/react';
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../../../lib/firebase';
 import { useGuestName } from '../../../../hooks/useGuestName';
+import { useThemeTokens } from '../../themes';
+import { cn } from '../../../../utils/cn';
 import { AlertCircle, CheckCircle2, User, MessageSquareQuote, Send, ChevronDown, Loader2 } from 'lucide-react';
 import { Wish } from '../../../../types';
 
@@ -23,6 +25,7 @@ const defaultWishes: Wish[] = [
 
 export function WishesSection() {
   const defaultGuestName = useGuestName();
+  const { tokens, isDark } = useThemeTokens();
   const [wishes, setWishes] = useState<Wish[]>(defaultWishes);
   const [name, setName] = useState('');
   const [wishText, setWishText] = useState('');
@@ -62,8 +65,6 @@ export function WishesSection() {
         });
         setWishes(fetchedWishes);
       }
-    }, (error) => {
-      console.error('Error listening to wishes:', error);
     });
 
     return () => unsubscribe();
@@ -94,52 +95,74 @@ export function WishesSection() {
   };
 
   return (
-    <section className="py-24 px-6 bg-warm-white relative overflow-hidden flex flex-col items-center">
+    <section 
+      className="py-24 px-6 relative overflow-hidden flex flex-col items-center transition-colors duration-500"
+      style={{ backgroundColor: tokens.bg }}
+    >
       <div className="max-w-[340px] w-full mx-auto relative z-10">
         <div className="text-center mb-10 flex flex-col items-center">
-           <h3 className="font-heading text-4xl text-text-dark mb-4">Ucapan & Doa</h3>
+           <h3 
+             className="font-heading text-4xl mb-4 font-bold"
+             style={{ color: tokens.textPrimary }}
+           >
+             Ucapan & Doa
+           </h3>
            <SectionDivider />
         </div>
 
         <form onSubmit={handleSubmit} className="mb-10 flex flex-col gap-3">
           {errorMessage && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-3.5 py-2.5 rounded-xl text-xs flex items-start gap-2">
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-3.5 py-2.5 rounded-xl text-xs flex items-start gap-2">
               <AlertCircle size={16} className="shrink-0 mt-0.5 text-red-500" />
               <span>{errorMessage}</span>
             </div>
           )}
           {successMessage && (
-            <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-2">
-              <CheckCircle2 size={16} className="shrink-0 text-emerald-600" />
+            <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-2">
+              <CheckCircle2 size={16} className="shrink-0 text-emerald-500" />
               <span>{successMessage}</span>
             </div>
           )}
           <div className="relative flex items-center">
-            <User size={16} className="absolute left-3.5 text-sage-dark pointer-events-none" />
+            <User size={16} className="absolute left-3.5 pointer-events-none" style={{ color: tokens.accent }} />
             <input 
               type="text" 
               placeholder="Nama Lengkap Anda" 
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full bg-white border border-sage/20 rounded-xl pl-10 pr-4 py-3.5 text-[13px] text-text-dark focus:border-sage outline-none transition-all placeholder:text-text-dark/30 shadow-sm"
+              className="w-full rounded-xl pl-10 pr-4 py-3.5 text-[13px] outline-none transition-all"
+              style={{
+                backgroundColor: tokens.inputBg,
+                border: `1px solid ${tokens.inputBorder}`,
+                color: tokens.inputText,
+              }}
             />
           </div>
           <div className="relative flex">
-            <MessageSquareQuote size={16} className="absolute left-3.5 top-3.5 text-sage-dark pointer-events-none" />
+            <MessageSquareQuote size={16} className="absolute left-3.5 top-3.5 pointer-events-none" style={{ color: tokens.accent }} />
             <textarea 
               placeholder="Tulis ucapan dan doa restu terbaik Anda..."
               value={wishText}
               onChange={(e) => setWishText(e.target.value)}
               required
               rows={3}
-              className="w-full bg-white border border-sage/20 rounded-xl pl-10 pr-4 py-3.5 text-[13px] text-text-dark focus:border-sage outline-none transition-all placeholder:text-text-dark/30 shadow-sm resize-none"
+              className="w-full rounded-xl pl-10 pr-4 py-3.5 text-[13px] outline-none transition-all resize-none"
+              style={{
+                backgroundColor: tokens.inputBg,
+                border: `1px solid ${tokens.inputBorder}`,
+                color: tokens.inputText,
+              }}
             />
           </div>
           <button 
             type="submit" 
             disabled={isSubmitting}
-            className="w-full bg-sage-dark text-white py-3.5 rounded-xl text-[13px] font-semibold tracking-wide hover:bg-sage transition-all disabled:opacity-70 shadow-sm cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+            className="w-full py-3.5 rounded-xl text-[13px] font-semibold tracking-wide transition-all disabled:opacity-70 shadow-md cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+            style={{
+              backgroundColor: tokens.primary,
+              color: tokens.btnPrimaryText
+            }}
           >
             {isSubmitting ? (
               <>
@@ -161,13 +184,33 @@ export function WishesSection() {
               key={wish.id || index}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white p-5 rounded-2xl border border-sage/10 shadow-sm"
+              className={cn(
+                "p-5 rounded-2xl backdrop-blur-md transition-all duration-300",
+                isDark ? "shadow-lg shadow-black/50" : "shadow-sm"
+              )}
+              style={{
+                backgroundColor: tokens.cardBg,
+                border: `1px solid ${tokens.cardBorder}`,
+              }}
             >
               <div className="flex justify-between items-baseline mb-2">
-                 <h5 className="font-heading text-lg text-sage-dark font-medium">{wish.name}</h5>
-                 <span className="text-[9px] text-text-dark/40 tracking-wider uppercase">{wish.time}</span>
+                 <h5 
+                   className="font-heading text-lg font-bold"
+                   style={{ color: tokens.accent }}
+                 >
+                   {wish.name}
+                 </h5>
+                 <span 
+                   className="text-[9px] tracking-wider uppercase font-medium"
+                   style={{ color: tokens.textMuted }}
+                 >
+                   {wish.time}
+                 </span>
               </div>
-              <p className="text-[13px] text-text-dark/70 leading-relaxed italic">
+              <p 
+                className="text-[13px] leading-relaxed italic"
+                style={{ color: tokens.textPrimary }}
+              >
                 "{wish.text}"
               </p>
             </motion.div>
@@ -175,7 +218,8 @@ export function WishesSection() {
           {wishes.length > visibleCount && (
             <button
               onClick={() => setVisibleCount(prev => prev + 5)}
-              className="mt-2 text-xs text-sage-dark font-semibold hover:underline py-2 flex items-center justify-center gap-1.5 cursor-pointer"
+              className="mt-2 text-xs font-semibold hover:underline py-2 flex items-center justify-center gap-1.5 cursor-pointer"
+              style={{ color: tokens.accent }}
             >
               <ChevronDown size={14} />
               <span>Lihat Lebih Banyak ({wishes.length - visibleCount})</span>

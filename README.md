@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.27.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.28.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -262,6 +262,23 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 - **Checklist Kesiapan Logistik Hari-H**: Tombol centang 1-klik untuk memantau status persiapan vendor dan barang bawaan.
 - **Ekspor Rekapitulasi CSV (UTF-8 BOM)**: Unduh seluruh data finansial dan status vendor ke file spreadsheet untuk pelaporan bendahara dan keluarga.
 - **Redesain Estetika Light Theme Selaras Admin Panel (v1.22.1)**: Mengadopsi palet warna *warm light* terpadu (`bg-[#fcfaf7]`), kartu putih dengan aksen *sage green* & *warm gold*, badge kategori pastel lembut, tipografi berkejelasan tinggi, tabel data bersih dengan efek *hover*, serta modal form dan konfirmasi SweetAlert2 bernuansa terang elegan.
+
+### 🎨 Semantic Theme Tokens & Full Theme Synchronization (v1.28.0)
+- **Harmonisasi Antarmuka Menyeluruh Lintas 10 Tema**: Mengeliminasi seluruh kelas warna statis (*hardcoded* krem/sage Betawi) pada elemen terapung, bilah navigasi bawah, dan seksi konten bersama sehingga 100% beradaptasi secara dinamis terhadap tema aktif.
+- **Arsitektur Semantic Theme Tokens (`ThemeVisualTokens`)**:
+  - Pemetaan token lengkap per tema: `isDark`, `bg`, `cardBg`, `cardBorder`, `textPrimary`, `textMuted`, `primary`, `secondary`, `accent`, `inputBg`, `inputBorder`, `btnPrimaryBg`, `navBg`, `navBorder`, `navActive`, `floatingBtnBg`, `floatingBtnBorder`, dan `floatingBtnRing`.
+  - Diinjeksi melalui context terpusat `ThemeProvider` dan custom hook `useThemeTokens()`.
+- **Adaptasi Elemen Terapung (Floating Action Buttons)**:
+  - Tombol Pemutar Musik (`MusicPlayer`), Tiket Masuk E-Pass QR (`GuestQRPassFloatingButton`), dan Gamepad Kuis (`TriviaFloatingButton`) mengadopsi gaya *sleek dark glass* beraksen tematik pada tema gelap (Netflix & Spotify) dan kaca elegan beraksen pada tema terang.
+- **Bilah Navigasi Bawah Adaptif (`BottomNavigation`)**:
+  - Menampilkan kontainer pil gelap dengan efek blur dan indikator aktif merah Netflix (`#E50914`) atau hijau neon Spotify (`#1DB954`) pada tema gelap, serta pil krem/putih beraksen emas/hijau ningrat pada tema adat Nusantara.
+- **Seksi Bersama Adaptif (`shared/sections/`)**:
+  - **Countdown Section**: Angka hitung mundur memancarkan warna aksen tema (merah Netflix, hijau neon Spotify, emas kraton Jawa) dengan kartu dan latar belakang yang menyatu sempurna.
+  - **Location Section**: Kartu Google Maps, tombol peta, dan tombol denah meja beradaptasi kontras penuh.
+  - **RSVP & Wishes Section**: Formulir konfirmasi kehadiran, input teks, tombol kirim, dan kartu ucapan doa bertransformasi sesuai palet tema tanpa merusak netralitas budaya layer `shared/`.
+  - **Wedding Gift & Gallery**: Kartu rekening bank, pratinjau QRIS, tombol salin rekening, dan bingkai foto galeri selaras warna tema.
+- **Bingkai Mockup Container Desktop Adaptif**:
+  - Border mockup smartphone pada tampilan desktop otomatis berganti menjadi gelap elegan (`md:border-[#242424]`) pada tema gelap dan putih bersih pada tema terang, dengan latar desktop radial dots yang selaras.
 
 ### 🎮 Wedding Trivia Quiz & Mini Games ("Seberapa Kenal Kamu dengan Mempelai?") (v1.27.0)
 - **Permainan Interaktif Smartphone Tamu**: Tamu undangan dapat menguji seberapa dalam mereka mengenal kedua mempelai melalui mini kuis seru berisi pertanyaan seputar pertemuan pertama, momen kencan lucu, hingga rahasia cinta kedua mempelai.

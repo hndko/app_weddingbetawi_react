@@ -2,10 +2,12 @@ import React from "react";
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
+import { useThemeTokens } from '../../themes';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 export function GallerySection() {
   const { weddingConfig } = useWeddingConfig();
+  const { tokens } = useThemeTokens();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const images = weddingConfig.gallery || [];
@@ -28,9 +30,20 @@ export function GallerySection() {
   };
 
   return (
-    <section className="py-24 px-6 bg-ivory text-center">
-      <h3 className="font-heading text-4xl text-text-dark mb-4">Galeri Bahagia</h3>
-      <p className="text-xs text-text-dark/60 max-w-[260px] mx-auto leading-relaxed mb-12">
+    <section 
+      className="py-24 px-6 text-center transition-colors duration-500"
+      style={{ backgroundColor: tokens.bg }}
+    >
+      <h3 
+        className="font-heading text-4xl mb-4 font-bold"
+        style={{ color: tokens.textPrimary }}
+      >
+        Galeri Bahagia
+      </h3>
+      <p 
+        className="text-xs max-w-[260px] mx-auto leading-relaxed mb-12 font-medium"
+        style={{ color: tokens.textMuted }}
+      >
         Momen-momen indah yang mengantarkan kami menuju hari bahagia.
       </p>
 

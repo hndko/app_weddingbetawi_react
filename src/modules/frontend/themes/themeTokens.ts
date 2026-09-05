@@ -349,6 +349,33 @@ export const THEME_TOKENS: Record<string, ThemeVisualTokens> = {
     floatingBtnActiveText: '#D97706',
   },
 
+  // 👑 Palembang Sriwijaya Songket Aesan Gede (Marun Sriwijaya, Emas Songket Lepus & Cempaka)
+  palembang: {
+    isDark: false,
+    bg: '#FAF5EE',
+    cardBg: 'rgba(255, 255, 255, 0.92)',
+    cardBorder: 'rgba(120, 0, 22, 0.2)',
+    textPrimary: '#240106',
+    textMuted: '#50020D',
+    primary: '#780016',
+    secondary: '#D4AF37',
+    accent: '#FFE082',
+    inputBg: 'rgba(250, 245, 238, 0.85)',
+    inputBorder: 'rgba(120, 0, 22, 0.25)',
+    inputText: '#240106',
+    btnPrimaryBg: '#780016',
+    btnPrimaryText: '#FFFFFF',
+    navBg: 'rgba(250, 245, 238, 0.92)',
+    navBorder: 'rgba(120, 0, 22, 0.2)',
+    navActive: '#780016',
+    navInactive: 'rgba(36, 1, 6, 0.45)',
+    floatingBtnBg: 'rgba(255, 255, 255, 0.95)',
+    floatingBtnBorder: 'rgba(120, 0, 22, 0.3)',
+    floatingBtnText: '#780016',
+    floatingBtnRing: 'rgba(212, 175, 55, 0.25)',
+    floatingBtnActiveText: '#D4AF37',
+  },
+
   // 🏮 Betawi Heritage (Default Klasik Sage, Terracotta & Emas)
   betawi: {
     isDark: false,

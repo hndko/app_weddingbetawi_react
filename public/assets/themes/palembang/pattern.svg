@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="lepusGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3C4" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#997A15" />
+    </linearGradient>
+  </defs>
+
+  <!-- Songket Lepus Diamond and Star Grid -->
+  <!-- Outer Checkered Grid -->
+  <rect x="0" y="0" width="64" height="64" fill="none" stroke="url(#lepusGold)" stroke-width="0.8" stroke-opacity="0.3" />
+
+  <!-- Center Diamond Lattice (Motif Belah Ketupat Emas) -->
+  <polygon points="32,6 58,32 32,58 6,32" fill="none" stroke="url(#lepusGold)" stroke-width="1.2" stroke-opacity="0.45" />
+  <polygon points="32,14 50,32 32,50 14,32" fill="none" stroke="#FFE082" stroke-width="0.7" stroke-opacity="0.35" />
+
+  <!-- Bunga Bintang 8-Petal Star (Bunga Melati / Cempaka Songket) -->
+  <circle cx="32" cy="32" r="3" fill="#FFE082" fill-opacity="0.6" />
+  <line x1="32" y1="23" x2="32" y2="41" stroke="url(#lepusGold)" stroke-width="1" stroke-opacity="0.5" />
+  <line x1="23" y1="32" x2="41" y2="32" stroke="url(#lepusGold)" stroke-width="1" stroke-opacity="0.5" />
+  <line x1="26" y1="26" x2="38" y2="38" stroke="url(#lepusGold)" stroke-width="0.75" stroke-opacity="0.4" />
+  <line x1="26" y1="38" x2="38" y2="26" stroke="url(#lepusGold)" stroke-width="0.75" stroke-opacity="0.4" />
+
+  <!-- Corner Diamonds -->
+  <polygon points="0,0 10,0 0,10" fill="url(#lepusGold)" fill-opacity="0.3" />
+  <polygon points="64,0 54,0 64,10" fill="url(#lepusGold)" fill-opacity="0.3" />
+  <polygon points="0,64 10,64 0,54" fill="url(#lepusGold)" fill-opacity="0.3" />
+  <polygon points="64,64 54,64 64,54" fill="url(#lepusGold)" fill-opacity="0.3" />
+</svg>

@@ -155,6 +155,23 @@ export const THEME_CATALOG: ThemeMeta[] = [
     favicon: '/assets/themes/bugis/favicon.svg',
   },
   {
+    id: 'palembang',
+    name: 'Palembang Sriwijaya Songket Aesan Gede',
+    category: 'adat',
+    subtitle: 'Kemegahan Sriwijaya & Songket Lepus Emas',
+    description: 'Kemegahan kerajaan Sriwijaya berhias ornamen Mahkota Kesuhun Aesan Gede bertingkat, Teratai Dada emas, atap Rumah Limas, dan kain Songket Lepus benang emas murni.',
+    thumbnail: '/assets/themes/palembang/thumbnail.svg',
+    previewColors: {
+      primary: '#780016',
+      secondary: '#D4AF37',
+      accent: '#FFE082',
+      bg: '#FAF5EE',
+    },
+    features: ['Mahkota Aesan Gede', 'Rumah Limas Simbar', 'Songket Lepus Emas', 'Bunga Cempaka Melati'],
+    status: 'ready',
+    favicon: '/assets/themes/palembang/favicon.svg',
+  },
+  {
     id: 'spotify',
     name: 'Spotify Interactive',
     category: 'modern',

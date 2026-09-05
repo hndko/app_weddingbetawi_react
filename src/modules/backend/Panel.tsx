@@ -17,6 +17,7 @@ import { DragDropUpload } from './components/DragDropUpload';
 import { EventScheduleEditor } from './components/EventScheduleEditor';
 import { ThemeSelector } from './components/ThemeSelector';
 import * as XLSX from 'xlsx';
+import { APP_VERSION } from '../../version';
 
 export interface PanelProps {
   currentRoute?: 'login' | 'modules';
@@ -1074,7 +1075,7 @@ Wassalamu'alaikum Wr. Wb.`;
           <div className="p-4 border-t border-gray-100 bg-gray-50/50">
             <div className="flex items-center justify-between text-[11px] text-gray-500 font-medium">
               <span>Versi Sistem</span>
-              <span className="font-mono font-semibold px-2 py-0.5 bg-white border border-gray-200 rounded-md">v1.6.1</span>
+              <span className="font-mono font-semibold px-2 py-0.5 bg-white border border-gray-200 rounded-md">v{APP_VERSION}</span>
             </div>
           </div>
         </aside>
@@ -1169,7 +1170,7 @@ Wassalamu'alaikum Wr. Wb.`;
               </div>
 
               <div className="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between text-xs">
-                <span className="text-gray-500 font-medium">Betawi SPA v1.6.1</span>
+                <span className="text-gray-500 font-medium">Panel Modules v{APP_VERSION}</span>
                 <button
                   type="button"
                   onClick={handleLogout}

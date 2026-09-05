@@ -8,6 +8,10 @@ import { OpeningCover as JawaOpeningCover } from './jawa/OpeningCover';
 import { InvitationContent as JawaInvitationContent } from './jawa/InvitationContent';
 import { AppFrame as JawaAppFrame } from './jawa/decorations/AppFrame';
 
+import { OpeningCover as SundaOpeningCover } from './sunda/OpeningCover';
+import { InvitationContent as SundaInvitationContent } from './sunda/InvitationContent';
+import { AppFrame as SundaAppFrame } from './sunda/decorations/AppFrame';
+
 export * from './types';
 
 export const THEME_CATALOG: ThemeMeta[] = [
@@ -58,8 +62,8 @@ export const THEME_CATALOG: ThemeMeta[] = [
       accent: '#D4AF37',
       bg: '#F4F7F4',
     },
-    features: ['Mahkota Siger Sunda', 'Ronce Melati Putih', 'Ornamen Bambu Priangan', 'Tahap Desain'],
-    status: 'coming_soon',
+    features: ['Mahkota Siger Sunda', 'Serat Ulem Pawiwahan', 'Ronce Melati Putih', 'Bambu Priangan Arch'],
+    status: 'ready',
     favicon: '/assets/themes/sunda/favicon.svg',
   },
   {
@@ -114,6 +118,15 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: JawaOpeningCover,
       InvitationContent: JawaInvitationContent,
       AppFrame: JawaAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  sunda: {
+    meta: THEME_CATALOG[2],
+    components: {
+      OpeningCover: SundaOpeningCover,
+      InvitationContent: SundaInvitationContent,
+      AppFrame: SundaAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

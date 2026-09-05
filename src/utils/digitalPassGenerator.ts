@@ -359,7 +359,7 @@ export async function downloadPassPDF(
   doc.setProperties({
     title: `Digital Wedding Pass - ${guestInfo?.guestName || 'Tamu Undangan'}`,
     subject: `Undangan Pernikahan ${guestInfo?.coupleText || 'The Wedding'}`,
-    creator: 'Betawi Heritage Digital Invitation SPA',
+    creator: 'Mari Partner Wedding Invitation SPA',
     author: 'Wedding Organizer System',
   });
 

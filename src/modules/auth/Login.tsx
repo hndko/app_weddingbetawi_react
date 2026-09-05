@@ -212,9 +212,9 @@ export function Login({
           </div>
         </div>
 
-        {/* Bottom Betawi Footer Accent */}
+        {/* Bottom Platform Footer Accent */}
         <div className="bg-gray-50/80 px-6 py-3 border-t border-gray-100 flex items-center justify-center text-[11px] text-gray-400">
-          <span>Dilindungi Firebase Firestore • Betawi Heritage Modern</span>
+          <span>Dilindungi Firebase Firestore • Mari Partner Wedding Invitation</span>
         </div>
       </motion.div>
     </div>

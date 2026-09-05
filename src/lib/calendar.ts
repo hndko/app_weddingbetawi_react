@@ -139,7 +139,7 @@ export function generateIcsContent(event: EventDetail, weddingConfig: WeddingCon
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Betawi Heritage Wedding Invitation//ID',
+    'PRODID:-//Mari Partner Wedding Invitation//ID',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',

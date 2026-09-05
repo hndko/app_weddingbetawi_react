@@ -1004,9 +1004,9 @@ Wassalamu'alaikum Wr. Wb.`;
                 </div>
                 <div>
                   <h2 className="font-heading text-base font-bold text-text-dark tracking-tight">
-                    Betawi Heritage
+                    Mari Partner
                   </h2>
-                  <p className="text-[11px] text-gray-500 font-medium">Panel Pengelola</p>
+                  <p className="text-[11px] text-gray-500 font-medium">Wedding Invitation</p>
                 </div>
               </div>
 
@@ -1214,7 +1214,10 @@ Wassalamu'alaikum Wr. Wb.`;
                 <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-warm-white">
                   <div className="flex items-center gap-2.5">
                     <Sparkles size={18} className="text-gold" />
-                    <span className="font-heading font-bold text-sm">Betawi Heritage</span>
+                    <div>
+                      <span className="font-heading font-bold text-sm block leading-tight">Mari Partner</span>
+                      <span className="text-[10px] text-gray-500 font-medium block">Wedding Invitation</span>
+                    </div>
                   </div>
                   <button
                     type="button"

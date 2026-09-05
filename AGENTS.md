@@ -1,14 +1,14 @@
 # 🤖 AGENTS.md — Panduan & Aturan Proyek untuk AI Assistant & Coding Agents
 
-Dokumen ini adalah **sumber kebenaran tunggal (*Single Source of Truth*)** untuk seluruh AI Assistant, Coding Agents, LLM Pair Programmer, dan pengembang yang bekerja pada repositori **Betawi Heritage - Digital Wedding Invitation SPA**. 
+Dokumen ini adalah **sumber kebenaran tunggal (*Single Source of Truth*)** untuk seluruh AI Assistant, Coding Agents, LLM Pair Programmer, dan pengembang yang bekerja pada repositori **Mari Partner - Digital Wedding Invitation SPA**. 
 
 Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek ini **WAJIB** membaca, memahami, dan mematuhi seluruh aturan di bawah ini tanpa pengecualian.
 
 ---
 
 ## 📌 Metadata Proyek
-- **Nama Proyek**: Betawi Heritage Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.40.0`
+- **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
+- **Versi Aplikasi Saat Ini**: `v1.40.1`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Firebase Firestore 12.17, Motion 12.23
 - **Tipe Aplikasi**: Client-Side Single Page Application (SPA)
 - **Status CI/CD & Deploy**: Vercel Serverless Static Hosting

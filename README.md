@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.13.1-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.14.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -219,18 +219,19 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
   - **Mode Cepat (Generator Tunggal)**: Opsi pembuatan link personal dadakan untuk satu nama tamu secara instan.
 - **Menu 3: Manajemen Konten Terpartisi (Sub-Tabs)**: 
   - Tab pill rapi untuk Tema Desain, Mempelai, Acara & Lokasi, Galeri Foto, Kisah Cinta, Musik & Hadiah/QRIS, serta SEO & Metadata dengan bilah simpan melayang (*sticky action bar*).
-  - **Arsitektur Multi-Tema & Separasi Budaya Terisolasi (v1.13.0)**:
-    - *Isolasi Ornamen Budaya 100%*: Seksi visual budaya (Hero, Intro, Profil Mempelai, Penutup) diisolasi penuh per tema tanpa pencemaran silang (Tema Sunda bebas 100% dari Monas, Ondel-ondel, dan Wayang Gunungan).
-    - *Ornamen Budaya Autentik Mandiri*:
+  - **Arsitektur Multi-Tema & Separasi Budaya Terisolasi (v1.14.0)**:
+    - *Isolasi Ornamen Budaya 100%*: Seksi visual budaya (Hero, Intro, Profil Mempelai, Penutup) diisolasi penuh per tema tanpa pencemaran silang (Tema Minimalis bebas 100% dari ornamen adat seperti Monas, Ondel-ondel, Wayang, atau Siger).
+    - *Ornamen Budaya & Gaya Autentik Mandiri*:
       - **Betawi Heritage**: Siluet Monas, Ondel-ondel beranimasi, dan Rumah Kebaya.
       - **Javanese Royal Kraton**: Gunungan Wayang Mas sakral, Pendopo Joglo Keraton megah, dan ukiran sulur kencana keraton (*Javanese Filigree*).
       - **Sundanese Parahyangan**: Mahkota Siger Sunda 7 pucuk kembang tanjung emas, untaian ronce melati suci (*FloatingJasmineRonce*), gerbang lengkung bambu Priangan (*PrianganArch*), dan ukiran sudut Kasundaan beranimasi lembut (*AnimatedSundaneseFiligree*).
-    - *Favicon & Meta Theme-Color Dinamis*: Favicon peramban otomatis berganti (Mahkota Siger untuk Sunda, Wayang Emas untuk Jawa, Ornamen Adat untuk Betawi) dan `meta theme-color` menyesuaikan palet tema aktif.
+      - **Modern Botanical Minimalist**: Cabang daun eucalyptus & olive sprig halus (*BotanicalEucalyptus*), lengkung geometris modern (*MinimalistArch*), dedaunan melayang halus (*FloatingBotanicalLeaves*), dan aksen sudut garis tipis simetris (*MinimalistCornerAccent*).
+    - *Favicon & Meta Theme-Color Dinamis*: Favicon peramban otomatis berganti (Inisial Serif untuk Minimalist, Mahkota Siger untuk Sunda, Wayang Emas untuk Jawa, Ornamen Adat untuk Betawi) dan `meta theme-color` menyesuaikan palet tema aktif.
     - *Centralized Theme Registry*: Standarisasi kontrak antarmuka tema untuk skalabilitas tanpa batas.
-    - *Tema Siap Pakai*: **Betawi Heritage** (`betawi`), **Javanese Royal Kraton** (`jawa`), dan **Sundanese Parahyangan** (`sunda`).
-    - *Katalog Roadmap Adat*: Modern Botanical Minimalist dan Islamic Arabian Garden.
-    - *Pemilih Tema Visual*: Pratinjau palet warna tema, badge kategori adat, dan tombol aktivasi 1-klik yang tersinkronisasi ke Firestore.
-    - *Demo URL Preview*: Uji coba instan dengan parameter query `?theme=sunda`, `?theme=jawa`, atau `?theme=betawi`.
+    - *Tema Siap Pakai*: **Betawi Heritage** (`betawi`), **Javanese Royal Kraton** (`jawa`), **Sundanese Parahyangan** (`sunda`), dan **Modern Botanical Minimalist** (`minimalist`).
+    - *Katalog Roadmap*: Islamic Arabian Garden.
+    - *Pemilih Tema Visual*: Pratinjau palet warna tema, badge kategori gaya, dan tombol aktivasi 1-klik yang tersinkronisasi ke Firestore.
+    - *Demo URL Preview*: Uji coba instan dengan parameter query `?theme=minimalist`, `?theme=sunda`, `?theme=jawa`, atau `?theme=betawi`.
   - **Modal Lightbox Slider Berkas Terunggah**: Kartu pratinjau foto dapat diklik untuk membuka foto penuh dalam modal Lightbox interaktif berlatar gelap & blur, tombol geser Kiri/Kanan, counter foto, dan shortcut keyboard (`ArrowLeft`, `ArrowRight`, `Escape`).
   - **Reorder Timeline Kisah Cinta (Tombol Naik & Turun)**: Pengaturan kronologi momen kisah cinta fleksibel dengan tombol **Naik (`<ArrowUp />`)** dan **Turun (`<ArrowDown />`)** di samping penomoran dinamis (`#1`, `#2`, dst.), mengeliminasi keharusan menghapus dan mengetik ulang jika terjadi kesalahan urutan.
   - **Pemilih Tanggal & Waktu Interaktif (Date & Time Picker)**:

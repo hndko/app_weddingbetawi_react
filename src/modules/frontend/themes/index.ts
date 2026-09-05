@@ -12,6 +12,10 @@ import { OpeningCover as SundaOpeningCover } from './sunda/OpeningCover';
 import { InvitationContent as SundaInvitationContent } from './sunda/InvitationContent';
 import { AppFrame as SundaAppFrame } from './sunda/decorations/AppFrame';
 
+import { OpeningCover as MinimalistOpeningCover } from './minimalist/OpeningCover';
+import { InvitationContent as MinimalistInvitationContent } from './minimalist/InvitationContent';
+import { AppFrame as MinimalistAppFrame } from './minimalist/decorations/AppFrame';
+
 export * from './types';
 
 export const THEME_CATALOG: ThemeMeta[] = [
@@ -79,8 +83,8 @@ export const THEME_CATALOG: ThemeMeta[] = [
       accent: '#D4AF37',
       bg: '#F7FAFC',
     },
-    features: ['Clean Aesthetic Serif', 'Eucalyptus Watercolor', 'Tata Letak Minimalis', 'Tahap Desain'],
-    status: 'coming_soon',
+    features: ['Clean Aesthetic Serif', 'Eucalyptus Watercolor', 'Editorial Minimalist', 'Tata Letak Lapang'],
+    status: 'ready',
     favicon: '/assets/themes/minimalist/favicon.svg',
   },
   {
@@ -127,6 +131,15 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: SundaOpeningCover,
       InvitationContent: SundaInvitationContent,
       AppFrame: SundaAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  minimalist: {
+    meta: THEME_CATALOG[3],
+    components: {
+      OpeningCover: MinimalistOpeningCover,
+      InvitationContent: MinimalistInvitationContent,
+      AppFrame: MinimalistAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

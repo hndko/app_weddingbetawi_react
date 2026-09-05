@@ -162,7 +162,8 @@ Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda k
   - **Betawi Heritage** (*Adat Tradisional*): Motif Gigi Balang, siluet Ondel-ondel, rumah Kebaya, palet Sage Green & Warm Gold.
   - **Javanese Royal Kraton** (*Adat Tradisional*): Ornamen Gunungan Wayang Kulit autentik, pembuka Serat Ulem Pawiwahan Ageng, bingkai ukiran emas, palet Forest Green & Burnished Gold.
   - **Sundanese Parahyangan** (*Adat Tradisional*): Ornamen Mahkota Siger Sunda kembang tanjung emas, ronce melati untun suci, gerbang lengkung bambu Priangan, palet Parahyangan Forest Green & Soft Champagne Gold.
-  - **Tema Lainnya** (*Roadmap Segera Hadir*): Modern Botanical Minimalist dan Islamic Arabian Garden.
+  - **Modern Botanical Minimalist** (*Modern & Intimate*): Cabang daun eucalyptus & olive sprig halus, garis lengkung geometris modern, palet Slate Charcoal, Soft Sage & Off-White.
+  - **Tema Lainnya** (*Roadmap Segera Hadir*): Islamic Arabian Garden.
 * **Filter Kategori Tema**: Saring katalog berdasarkan tab *Semua*, *Adat Tradisional*, *Modern Minimalist*, atau *Nuansa Islami*.
 * **Titik Palet Warna Interaktif**: Setiap kartu tema memperlihatkan 3 warna khas tema tersebut.
 * **1-Klik Ganti Tema**: Klik tombol **"Gunakan Tema Ini"** untuk beralih tema seketika ke seluruh tamu secara instan tanpa perlu memprogram ulang.

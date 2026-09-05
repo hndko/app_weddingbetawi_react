@@ -67,8 +67,8 @@ function AppContent({ currentPath }: { currentPath: string }) {
     return (
       <>
         <SEO 
-          title={isModules ? `Admin Modules | ${siteName}` : `Admin Login | ${siteName}`}
-          description="Halaman admin untuk mengatur undangan pernikahan."
+          title={isModules ? `Panel Modules | ${siteName}` : `Panel Login | ${siteName}`}
+          description="Halaman panel modules untuk mengatur undangan pernikahan."
           robots="noindex, nofollow"
           siteName={siteName}
         />

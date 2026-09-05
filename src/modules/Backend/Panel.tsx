@@ -884,7 +884,7 @@ Wassalamu'alaikum Wr. Wb.`;
             </div>
             <div>
               <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-medium">
-                <span>Modules</span>
+                <span>Panel Modules</span>
                 <span>/</span>
                 <span className="text-sage-dark font-semibold capitalize">{activeMenu}</span>
               </div>
@@ -901,10 +901,10 @@ Wassalamu'alaikum Wr. Wb.`;
 
         {/* Topbar Right Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Active Admin Badge */}
+          {/* Active Panel Badge */}
           <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/70 text-[11px] font-semibold text-emerald-700">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Admin Mode</span>
+            <span>Panel Mode</span>
           </div>
 
           {/* Direct Link to Invitation */}
@@ -1061,7 +1061,7 @@ Wassalamu'alaikum Wr. Wb.`;
           <div className="p-4 border-t border-gray-100 bg-gray-50/50">
             <div className="flex items-center justify-between text-[11px] text-gray-500 font-medium">
               <span>Versi Sistem</span>
-              <span className="font-mono font-semibold px-2 py-0.5 bg-white border border-gray-200 rounded-md">v1.4.2</span>
+              <span className="font-mono font-semibold px-2 py-0.5 bg-white border border-gray-200 rounded-md">v1.6.1</span>
             </div>
           </div>
         </aside>
@@ -1156,7 +1156,7 @@ Wassalamu'alaikum Wr. Wb.`;
               </div>
 
               <div className="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between text-xs">
-                <span className="text-gray-500 font-medium">Betawi SPA v1.4.2</span>
+                <span className="text-gray-500 font-medium">Betawi SPA v1.6.1</span>
                 <button
                   type="button"
                   onClick={handleLogout}

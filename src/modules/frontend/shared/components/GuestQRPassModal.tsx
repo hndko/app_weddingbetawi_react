@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Download, QrCode, CheckCircle2, Calendar, MapPin, Users, Loader2 } from 'lucide-react';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from '../../../../lib/firebase';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { generateQRCodeDataURL, serializeGuestPayload, generateTicketCode } from '../../../../utils/qrGenerator';
+import type { WeddingTable } from '../../../../types';
 
 interface GuestQRPassModalProps {
   isOpen: boolean;
@@ -10,6 +13,7 @@ interface GuestQRPassModalProps {
   guestName: string;
   guestPax?: number;
   guestId?: string;
+  tableNumber?: string;
 }
 
 export function GuestQRPassModal({
@@ -18,6 +22,7 @@ export function GuestQRPassModal({
   guestName,
   guestPax = 1,
   guestId,
+  tableNumber,
 }: GuestQRPassModalProps) {
   const { weddingConfig } = useWeddingConfig();
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
@@ -65,6 +70,46 @@ export function GuestQRPassModal({
       isMounted = false;
     };
   }, [isOpen, displayName, guestPax, guestId, ticketCode]);
+
+  // Seating table lookup from wedding_tables
+  const [assignedTable, setAssignedTable] = useState<{ number: string; name: string } | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const q = query(collection(db, 'wedding_tables'));
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        const list = snapshot.docs.map((d) => d.data() as WeddingTable);
+        const norm = displayName.toLowerCase().trim();
+        const found = list.find((t) =>
+          (t.assignedGuests || []).some(
+            (g) =>
+              (g.name && g.name.toLowerCase().trim() === norm) ||
+              (guestId && g.id === guestId)
+          )
+        );
+        if (found) {
+          setAssignedTable({ number: found.number, name: found.name });
+        } else if (tableNumber) {
+          const matchByNum = list.find((t) => t.number.toLowerCase() === tableNumber.toLowerCase());
+          setAssignedTable({
+            number: tableNumber,
+            name: matchByNum ? matchByNum.name : 'Meja Khusus',
+          });
+        } else {
+          setAssignedTable(null);
+        }
+      },
+      () => {
+        if (tableNumber) {
+          setAssignedTable({ number: tableNumber, name: 'Meja Tamu' });
+        }
+      }
+    );
+
+    return () => unsub();
+  }, [isOpen, displayName, guestId, tableNumber]);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -167,12 +212,13 @@ export function GuestQRPassModal({
       // Ticket Code & Pax Badge
       ctx.fillStyle = '#F4EFE6';
       ctx.beginPath();
-      ctx.roundRect(width / 2 - 180, 370, 360, 48, 24);
+      ctx.roundRect(width / 2 - 200, 370, 400, 48, 24);
       ctx.fill();
 
       ctx.fillStyle = '#1A2E26';
-      ctx.font = 'bold 18px "Cinzel", monospace';
-      ctx.fillText(`KODE: ${ticketCode}  •  ${guestPax} PAX`, width / 2, 401);
+      ctx.font = 'bold 16px "Cinzel", monospace';
+      const seatText = assignedTable ? `  •  MEJA: ${assignedTable.number}` : '';
+      ctx.fillText(`KODE: ${ticketCode}  •  ${guestPax} PAX${seatText}`, width / 2, 401);
 
       // QR Code Image
       const qrImg = new Image();
@@ -301,6 +347,16 @@ export function GuestQRPassModal({
                     {guestPax} Pax
                   </span>
                 </div>
+
+                {/* Table Seating Badge */}
+                {assignedTable && (
+                  <div className="mt-2.5 flex items-center justify-center">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-300/80 text-amber-900 text-xs font-semibold shadow-xs">
+                      <MapPin size={12} className="text-amber-700 shrink-0" />
+                      <span>Meja: <strong className="font-bold">{assignedTable.number}</strong> ({assignedTable.name})</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* QR Code Container */}

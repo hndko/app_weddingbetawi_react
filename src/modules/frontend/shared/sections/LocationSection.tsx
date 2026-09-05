@@ -1,9 +1,16 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
-import { Map } from 'lucide-react';
+import { Map, Armchair } from 'lucide-react';
+import { GuestSeatingLookupModal } from '../components/GuestSeatingLookupModal';
 
 export function LocationSection() {
   const { weddingConfig } = useWeddingConfig();
+  const [isSeatingModalOpen, setIsSeatingModalOpen] = useState(false);
+
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const guestNameFromUrl = searchParams ? searchParams.get('to') || '' : '';
+
   return (
     <section className="py-20 px-6 bg-ivory text-center">
       <motion.div
@@ -30,15 +37,33 @@ export function LocationSection() {
           </div>
         </div>
         
-        <a 
-          href={weddingConfig.events.resepsi.mapUrl || "#"}
-          target="_blank" rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 bg-white text-sage-dark border border-sage/40 py-3.5 px-8 rounded-full text-[13px] font-medium tracking-wide hover:bg-sage-50 transition-colors shadow-sm"
-        >
-          <Map size={16} />
-          Buka Google Maps
-        </a>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <a 
+            href={weddingConfig.events.resepsi.mapUrl || "#"}
+            target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 bg-white text-sage-dark border border-sage/40 py-3.5 px-7 rounded-full text-[13px] font-medium tracking-wide hover:bg-sage-50 transition-colors shadow-sm"
+          >
+            <Map size={16} />
+            Buka Google Maps
+          </a>
+
+          <button
+            type="button"
+            onClick={() => setIsSeatingModalOpen(true)}
+            className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 text-white py-3.5 px-7 rounded-full text-[13px] font-semibold tracking-wide hover:from-amber-700 hover:to-amber-800 transition-all shadow-sm cursor-pointer"
+          >
+            <Armchair size={16} />
+            Cari Meja & Denah Anda
+          </button>
+        </div>
       </motion.div>
+
+      {/* Guest Seating Lookup Modal */}
+      <GuestSeatingLookupModal
+        isOpen={isSeatingModalOpen}
+        onClose={() => setIsSeatingModalOpen(false)}
+        defaultGuestName={guestNameFromUrl}
+      />
     </section>
   );
 }

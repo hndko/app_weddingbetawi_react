@@ -90,14 +90,14 @@ export const CoupleProfile: React.FC = () => {
         <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-3" />
       </motion.div>
 
-      {/* Couple Profiles Grid */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-14 w-full max-w-2xl relative z-10">
+      {/* Couple Profiles Vertical Stack */}
+      <div className="flex flex-col items-center gap-14 w-full max-w-sm relative z-10">
         <ProfileCard data={weddingConfig.groom} delay={0.2} index={0} />
 
-        <div className="text-2xl sm:text-3xl font-serif italic text-[#C5A059] -my-4 md:my-0 flex items-center justify-center">
-          <span className="w-8 h-[1px] bg-[#D4AF37]/50 md:hidden mr-2" />
-          &amp;
-          <span className="w-8 h-[1px] bg-[#D4AF37]/50 md:hidden ml-2" />
+        <div className="flex items-center justify-center gap-4 text-[#C5A059] -my-4 z-20">
+          <span className="w-12 h-[1px] bg-[#D4AF37]/50" />
+          <span className="font-heading text-4xl italic text-[#7C2D12]">&amp;</span>
+          <span className="w-12 h-[1px] bg-[#D4AF37]/50" />
         </div>
 
         <ProfileCard data={weddingConfig.bride} delay={0.4} index={1} />

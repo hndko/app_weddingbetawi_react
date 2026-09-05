@@ -36,7 +36,7 @@ import {
 import { db } from '../../../lib/firebase';
 import { playSuccessBeep, playWarningBeep } from '../../../utils/audioBeep';
 import { parseGuestPayload, generateTicketCode } from '../../../utils/qrGenerator';
-import type { GuestInvitation, RSVPResponse, CheckInRecord } from '../../../types';
+import type { GuestInvitation, RSVPResponse, CheckInRecord, WeddingTable } from '../../../types';
 
 interface ReceptionCheckinProps {
   guests: GuestInvitation[];
@@ -59,6 +59,8 @@ interface PendingCheckinData {
 export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinProps) {
   // Check-in records synced from Firestore
   const [checkins, setCheckins] = useState<CheckInRecord[]>([]);
+  // Wedding tables synced from Firestore for live seating resolution
+  const [tables, setTables] = useState<WeddingTable[]>([]);
 
   // Camera & Scanner States
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
@@ -83,11 +85,11 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
   const [deleteTarget, setDeleteTarget] = useState<CheckInRecord | null>(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
-  // Real-time sync for checkins collection
+  // Real-time sync for checkins and wedding_tables collection
   useEffect(() => {
-    const q = query(collection(db, 'checkins'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(
-      q,
+    const qCheckins = query(collection(db, 'checkins'), orderBy('createdAt', 'desc'));
+    const unsubCheckins = onSnapshot(
+      qCheckins,
       (snapshot) => {
         const records = snapshot.docs.map((d) => ({
           id: d.id,
@@ -95,11 +97,26 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
         })) as CheckInRecord[];
         setCheckins(records);
       },
-      () => {
-        // Fallback for permission/network
-      }
+      () => {}
     );
-    return () => unsubscribe();
+
+    const qTables = query(collection(db, 'wedding_tables'), orderBy('number', 'asc'));
+    const unsubTables = onSnapshot(
+      qTables,
+      (snapshot) => {
+        const list = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        })) as WeddingTable[];
+        setTables(list);
+      },
+      () => {}
+    );
+
+    return () => {
+      unsubCheckins();
+      unsubTables();
+    };
   }, []);
 
   // Stop camera media stream
@@ -179,7 +196,14 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       );
 
       const resolvedPax = matchedRsvp?.guestCount || parsed.pax || 1;
-      const resolvedTable = matchedGuest?.tableNumber || matchedRsvp?.tableNumber || '';
+      const matchedTableFromCollection = tables.find((t) =>
+        (t.assignedGuests || []).some(
+          (ag) =>
+            ag.name?.toLowerCase().trim() === guestNameClean.toLowerCase() ||
+            (matchedGuest?.id && ag.id === matchedGuest.id)
+        )
+      );
+      const resolvedTable = matchedGuest?.tableNumber || matchedRsvp?.tableNumber || matchedTableFromCollection?.number || '';
 
       if (existingCheckin) {
         playWarningBeep();
@@ -427,6 +451,18 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
     if (!searchQuery.trim()) return [];
     const qLower = searchQuery.toLowerCase().trim();
 
+    const resolveTableForGuest = (name: string, id?: string) => {
+      const norm = name.toLowerCase().trim();
+      const matched = tables.find((t) =>
+        (t.assignedGuests || []).some(
+          (ag) =>
+            ag.name?.toLowerCase().trim() === norm ||
+            (id && ag.id === id)
+        )
+      );
+      return matched ? matched.number : undefined;
+    };
+
     // Map unique guests by name
     const map = new Map<string, { id?: string; name: string; phone?: string; pax?: number; tableNumber?: string; isCheckedIn: boolean }>();
 
@@ -437,7 +473,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
         name: g.name,
         phone: g.phone,
         pax: g.actualPax || 1,
-        tableNumber: g.tableNumber,
+        tableNumber: g.tableNumber || resolveTableForGuest(g.name, g.id),
         isCheckedIn: isChecked,
       });
     });
@@ -447,11 +483,14 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       const isChecked = checkins.some((c) => c.name.toLowerCase() === r.name.toLowerCase());
       if (existing) {
         existing.pax = r.guestCount || existing.pax || 1;
+        if (!existing.tableNumber) {
+          existing.tableNumber = r.tableNumber || resolveTableForGuest(r.name);
+        }
       } else {
         map.set(r.name.toLowerCase(), {
           name: r.name,
           pax: r.guestCount || 1,
-          tableNumber: r.tableNumber,
+          tableNumber: r.tableNumber || resolveTableForGuest(r.name),
           isCheckedIn: isChecked,
         });
       }
@@ -460,7 +499,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
     return Array.from(map.values())
       .filter((item) => item.name.toLowerCase().includes(qLower) || (item.phone && item.phone.includes(qLower)))
       .slice(0, 10);
-  }, [guests, rsvps, checkins, searchQuery]);
+  }, [guests, rsvps, checkins, tables, searchQuery]);
 
   // Filtered attendance records for history table
   const filteredCheckins = useMemo(() => {

@@ -147,3 +147,28 @@ export interface WeddingExpense {
   createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
   updatedAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
 }
+
+export type TableShape = 'round' | 'long' | 'vip_stage';
+export type TableZone = 'vip_front' | 'family_center' | 'regular_left' | 'regular_right';
+
+export interface TableGuestAssignment {
+  id: string; // guestId atau nama
+  name: string;
+  pax: number;
+  isVip?: boolean;
+}
+
+export interface WeddingTable {
+  id?: string;
+  number: string; // e.g. "VIP-01", "Meja 05"
+  name: string;   // e.g. "Keluarga Inti Pria", "Rekan Kerja Kantor"
+  shape: TableShape;
+  zone: TableZone;
+  capacity: number; // e.g. 8 atau 10
+  assignedGuests: TableGuestAssignment[];
+  notes?: string;
+  posX?: number; // koordinat persen denah (0 - 100)
+  posY?: number; // koordinat persen denah (0 - 100)
+  createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+  updatedAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
+}

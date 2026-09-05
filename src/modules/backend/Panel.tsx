@@ -7,7 +7,7 @@ import {
   Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
   ArrowUpRight, ShieldCheck, Sparkles, BookOpen, Upload, UserPlus, 
   FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette, QrCode, Tv,
-  Wallet
+  Wallet, Armchair
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
@@ -19,6 +19,7 @@ import { EventScheduleEditor } from './components/EventScheduleEditor';
 import { ThemeSelector } from './components/ThemeSelector';
 import { ReceptionCheckin } from './components/ReceptionCheckin';
 import { BudgetVendorTracker } from './components/BudgetVendorTracker';
+import { SeatingChartManager } from './components/SeatingChartManager';
 import { APP_VERSION } from '../../version';
 
 export interface PanelProps {
@@ -78,7 +79,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   });
 
   // Modern Dashboard Navigation State
-  const [activeMenu, setActiveMenu] = useState<'overview' | 'reception' | 'generator' | 'config' | 'budget' | 'rsvps' | 'wishes'>('overview');
+  const [activeMenu, setActiveMenu] = useState<'overview' | 'reception' | 'seating' | 'generator' | 'config' | 'budget' | 'rsvps' | 'wishes'>('overview');
   const [configSubTab, setConfigSubTab] = useState<'theme' | 'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'seo'>('theme');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -908,6 +909,7 @@ Wassalamu'alaikum Wr. Wb.`;
               <h1 className="text-sm sm:text-base font-heading font-bold text-text-dark leading-none mt-0.5">
                 {activeMenu === 'overview' && 'Ringkasan Dashboard'}
                 {activeMenu === 'reception' && 'Meja Resepsi & Check-in Tamu'}
+                {activeMenu === 'seating' && 'Manajemen Meja & Seating Chart'}
                 {activeMenu === 'generator' && 'WhatsApp Link Generator'}
                 {activeMenu === 'config' && 'Kelola Konten Undangan'}
                 {activeMenu === 'budget' && 'Wedding Budget & Checklist Vendor'}
@@ -1021,6 +1023,26 @@ Wassalamu'alaikum Wr. Wb.`;
                   activeMenu === 'reception' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800'
                 }`}>
                   Hari-H
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveMenu('seating')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeMenu === 'seating'
+                    ? 'bg-sage-dark text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Armchair size={16} />
+                  <span>Seating Chart</span>
+                </div>
+                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                  activeMenu === 'seating' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800'
+                }`}>
+                  Ballroom
                 </span>
               </button>
 
@@ -1173,6 +1195,21 @@ Wassalamu'alaikum Wr. Wb.`;
                     </div>
                     <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
                       Hari-H
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveMenu('seating'); setIsMobileSidebarOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold ${
+                      activeMenu === 'seating' ? 'bg-sage-dark text-white' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Armchair size={16} />
+                      <span>Seating Chart</span>
+                    </div>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                      Ballroom
                     </span>
                   </button>
                   <button
@@ -1389,7 +1426,7 @@ Wassalamu'alaikum Wr. Wb.`;
               {/* Quick Action Shortcuts Grid */}
               <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col gap-3">
                 <h3 className="font-heading text-sm font-bold text-text-dark">Aksi Cepat</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-2.5">
                   <button
                     type="button"
                     onClick={() => setActiveMenu('reception')}
@@ -1399,6 +1436,18 @@ Wassalamu'alaikum Wr. Wb.`;
                     <div>
                       <span className="block text-xs font-bold text-gray-800">Meja Resepsi</span>
                       <span className="text-[11px] text-amber-800/80 font-medium">Scan QR Hari-H</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveMenu('seating')}
+                    className="p-3.5 rounded-xl border border-blue-200 hover:border-blue-400 bg-blue-50/40 hover:bg-blue-100/40 transition-all text-left flex flex-col gap-2 cursor-pointer group"
+                  >
+                    <Armchair size={18} className="text-blue-700 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <span className="block text-xs font-bold text-gray-800">Seating Chart</span>
+                      <span className="text-[11px] text-blue-800/80 font-medium">Denah Meja</span>
                     </div>
                   </button>
 
@@ -1562,6 +1611,13 @@ Wassalamu'alaikum Wr. Wb.`;
               rsvps={rsvps}
               showToast={showToast}
             />
+          )}
+
+          {/* ========================================================================= */}
+          {/* MENU: MANAJEMEN MEJA & SEATING CHART BALLROOM */}
+          {/* ========================================================================= */}
+          {activeMenu === 'seating' && (
+            <SeatingChartManager onNotify={(msg, type) => showToast(type, msg)} />
           )}
 
           {/* ========================================================================= */}

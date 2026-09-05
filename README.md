@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.23.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.24.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -154,6 +154,34 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 | `text` | `String` | Isi pesan doa restu. |
 | `createdAt` | `Timestamp` | Waktu pengiriman ucapan. |
 
+### 4. Koleksi Anggaran Pernikahan: `wedding_expenses`
+Menyimpan rincian target anggaran dan kontrak vendor acara pernikahan.
+
+| Nama Field | Tipe Data | Deskripsi |
+| :--- | :--- | :--- |
+| `category` | `String` | Kategori pos biaya (Venue, Catering, MUA, Dekorasi, dll.). |
+| `name` | `String` | Nama pos atau item pengeluaran. |
+| `vendor` | `String` | Nama vendor atau penyedia jasa. |
+| `phone` | `String` | Nomor WhatsApp vendor untuk kontak cepat. |
+| `estimatedCost` | `Number` | Estimasi anggaran biaya yang direncanakan. |
+| `actualCost` | `Number` | Nilai kontrak riil yang disepakati dengan vendor. |
+| `paidAmount` | `Number` | Jumlah uang yang telah dibayarkan (DP / termin). |
+| `status` | `String` | Status pelunasan (`unpaid`, `partial`, `paid`). |
+| `isReady` | `Boolean` | Status kesiapan logistik hari-H. |
+
+### 5. Koleksi Meja & Denah Ballroom: `wedding_tables`
+Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
+
+| Nama Field | Tipe Data | Deskripsi |
+| :--- | :--- | :--- |
+| `tableNumber` | `String` | Nomor/kode meja (misal: `VIP-01`, `TBL-02`). |
+| `tableName` | `String` | Nama label meja (misal: "VIP Utama & Tamu Kehormatan"). |
+| `zone` | `String` | Zona penempatan meja (`front`, `center`, `back`, `left_wing`, `right_wing`). |
+| `capacity` | `Number` | Daya tampung maksimal kursi di meja (2-20 kursi). |
+| `shape` | `String` | Bentuk meja (`round`, `rectangle`). |
+| `assignedGuests` | `Array<Object>` | Daftar tamu yang duduk (`id`, `guestName`, `pax`, `assignedAt`). |
+| `notes` | `String` | Catatan khusus meja (*opsional*). |
+
 ---
 
 ## 👥 Hak Akses & Role Pengguna
@@ -234,6 +262,17 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 - **Checklist Kesiapan Logistik Hari-H**: Tombol centang 1-klik untuk memantau status persiapan vendor dan barang bawaan.
 - **Ekspor Rekapitulasi CSV (UTF-8 BOM)**: Unduh seluruh data finansial dan status vendor ke file spreadsheet untuk pelaporan bendahara dan keluarga.
 - **Redesain Estetika Light Theme Selaras Admin Panel (v1.22.1)**: Mengadopsi palet warna *warm light* terpadu (`bg-[#fcfaf7]`), kartu putih dengan aksen *sage green* & *warm gold*, badge kategori pastel lembut, tipografi berkejelasan tinggi, tabel data bersih dengan efek *hover*, serta modal form dan konfirmasi SweetAlert2 bernuansa terang elegan.
+
+### 🪑 Manajemen Meja & Seating Chart Ballroom (v1.24.0)
+- **Denah Lantai Interaktif Ballroom (Floor Plan Layout)**: Visualisasi tata letak panggung pelaminan, meja VIP kehormatan, meja bundar keluarga besar & tamu umum, hingga area prasmanan/katering dengan zona terarah (*Depan, Tengah, Belakang, Samping Kiri, Samping Kanan*).
+- **4 Kartu Indikator KPI Kapasitas**: Total Meja Aktif, Kapasitas Ballroom Keseluruhan, Kursi Terisi, dan Sisa Kursi Tersedia secara real-time tersinkronisasi via Firestore listener `wedding_tables`.
+- **12 Preset Meja Standar Ballroom (1-Klik)**: Tombol pemuatan instan 12 meja standar ballroom berkapasitas total 108 kursi (VIP Pengantin, Keluarga Pria & Wanita, VIP Pejabat, Kolega, dan Tamu Umum).
+- **Drawer Alokasi Tamu & Kursi (Guest Assignment)**: Panel interaktif untuk menempatkan atau mencabut tamu undangan (`guests`) ke meja tertentu dengan deteksi kapasitas otomatis (*Sisa Kursi*).
+- **Sinkronisasi Otomatis E-Ticket QR Pass & Meja Resepsi**:
+  - Badge alokasi meja (`📍 Meja: VIP-01 (VIP Utama)`) otomatis tercetak pada QR pass digital tamu serta pada berkas gambar tiket PNG yang diunduh ke galeri ponsel.
+  - Pemindai QR Meja Resepsi (`ReceptionCheckin`) otomatis menampilkan nama dan zona meja tamu saat check-in tanpa input manual.
+- **Pencarian Mandiri Tamu (Self-Service Lookup)**: Tamu undangan dapat mencari nomor dan denah mejanya secara mandiri lewat tombol *"Cari Meja & Denah Anda"* di seksi Lokasi.
+- **Ekspor Rekapitulasi Seating Chart CSV**: Unduh denah dan alokasi meja ke format spreadsheet CSV UTF-8 BOM untuk koordinasi tim *event organizer* (EO) dan *usher*.
 
 ### ⛰️ Tema Batak Toba Royal Gorga (Unjuk Adat Bolon Batak Toba) (v1.23.0)
 - **Kemegahan Seni Ukir Gorga & Ruma Bolon**: Menghadirkan siluet atap pelana melengkung Ruma Bolon dengan puncak tanduk kerbau (*simatutu*), ukiran suci Gorga Simeol-meol, Gorga Boraspati, dan fasad *dorpi*.

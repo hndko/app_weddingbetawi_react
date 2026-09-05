@@ -326,7 +326,57 @@ graph LR
 
 ---
 
-## ❓ 13. Tanya Jawab Umum (FAQ)
+## 🪑 13. Modul Manajemen Meja & Seating Chart Ballroom (Menu 8)
+
+Modul ini adalah pusat penataan denah lantai (*floor plan layout*) ballroom dan alokasi tempat duduk para tamu undangan resepsi pernikahan:
+
+```mermaid
+graph LR
+    A["Atur Meja & Muat 12 Preset Ballroom"] --> B["Buka Drawer Alokasi Tamu"]
+    B --> C["Tempatkan Tamu ke Meja Sesuai Kapasitas"]
+    C --> D["Otomatis Muncul di QR Pass & Tiket Tamu"]
+    D --> E["Resepsionis Scan QR: Langsung Tertera Meja!"]
+```
+
+### A. 4 Kartu Indikator KPI Kapasitas Ballroom:
+1. **Total Meja Aktif**: Jumlah keseluruhan meja yang terdaftar di ballroom.
+2. **Kapasitas Kursi**: Total daya tampung fisik kursi dari semua meja aktif.
+3. **Kursi Terisi**: Akumulasi pax tamu yang telah dialokasikan ke nomor meja tertentu.
+4. **Sisa Kursi Tersedia**: Kapasitas kursi kosong yang masih dapat ditempati oleh tamu.
+
+### B. Fitur & Kemudahan Operasional:
+1. **12 Preset Meja Standar Ballroom (1-Klik)**:
+   - Jika data meja masih kosong, klik tombol **"Muat 12 Preset Meja"** untuk langsung menyusun tata letak standar ballroom berkapasitas 108 kursi:
+     - `VIP-01`: Meja Utama Pelaminan (12 Kursi - Zona Depan)
+     - `VIP-02`: Keluarga Besar Mempelai Pria (10 Kursi - Zona Depan)
+     - `VIP-03`: Keluarga Besar Mempelai Wanita (10 Kursi - Zona Depan)
+     - `VIP-04`: Pejabat & Tamu VVIP (8 Kursi - Zona Depan)
+     - `TBL-01` s/d `TBL-04`: Meja Tamu Kehormatan & Kolega (Zona Tengah)
+     - `TBL-05` s/d `TBL-08`: Meja Tamu Umum & Sahabat (Zona Belakang & Samping)
+2. **Denah Lantai Visual Interaktif (Visual Floor Plan)**:
+   - Kartu denah meja dikelompokkan berdasarkan zona (*Zona Depan, Zona Tengah, Zona Belakang, Sayap Kiri, Sayap Kanan*).
+   - Setiap kartu meja menampilkan nomor meja, bentuk meja (Bundar / Persegi Panjang), kapasitas maksimal, sisa kursi, indikator okupansi warna, serta daftar nama tamu yang duduk.
+3. **Drawer Alokasi Tamu (Guest Assignment Drawer)**:
+   - Klik tombol **"Atur Tamu"** pada salah satu meja untuk membuka panel laci samping (*slide-over drawer*).
+   - Menampilkan daftar tamu yang sudah duduk di meja tersebut dan daftar tamu yang belum dialokasikan meja (*Unassigned Guests*).
+   - Tambah atau keluarkan tamu dengan 1-klik, dilengkapi peringatan otomatis jika kapasitas kursi meja telah penuh.
+4. **Tambah & Edit Meja Fleksibel**:
+   - Tambahkan meja baru dengan nomor custom, nama label, zona tata letak, kapasitas kursi (2 s/d 20 kursi), serta bentuk meja.
+5. **Ekspor CSV Seating Chart (UTF-8 BOM)**:
+   - Klik tombol **"Export CSV"** untuk mengunduh rekapitulasi data meja, kapasitas, dan alokasi nama tamu ke format spreadsheet untuk dibagikan kepada tim *usher* penerima tamu dan *event organizer* (EO).
+
+### C. Sinkronisasi Sisi Tamu & Meja Resepsi:
+1. **Badge Meja di E-Ticket & QR Pass**:
+   - Tamu yang telah dialokasikan meja akan otomatis melihat nomor dan nama meja mereka di badge emas QR pass digital (`📍 Meja: VIP-01 (VIP Utama)`).
+   - Saat tamu menekan tombol *"Simpan Tiket ke HP (PNG)"*, nomor meja otomatis tercetak jelas pada gambar tiket masuk ponsel mereka.
+2. **Pencarian Mandiri Tamu ("Cari Meja & Denah Anda")**:
+   - Di seksi Lokasi acara undangan digital, tamu dapat mengetuk tombol *"Cari Meja & Denah Anda"* untuk membuka dialog pencarian nama dan mengetahui nomor meja serta petunjuk letak zonanya sebelum memasuki ballroom.
+3. **Deteksi Otomatis di Scanner Meja Resepsi**:
+   - Saat resepsionis memindai QR code tamu pada modul Meja Resepsi (`ReceptionCheckin`), sistem langsung menampilkan nomor dan zona meja tamu tersebut sehingga staf *usher* dapat langsung mengarahkan tamu ke meja yang tepat.
+
+---
+
+## ❓ 14. Tanya Jawab Umum (FAQ)
 
 ### T: Apakah musik otomatis berputar saat tamu pertama kali membuka website?
 **J:** Kebijakan peramban modern (Chrome, Safari, iOS) melarang suara berputar otomatis (*autoplay*) sebelum ada interaksi fisik dari pengguna. Oleh sebab itu, aplikasi menyediakan gerbang **Opening Cover** dengan tombol *"Buka Undangan"*. Saat tamu mengetuk tombol tersebut, musik akan langsung berputar secara mulus.

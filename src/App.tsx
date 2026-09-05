@@ -38,9 +38,25 @@ function useCurrentPath(): string {
   return path;
 }
 
+const DefaultNullFrame: React.FC = () => null;
+
 function AppContent({ currentPath }: { currentPath: string }) {
   const { weddingConfig, loading } = useWeddingConfig();
   const [isOpened, setIsOpened] = useState(false);
+
+  // Check URL query parameter ?theme= for live demo/preview override (must be called unconditionally)
+  const previewTheme = useMemo(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('theme') || undefined;
+    } catch {
+      return undefined;
+    }
+  }, [currentPath]);
+
+  const activeTheme = useMemo(() => {
+    return resolveTheme(previewTheme || weddingConfig?.theme);
+  }, [previewTheme, weddingConfig?.theme]);
 
   const rawPath = currentPath.toLowerCase().replace(/\/+$/, '') || '/';
   const isLogin = rawPath === '/login';
@@ -48,7 +64,10 @@ function AppContent({ currentPath }: { currentPath: string }) {
   
   if (loading) {
     return (
-      <div className="min-h-screen w-full bg-[#E8EBE3] flex items-center justify-center font-body">
+      <div 
+        className="min-h-screen w-full flex items-center justify-center font-body"
+        style={{ backgroundColor: activeTheme.meta.previewColors.bg }}
+      >
         <div className="w-8 h-8 border-4 border-sage border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -79,24 +98,10 @@ function AppContent({ currentPath }: { currentPath: string }) {
     );
   }
 
-  // Check URL query parameter ?theme= for live demo/preview override
-  const previewTheme = useMemo(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('theme') || undefined;
-    } catch {
-      return undefined;
-    }
-  }, []);
-
-  const activeTheme = useMemo(() => {
-    return resolveTheme(previewTheme || weddingConfig.theme);
-  }, [previewTheme, weddingConfig.theme]);
-
   const {
     OpeningCover,
     InvitationContent,
-    AppFrame = () => null,
+    AppFrame = DefaultNullFrame,
     MusicPlayer = DefaultMusicPlayer,
   } = activeTheme.components;
 

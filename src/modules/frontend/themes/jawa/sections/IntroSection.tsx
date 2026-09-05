@@ -2,10 +2,14 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { PendopoJoglo } from '../decorations/PendopoJoglo';
 import { JavaneseFiligree } from '../decorations/JavaneseFiligree';
+import { FloatingMelati } from '../decorations/FloatingMelati';
 
 export const IntroSection: React.FC = () => {
   return (
     <section className="py-20 px-4 sm:px-6 text-center bg-[#FAF8F2] relative overflow-hidden flex flex-col items-center">
+      {/* Floating Sacred Jasmine & Gold Dust */}
+      <FloatingMelati className="opacity-40" />
+
       {/* Background Subtle Gold Dots */}
       <div 
         className="absolute inset-0 opacity-[0.03] pointer-events-none"

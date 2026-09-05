@@ -3,12 +3,16 @@ import { motion } from 'motion/react';
 import { useWeddingConfig } from '../../../../../context/WeddingContext';
 import { WayangGunungan } from '../decorations/WayangGunungan';
 import { JavaneseFiligree } from '../decorations/JavaneseFiligree';
+import { FloatingMelati } from '../decorations/FloatingMelati';
 
 export const ClosingSection: React.FC = () => {
   const { weddingConfig } = useWeddingConfig();
 
   return (
     <section className="relative py-24 px-6 text-center bg-gradient-to-b from-[#FAF8F2] via-[#FAF6EC] to-[#F3EEDC] overflow-hidden">
+      {/* Floating Sacred Jasmine Animation */}
+      <FloatingMelati className="opacity-45" />
+
       {/* Subtle Gold Corner Frames */}
       <JavaneseFiligree position="top-left" className="absolute top-3 left-3 opacity-60" size={40} color="#C5A059" />
       <JavaneseFiligree position="top-right" className="absolute top-3 right-3 opacity-60" size={40} color="#C5A059" />

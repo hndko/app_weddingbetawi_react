@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { useWeddingConfig } from '../../../../../context/WeddingContext';
 import { WayangGunungan } from '../decorations/WayangGunungan';
+import { FloatingMelati } from '../decorations/FloatingMelati';
 import { Sparkles } from 'lucide-react';
 
 export const HeroSection: React.FC = () => {
@@ -9,6 +10,9 @@ export const HeroSection: React.FC = () => {
 
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-6 py-20 text-center overflow-hidden bg-gradient-to-b from-[#183424] via-[#1F412E] to-[#132A1C] text-[#FAF8F2]">
+      {/* Floating Sacred Jasmine & Gold Petals */}
+      <FloatingMelati className="opacity-50" />
+
       {/* Subtle Batik Parang Pattern Overlay */}
       <div 
         className="absolute inset-0 opacity-[0.04] pointer-events-none"

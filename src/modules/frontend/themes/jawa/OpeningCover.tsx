@@ -4,6 +4,7 @@ import { MailOpen, Sparkles } from 'lucide-react';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { useGuestName } from '../../../../hooks/useGuestName';
 import { WayangGunungan } from './decorations/WayangGunungan';
+import { FloatingMelati } from './decorations/FloatingMelati';
 
 export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
   const { weddingConfig } = useWeddingConfig();
@@ -23,6 +24,9 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
           backgroundSize: '24px 24px'
         }}
       />
+
+      {/* Floating Sacred Jasmine & Gold Dust Animation */}
+      <FloatingMelati className="opacity-65" />
 
       {/* Top Wayang Gunungan Emblem */}
       <motion.div

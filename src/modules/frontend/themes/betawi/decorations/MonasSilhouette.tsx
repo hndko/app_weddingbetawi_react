@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import { cn } from '../../../../../utils/cn';
 
 export function MonasSilhouette({ className = '' }: { className?: string }) {
@@ -9,9 +10,15 @@ export function MonasSilhouette({ className = '' }: { className?: string }) {
       className={cn("w-full h-full", className)}
     >
       <g>
-        {/* === FLAME (Lidah Api) === */}
-        <path d="M 100 10 C 115 35, 115 60, 100 75 C 85 60, 85 35, 100 10 Z" fill="var(--color-gold)" opacity="0.9" />
-        <path d="M 100 10 C 100 35, 100 60, 100 75 C 85 60, 85 35, 100 10 Z" fill="var(--color-gold)" opacity="0.7" />
+        {/* === FLAME (Lidah Api Emas Menyala Beranimasi) === */}
+        <motion.g
+          animate={{ scale: [1, 1.06, 1], opacity: [0.85, 1, 0.85] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          style={{ transformOrigin: "100px 75px" }}
+        >
+          <path d="M 100 10 C 115 35, 115 60, 100 75 C 85 60, 85 35, 100 10 Z" fill="var(--color-gold)" opacity="0.9" />
+          <path d="M 100 10 C 100 35, 100 60, 100 75 C 85 60, 85 35, 100 10 Z" fill="var(--color-gold)" opacity="0.7" />
+        </motion.g>
 
         {/* === TOP DECK (Pelataran Puncak) === */}
         <rect x="85" y="75" width="30" height="4" fill="currentColor" />

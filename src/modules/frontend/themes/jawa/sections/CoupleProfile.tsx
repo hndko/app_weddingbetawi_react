@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { useWeddingConfig } from '../../../../../context/WeddingContext';
 import { Instagram } from 'lucide-react';
 import { JavaneseFiligree } from '../decorations/JavaneseFiligree';
+import { FloatingMelati } from '../decorations/FloatingMelati';
 import { PersonInfo } from '../../../../../types';
 
 function ProfileCard({ data, delay, index }: { data: PersonInfo; delay: number; index: number }) {
@@ -73,6 +74,9 @@ export const CoupleProfile: React.FC = () => {
   
   return (
     <section className="py-20 px-6 bg-[#FAF8F2] relative overflow-hidden flex flex-col items-center">
+      {/* Floating Sacred Jasmine Animation */}
+      <FloatingMelati className="opacity-40" />
+
       {/* Decorative Gold Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

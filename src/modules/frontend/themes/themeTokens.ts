@@ -25,6 +25,33 @@ export interface ThemeVisualTokens {
 }
 
 export const THEME_TOKENS: Record<string, ThemeVisualTokens> = {
+  // 📸 Instagram Stories & Reels (Dark Aesthetic with Sunset Gradient)
+  instagram: {
+    isDark: true,
+    bg: '#000000',
+    cardBg: 'rgba(18, 18, 18, 0.9)',
+    cardBorder: 'rgba(255, 255, 255, 0.15)',
+    textPrimary: '#FFFFFF',
+    textMuted: '#A8A8A8',
+    primary: '#FF0069',
+    secondary: '#262626',
+    accent: '#FFD600',
+    inputBg: 'rgba(38, 38, 38, 0.95)',
+    inputBorder: 'rgba(255, 255, 255, 0.2)',
+    inputText: '#FFFFFF',
+    btnPrimaryBg: '#FF0069',
+    btnPrimaryText: '#FFFFFF',
+    navBg: 'rgba(10, 10, 10, 0.92)',
+    navBorder: 'rgba(255, 255, 255, 0.12)',
+    navActive: '#FF0069',
+    navInactive: 'rgba(255, 255, 255, 0.45)',
+    floatingBtnBg: 'rgba(24, 24, 24, 0.92)',
+    floatingBtnBorder: 'rgba(255, 255, 255, 0.15)',
+    floatingBtnText: '#FFFFFF',
+    floatingBtnRing: 'rgba(255, 0, 105, 0.3)',
+    floatingBtnActiveText: '#FF0069',
+  },
+
   // 🍏 Apple iOS Bento Grid (Titanium Light & iOS Glass)
   apple: {
     isDark: false,

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+  <!-- Instagram Viewfinder / Rule of Thirds subtle grid dots -->
+  <circle cx="18" cy="18" r="1.5" fill="#E1306C" opacity="0.15"/>
+  <circle cx="0" cy="0" r="1" fill="#FFFFFF" opacity="0.06"/>
+  <circle cx="36" cy="0" r="1" fill="#FFFFFF" opacity="0.06"/>
+  <circle cx="0" cy="36" r="1" fill="#FFFFFF" opacity="0.06"/>
+  <circle cx="36" cy="36" r="1" fill="#FFFFFF" opacity="0.06"/>
+  <!-- Focus crosshairs -->
+  <path d="M16,18 L20,18 M18,16 L18,20" stroke="#FD1D1D" stroke-width="0.75" opacity="0.15"/>
+</svg>

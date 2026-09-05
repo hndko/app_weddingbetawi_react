@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="igDarkBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#181818"/>
+      <stop offset="50%" stop-color="#0E0E0E"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="igRingGrad" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FFD600"/>
+      <stop offset="25%" stop-color="#FF7A00"/>
+      <stop offset="50%" stop-color="#FF0069"/>
+      <stop offset="75%" stop-color="#D300C5"/>
+      <stop offset="100%" stop-color="#7638FA"/>
+    </linearGradient>
+    <linearGradient id="cfRingGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00E676"/>
+      <stop offset="100%" stop-color="#00B0FF"/>
+    </linearGradient>
+    <filter id="igGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#FF0069" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Dark Cinema Background -->
+  <rect width="800" height="500" fill="url(#igDarkBg)"/>
+
+  <!-- Subtle ambient gradient spotlight -->
+  <circle cx="200" cy="120" r="220" fill="#7638FA" opacity="0.08"/>
+  <circle cx="620" cy="380" r="240" fill="#FF0069" opacity="0.08"/>
+
+  <!-- Outer Frame -->
+  <rect x="25" y="25" width="750" height="450" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2" rx="28"/>
+
+  <!-- Left: Mockup of 9:16 Story Card -->
+  <g transform="translate(100, 60)" filter="url(#igGlow)">
+    <rect width="210" height="380" rx="28" fill="#121212" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+
+    <!-- Story Progress Segments -->
+    <g transform="translate(14, 14)">
+      <rect x="0" y="0" width="28" height="3" rx="1.5" fill="#FFFFFF"/>
+      <rect x="31" y="0" width="28" height="3" rx="1.5" fill="#FFFFFF"/>
+      <rect x="62" y="0" width="28" height="3" rx="1.5" fill="#FFFFFF"/>
+      <rect x="93" y="0" width="28" height="3" rx="1.5" fill="rgba(255,255,255,0.3)"/>
+      <rect x="124" y="0" width="28" height="3" rx="1.5" fill="rgba(255,255,255,0.3)"/>
+      <rect x="155" y="0" width="28" height="3" rx="1.5" fill="rgba(255,255,255,0.3)"/>
+    </g>
+
+    <!-- Story Top Bar: Avatar & Username -->
+    <g transform="translate(14, 26)">
+      <circle cx="12" cy="12" r="12" fill="url(#igRingGrad)"/>
+      <circle cx="12" cy="12" r="10" fill="#121212"/>
+      <circle cx="12" cy="12" r="8" fill="#CCCCCC"/>
+      <text x="30" y="11" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="10" font-weight="700" fill="#FFFFFF">cecep_ipeh</text>
+      <text x="30" y="20" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="8" font-weight="500" fill="rgba(255,255,255,0.6)">2 jam • 🎵 Wedding Theme</text>
+    </g>
+
+    <!-- Center Couple Illustration / Placeholder -->
+    <rect x="14" y="65" width="182" height="190" rx="18" fill="#202020"/>
+    <circle cx="105" cy="135" r="38" fill="#303030"/>
+    <path d="M70,210 C70,175 140,175 140,210 Z" fill="#444444"/>
+
+    <!-- Countdown Sticker on Story -->
+    <g transform="translate(26, 175)">
+      <rect width="158" height="52" rx="14" fill="rgba(0,0,0,0.75)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <text x="79" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8" font-weight="700" fill="#FF7A00" text-anchor="middle" letter-spacing="1">MENUDJU HARI-H</text>
+      <text x="79" y="38" font-family="'Courier New', monospace" font-size="14" font-weight="800" fill="#FFFFFF" text-anchor="middle">15 : 08 : 42</text>
+    </g>
+
+    <!-- Bottom Action Bar: Reply & Floating Hearts -->
+    <g transform="translate(14, 335)">
+      <rect width="138" height="32" rx="16" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+      <text x="14" y="20" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" fill="rgba(255,255,255,0.5)">Kirim doa restu...</text>
+      <!-- Heart Icon -->
+      <circle cx="162" cy="16" r="14" fill="rgba(255,0,105,0.2)"/>
+      <path d="M162,21 C157,17 155,14 157,11.5 C159,9 161.5,10 162,12 C162.5,10 165,9 167,11.5 C169,14 167,17 162,21 Z" fill="#FF0069"/>
+    </g>
+  </g>
+
+  <!-- Right: Big Branding & Features Showcase -->
+  <g transform="translate(370, 140)">
+    <!-- Header Tag -->
+    <rect x="0" y="0" width="180" height="26" rx="13" fill="url(#igRingGrad)"/>
+    <text x="90" y="17" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="10" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">INSTAGRAM STORIES</text>
+
+    <!-- Main Title -->
+    <text x="0" y="65" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="36" font-weight="800" fill="#FFFFFF" letter-spacing="-0.5">Wedding Stories</text>
+    <text x="0" y="95" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="20" font-weight="700" fill="url(#igRingGrad)">&amp; Close Friends</text>
+
+    <text x="0" y="130" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="13" font-weight="400" fill="#A8A8A8" width="360">
+      Format kartu story 9:16 vertikal imersif, progress bar tersegmentasi,
+    </text>
+    <text x="0" y="150" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="13" font-weight="400" fill="#A8A8A8">
+      stiker hitung mundur live, polling RSVP, dan reaksi hati mengambang.
+    </text>
+
+    <!-- Feature Pills -->
+    <g transform="translate(0, 180)">
+      <rect x="0" y="0" width="115" height="28" rx="14" fill="#1F1F1F" stroke="rgba(255,255,255,0.1)"/>
+      <text x="57" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">Story Progress</text>
+
+      <rect x="125" y="0" width="105" height="28" rx="14" fill="#1F1F1F" stroke="rgba(255,255,255,0.1)"/>
+      <text x="177" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">Live Stickers</text>
+
+      <rect x="240" y="0" width="125" height="28" rx="14" fill="#1F1F1F" stroke="rgba(255,255,255,0.1)"/>
+      <text x="302" y="18" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">Double-Tap Hearts</text>
+    </g>
+
+    <!-- Button Showcase -->
+    <g transform="translate(0, 230)">
+      <rect x="0" y="0" width="170" height="40" rx="20" fill="url(#igRingGrad)"/>
+      <text x="85" y="25" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">TONTON STORY</text>
+    </g>
+  </g>
+</svg>

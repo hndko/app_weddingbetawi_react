@@ -63,6 +63,11 @@ const AppleOpeningCover = lazy(() => import('./apple/OpeningCover').then(m => ({
 const AppleInvitationContent = lazy(() => import('./apple/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const AppleAppFrame = lazy(() => import('./apple/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
+// Lazy-loaded Instagram Stories theme
+const InstagramOpeningCover = lazy(() => import('./instagram/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const InstagramInvitationContent = lazy(() => import('./instagram/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const InstagramAppFrame = lazy(() => import('./instagram/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
 export const THEMES: Record<string, ThemeDefinition> = {
   betawi: {
     meta: THEME_CATALOG[0],
@@ -160,6 +165,15 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: AppleOpeningCover,
       InvitationContent: AppleInvitationContent,
       AppFrame: AppleAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  instagram: {
+    meta: THEME_CATALOG[11],
+    components: {
+      OpeningCover: InstagramOpeningCover,
+      InvitationContent: InstagramInvitationContent,
+      AppFrame: InstagramAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

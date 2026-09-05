@@ -188,6 +188,23 @@ export const THEME_CATALOG: ThemeMeta[] = [
     status: 'ready',
     favicon: '/assets/themes/apple/favicon.svg',
   },
+  {
+    id: 'instagram',
+    name: 'Instagram Stories & Reels',
+    category: 'modern',
+    subtitle: 'Wedding Stories & Close Friends',
+    description: 'Konsep modern viral Instagram Stories berformat 9:16 vertikal imersif dengan progress bar tersegmentasi, stiker countdown live, RSVP polling, dan reaksi hati double-tap.',
+    thumbnail: '/assets/themes/instagram/thumbnail.svg',
+    previewColors: {
+      primary: '#E1306C',
+      secondary: '#FD1D1D',
+      accent: '#FFD600',
+      bg: '#000000',
+    },
+    features: ['Story Segmented Progress', 'Live Countdown Sticker', 'RSVP Poll Sticker', 'Double-Tap Floating Hearts'],
+    status: 'ready',
+    favicon: '/assets/themes/instagram/favicon.svg',
+  },
 ];
 
 

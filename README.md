@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.22.1-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.23.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -234,6 +234,15 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 - **Checklist Kesiapan Logistik Hari-H**: Tombol centang 1-klik untuk memantau status persiapan vendor dan barang bawaan.
 - **Ekspor Rekapitulasi CSV (UTF-8 BOM)**: Unduh seluruh data finansial dan status vendor ke file spreadsheet untuk pelaporan bendahara dan keluarga.
 - **Redesain Estetika Light Theme Selaras Admin Panel (v1.22.1)**: Mengadopsi palet warna *warm light* terpadu (`bg-[#fcfaf7]`), kartu putih dengan aksen *sage green* & *warm gold*, badge kategori pastel lembut, tipografi berkejelasan tinggi, tabel data bersih dengan efek *hover*, serta modal form dan konfirmasi SweetAlert2 bernuansa terang elegan.
+
+### ⛰️ Tema Batak Toba Royal Gorga (Unjuk Adat Bolon Batak Toba) (v1.23.0)
+- **Kemegahan Seni Ukir Gorga & Ruma Bolon**: Menghadirkan siluet atap pelana melengkung Ruma Bolon dengan puncak tanduk kerbau (*simatutu*), ukiran suci Gorga Simeol-meol, Gorga Boraspati, dan fasad *dorpi*.
+- **Palet Kosmis Tolu Bolit**: Perpaduan sakral tiga warna adat Batak Toba (Merah Marun Bara Gorga `#7A1B1E`, Hitam Arang Batu Ruma `#1C1917`, dan Putih Gading Sihapor `#FAF6F0`) berpadu dengan aksen kemewahan Emas Antik Tenun Ulos (`#D4AF37`).
+- **Salam Tradisional & Falsafah Luhur**: Salam sakral *"Horas Jala Gabe!"*, falsafah luhur adat Batak (*"Aek godang tu aek laut, Dos ni roha sibaen na saut"*), serta doa berkat pernikahan dan permohonan restu para kerabat, Hula-hula, Dongan Tubu, Boru, dan sahabat.
+- **Profil Mempelai Pangoli & Oroan**: Penandaan adat mempelai pria (*Pangoli*) dan mempelai wanita (*Oroan*) berbingkai ukiran ganda Ulos & Gorga.
+- **Partikel Dekorasi Melayang Tematik**: Serpihan benang emas tenun Ulos Sadum dan daun sirih adat (*demban*) yang melayang lembut dengan rotasi alami menggunakan `motion/react` berutilitas `pointer-events-none`.
+- **Penutup Adat Horas**: Salam penutup *"Mauliate Godang"* dan doa berkat *"Horas, Horas, Horas ma di hita sasudena!"*.
+- **Paket Aset Mandiri Offline**: Dilengkapi `thumbnail.svg`, `pattern.svg`, dan `favicon.svg` di `public/assets/themes/batak/` (*zero external CDN dependency*).
 
 ### 🛕 Tema Balinese Royal Temple (Adat Pawiwahan Ageng Bali) (v1.20.0)
 - **Kemegahan Pura & Arsitektur Tradisional Bali**: Menghadirkan siluet Gapura Candi Bentar bertingkat, payung Tedung Agung upacara kembar, penjor emas melengkung, serta motif relief ukiran Patra Punggel.

@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="batakBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3B0D11"/>
+      <stop offset="45%" stop-color="#7A1B1E"/>
+      <stop offset="100%" stop-color="#141210"/>
+    </linearGradient>
+    <linearGradient id="batakGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFF3C4"/>
+      <stop offset="50%" stop-color="#E5C158"/>
+      <stop offset="100%" stop-color="#B38B22"/>
+    </linearGradient>
+    <linearGradient id="batakRed" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#B91C1C"/>
+      <stop offset="100%" stop-color="#7F1D1D"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Majestic Batak Tolu Bolit Crimson & Charcoal Background -->
+  <rect width="800" height="500" fill="url(#batakBg)"/>
+  
+  <!-- Subtle Ulos & Gorga Geometry Lattice -->
+  <g opacity="0.09" stroke="#E5C158" stroke-width="1.5" fill="none">
+    <path d="M0,50 L50,0 L100,50 L50,100 Z M100,50 L150,0 L200,50 L150,100 Z M200,50 L250,0 L300,50 L250,100 Z M300,50 L350,0 L400,50 L350,100 Z M400,50 L450,0 L500,50 L450,100 Z M500,50 L550,0 L600,50 L550,100 Z M600,50 L650,0 L700,50 L650,100 Z M700,50 L750,0 L800,50 L750,100 Z"/>
+    <path d="M0,150 L50,100 L100,150 L50,200 Z M100,150 L150,100 L200,150 L150,200 Z M200,150 L250,100 L300,150 L250,200 Z M300,150 L350,100 L400,150 L350,200 Z M400,150 L450,100 L500,150 L450,200 Z M500,150 L550,100 L600,150 L550,200 Z M600,150 L650,100 L700,150 L650,200 Z M700,150 L750,100 L800,150 L750,200 Z"/>
+    <path d="M0,250 L50,200 L100,250 L50,300 Z M100,250 L150,200 L200,250 L150,300 Z M200,250 L250,200 L300,250 L250,300 Z M300,250 L350,200 L400,250 L350,300 Z M400,250 L450,200 L500,250 L450,300 Z M500,250 L550,200 L600,250 L550,300 Z M600,250 L650,200 L700,250 L650,300 Z M700,250 L750,200 L800,250 L750,300 Z"/>
+  </g>
+
+  <!-- Outer Border with Gold Stroke -->
+  <rect x="25" y="25" width="750" height="450" fill="none" stroke="url(#batakGold)" stroke-width="2" rx="16" opacity="0.8"/>
+  <rect x="33" y="33" width="734" height="434" fill="none" stroke="#7A1B1E" stroke-width="1" rx="12" opacity="0.6"/>
+
+  <!-- Majestic Ruma Bolon Batak Toba Silhouette -->
+  <g transform="translate(400, 195) scale(1.65)">
+    <!-- Sweeping Saddleback Roof (Atap Pelana Melengkung) -->
+    <path d="M-85,-20 C-45,30 45,30 85,-20 C70,-5 35,8 0,8 C-35,8 -70,-5 -85,-20 Z" fill="url(#batakGold)" opacity="0.95"/>
+    
+    <!-- Horn Peaks / Simatutu (Tanduk Kerbau Megah Kiri & Kanan) -->
+    <path d="M-85,-20 C-78,-48 -58,-60 -45,-38 C-58,-38 -70,-30 -85,-20 Z" fill="url(#batakGold)"/>
+    <path d="M85,-20 C78,-48 58,-60 45,-38 C58,-38 70,-30 85,-20 Z" fill="url(#batakGold)"/>
+
+    <!-- Gable Triangle Facade (Dorpi Ruma Bolon) -->
+    <path d="M-36,10 L36,10 L28,52 L-28,52 Z" fill="#1C1917" stroke="url(#batakGold)" stroke-width="1.8"/>
+    
+    <!-- Gorga Carvings on Gable Facade -->
+    <!-- Gorga Boraspati (Lizard of Prosperity) -->
+    <path d="M0,16 L0,44 M-6,22 L6,22 M-8,36 L8,36" stroke="url(#batakGold)" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Left & Right Gorga Simeol-meol Spirals -->
+    <path d="M-16,24 C-22,24 -24,28 -20,32 C-16,36 -12,32 -14,28" fill="none" stroke="url(#batakGold)" stroke-width="1.2"/>
+    <path d="M16,24 C22,24 24,28 20,32 C16,36 12,32 14,28" fill="none" stroke="url(#batakGold)" stroke-width="1.2"/>
+
+    <!-- High Wooden Stilts (Tiang Kolong Ruma Bolon) -->
+    <line x1="-22" y1="52" x2="-22" y2="78" stroke="url(#batakGold)" stroke-width="3" stroke-linecap="round"/>
+    <line x1="-8" y1="52" x2="-8" y2="78" stroke="url(#batakGold)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="8" y1="52" x2="8" y2="78" stroke="url(#batakGold)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="22" y1="52" x2="22" y2="78" stroke="url(#batakGold)" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Wooden Stilt Base Planks -->
+    <rect x="-32" y="76" width="64" height="4" rx="2" fill="url(#batakGold)"/>
+
+    <!-- Flanking Decorative Ulos Banners (Kiri & Kanan) -->
+    <g transform="translate(-110, 10) scale(0.65)">
+      <rect x="-8" y="0" width="16" height="85" rx="3" fill="#7A1B1E" stroke="url(#batakGold)" stroke-width="1.5"/>
+      <path d="M-8,15 L8,15 M-8,30 L8,30 M-8,45 L8,45 M-8,60 L8,60 M-8,75 L8,75" stroke="url(#batakGold)" stroke-width="1.2"/>
+      <polygon points="0,85 -8,96 8,96" fill="url(#batakGold)"/>
+    </g>
+    <g transform="translate(110, 10) scale(0.65)">
+      <rect x="-8" y="0" width="16" height="85" rx="3" fill="#7A1B1E" stroke="url(#batakGold)" stroke-width="1.5"/>
+      <path d="M-8,15 L8,15 M-8,30 L8,30 M-8,45 L8,45 M-8,60 L8,60 M-8,75 L8,75" stroke="url(#batakGold)" stroke-width="1.2"/>
+      <polygon points="0,85 -8,96 8,96" fill="url(#batakGold)"/>
+    </g>
+  </g>
+
+  <!-- Elegant Traditional Typography -->
+  <g text-anchor="middle">
+    <!-- Subtitle Adat -->
+    <text x="400" y="380" font-family="'Cinzel', 'Playfair Display', Georgia, serif" font-size="13" font-weight="600" letter-spacing="4" fill="#E5C158">
+      UNJUK ADAT BOLON BATAK TOBA
+    </text>
+    
+    <!-- Main Title -->
+    <text x="400" y="415" font-family="'Cinzel', 'Playfair Display', Georgia, serif" font-size="28" font-weight="bold" letter-spacing="2" fill="#FFFFFF">
+      BATAK TOBA ROYAL GORGA
+    </text>
+    
+    <!-- Cultural Blessing -->
+    <text x="400" y="442" font-family="'Cinzel', 'Playfair Display', Georgia, serif" font-size="12" font-weight="400" letter-spacing="3" fill="#FCA5A5">
+      HORAS JALA GABE • TOLU BOLIT SAKRAL
+    </text>
+  </g>
+</svg>

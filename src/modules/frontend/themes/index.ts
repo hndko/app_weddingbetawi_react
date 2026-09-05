@@ -41,6 +41,11 @@ const BaliOpeningCover = lazy(() => import('./bali/OpeningCover').then(m => ({ d
 const BaliInvitationContent = lazy(() => import('./bali/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const BaliAppFrame = lazy(() => import('./bali/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
+// Lazy-loaded Batak theme
+const BatakOpeningCover = lazy(() => import('./batak/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const BatakInvitationContent = lazy(() => import('./batak/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const BatakAppFrame = lazy(() => import('./batak/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
 export const THEMES: Record<string, ThemeDefinition> = {
   betawi: {
     meta: THEME_CATALOG[0],
@@ -102,6 +107,15 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: BaliOpeningCover,
       InvitationContent: BaliInvitationContent,
       AppFrame: BaliAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  batak: {
+    meta: THEME_CATALOG[7],
+    components: {
+      OpeningCover: BatakOpeningCover,
+      InvitationContent: BatakInvitationContent,
+      AppFrame: BatakAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="favBatakGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFF3C4"/>
+      <stop offset="50%" stop-color="#E5C158"/>
+      <stop offset="100%" stop-color="#B38B22"/>
+    </linearGradient>
+    <linearGradient id="favBatakRed" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#991B1B"/>
+      <stop offset="100%" stop-color="#5C1417"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Badge: Crimson Red & Charcoal Ring -->
+  <circle cx="50" cy="50" r="48" fill="url(#favBatakRed)"/>
+  <circle cx="50" cy="50" r="44" fill="none" stroke="url(#favBatakGold)" stroke-width="2.5"/>
+  <circle cx="50" cy="50" r="41" fill="#1C1917" opacity="0.65"/>
+  
+  <!-- Majestic Ruma Bolon Saddleback Roof & Horn Peaks Silhouette -->
+  <g transform="translate(50, 52) scale(0.65)">
+    <!-- Ruma Bolon Sweeping Roof Silhouette -->
+    <path d="M-45,-15 C-25,12 25,12 45,-15 C38,-5 20,4 0,4 C-20,4 -38,-5 -45,-15 Z" fill="url(#favBatakGold)"/>
+    <!-- Horn Peaks / Simatutu (Left & Right) -->
+    <path d="M-45,-15 C-42,-28 -32,-35 -26,-22 C-32,-22 -38,-18 -45,-15 Z" fill="url(#favBatakGold)"/>
+    <path d="M45,-15 C42,-28 32,-35 26,-22 C32,-22 38,-18 45,-15 Z" fill="url(#favBatakGold)"/>
+    <!-- Central Peak Accent (Ujung Atap) -->
+    <path d="M0,4 L0,-24 L3,-18 L0,-12 L-3,-18 Z" fill="url(#favBatakGold)"/>
+    
+    <!-- House Body & Pilin Gorga Foundation -->
+    <path d="M-22,6 L22,6 L18,28 L-18,28 Z" fill="#7A1B1E" stroke="url(#favBatakGold)" stroke-width="1.5"/>
+    <line x1="-14" y1="28" x2="-14" y2="38" stroke="url(#favBatakGold)" stroke-width="2"/>
+    <line x1="14" y1="28" x2="14" y2="38" stroke="url(#favBatakGold)" stroke-width="2"/>
+    <line x1="0" y1="28" x2="0" y2="38" stroke="url(#favBatakGold)" stroke-width="2"/>
+    
+    <!-- Gorga Simeol-meol Spiral Medallion in Center -->
+    <circle cx="0" cy="17" r="5" fill="none" stroke="url(#favBatakGold)" stroke-width="1.5"/>
+    <circle cx="0" cy="17" r="2" fill="#FFF3C4"/>
+  </g>
+</svg>

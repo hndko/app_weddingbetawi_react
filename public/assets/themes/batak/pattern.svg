@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <linearGradient id="batakPatternGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E5C158"/>
+      <stop offset="100%" stop-color="#997A15"/>
+    </linearGradient>
+  </defs>
+  <!-- Sacred Batak Gorga Simeol-meol & Ulos Ragidup Geometric Motif -->
+  <g fill="none" stroke="url(#batakPatternGold)" stroke-width="1.2" opacity="0.35">
+    <!-- Center Ulos Diamond -->
+    <path d="M30,6 L54,30 L30,54 L6,30 Z"/>
+    <path d="M30,14 L46,30 L30,46 L14,30 Z"/>
+    
+    <!-- Gorga Interlocking S-Curves (Simeol-meol) -->
+    <path d="M30,22 C34,26 36,28 36,30 C36,32 34,34 30,34 C26,34 24,32 24,30 C24,28 26,26 30,22 Z"/>
+    
+    <!-- Corner Interlocking Chevrons -->
+    <path d="M0,0 L12,12 M60,0 L48,12 M0,60 L12,48 M60,60 L48,48"/>
+    <path d="M0,20 L10,30 L0,40 M60,20 L50,30 L60,40"/>
+    <path d="M20,0 L30,10 L40,0 M20,60 L30,50 L40,60"/>
+  </g>
+  
+  <!-- Tolu Bolit Sacred Dot Triads (Red, White, Gold) -->
+  <circle cx="30" cy="30" r="2.5" fill="#7A1B1E" opacity="0.6"/>
+  <circle cx="30" cy="6" r="1.5" fill="#E5C158" opacity="0.4"/>
+  <circle cx="30" cy="54" r="1.5" fill="#E5C158" opacity="0.4"/>
+  <circle cx="6" cy="30" r="1.5" fill="#E5C158" opacity="0.4"/>
+  <circle cx="54" cy="30" r="1.5" fill="#E5C158" opacity="0.4"/>
+</svg>

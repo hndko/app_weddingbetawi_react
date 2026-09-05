@@ -120,4 +120,21 @@ export const THEME_CATALOG: ThemeMeta[] = [
     status: 'ready',
     favicon: '/assets/themes/bali/favicon.svg',
   },
+  {
+    id: 'batak',
+    name: 'Batak Toba Royal Gorga',
+    category: 'adat',
+    subtitle: 'Unjuk Adat Bolon Batak Toba',
+    description: 'Kemegahan adat Batak Toba berhias ornamen ukiran Gorga sakral, motif tenun Ulos Ragidup/Sadum, siluet Ruma Bolon, dan palet Tolu Bolit merah-hitam-emas.',
+    thumbnail: '/assets/themes/batak/thumbnail.svg',
+    previewColors: {
+      primary: '#7A1B1E',
+      secondary: '#1C1917',
+      accent: '#D4AF37',
+      bg: '#FAF6F0',
+    },
+    features: ['Ukiran Seni Gorga', 'Motif Ulos Ragidup', 'Siluet Ruma Bolon', 'Horas Jala Gabe'],
+    status: 'ready',
+    favicon: '/assets/themes/batak/favicon.svg',
+  },
 ];

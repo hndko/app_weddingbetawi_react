@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { WeddingProvider, useWeddingConfig } from './context/WeddingContext';
-import { resolveTheme } from './modules/Frontend/themes';
-import { Panel as AdminPanel } from './modules/Backend/Panel';
-import { SEO } from './modules/Frontend/betawi-themes/SEO';
-import { MusicPlayer as DefaultMusicPlayer } from './modules/Frontend/betawi-themes/MusicPlayer';
+import { resolveTheme } from './modules/frontend/themes';
+import { Panel as AdminPanel } from './modules/backend/Panel';
+import { SEO } from './modules/frontend/shared/components/SEO';
+import { MusicPlayer as DefaultMusicPlayer } from './modules/frontend/shared/components/MusicPlayer';
 
 export function navigateTo(path: string) {
   if (window.location.pathname !== path) {
@@ -78,7 +78,7 @@ function AppContent({ currentPath }: { currentPath: string }) {
   const seoTitle = weddingConfig.seo?.title || `${siteName} | Wedding Invitation`;
   const seoDesc = weddingConfig.seo?.description || "Kami mengundang Anda untuk hadir di acara pernikahan kami.";
   const seoKeywords = weddingConfig.seo?.keywords || "wedding, pernikahan, undangan digital";
-  const seoImage = weddingConfig.seo?.image || weddingConfig.gallery?.[0] || '/assets/betawi-themes/images/og-image.jpg';
+  const seoImage = weddingConfig.seo?.image || weddingConfig.gallery?.[0] || activeTheme.meta.thumbnail;
 
   if (isLogin || isModules) {
     return (

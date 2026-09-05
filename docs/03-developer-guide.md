@@ -40,20 +40,19 @@ app_weddingbetawi_react/
 ├── docs/                       # Dokumentasi resmi proyek & blueprint skema Firestore
 ├── public/                     # Aset publik statis (favicon, robots.txt, sitemap.xml, webmanifest)
 ├── src/
-│   ├── modules/                # Arsitektur Modular Berbasis Domain
-│   │   ├── Auth/
-│   │   │   └── Login.tsx       # Halaman autentikasi panel admin bertema Betawi
-│   │   ├── Backend/
+│   ├── modules/                # Arsitektur Modular Berbasis Domain (Lowercase Standard)
+│   │   ├── auth/
+│   │   │   └── Login.tsx       # Halaman autentikasi panel admin
+│   │   ├── backend/
 │   │   │   ├── components/     # Komponen sub-modul admin (ThemeSelector, DragDropUpload, dsb.)
 │   │   │   └── Panel.tsx       # Dasbor pengelolaan lengkap (Overview, Tamu WA, Konten, RSVP, Doa)
-│   │   └── Frontend/
-│   │       ├── betawi-themes/  # Komponen tema klasik & seksi domain bersama
-│   │       │   ├── decorations/# Ornamen Gigi Balang, Ondel-ondel, Rumah Kebaya
-│   │       │   ├── sections/   # Seksi bersama (Hero, Couple, Event, RSVP, Doa, dll.)
-│   │       │   └── ...
+│   │   └── frontend/
+│   │       ├── shared/         # Komponen & Seksi domain bersama lintas tema
+│   │       │   ├── components/ # BottomNavigation, MusicPlayer, SEO
+│   │       │   └── sections/   # Seksi netral (RSVP, Wishes, Countdown, Event, Gallery, dsb.)
 │   │       └── themes/         # Multi-Theme Architecture Engine
-│   │           ├── betawi/     # Adapter tema Betawi Heritage
-│   │           ├── jawa/       # Adapter tema Javanese Royal Kraton (Gunungan, Pawiwahan)
+│   │           ├── betawi/     # Adapter tema Betawi Heritage (OpeningCover, Invitation, decor)
+│   │           ├── jawa/       # Adapter tema Javanese Royal Kraton (Gunungan, Pawiwahan, decor)
 │   │           ├── index.ts    # Centralized Registry (THEMES, resolveTheme, THEME_CATALOG)
 │   │           └── types.ts    # ThemeMeta & ThemeDefinition interface contracts
 │   ├── context/

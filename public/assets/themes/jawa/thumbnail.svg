@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="jawaBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#132A1C"/>
+      <stop offset="50%" stop-color="#1B3B2B"/>
+      <stop offset="100%" stop-color="#0C1C13"/>
+    </linearGradient>
+    <radialGradient id="goldGlow" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#E5C158" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#E5C158" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#jawaBg)"/>
+  <rect width="800" height="500" fill="url(#goldGlow)"/>
+  <rect x="25" y="25" width="750" height="450" fill="none" stroke="#C5A059" stroke-width="2" rx="16" opacity="0.7"/>
+  <rect x="35" y="35" width="730" height="430" fill="none" stroke="#E5C158" stroke-width="1" stroke-dasharray="6,6" rx="12" opacity="0.5"/>
+  <g transform="translate(400, 230) scale(1.6)">
+    <path d="M0 -90 C12 -65 42 -40 50 -10 C54 10 40 30 0 35 C-40 30 -54 10 -50 -10 C-42 -40 -12 -65 0 -90 Z" fill="#E5C158" opacity="0.95"/>
+    <path d="M0 35 L0 60" stroke="#E5C158" stroke-width="5" stroke-linecap="round"/>
+    <path d="M0 -70 L0 25 M-20 -20 Q0 -40 20 -20 M-28 0 Q0 -25 28 0 M-22 18 Q0 0 22 18" stroke="#1B3B2B" stroke-width="2" fill="none"/>
+  </g>
+  <text x="400" y="370" font-family="serif" font-size="28" fill="#FAF8F2" font-weight="bold" text-anchor="middle" letter-spacing="4">PAWIWAHAN AGENG</text>
+  <text x="400" y="405" font-family="sans-serif" font-size="14" fill="#C5A059" text-anchor="middle" letter-spacing="6">JAVANESE ROYAL KRATON</text>
+</svg>

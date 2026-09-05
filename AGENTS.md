@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Betawi Heritage Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.10.0`
+- **Versi Aplikasi Saat Ini**: `v1.11.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Firebase Firestore 12.17, Motion 12.23
 - **Tipe Aplikasi**: Client-Side Single Page Application (SPA)
 - **Status CI/CD & Deploy**: Vercel Serverless Static Hosting
@@ -44,9 +44,11 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ### 🏗️ 2. Arsitektur Kode & Pemisahan Tanggung Jawab (Separation of Concerns)
 1. **Struktur Direktori Modular Terstandarisasi (`src/modules/`)**:
-   - `src/modules/Auth/`: Modul autentikasi panel admin (`Login.tsx`).
-   - `src/modules/Backend/`: Modul pengelolaan data dan dasbor admin (`Panel.tsx`, `components/DragDropUpload.tsx`).
-   - `src/modules/Frontend/betawi-themes/`: Seluruh komponen tema undangan pernikahan Betawi (`decorations/`, `sections/`, `OpeningCover.tsx`, `InvitationContent.tsx`, `BottomNavigation.tsx`, `MusicPlayer.tsx`, `SEO.tsx`).
+   - `src/modules/auth/`: Modul autentikasi panel admin (`Login.tsx`).
+   - `src/modules/backend/`: Modul pengelolaan data dan dasbor admin (`Panel.tsx`, `components/DragDropUpload.tsx`, `components/ThemeSelector.tsx`, `components/EventScheduleEditor.tsx`).
+   - `src/modules/frontend/shared/`: Komponen dan seksi bersama lintas tema (`components/BottomNavigation.tsx`, `components/MusicPlayer.tsx`, `components/SEO.tsx`, `sections/RSVPSection.tsx`, `sections/WishesSection.tsx`, `sections/CountdownSection.tsx`, `sections/EventSection.tsx`, `sections/GallerySection.tsx`, `sections/LocationSection.tsx`, `sections/LoveStory.tsx`, `sections/WeddingGift.tsx`).
+   - `src/modules/frontend/themes/`: Modul tema modular (`betawi/`, `jawa/`, `index.ts`, `types.ts`).
+   - `public/assets/themes/{theme_id}/`: Aset default lokal offline (thumbnail, favicon, pattern) per tema.
    - `src/types.ts`: Deklarasi tipe TypeScript global dan interface domain.
    - `src/lib/firebase.ts`: Konfigurasi SDK Firebase dan instance Firestore.
    - `src/index.css`: Konfigurasi Tailwind CSS v4 dan styling global.

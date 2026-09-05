@@ -7,12 +7,12 @@ import {
   Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
   ArrowUpRight, ShieldCheck, Sparkles, BookOpen, Upload, UserPlus, 
   FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette, QrCode, Tv,
-  Wallet, Armchair, Gamepad2, Repeat, Repeat1, Shuffle, ListMusic
+  Wallet, Armchair, Gamepad2, Repeat, Repeat1, Shuffle, ListMusic, LayoutGrid
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { WeddingConfig, RSVPResponse, Wish, GuestInvitation } from '../../types';
+import { WeddingConfig, RSVPResponse, Wish, GuestInvitation, GalleryLayoutStyle } from '../../types';
 import { Login } from '../auth/Login';
 import { DragDropUpload } from './components/DragDropUpload';
 import { EventScheduleEditor } from './components/EventScheduleEditor';
@@ -2487,27 +2487,183 @@ Wassalamu'alaikum Wr. Wb.`;
 
                 {/* SUB-PILL 3: GALERI FOTO */}
                 {configSubTab === 'gallery' && (
-                  <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xs flex flex-col gap-4">
-                    <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
-                      <ImageIcon size={16} className="text-sage-dark" />
-                      <span>Album Galeri Foto Pernikahan ({formData.gallery.length} foto)</span>
-                    </h3>
-                    <DragDropUpload
-                      id="gallery-dropzone-dashboard"
-                      multiple
-                      label="Tarik & lepas foto-foto galeri di sini, atau klik untuk memilih"
-                      helperText="Pilih beberapa foto sekaligus. Otomatis dikompresi (Zero Storage Cost)."
-                      value={formData.gallery}
-                      isUploading={isUploadingGallery}
-                      onFileSelect={handleUploadGallery}
-                      onRemove={(idx) => {
-                        if (idx === undefined) return;
-                        setFormData(prev => ({
-                          ...prev,
-                          gallery: prev.gallery.filter((_, i) => i !== idx)
-                        }));
-                      }}
-                    />
+                  <div className="flex flex-col gap-6">
+                    {/* Visual Card Selector: Pilihan Konsep Layout Galeri */}
+                    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xs flex flex-col gap-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3.5">
+                        <div>
+                          <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2">
+                            <LayoutGrid size={16} className="text-sage-dark" />
+                            <span>Pilihan Konsep & Tata Letak Galeri (Layout Style)</span>
+                          </h3>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Pilih gaya presentasi foto yang akan ditampilkan pada seksi Galeri Bahagia undangan tamu.
+                          </p>
+                        </div>
+                        <span className="self-start sm:self-auto px-2.5 py-1 rounded-full bg-sage/15 text-sage-dark text-[11px] font-semibold">
+                          Aktif: {(formData.galleryLayout || 'editorial').toUpperCase()}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                        {[
+                          {
+                            id: 'editorial' as const,
+                            title: 'Editorial Asymmetric',
+                            subtitle: 'Gaya Majalah Elegan',
+                            badge: 'Default Populer',
+                            description: 'Irama dinamis: 1 portrait besar, 2 kotak berdampingan, dan 1 landscape sinematik berulang.',
+                            renderWireframe: () => (
+                              <div className="w-full h-24 bg-gray-100/80 rounded-xl p-2.5 flex flex-col gap-1.5 overflow-hidden">
+                                <div className="w-full h-9 bg-sage/35 rounded-md" />
+                                <div className="flex gap-1.5 h-6">
+                                  <div className="w-1/2 h-full bg-sage/45 rounded-md" />
+                                  <div className="w-1/2 h-full bg-sage/45 rounded-md" />
+                                </div>
+                                <div className="w-full h-5 bg-sage/25 rounded-md" />
+                              </div>
+                            ),
+                          },
+                          {
+                            id: 'masonry' as const,
+                            title: 'Modern Masonry',
+                            subtitle: 'Pinterest Staggered Grid',
+                            badge: 'Rekomendasi',
+                            description: '2 kolom bertingkat natural yang mempertahankan aspek rasio foto asli tanpa pemotongan.',
+                            renderWireframe: () => (
+                              <div className="w-full h-24 bg-gray-100/80 rounded-xl p-2.5 flex gap-1.5 overflow-hidden">
+                                <div className="w-1/2 flex flex-col gap-1.5">
+                                  <div className="w-full h-11 bg-sage/45 rounded-md" />
+                                  <div className="w-full h-7 bg-sage/25 rounded-md" />
+                                </div>
+                                <div className="w-1/2 flex flex-col gap-1.5">
+                                  <div className="w-full h-7 bg-sage/25 rounded-md" />
+                                  <div className="w-full h-11 bg-sage/45 rounded-md" />
+                                </div>
+                              </div>
+                            ),
+                          },
+                          {
+                            id: 'carousel' as const,
+                            title: 'Interactive Carousel',
+                            subtitle: 'Slider Geser Hemat Ruang',
+                            badge: 'Interaktif',
+                            description: 'Slider horizontal swipeable dengan kartu aktif membesar, navigasi panah, dots, dan thumbnail strip.',
+                            renderWireframe: () => (
+                              <div className="w-full h-24 bg-gray-100/80 rounded-xl p-2 flex flex-col items-center justify-between overflow-hidden">
+                                <div className="flex items-center gap-1.5 w-full justify-center pt-1.5">
+                                  <div className="w-3.5 h-11 bg-gray-300/60 rounded-sm opacity-40 scale-85" />
+                                  <div className="w-20 h-14 bg-sage/55 rounded-md shadow-xs flex items-center justify-center text-white text-[9px] font-bold tracking-wider">
+                                    SWIPE
+                                  </div>
+                                  <div className="w-3.5 h-11 bg-gray-300/60 rounded-sm opacity-40 scale-85" />
+                                </div>
+                                <div className="flex gap-1 pb-1">
+                                  <div className="w-4 h-1 bg-sage rounded-full" />
+                                  <div className="w-1.5 h-1 bg-gray-300 rounded-full" />
+                                  <div className="w-1.5 h-1 bg-gray-300 rounded-full" />
+                                </div>
+                              </div>
+                            ),
+                          },
+                          {
+                            id: 'polaroid' as const,
+                            title: 'Polaroid Stack',
+                            subtitle: 'Nostalgic Scrapbook',
+                            badge: 'Artistik',
+                            description: 'Bingkai kartu foto polaroid putih dengan bayangan realistis, kemiringan acak manis, dan aksen pita.',
+                            renderWireframe: () => (
+                              <div className="w-full h-24 bg-gray-100/80 rounded-xl p-2 flex items-center justify-center gap-2.5 overflow-hidden">
+                                <div className="w-11 h-16 bg-white p-1 pb-2 shadow-sm rounded-xs -rotate-6 border border-gray-200/80 flex flex-col">
+                                  <div className="w-full h-9 bg-sage/40 rounded-2xs" />
+                                  <div className="w-6 h-1 bg-gray-300 rounded-full mt-auto mx-auto" />
+                                </div>
+                                <div className="w-11 h-16 bg-white p-1 pb-2 shadow-sm rounded-xs rotate-6 border border-gray-200/80 flex flex-col">
+                                  <div className="w-full h-9 bg-sage/50 rounded-2xs" />
+                                  <div className="w-6 h-1 bg-gray-300 rounded-full mt-auto mx-auto" />
+                                </div>
+                              </div>
+                            ),
+                          },
+                        ].map((layout) => {
+                          const isSelected = (formData.galleryLayout || 'editorial') === layout.id;
+                          return (
+                            <div
+                              key={layout.id}
+                              onClick={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  galleryLayout: layout.id,
+                                }));
+                              }}
+                              className={`p-4 rounded-2xl cursor-pointer transition-all duration-200 flex flex-col gap-3 relative text-left ${
+                                isSelected
+                                  ? 'border-2 border-sage-dark bg-sage/5 shadow-sm ring-2 ring-sage/15'
+                                  : 'border border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50/70 hover:shadow-2xs'
+                              }`}
+                            >
+                              {/* Header Badges & Indicator */}
+                              <div className="flex items-center justify-between">
+                                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${
+                                  isSelected 
+                                    ? 'bg-sage text-white' 
+                                    : 'bg-gray-100 text-gray-600'
+                                }`}>
+                                  {layout.badge}
+                                </span>
+                                <div className="shrink-0">
+                                  {isSelected ? (
+                                    <CheckCircle2 size={18} className="text-sage-dark" />
+                                  ) : (
+                                    <div className="w-4 h-4 rounded-full border border-gray-300" />
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Wireframe Mini-Preview */}
+                              {layout.renderWireframe()}
+
+                              {/* Title & Description */}
+                              <div>
+                                <h4 className="font-bold text-xs text-text-dark flex items-center justify-between">
+                                  <span>{layout.title}</span>
+                                </h4>
+                                <p className="text-[11px] font-medium text-sage-dark mt-0.5">
+                                  {layout.subtitle}
+                                </p>
+                                <p className="text-[11px] text-gray-500 mt-1.5 leading-relaxed line-clamp-3">
+                                  {layout.description}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* DragDropUpload Galeri Foto */}
+                    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xs flex flex-col gap-4">
+                      <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                        <ImageIcon size={16} className="text-sage-dark" />
+                        <span>Album Galeri Foto Pernikahan ({formData.gallery.length} foto)</span>
+                      </h3>
+                      <DragDropUpload
+                        id="gallery-dropzone-dashboard"
+                        multiple
+                        label="Tarik & lepas foto-foto galeri di sini, atau klik untuk memilih"
+                        helperText="Pilih beberapa foto sekaligus. Otomatis dikompresi (Zero Storage Cost)."
+                        value={formData.gallery}
+                        isUploading={isUploadingGallery}
+                        onFileSelect={handleUploadGallery}
+                        onRemove={(idx) => {
+                          if (idx === undefined) return;
+                          setFormData(prev => ({
+                            ...prev,
+                            gallery: prev.gallery.filter((_, i) => i !== idx)
+                          }));
+                        }}
+                      />
+                    </div>
                   </div>
                 )}
 

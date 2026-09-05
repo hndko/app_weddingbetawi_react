@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.37.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.38.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -259,6 +259,20 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 
 ### 📱 Navigasi Cepat (Floating Bottom Bar)
 - Menu navigasi bawah mengambang dengan indikator *ScrollSpy* yang mendeteksi seksi yang sedang aktif secara otomatis.
+
+### 🖼️ Sistem Multi-Layout Galeri Bahagia & Visual Selector (v1.38.0)
+- **4 Variasi Konsep Tata Letak Galeri Pilihan Pengantin**:
+  - **Editorial Asymmetric (`editorial`)**: Susunan dinamis bergaya majalah (*magazine rhythm*) yang berulang secara ritmis (1 foto portrait aspect 4/5, 2 foto kotak aspect 1:1, dan 1 foto landscape aspect 3/2) dengan dukungan jumlah foto tanpa batas (*infinite loop pattern*).
+  - **Modern Masonry (`masonry`)**: Grid 2 kolom bertingkat (*Pinterest-style*) yang mempertahankan aspek rasio asli foto tanpa terpotong (*aspect-ratio preservation*), lengkap dengan animasi *staggered entrance*.
+  - **Interactive Carousel / 3D Slider (`carousel`)**: Slider horizontal interaktif *swipeable* dengan kartu aktif membesar (*scale-up*), indikator titik navigasi (*dots*) adaptif warna tema, tombol panah prev/next, dan deretan *thumbnail strip* di bagian bawah.
+  - **Polaroid Stack (`polaroid`)**: Tampilan kartu foto polaroid putih dengan bayangan lembut realistis, efek rotasi kemiringan acak halus (-2° s/d +2°), hiasan pita perekat (*washi tape*), dan nomor urut momen manis.
+- **Visual Card Selector di Admin Panel (`/modules`)**:
+  - Sub-tab "Galeri Foto" dilengkapi 4 kartu pemilih layout dengan ilustrasi mini-wireframe visual, badge kategori (*Default Populer, Rekomendasi, Interaktif, Artistik*), dan deskripsi karakteristik masing-masing gaya.
+  - Sinkronisasi instan ke state `formData.galleryLayout` dan tersimpan permanen ke Cloud Firestore.
+- **Universal Fullscreen Lightbox**:
+  - Setiap foto pada seluruh 4 pilihan layout dapat diklik untuk membuka modal Lightbox resolusi tinggi dengan navigasi Next/Prev, dukungan keyboard (*Escape, Left/Right Arrow*), tombol tutup cepat, dan penghitung nomor foto aktif.
+- **Thematic Adaptive Styling**:
+  - Indikator dot slider, border radius, bayangan kartu, dan kontras otomatis menyesuaikan token tema aktif dari 20 tema yang tersedia.
 
 ### 🎫 Digital Pass & E-Ticket PDF Export Suite (v1.37.0)
 - **Ultra-Sharp High-Density Rendering (1200x1850 px, 300 DPI Equivalent)**:

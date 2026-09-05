@@ -43,6 +43,7 @@ export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           },
           banks: data.banks || (data.bank ? [data.bank] : defaultConfig.banks),
           gallery: data.gallery || defaultConfig.gallery,
+          galleryLayout: data.galleryLayout || 'editorial',
           loveStory: data.loveStory || defaultConfig.loveStory,
           musicUrl: data.musicUrl || (data.music?.playlist?.[0]?.url) || defaultConfig.musicUrl,
           music: {

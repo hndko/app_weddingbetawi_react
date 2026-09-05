@@ -43,6 +43,7 @@ export const config = {
     "https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
     "https://images.unsplash.com/photo-1510076857177-7470076d4098?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
   ],
+  galleryLayout: 'editorial' as const,
   banks: [
     {
       name: "BCA",

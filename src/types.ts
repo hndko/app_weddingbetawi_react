@@ -53,6 +53,8 @@ export interface SEOSettings {
   image?: string;
 }
 
+export type GalleryLayoutStyle = 'editorial' | 'masonry' | 'carousel' | 'polaroid';
+
 export interface WeddingConfig {
   groom: PersonInfo;
   bride: PersonInfo;
@@ -60,6 +62,7 @@ export interface WeddingConfig {
   dateISO: string;
   events: EventsConfig;
   gallery: string[];
+  galleryLayout?: GalleryLayoutStyle;
   bank?: BankInfo; // deprecated
   banks?: BankInfo[];
   loveStory: LoveStoryItem[];

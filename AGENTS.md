@@ -55,6 +55,18 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 2. **Thin Presentational Components**: Komponen antarmuka fokus pada rendering UI. Logika manipulasi state kompleks, integrasi database, atau format string wajib didelegasikan ke fungsi pembantu (*helper*) atau *custom hooks*.
 3. **Penyimpanan Gambar Efisien (Zero Storage Cost)**: Seluruh kompresi foto galeri atau QRIS dilakukan pada sisi klien via Canvas API (Base64 JPEG kompresi ~80-120KB) yang langsung disimpan ke Firestore tanpa memerlukan backend server atau Firebase Storage berbayar.
 4. **Single Page Routing**: Navigasi menggunakan state lokal dan *smooth scrolling* internal section. Rute admin dikelola via path khusus `/login` dan `/modules` dengan sinkronisasi History API, serta penanganan parameter query nama tamu (`?to=Nama+Tamu`) secara elegan.
+5. **Standarisasi Penamaan Folder Lowercase Murni (`src/modules/`)**:
+   - Seluruh folder di dalam `src/modules/` WAJIB selalu menggunakan huruf kecil penuh: `auth/`, `backend/`, `frontend/`, `shared/`, `themes/`.
+   - DILARANG KERAS menggunakan huruf kapital atau campuran huruf besar-kecil pada penamaan direktori maupun impor berkas modul guna mencegah galat *case-sensitivity* lintas sistem operasi (Windows vs Linux vs Vercel Serverless CI/CD) dan error kompilasi TypeScript `TS1149`/`TS1261`.
+6. **Invarian Netral Budaya pada Layer Bersama (`shared/`)**:
+   - Direktori `src/modules/frontend/shared/` mengisolasi komponen bersama (`BottomNavigation`, `MusicPlayer`, `SEO`) dan seksi data domain bersama (`RSVP`, `Wishes`, `Countdown`, `Event`, `Gallery`, `Location`, `LoveStory`, `WeddingGift`).
+   - Seluruh berkas di `src/modules/frontend/shared/` WAJIB 100% netral budaya (*culturally agnostic*). DILARANG mengimpor atau merender ornamen khusus adat tertentu (seperti Ondel-ondel, siluet Monas, Rumah Kebaya, atau Gunungan Wayang). Gunakan ornamen pemisah netral (`SectionDivider`).
+7. **Standar Paket Aset Default Luring Tema (*Offline Default Theme Assets Suite*)**:
+   - Setiap tema pada `THEME_CATALOG` (`src/modules/frontend/themes/index.ts`) WAJIB menyediakan paket aset lokal mandiri di `public/assets/themes/{theme_id}/`:
+     - `thumbnail.jpg` atau `thumbnail.svg`
+     - `pattern.svg`
+     - `favicon.svg`
+   - DILARANG mengandalkan URL eksternal (seperti Unsplash atau CDN pihak ketiga) untuk aset dasar tema guna menjamin aplikasi tetap mandiri, tahan gangguan jaringan, dan dapat diakses luring (*zero external dependency*).
 
 ---
 
@@ -111,8 +123,13 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
    - **Tombol Aksi Tabel**: Wajib **Icon-Only** (contoh: `<Trash2 size={15}/>`) dengan atribut `title` dan `aria-label` yang jelas agar kolom tabel tetap rapi dan ringkas.
 8. **Penomoran Otomatis Kolom Tabel (`#`)**:
    - Setiap tabel data wajib memiliki kolom pertama `#` dengan penomoran urut otomatis 1-indexed (`index + 1`), yang tetap urut saat data disaring oleh fitur pencarian.
-9. **Desain Responsif & Estetika Budaya Betawi**:
-   - Desain sempurna pada mobile (360px-430px) dengan motif Gigi Balang, Ondel-ondel siluet elegan, font kaligrafi, dan palet warna hangat adat Betawi.
+9. **Desain Responsif & Estetika Budaya**:
+   - Desain sempurna pada mobile (360px-430px) dengan tipografi berkelas, adaptasi palet warna tematik yang harmonis, dan proporsi elemen visual yang nyaman diakses satu tangan.
+10. **Paket Animasi Dekorasi Tematik (*Theme Animated Decorations Suite*)**:
+   - Setiap tema aktif (status `ready`) WAJIB menyertakan minimal dua varian dekorasi beranimasi halus menggunakan `motion/react`:
+     1. *Floating Particles / Petals* (contoh: `FloatingFlowers` di Betawi, `FloatingMelati` di Jawa) yang melayang dengan rotasi perlahan, pergeseran sumbu X/Y lembut, dan variasi skala.
+     2. *Swaying Corner Filigree / Vines* pada bingkai utama `AppFrame` (contoh: `AnimatedFloralVines` di Betawi, `AnimatedJavaneseFiligree` di Jawa).
+   - Seluruh elemen dekorasi beranimasi WAJIB menyertakan kelas utilitas Tailwind `pointer-events-none` agar tidak menghalangi gestur sentuh pengguna, interaksi tombol, ataupun scroll pada layar perangkat seluler.
 
 ---
 
@@ -191,6 +208,9 @@ Format: <type>(<scope>): <description>
 
 Sebelum AI Assistant mengakhiri sesi pengerjaan tugas, lakukan pengecekan berikut secara berurutan:
 - [ ] Kode bebas dari tipe `any`, komentar *slop*, `console.log`, dan dialog browser `alert()` / `confirm()`.
+- [ ] Struktur direktori modul pada `src/modules/` 100% konsisten berhuruf kecil murni (`auth`, `backend`, `frontend`, `shared`, `themes`).
+- [ ] Seluruh seksi bersama di `src/modules/frontend/shared/` 100% netral budaya tanpa ketergantungan ornamen adat spesifik.
+- [ ] Setiap tema memiliki paket aset default luring di `public/assets/themes/{id}/` dan animasi dekorasi tematik (`motion/react`).
 - [ ] Berkas `.env` dan `.env.example` 100% konsisten dalam kunci, urutan, dan penamaan (Pilar 3).
 - [ ] Menjalankan verifikasi tipe `tsc --noEmit` / `npm run lint` dan lulus 100%.
 - [ ] Menjalankan uji kompilasi `npm run build` dan sukses menghasilkan `dist/`.

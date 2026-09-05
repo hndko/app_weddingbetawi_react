@@ -16,6 +16,10 @@ import { OpeningCover as MinimalistOpeningCover } from './minimalist/OpeningCove
 import { InvitationContent as MinimalistInvitationContent } from './minimalist/InvitationContent';
 import { AppFrame as MinimalistAppFrame } from './minimalist/decorations/AppFrame';
 
+import { OpeningCover as IslamicOpeningCover } from './islamic/OpeningCover';
+import { InvitationContent as IslamicInvitationContent } from './islamic/InvitationContent';
+import { AppFrame as IslamicAppFrame } from './islamic/decorations/AppFrame';
+
 export * from './types';
 
 export const THEME_CATALOG: ThemeMeta[] = [
@@ -97,11 +101,11 @@ export const THEME_CATALOG: ThemeMeta[] = [
     previewColors: {
       primary: '#0F4C5C',
       secondary: '#C5A059',
-      accent: '#E36414',
-      bg: '#FDFBF7',
+      accent: '#E5C158',
+      bg: '#FAF6EE',
     },
-    features: ['Arabesque Arches', 'Bismillah Kaligrafi', 'Islamic Stars', 'Tahap Desain'],
-    status: 'coming_soon',
+    features: ['Arabesque Arches', 'Bismillah Kaligrafi', 'Islamic 8-Star Rub el Hizb', 'Syar\'i & Sakral Kontemporer'],
+    status: 'ready',
     favicon: '/assets/themes/islamic/favicon.svg',
   },
 ];
@@ -140,6 +144,15 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: MinimalistOpeningCover,
       InvitationContent: MinimalistInvitationContent,
       AppFrame: MinimalistAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  islamic: {
+    meta: THEME_CATALOG[4],
+    components: {
+      OpeningCover: IslamicOpeningCover,
+      InvitationContent: IslamicInvitationContent,
+      AppFrame: IslamicAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

@@ -53,6 +53,9 @@ app_weddingbetawi_react/
 │   │       └── themes/         # Multi-Theme Architecture Engine
 │   │           ├── betawi/     # Adapter tema Betawi Heritage (OpeningCover, Invitation, decor)
 │   │           ├── jawa/       # Adapter tema Javanese Royal Kraton (Gunungan, Pawiwahan, decor)
+│   │           ├── sunda/      # Adapter tema Sundanese Parahyangan (Mahkota Siger, Priangan, decor)
+│   │           ├── minimalist/ # Adapter tema Modern Botanical Minimalist (Eucalyptus, decor)
+│   │           ├── islamic/    # Adapter tema Islamic Arabian Garden (Arabesque Arch, Hilal, decor)
 │   │           ├── index.ts    # Centralized Registry (THEMES, resolveTheme, THEME_CATALOG)
 │   │           └── types.ts    # ThemeMeta & ThemeDefinition interface contracts
 │   ├── context/

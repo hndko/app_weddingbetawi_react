@@ -1,7 +1,9 @@
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 import { EventDetail } from '../../../../types';
+import { CalendarEventModal } from '../components/CalendarEventModal';
 
 function SectionDivider({ className = '' }: { className?: string }) {
   return (
@@ -13,7 +15,15 @@ function SectionDivider({ className = '' }: { className?: string }) {
   );
 }
 
-function EventCard({ event, delay }: { event: EventDetail, delay: number }) {
+function EventCard({ 
+  event, 
+  delay, 
+  onSaveCalendar 
+}: { 
+  event: EventDetail; 
+  delay: number; 
+  onSaveCalendar: () => void; 
+}) {
   const { weddingConfig } = useWeddingConfig();
   return (
     <motion.div
@@ -78,13 +88,14 @@ function EventCard({ event, delay }: { event: EventDetail, delay: number }) {
             </div>
           </div>
           
-          <a 
-            href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Pernikahan ${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname} - ${event.title}`)}&dates=${weddingConfig.dateISO.replace(/[-:]/g, '').split('+')[0]}Z/${weddingConfig.dateISO.replace(/[-:]/g, '').split('+')[0]}Z&details=${encodeURIComponent(event.address)}&location=${encodeURIComponent(event.address)}`}
-            target="_blank" rel="noopener noreferrer"
-            className="w-full bg-sage text-white py-3.5 rounded-full text-[13px] font-medium tracking-wide text-center hover:bg-sage-dark transition-colors shadow-sm hover:shadow-md"
+          <button 
+            type="button"
+            onClick={onSaveCalendar}
+            className="w-full bg-sage text-white py-3.5 rounded-full text-[13px] font-medium tracking-wide text-center hover:bg-sage-dark transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer group"
           >
-            Tambahkan ke Kalender
-          </a>
+            <Calendar size={16} className="text-white/80 group-hover:scale-110 transition-transform" />
+            <span>Simpan ke Kalender</span>
+          </button>
         </div>
       </div>
     </motion.div>
@@ -93,6 +104,8 @@ function EventCard({ event, delay }: { event: EventDetail, delay: number }) {
 
 export function EventSection() {
   const { weddingConfig } = useWeddingConfig();
+  const [selectedEventForCalendar, setSelectedEventForCalendar] = useState<EventDetail | null>(null);
+
   return (
     <section className="py-24 px-6 bg-warm-white relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full rotate-180 opacity-50">
@@ -107,9 +120,25 @@ export function EventSection() {
       </div>
 
       <div className="flex flex-col gap-8">
-        <EventCard event={weddingConfig.events.akad} delay={0} />
-        <EventCard event={weddingConfig.events.resepsi} delay={0.2} />
+        <EventCard 
+          event={weddingConfig.events.akad} 
+          delay={0} 
+          onSaveCalendar={() => setSelectedEventForCalendar(weddingConfig.events.akad)} 
+        />
+        <EventCard 
+          event={weddingConfig.events.resepsi} 
+          delay={0.2} 
+          onSaveCalendar={() => setSelectedEventForCalendar(weddingConfig.events.resepsi)} 
+        />
       </div>
+
+      {/* Calendar Selection & Navigation Modal */}
+      <CalendarEventModal
+        isOpen={!!selectedEventForCalendar}
+        onClose={() => setSelectedEventForCalendar(null)}
+        event={selectedEventForCalendar}
+        weddingConfig={weddingConfig}
+      />
       
       <div className="absolute bottom-0 left-0 w-full opacity-50">
         <SectionDivider />

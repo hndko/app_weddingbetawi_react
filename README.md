@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.21.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.22.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -215,6 +215,15 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 - **Auto-Cycling Carousel & Kontrol Operator Mengambang**:
   - Jika tidak ada ucapan baru, daftar ucapan bergulir otomatis per halaman (*carousel*) secara halus.
   - Operator panggung dapat mengontrol kecepatan transisi (Cepat 4s, Normal 7s, Lambat 10s, Jeda), tombol *Fullscreen* (F11), dan tombol *Mute/Unmute* nada audio melalui bilah kontrol bawah mengambang yang otomatis bersembunyi setelah 3,5 detik kursor tidak bergerak.
+
+### 📅 Sinkronisasi Kalender 1-Klik (Google Calendar & Apple iCal .ics) (v1.22.0)
+- **Modal Dialog Interaktif Multi-Kalender**: Tombol *"Simpan ke Kalender"* pada setiap kartu acara (Akad & Resepsi) membuka pop-up pilihan aplikasi kalender favorit tamu undangan.
+- **Sinkronisasi Google Calendar**: Tautan langsung template Google Calendar dengan tanggal mulai & selesai yang terstruktur dalam format UTC ISO.
+- **Dukungan Apple Calendar / iCal (`.ics`)**: Unduhan file iCalendar RFC 5545 standar yang langsung dikenali dan diimpor otomatis oleh perangkat Apple (iPhone, iPad, Mac) serta Microsoft Outlook.
+- **Alarm Pengingat Otomatis Ganda (Double Reminder)**:
+  - Notifikasi **H-1 Acara** (`-P1D`): Pengingat persiapan satu hari menjelang hari pernikahan.
+  - Notifikasi **1 Jam Sebelum Acara** (`-PT1H`): Pengingat keberangkatan menuju venue akad / resepsi.
+- **Integrasi Google Maps**: Tautan rute peta lokasi venue yang disematkan langsung di dalam deskripsi acara kalender dan tombol aksi navigasi cepat.
 
 ### 💰 Wedding Budget & Checklist Vendor Tracker (v1.21.0)
 - **Dasbor Finansial Real-Time**: 4 Kartu KPI finansial: Target Anggaran, Kontrak Aktual, Terbayar/DP, dan Sisa Tagihan Pelunasan yang tersinkronisasi langsung via Firestore listener.

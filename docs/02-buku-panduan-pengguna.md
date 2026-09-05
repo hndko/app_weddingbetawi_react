@@ -24,6 +24,7 @@ Aplikasi ini adalah platform undangan pernikahan digital berbasis web responsif 
 | Membuka sampul digital dengan nama pribadi | ✅ Ya | ✅ Ya |
 | Mendengarkan & mengontrol pemutar musik latar | ✅ Ya | ✅ Ya |
 | Melihat jadwal, peta lokasi, & kisah cinta | ✅ Ya | ✅ Ya |
+| Menyimpan jadwal acara ke Google Calendar & Apple/iCal | ✅ Ya | ✅ Ya |
 | Mengisi konfirmasi kehadiran (RSVP) | ✅ Ya | ✅ Ya |
 | Menulis doa restu di dinding ucapan | ✅ Ya | ✅ Ya |
 | Mengakses generator pesan WhatsApp nama tamu | ❌ Tidak | ✅ Ya |
@@ -183,6 +184,7 @@ Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda k
 * **Pemilih Jam Terstruktur**: Tentukan **Jam Mulai**, **Jam Selesai**, centang opsi **"Sampai Selesai"**, dan pilih **Zona Waktu** (*WIB, WITA, WIT*). Sistem otomatis menyusun format string yang rapi. Tersedia pula mode teks bebas untuk format non-jam seperti *"Ba'da Isya"*.
 * **Samakan Resepsi dengan Akad**: Tombol 1-klik untuk menyalin tanggal, nama gedung, alamat, dan link Google Maps dari sesi Akad ke sesi Resepsi.
 * Masukkan **Nama Gedung / Masjid**, **Alamat Lengkap**, dan **Tautan Google Maps**.
+* **Integrasi Kalender Tamu Otomatis**: Setiap perubahan jadwal Akad & Resepsi langsung memperbarui data tombol *"Simpan ke Kalender"* di kartu acara publik, memungkinkan tamu mengimpor jadwal ke **Google Calendar** atau **Apple Calendar / iCal (.ics)** dengan alarm pengingat H-1 dan 1 Jam sebelum acara.
 
 ### C. Sub-Tab Galeri Foto
 * Tambahkan foto-foto pra-nikah (*prewedding*) melalui dropzone drag & drop atau URL langsung.

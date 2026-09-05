@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.29.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.29.1-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -262,6 +262,18 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 - **Checklist Kesiapan Logistik Hari-H**: Tombol centang 1-klik untuk memantau status persiapan vendor dan barang bawaan.
 - **Ekspor Rekapitulasi CSV (UTF-8 BOM)**: Unduh seluruh data finansial dan status vendor ke file spreadsheet untuk pelaporan bendahara dan keluarga.
 - **Redesain Estetika Light Theme Selaras Admin Panel (v1.22.1)**: Mengadopsi palet warna *warm light* terpadu (`bg-[#fcfaf7]`), kartu putih dengan aksen *sage green* & *warm gold*, badge kategori pastel lembut, tipografi berkejelasan tinggi, tabel data bersih dengan efek *hover*, serta modal form dan konfirmasi SweetAlert2 bernuansa terang elegan.
+
+### 🪄 Floating Feature Hub (Show/Hide Speed Dial) (v1.29.1)
+- **Pengelompokan Fitur Interaktif Terpadu**: Mengeliminasi tombol terapung yang tersebar di layar dengan menyatukan tombol **Photo Booth**, **Wedding Trivia Mini Game**, dan **E-Ticket QR Pass** ke dalam 1 tombol pemicu (*Floating Speed Dial*) di kiri bawah.
+- **Layar Bersih & Rapi (*Collapsed by Default*)**: Saat pertama kali dibuka, layar mobile hanya menampilkan 1 tombol pemicu di sisi kiri bawah berhias lencana kilau (*sparkle ping*) halus, dan 1 tombol pemutar musik (*Music Player*) di sisi kanan bawah.
+- **Mekanisme Show / Hide Interaktif**:
+  - Tombol trigger berganti dari ikon `Sparkles` menjadi ikon `X` untuk menutup menu.
+  - Ketiga tombol fitur mekar meluncur ke atas (*vertical stagger animation*) lengkap dengan tombol ikon bulat dan pil label keterangan teks:
+    - 📷 **Photo Booth** (*"Photo Booth • BARU • Cetak Photostrip HD"*)
+    - 🎮 **Mini Game Trivia** (*"Mini Game Trivia • GAME • Kuis Seru Mempelai"*)
+    - 🎟️ **E-Ticket QR Pass** (*"E-Ticket QR Pass • TIKET • Check-in Resepsi"*)
+- **Backdrop Catcher & Click Outside**: Latar belakang menggelap halus dengan efek blur ringan (`backdrop-blur-[2px]`) yang otomatis menutup menu saat area luar diketuk.
+- **Isolasi Pemutar Musik Latar**: Tombol musik di sisi kanan bawah tetap mandiri dan terpisah dari menu fitur tamu.
 
 ### 📸 Digital Photo Booth & Guest Photostrip Generator (v1.29.0)
 - **Wedding Virtual Photobooth Tamu**: Pengalaman photobooth digital interaktif langsung di smartphone tamu undangan tanpa perlu aplikasi tambahan.

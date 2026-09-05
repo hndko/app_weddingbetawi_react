@@ -401,7 +401,7 @@ Modul ini adalah pusat pengelolaan permainan interaktif seputar kedua mempelai y
    - Tombol **"Unduh Rekap CSV"**: Mengunduh seluruh rekapitulasi nilai kuis ke format spreadsheet CSV UTF-8 BOM.
 
 ### B. Pengalaman Tamu di Sisi Undangan (Guest Side):
-- **Tombol Gamepad Mengambang (`TriviaFloatingButton`)**: Tombol aksi mengambang berikon stik game di sisi kiri layar dengan notifikasi titik menyala.
+- **Floating Feature Hub (Speed Dial)**: Terintegrasi ke dalam menu terapung pemicu di sisi kiri bawah layar (`FloatingFeatureHub`), berdampingan rapi dengan tombol pemutar musik di sisi kanan.
 - **Seksi Undangan (`TriviaQuizSection`)**: Kartu ajakan bermain di alur halaman undangan setelah seksi konfirmasi RSVP.
 - **Synthesizer Audio Web Audio API**: Efek suara nada benar (*chime*), nada salah (*buzz*), dan terompet kemenangan (*fanfare*) tanpa unduhan berkas audio eksternal.
 - **Tantangan WhatsApp**: Tombol instan untuk membagikan skor ke grup/chat WhatsApp dengan pesan tantangan seru bagi rekan-rekan tamu lainnya.
@@ -434,7 +434,7 @@ graph LR
    - Pilihan filter instan: **Natural** (asli), **B&W Vintage** (monokrom kontras), **Sepia Retro** (hangat klasik), dan **Warm Glow** (kilau lembut).
 
 ### B. Cara Penggunaan bagi Tamu:
-1. Ketuk tombol mengambang kamera berikon ✨ di pojok kanan bawah atau ketuk tombol **"Buka Virtual Photo Booth"** pada seksi galeri undangan.
+1. Ketuk tombol pemicu terapung berikon ✨ (**Floating Feature Hub**) di pojok kiri bawah lalu pilih tombol **Photo Booth**, atau ketuk tombol **"Buka Virtual Photo Booth"** pada seksi galeri undangan.
 2. Pilih format yang diinginkan (**3-Pose Strip** atau **Single Polaroid**).
 3. Pilih metode pengambilan:
    - **Kamera Selfie**: Mengaktifkan kamera depan/belakang dengan timer hitung mundur 3 detik (dilengkapi suara beep dan kilatan lampu putih studio saat foto terambil).

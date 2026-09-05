@@ -32,6 +32,7 @@ Aplikasi ini adalah platform undangan pernikahan digital berbasis web responsif 
 | Mengatur daftar rekening & upload kode QRIS | ❌ Tidak | ✅ Ya |
 | Mengatur playlist musik & mode putar lagu | ❌ Tidak | ✅ Ya |
 | Memantau total tamu hadir & menghapus RSVP/ucapan spam | ❌ Tidak | ✅ Ya |
+| Membuka Layar Proyektor LED Panggung Hari-H (`/live`) | ✅ Ya (Tanpa Login) | ✅ Ya |
 
 ---
 
@@ -237,7 +238,60 @@ Dinding ucapan doa restu tamu diperbarui secara otomatis secara *real-time*:
 
 ---
 
-## ❓ 11. Tanya Jawab Umum (FAQ)
+## 📺 11. Layar Proyektor LED Panggung Hari-H / Live Wishes Screen (`/live`)
+
+Fitur ini dirancang khusus untuk memproyeksikan doa restu para tamu secara langsung (*real-time*) di layar videotron LED panggung ballroom pernikahan atau layar proyektor besar di venue acara.
+
+```mermaid
+graph LR
+    A["Tamu Duduk di Meja Ballroom"] --> B["Pindai QR Code di Layar Panggung"]
+    B --> C["Kirim Ucapan Doa via HP"]
+    C --> D["Firestore Real-Time Listener"]
+    D --> E["Spotlight Pop-Up + Lonceng Harmonis di Layar Panggung!"]
+    E --> F["Ucapan Mengalir Masuk ke Feed Carousel"]
+```
+
+### A. Cara Membuka Layar Proyektor Panggung:
+1. Hubungkan laptop operator panggung / MC ke videotron LED atau proyektor panggung via HDMI.
+2. Buka peramban (Google Chrome / Edge) dan akses salah satu alamat berikut:
+   - Akses langsung mandiri: `https://undangan-anda.vercel.app/live` atau `/projector` (bebas tanpa perlu login passcode).
+   - Melalui Admin Panel: Buka menu **Moderasi Ucapan** atau **Overview**, lalu klik tombol emas **"Buka Layar Proyektor Panggung"**.
+3. Tekan tombol **F11** atau klik ikon layar penuh (**Fullscreen**) pada bilah kontrol di bawah untuk pengalaman tampilan sinematik 16:9 tanpa gangguan antarmuka browser.
+
+### B. Komponen Tampilan Layar Panggung (Split Stage Cinema 16:9):
+1. **Panel Sisi Kiri (35%)**:
+   - **Monogram Emas Mempelai**: Inisial kedua mempelai beranimasi pernapasan lembut (*breathing animation*).
+   - **Nama Pasangan & Tanggal Acara**: Menampilkan nama kedua mempelai dan venue acara dengan tipografi aksen emas mewah.
+   - **Counter Ucapan Live**: Angka total doa yang masuk terbarui secara dinamis saat ada tamu yang mengirimkan doa.
+   - **QR Code Interaktif Ukuran Besar**: Mengarah langsung ke formulir ucapan undangan digital (`#ucapan`). Tamu undangan yang sedang duduk di ballroom dapat langsung mengarahkan kamera ponsel ke layar panggung untuk mengirim doa restu.
+2. **Panel Aliran Doa Restu (65%)**:
+   - Menampilkan feed ucapan tamu dengan kartu berdesain malam eksklusif (*Midnight Slate & Emerald*).
+   - Jika belum ada ucapan, menampilkan ucapan selamat datang yang anggun mengajak para tamu memindai QR code.
+
+### C. Efek Selebrasi Spotlight Pop-Up & Audio Chime:
+1. **Deteksi Real-Time Kilat**:
+   - Begitu seorang tamu menekan tombol "Kirim Doa Restu" di ponselnya, layar panggung langsung mendeteksi kedatangan data baru dalam hitungan milidetik melalui WebSocket Firestore.
+2. **Modal Spotlight Pop-Up**:
+   - Kartu doa tamu yang baru masuk langsung melayang ke tengah layar dengan latar redup dramatis, lingkaran halo emas bercahaya, dan partikel konfeti/bintang berkilau beranimasi selama 6,5 detik.
+3. **Harmonic Bell Chime (Web Audio API)**:
+   - Bersamaan dengan munculnya spotlight, speaker panggung akan memperdengarkan nada lonceng akor C-Mayor harmonis (C5-E5-G5-C6) dengan peluruhan alami (*natural decay*) tanpa membutuhkan unduhan file MP3 eksternal (*zero external network download*).
+4. **Transisi Mengalir**:
+   - Setelah 6,5 detik, kartu ucapan menutup dan meluncur anggun ke posisi teratas aliran feed.
+
+### D. Kontrol Bilah Bawah Operator (Floating Auto-Hide Toolbar):
+- Arahkan kursor mouse ke bagian bawah layar untuk memunculkan bilah kontrol operator:
+  - **Status Suara**: Tombol ikon lonceng untuk mematikan (*Mute*) atau mengaktifkan (*Unmute*) suara chime panggung.
+  - **Pilihan Kecepatan Putar (Carousel)**:
+    - **Cepat (4 detik)**: Cocok untuk acara resepsi dengan ribuan tamu dan arus doa sangat deras.
+    - **Normal (7 detik)**: Kecepatan standar ideal yang nyaman dibaca oleh tamu undangan.
+    - **Lambat (10 detik)**: Memberikan waktu lebih lama bagi tamu untuk menikmati setiap doa restu.
+    - **Jeda**: Menghentikan perputaran otomatis jika MC ingin membacakan doa tertentu.
+  - **Mode Layar Penuh (Fullscreen)**: Memaksimalkan jendela peramban ke seluruh layar monitor LED.
+  - **Bilah Kontrol Otomatis Sembunyi**: Bilah ini otomatis menghilang setelah 3,5 detik kursor diam agar tampilan panggung tetap bersih dan mewah.
+
+---
+
+## ❓ 12. Tanya Jawab Umum (FAQ)
 
 ### T: Apakah musik otomatis berputar saat tamu pertama kali membuka website?
 **J:** Kebijakan peramban modern (Chrome, Safari, iOS) melarang suara berputar otomatis (*autoplay*) sebelum ada interaksi fisik dari pengguna. Oleh sebab itu, aplikasi menyediakan gerbang **Opening Cover** dengan tombol *"Buka Undangan"*. Saat tamu mengetuk tombol tersebut, musik akan langsung berputar secara mulus.

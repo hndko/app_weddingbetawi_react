@@ -6,7 +6,7 @@ import {
   MapPin, Search, RotateCcw, User, KeyRound, Globe, FileText, CheckCircle2, 
   Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
   ArrowUpRight, ShieldCheck, Sparkles, BookOpen, Upload, UserPlus, 
-  FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette, QrCode
+  FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette, QrCode, Tv
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
@@ -1361,7 +1361,7 @@ Wassalamu'alaikum Wr. Wb.`;
               {/* Quick Action Shortcuts Grid */}
               <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col gap-3">
                 <h3 className="font-heading text-sm font-bold text-text-dark">Aksi Cepat</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
                   <button
                     type="button"
                     onClick={() => setActiveMenu('reception')}
@@ -1371,6 +1371,18 @@ Wassalamu'alaikum Wr. Wb.`;
                     <div>
                       <span className="block text-xs font-bold text-gray-800">Meja Resepsi</span>
                       <span className="text-[11px] text-amber-800/80 font-medium">Scan QR Hari-H</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => window.open('/live', '_blank')}
+                    className="p-3.5 rounded-xl border border-indigo-200 hover:border-indigo-400 bg-indigo-50/40 hover:bg-indigo-100/40 transition-all text-left flex flex-col gap-2 cursor-pointer group"
+                  >
+                    <Tv size={18} className="text-indigo-600 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <span className="block text-xs font-bold text-gray-800">Layar Panggung</span>
+                      <span className="text-[11px] text-indigo-700/80 font-medium">Live Proyektor</span>
                     </div>
                   </button>
 
@@ -2830,13 +2842,23 @@ Wassalamu'alaikum Wr. Wb.`;
           {/* ========================================================================= */}
           {activeMenu === 'wishes' && (
             <div className="flex flex-col gap-5">
-              <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                   <h3 className="font-heading text-lg font-bold text-text-dark">Moderasi Doa & Ucapan Restu</h3>
                   <p className="text-xs text-gray-500 mt-0.5">
                     Daftar seluruh kiriman doa dan restu dari tamu undangan ({wishes.length} ucapan masuk)
                   </p>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => window.open('/live', '_blank')}
+                  className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-2 cursor-pointer shrink-0"
+                >
+                  <Tv size={15} />
+                  <span>Buka Layar Proyektor Panggung</span>
+                  <ExternalLink size={13} />
+                </button>
               </div>
 
               {/* In-Memory Live Search Bar */}

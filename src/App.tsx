@@ -6,6 +6,7 @@ import { Panel as AdminPanel } from './modules/backend/Panel';
 import { SEO } from './modules/frontend/shared/components/SEO';
 import { MusicPlayer as DefaultMusicPlayer } from './modules/frontend/shared/components/MusicPlayer';
 import { GuestQRPassFloatingButton } from './modules/frontend/shared/components/GuestQRPassFloatingButton';
+import { LiveWishesProjector } from './modules/frontend/shared/components/LiveWishesProjector';
 
 export function navigateTo(path: string) {
   if (window.location.pathname !== path) {
@@ -62,6 +63,7 @@ function AppContent({ currentPath }: { currentPath: string }) {
   const rawPath = currentPath.toLowerCase().replace(/\/+$/, '') || '/';
   const isLogin = rawPath === '/login';
   const isModules = rawPath === '/modules';
+  const isLiveWishes = rawPath === '/live' || rawPath === '/projector' || rawPath === '/live-wishes';
   
   if (loading) {
     return (
@@ -80,6 +82,20 @@ function AppContent({ currentPath }: { currentPath: string }) {
   const seoDesc = weddingConfig.seo?.description || "Kami mengundang Anda untuk hadir di acara pernikahan kami.";
   const seoKeywords = weddingConfig.seo?.keywords || "wedding, pernikahan, undangan digital";
   const seoImage = weddingConfig.seo?.image || weddingConfig.gallery?.[0] || activeTheme.meta.thumbnail;
+
+  if (isLiveWishes) {
+    return (
+      <>
+        <SEO 
+          title={`Live Stage Screen | ${siteName}`}
+          description="Layar LED Proyektor Panggung Dinding Doa & Ucapan Restu Tamu."
+          robots="noindex, nofollow"
+          siteName={siteName}
+        />
+        <LiveWishesProjector />
+      </>
+    );
+  }
 
   if (isLogin || isModules) {
     return (

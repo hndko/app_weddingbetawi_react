@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.17.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.18.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -161,7 +161,8 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 | Role | Metode Akses | Hak Akses & Fitur yang Diizinkan |
 | :--- | :--- | :--- |
 | **Tamu Undangan** *(Public Guest)* | Membuka URL undangan publik (`https://domain.com/?to=Nama+Tamu`) | - Membuka sampul undangan interaktif (*Opening Cover*).<br>- Memutar dan menjeda musik latar (*Floating Audio Player*).<br>- Menavigasi seksi undangan via *Bottom Navigation* & *ScrollSpy*.<br>- Melihat detail acara dan membuka rute lokasi ke Google Maps.<br>- Mengirim konfirmasi kehadiran pada formulir RSVP.<br>- Mengirim doa restu dan melihat dinding ucapan secara *real-time*.<br>- Menyalin nomor rekening bank & memindai kode QRIS untuk hadiah. |
-| **Mempelai / Admin** *(Administrator)* | Membuka URL rahasia `/login` dan memasukkan passcode (setelah login dialihkan ke `/modules`) | - Mengakses **WhatsApp Link Generator** (membuat link custom nama tamu dan template pesan WA instan).<br>- Mengubah data profil kedua mempelai dan unggah foto.<br>- Mengubah jadwal, jam, venue, dan link Google Maps acara.<br>- Menambah, menyusun, dan menghapus foto galeri pernikahan.<br>- Mengelola daftar rekening bank & unggah gambar kode QRIS.<br>- Mengatur playlist musik latar (YouTube/Google Drive) dan mode putar.<br>- Mengonfigurasi metadata SEO & pratinjau thumbnail media sosial.<br>- Memantau statistik kehadiran RSVP (Total Hadir, Tidak Hadir, Total Respon).<br>- Menghapus respon RSVP atau ucapan tamu yang tidak pantas (moderasi). |
+| **Mempelai / Admin** *(Administrator)* | Membuka URL rahasia `/login` dan memasukkan passcode (setelah login dialihkan ke `/modules`) | - Mengakses **WhatsApp Link Generator** (membuat link custom nama tamu dan template pesan WA instan).<br>- Mengubah data profil kedua mempelai dan unggah foto.<br>- Mengubah jadwal, jam, venue, dan link Google Maps acara.<br>- Menambah, menyusun, dan menghapus foto galeri pernikahan.<br>- Mengelola daftar rekening bank & unggah gambar kode QRIS.<br>- Mengatur playlist musik latar (YouTube/Google Drive) dan mode putar.<br>- Mengonfigurasi metadata SEO & pratinjau thumbnail media sosial.<br>- Memantau statistik kehadiran RSVP (Total Hadir, Tidak Hadir, Total Respon).<br>- Mengelola meja resepsi dan pemindai QR pass tamu hari-H.<br>- Menghapus respon RSVP atau ucapan tamu yang tidak pantas (moderasi). |
+| **Operator Panggung / MC** *(Stage Display)* | Membuka rute publik mandiri `/live` atau `/projector` (atau via tombol jalan pintas di `/modules`) | - Menampilkan layar penuh 16:9 sinematik di proyektor/LED ballroom panggung pernikahan.<br>- Menampilkan QR Code interaktif untuk dipindai tamu dari meja.<br>- Memutar selebrasi spotlight & audio chime harmonis secara otomatis saat ada ucapan baru.<br>- Mengatur kecepatan putar otomatis (carousel) dan audio chime via floating control bar. |
 
 ---
 
@@ -202,13 +203,26 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 ### 📱 Navigasi Cepat (Floating Bottom Bar)
 - Menu navigasi bawah mengambang dengan indikator *ScrollSpy* yang mendeteksi seksi yang sedang aktif secara otomatis.
 
+### 📺 Live Wishes Stage Projector Screen (Layar LED Panggung Hari-H) (v1.18.0)
+- **Akses Mandiri Standalone**: Dapat dibuka melalui URL publik `/live` atau `/projector` tanpa memerlukan otentikasi login, serta tombol jalan pintas langsung dari Admin Panel (`/modules`).
+- **Tata Letak Sinematik Split Stage 16:9**:
+  - **Panel Kiri (35%)**: Monogram emas inisial kedua mempelai beranimasi elegan, nama lengkap mempelai, tanggal akad/resepsi & nama gedung ballroom, *Live Counter* jumlah ucapan masuk, serta **QR Code Interaktif** berukuran besar yang dapat langsung dipindai oleh para tamu dari meja mereka untuk membuka formulir ucapan doa.
+  - **Panel Aliran Kanan (65%)**: Aliran kartu ucapan mewah berlatar gelap malam (*Midnight Slate & Emerald*) dengan tipografi aksen emas bercahaya.
+- **Spotlight Celebration Pop-Up & Efek Konfeti**:
+  - Setiap kali ada ucapan baru yang masuk via Firestore listener, layar proyektor otomatis menampilkan pop-up modal selebrasi *Spotlight* dengan animasi partikel emas/konfeti berkilau selama 6,5 detik sebelum meluncur anggun ke posisi teratas daftar ucapan.
+- **Harmonic Audio Chime (Web Audio API Synthesizer)**:
+  - Nada lonceng akor harmonis C5-E5-G5-C6 dengan peluruhan nada alami berdurasi 2,4 detik tanpa perlu aset file audio eksternal (*zero external network download*).
+- **Auto-Cycling Carousel & Kontrol Operator Mengambang**:
+  - Jika tidak ada ucapan baru, daftar ucapan bergulir otomatis per halaman (*carousel*) secara halus.
+  - Operator panggung dapat mengontrol kecepatan transisi (Cepat 4s, Normal 7s, Lambat 10s, Jeda), tombol *Fullscreen* (F11), dan tombol *Mute/Unmute* nada audio melalui bilah kontrol bawah mengambang yang otomatis bersembunyi setelah 3,5 detik kursor tidak bergerak.
+
 ### 🔐 Panel Modules Responsif & Standar UI/UX Interaktif (v1.9.0)
 - **Arsitektur Dashboard Modern**: Tata letak modular di `/modules` dengan Sidebar desktop (expand/collapse), Mobile Slide-over Drawer (hamburger toggle), Topbar dengan breadcrumb navigasi dinamis, dan tombol pintas Live Preview.
 - **Menu 1: Dashboard Overview (Ringkasan Real-Time)**:
   - Banner hitung mundur hari-H pernikahan interaktif.
   - 4 Kartu KPI Ringkasan: Total Hadir, Total Tidak Hadir, Total Respon, dan Total Doa.
   - Rasio Kehadiran visual (*Progress Bar* persentase Hadir vs Tidak Hadir).
-  - Tombol jalan pintas cepat (*Quick Action Shortcuts*).
+  - Tombol jalan pintas cepat (*Quick Action Shortcuts*: WhatsApp Generator, Meja Resepsi QR Pass, Layar Panggung Live Proyektor, Ubah Konten, Ekspor RSVP).
   - Feed aktivitas interaksi terbaru (*Live Recent Feeds* untuk RSVP & Doa Tamu).
 - **Menu 2: Meja Resepsi & Scanner QR Pass Hari-H (v1.17.0)**:
   - **Pemindai Kamera Langsung**: Pemindai kamera performa tinggi murni sisi klien via `jsQR` dengan animasi laser pemindai, tombol sakelar on/off hemat baterai, dan toggle kamera depan/belakang.
@@ -249,7 +263,7 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
     - Pemilih jam terstruktur: Jam Mulai, Jam Selesai, centang *Sampai Selesai*, dan selector Zona Waktu (*WIB, WITA, WIT*) yang otomatis merangkai teks standar (misal: *08:00 - 10:00 WIB* atau *08:00 WIB - Selesai*), dengan toggle input kustom teks untuk acara khusus (*"Ba'da Isya"*).
     - Tombol Sinkronisasi Kilat: 1-klik untuk menyelaraskan tanggal countdown ke seluruh sesi acara dan menyamakan jadwal/tempat Resepsi dengan Akad.
 - **Menu 5: Buku Tamu RSVP & Export CSV**: Daftar konfirmasi kehadiran dengan pencarian latar *real-time*, penomoran urut otomatis 1-indexed (`#`), dan tombol **Export ke Excel (CSV)** berformat UTF-8 BOM.
-- **Menu 6: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan dan dialog hapus SweetAlert2.
+- **Menu 6: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan, dialog hapus SweetAlert2, serta tombol akses cepat **"Buka Layar Proyektor Panggung"** (`/live`).
 - **Penerapan Penuh 8 Pilar UI/UX Interaktif (`interactive-ux-standards`)**:
   1. *Toast Alerts*: Umpan balik status sukses dan error mengambang yang ramah pengguna (auto-dismiss 3,5 detik).
   2. *SweetAlert2 Confirmation Modals*: Dialog konfirmasi hapus data dengan badge bahaya dan tombol *Icon + Text*.

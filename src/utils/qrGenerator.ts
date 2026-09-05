@@ -1,5 +1,3 @@
-import QRCode from 'qrcode';
-
 export interface GuestQRPayload {
   v: number;
   id?: string;
@@ -104,6 +102,7 @@ export async function generateQRCodeDataURL(
     lightColor?: string;
   }
 ): Promise<string> {
+  const QRCode = (await import('qrcode')).default;
   return QRCode.toDataURL(text, {
     width: options?.width || 360,
     margin: options?.margin ?? 2,

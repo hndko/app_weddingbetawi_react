@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { QrCode } from 'lucide-react';
 import { useGuestName } from '../../../../hooks/useGuestName';
-import { GuestQRPassModal } from './GuestQRPassModal';
 import { cn } from '../../../../utils/cn';
+
+const GuestQRPassModal = lazy(() => 
+  import('./GuestQRPassModal').then(m => ({ default: m.GuestQRPassModal }))
+);
 
 interface GuestQRPassFloatingButtonProps {
   isOpened: boolean;
@@ -36,12 +39,16 @@ export function GuestQRPassFloatingButton({ isOpened }: GuestQRPassFloatingButto
         </div>
       </button>
 
-      <GuestQRPassModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        guestName={guestName || 'Tamu Undangan'}
-        guestPax={1}
-      />
+      {isOpen && (
+        <Suspense fallback={null}>
+          <GuestQRPassModal
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            guestName={guestName || 'Tamu Undangan'}
+            guestPax={1}
+          />
+        </Suspense>
+      )}
     </>
   );
 }

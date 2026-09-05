@@ -3,7 +3,8 @@ import {
   Palette, Sparkles, CheckCircle2, Clock, ExternalLink, 
   Eye, Check, Layers, Compass
 } from 'lucide-react';
-import { THEME_CATALOG, ThemeMeta } from '../../frontend/themes';
+import { THEME_CATALOG } from '../../frontend/themes/catalog';
+import { ThemeMeta } from '../../frontend/themes/types';
 
 export interface ThemeSelectorProps {
   currentThemeId: string;

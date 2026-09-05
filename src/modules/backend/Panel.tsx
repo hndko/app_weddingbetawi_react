@@ -17,7 +17,6 @@ import { DragDropUpload } from './components/DragDropUpload';
 import { EventScheduleEditor } from './components/EventScheduleEditor';
 import { ThemeSelector } from './components/ThemeSelector';
 import { ReceptionCheckin } from './components/ReceptionCheckin';
-import * as XLSX from 'xlsx';
 import { APP_VERSION } from '../../version';
 
 export interface PanelProps {
@@ -714,6 +713,7 @@ Wassalamu'alaikum Wr. Wb.`;
         const parsed = parseMultilineGuestText(dataLines);
         setParsedGuestsPreview(parsed);
       } else if (extension === 'xlsx' || extension === 'xls') {
+        const XLSX = await import('xlsx');
         const buffer = await file.arrayBuffer();
         const workbook = XLSX.read(buffer, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];

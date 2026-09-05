@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.18.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.19.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -215,6 +215,18 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
 - **Auto-Cycling Carousel & Kontrol Operator Mengambang**:
   - Jika tidak ada ucapan baru, daftar ucapan bergulir otomatis per halaman (*carousel*) secara halus.
   - Operator panggung dapat mengontrol kecepatan transisi (Cepat 4s, Normal 7s, Lambat 10s, Jeda), tombol *Fullscreen* (F11), dan tombol *Mute/Unmute* nada audio melalui bilah kontrol bawah mengambang yang otomatis bersembunyi setelah 3,5 detik kursor tidak bergerak.
+
+### ⚡ Optimasi Performa & Vite Code-Splitting Modular (v1.19.0)
+- **Pengurangan Ukuran Entry Point Hingga 97%**: Entry bundle publik berkurang drastis dari **1.82 MB** menjadi hanya **56 KB** (19 KB gzip) melalui partisi cerdas *Rollup manualChunks* dan *asynchronous lazy-loading*.
+- **Route Lazy-Loading (React.lazy & Suspense)**:
+  - Modul Dasbor Admin Panel (`/modules` & `/login`) berukuran 171 KB diisolasi secara asinkron sehingga tidak pernah diunduh oleh tamu undangan umum.
+  - Modul Layar Proyektor Panggung (`/live` & `/projector`) berukuran 15 KB diisolasi secara mandiri.
+- **On-Demand Dynamic Imports Pustaka Berat**:
+  - Pustaka spreadsheet **XLSX / SheetJS** (~430 KB) hanya diunduh oleh peramban jika pengantin memilih untuk mengunggah berkas `.xlsx/.xls` pada modal import tamu WhatsApp.
+  - Pustaka **jsQR & QRCode Canvas** (~156 KB) hanya diunduh saat kamera pemindai resepsi aktif atau saat tamu membuka kartu E-Pass.
+- **Isolasi Dynamic Multi-Theme**:
+  - Komponen visual dan ornamen dekorasi dari 6 tema Nusantara dipecah menjadi chunk mandiri (0.8 KB - 14 KB). Tamu yang membuka tema tertentu hanya mengunduh aset tema tersebut, mengeliminasi pengunduhan berlebih dari 5 tema lainnya.
+- **Zero Chunk Size Warnings**: Lulus kompilasi produksi Vite tanpa peringatan bundle berukuran melebihi batas 500 KB / 600 KB.
 
 ### 🔐 Panel Modules Responsif & Standar UI/UX Interaktif (v1.9.0)
 - **Arsitektur Dashboard Modern**: Tata letak modular di `/modules` dengan Sidebar desktop (expand/collapse), Mobile Slide-over Drawer (hamburger toggle), Topbar dengan breadcrumb navigasi dinamis, dan tombol pintas Live Preview.

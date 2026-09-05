@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { motion } from 'motion/react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../../../lib/firebase';
 import { useGuestName } from '../../../../hooks/useGuestName';
 import { AlertCircle, User, Users, CheckCircle2, MessageSquare, Send, RotateCcw, Loader2, QrCode } from 'lucide-react';
-import { GuestQRPassModal } from '../components/GuestQRPassModal';
+
+const GuestQRPassModal = lazy(() => 
+  import('../components/GuestQRPassModal').then(m => ({ default: m.GuestQRPassModal }))
+);
 
 export function RSVPSection() {
   const defaultGuestName = useGuestName();
@@ -193,12 +196,16 @@ export function RSVPSection() {
           </div>
         )}
 
-        <GuestQRPassModal
-          isOpen={isPassModalOpen}
-          onClose={() => setIsPassModalOpen(false)}
-          guestName={name || defaultGuestName}
-          guestPax={guestCount}
-        />
+        {isPassModalOpen && (
+          <Suspense fallback={null}>
+            <GuestQRPassModal
+              isOpen={isPassModalOpen}
+              onClose={() => setIsPassModalOpen(false)}
+              guestName={name || defaultGuestName}
+              guestPax={guestCount}
+            />
+          </Suspense>
+        )}
       </motion.div>
     </section>
   );

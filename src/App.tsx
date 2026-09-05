@@ -114,6 +114,8 @@ function AppContent({ currentPath }: { currentPath: string }) {
         author={`${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname}`}
         siteName={siteName}
         image={seoImage}
+        favicon={activeTheme.meta.favicon}
+        themeColor={activeTheme.meta.previewColors.bg}
       />
       <div 
         className="relative min-h-screen w-full flex items-center justify-center font-body selection:bg-sage/30 transition-colors duration-500"

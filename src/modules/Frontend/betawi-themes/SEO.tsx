@@ -10,6 +10,8 @@ interface SEOProps {
   robots?: string;
   author?: string;
   siteName?: string;
+  favicon?: string;
+  themeColor?: string;
 }
 
 export function SEO({
@@ -22,6 +24,8 @@ export function SEO({
   robots = 'index, follow',
   author,
   siteName = 'The Wedding',
+  favicon,
+  themeColor,
 }: SEOProps) {
   const currentUrl = canonical || window.location.href;
   const metaEnv = import.meta.env as Record<string, string | undefined>;
@@ -34,6 +38,8 @@ export function SEO({
       {description && <meta name="description" content={description} />}
       {keywords && <meta name="keywords" content={keywords} />}
       {author && <meta name="author" content={author} />}
+      {themeColor && <meta name="theme-color" content={themeColor} />}
+      {favicon && <link rel="icon" type="image/svg+xml" href={favicon} />}
       
       <link rel="canonical" href={currentUrl} />
       <meta name="robots" content={robots} />

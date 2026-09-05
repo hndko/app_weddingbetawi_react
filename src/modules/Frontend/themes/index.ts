@@ -26,6 +26,7 @@ export const THEME_CATALOG: ThemeMeta[] = [
     },
     features: ['Gigi Balang Frame', 'Ondel-ondel Siluet', 'Bunga Flora Melayang', 'Musik Mengambang'],
     status: 'ready',
+    favicon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%235B7065'/><circle cx='50' cy='50' r='44' fill='none' stroke='%23D4AF37' stroke-width='3'/><path d='M50 15 L56 38 L80 38 L60 52 L68 75 L50 60 L32 75 L40 52 L20 38 L44 38 Z' fill='%23D4AF37'/></svg>",
   },
   {
     id: 'jawa',
@@ -42,6 +43,7 @@ export const THEME_CATALOG: ThemeMeta[] = [
     },
     features: ['Gunungan Wayang Mas', 'Serat Ulem Pawiwahan', 'Bingkai Ukiran Keraton', 'Batik Royal Gold'],
     status: 'ready',
+    favicon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23132A1C'/><circle cx='50' cy='50' r='44' fill='none' stroke='%23E5C158' stroke-width='3'/><path d='M50 14 C56 26 72 40 76 60 C78 70 70 78 50 78 C30 78 22 70 24 60 C28 40 44 26 50 14 Z' fill='%23E5C158'/><path d='M50 78 L50 88' stroke='%23E5C158' stroke-width='4' stroke-linecap='round'/></svg>",
   },
   {
     id: 'sunda',
@@ -58,6 +60,7 @@ export const THEME_CATALOG: ThemeMeta[] = [
     },
     features: ['Mahkota Siger Sunda', 'Ronce Melati Putih', 'Ornamen Bambu Priangan', 'Tahap Desain'],
     status: 'coming_soon',
+    favicon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%234A6B5D'/><circle cx='50' cy='50' r='44' fill='none' stroke='%23D4AF37' stroke-width='3'/><path d='M30 65 Q50 35 70 65 Z' fill='%23D4AF37'/></svg>",
   },
   {
     id: 'minimalist',
@@ -74,6 +77,7 @@ export const THEME_CATALOG: ThemeMeta[] = [
     },
     features: ['Clean Aesthetic Serif', 'Eucalyptus Watercolor', 'Tata Letak Minimalis', 'Tahap Desain'],
     status: 'coming_soon',
+    favicon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%232D3748'/><circle cx='50' cy='50' r='44' fill='none' stroke='%239AA79C' stroke-width='3'/><text x='50' y='65' font-size='45' text-anchor='middle' fill='%23FFFFFF' font-family='serif'>W</text></svg>",
   },
   {
     id: 'islamic',
@@ -90,6 +94,7 @@ export const THEME_CATALOG: ThemeMeta[] = [
     },
     features: ['Arabesque Arches', 'Bismillah Kaligrafi', 'Islamic Stars', 'Tahap Desain'],
     status: 'coming_soon',
+    favicon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%230F4C5C'/><circle cx='50' cy='50' r='44' fill='none' stroke='%23C5A059' stroke-width='3'/><path d='M50 20 C65 20 75 35 75 50 C75 65 65 80 50 80 C60 70 65 60 65 50 C65 40 60 30 50 20 Z' fill='%23C5A059'/></svg>",
   },
 ];
 

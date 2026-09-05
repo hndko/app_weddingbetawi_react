@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.9.2-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.10.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -219,9 +219,12 @@ Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
   - **Mode Cepat (Generator Tunggal)**: Opsi pembuatan link personal dadakan untuk satu nama tamu secara instan.
 - **Menu 3: Manajemen Konten Terpartisi (Sub-Tabs)**: 
   - Tab pill rapi untuk Tema Desain, Mempelai, Acara & Lokasi, Galeri Foto, Kisah Cinta, Musik & Hadiah/QRIS, serta SEO & Metadata dengan bilah simpan melayang (*sticky action bar*).
-  - **Arsitektur Multi-Tema & Theme Engine Modular (v1.9.0)**:
+  - **Arsitektur Multi-Tema & Separasi Budaya Terisolasi (v1.10.0)**:
+    - *Isolasi Ornamen Budaya 100%*: Seksi visual budaya (Hero, Intro, Profil Mempelai, Penutup) diisolasi penuh per tema tanpa pencemaran silang (Tema Jawa bebas 100% dari Monas, Ondel-ondel, dan Rumah Kebaya).
+    - *Ornamen Khas Jawa Autentik*: Gunungan Wayang Mas sakral, Pendopo Joglo Keraton megah, ukiran sulur kencana emas keraton (*Javanese Filigree*), dan teks salam krama inggil.
+    - *Favicon & Meta Theme-Color Dinamis*: Favicon peramban otomatis berganti (Wayang Emas untuk Jawa, Ornamen Adat untuk Betawi) dan `meta theme-color` menyesuaikan palet tema aktif.
     - *Centralized Theme Registry*: Standarisasi kontrak antarmuka tema untuk skalabilitas tanpa batas.
-    - *Tema Siap Pakai*: **Betawi Heritage** (`betawi`) & **Javanese Royal Kraton** (`jawa` - Gunungan Wayang Mas & Serat Ulem Pawiwahan).
+    - *Tema Siap Pakai*: **Betawi Heritage** (`betawi`) & **Javanese Royal Kraton** (`jawa`).
     - *Katalog Roadmap Adat*: Sundanese Parahyangan, Modern Botanical Minimalist, dan Islamic Arabian Garden.
     - *Pemilih Tema Visual*: Pratinjau palet warna tema, badge kategori adat, dan tombol aktivasi 1-klik yang tersinkronisasi ke Firestore.
     - *Demo URL Preview*: Uji coba instan dengan parameter query `?theme=jawa` atau `?theme=betawi`.

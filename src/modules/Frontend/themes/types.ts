@@ -17,6 +17,7 @@ export interface ThemeMeta {
   previewColors: ThemeColors;
   features: string[];
   status: 'ready' | 'coming_soon';
+  favicon?: string;
 }
 
 export interface ThemeComponents {

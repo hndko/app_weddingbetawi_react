@@ -2,11 +2,11 @@ import React, { Suspense, lazy } from 'react';
 import { motion } from 'motion/react';
 import { WayangGunungan } from './decorations/WayangGunungan';
 import { BottomNavigation } from '../../betawi-themes/BottomNavigation';
-import { HeroSection } from '../../betawi-themes/sections/HeroSection';
-import { IntroSection } from '../../betawi-themes/sections/IntroSection';
+import { HeroSection } from './sections/HeroSection';
+import { IntroSection } from './sections/IntroSection';
 
-// Lazy load shared domain sections
-const CoupleProfile = lazy(() => import('../../betawi-themes/sections/CoupleProfile').then(module => ({ default: module.CoupleProfile })));
+// Lazy load Javanese cultural sections and shared domain sections
+const CoupleProfile = lazy(() => import('./sections/CoupleProfile').then(module => ({ default: module.CoupleProfile })));
 const CountdownSection = lazy(() => import('../../betawi-themes/sections/CountdownSection').then(module => ({ default: module.CountdownSection })));
 const EventSection = lazy(() => import('../../betawi-themes/sections/EventSection').then(module => ({ default: module.EventSection })));
 const LocationSection = lazy(() => import('../../betawi-themes/sections/LocationSection').then(module => ({ default: module.LocationSection })));
@@ -15,7 +15,7 @@ const GallerySection = lazy(() => import('../../betawi-themes/sections/GallerySe
 const WeddingGift = lazy(() => import('../../betawi-themes/sections/WeddingGift').then(module => ({ default: module.WeddingGift })));
 const RSVPSection = lazy(() => import('../../betawi-themes/sections/RSVPSection').then(module => ({ default: module.RSVPSection })));
 const WishesSection = lazy(() => import('../../betawi-themes/sections/WishesSection').then(module => ({ default: module.WishesSection })));
-const ClosingSection = lazy(() => import('../../betawi-themes/sections/ClosingSection').then(module => ({ default: module.ClosingSection })));
+const ClosingSection = lazy(() => import('./sections/ClosingSection').then(module => ({ default: module.ClosingSection })));
 
 export const InvitationContent: React.FC = () => {
   return (

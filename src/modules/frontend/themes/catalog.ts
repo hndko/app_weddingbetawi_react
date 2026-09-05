@@ -137,4 +137,22 @@ export const THEME_CATALOG: ThemeMeta[] = [
     status: 'ready',
     favicon: '/assets/themes/batak/favicon.svg',
   },
+  {
+    id: 'spotify',
+    name: 'Spotify Interactive',
+    category: 'modern',
+    subtitle: 'Wedding Track & Love Playlist',
+    description: 'Konsep viral pemutar musik Spotify dengan piringan hitam vinyl berputar, lencana Verified Newlyweds, dan album tracklist kisah cinta.',
+    thumbnail: '/assets/themes/spotify/thumbnail.svg',
+    previewColors: {
+      primary: '#1DB954',
+      secondary: '#181818',
+      accent: '#1ED760',
+      bg: '#121212',
+    },
+    features: ['Rotating Vinyl Cover', 'Verified Newlyweds', 'Album Tracklist', 'Floating Music Notes'],
+    status: 'ready',
+    favicon: '/assets/themes/spotify/favicon.svg',
+  },
 ];
+

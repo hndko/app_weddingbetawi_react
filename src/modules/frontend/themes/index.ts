@@ -46,6 +46,11 @@ const BatakOpeningCover = lazy(() => import('./batak/OpeningCover').then(m => ({
 const BatakInvitationContent = lazy(() => import('./batak/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const BatakAppFrame = lazy(() => import('./batak/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
+// Lazy-loaded Spotify theme
+const SpotifyOpeningCover = lazy(() => import('./spotify/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const SpotifyInvitationContent = lazy(() => import('./spotify/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const SpotifyAppFrame = lazy(() => import('./spotify/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
 export const THEMES: Record<string, ThemeDefinition> = {
   betawi: {
     meta: THEME_CATALOG[0],
@@ -116,6 +121,15 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: BatakOpeningCover,
       InvitationContent: BatakInvitationContent,
       AppFrame: BatakAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  spotify: {
+    meta: THEME_CATALOG[8],
+    components: {
+      OpeningCover: SpotifyOpeningCover,
+      InvitationContent: SpotifyInvitationContent,
+      AppFrame: SpotifyAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

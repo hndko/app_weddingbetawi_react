@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="spLineGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1DB954" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#D4AF37" stop-opacity="0.06"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Subtle Equalizer Waves -->
+  <g stroke="url(#spLineGrad)" stroke-width="1.5" stroke-linecap="round" fill="none">
+    <!-- Sound Bars Block 1 -->
+    <line x1="15" y1="35" x2="15" y2="50"/>
+    <line x1="22" y1="25" x2="22" y2="60"/>
+    <line x1="29" y1="40" x2="29" y2="45"/>
+    <line x1="36" y1="20" x2="36" y2="65"/>
+    <line x1="43" y1="30" x2="43" y2="55"/>
+
+    <!-- Concentric Curved Sound Waves (Corner) -->
+    <path d="M70,20 C85,25 95,35 100,50"/>
+    <path d="M76,26 C88,30 96,38 100,50"/>
+    <path d="M82,32 C91,35 97,41 100,50"/>
+
+    <!-- Musical Note Motif -->
+    <circle cx="85" cy="90" r="3.5" fill="#1DB954" fill-opacity="0.08"/>
+    <line x1="88.5" y1="90" x2="88.5" y2="75"/>
+    <path d="M88.5,75 C94,77 96,81 96,84"/>
+
+    <circle cx="35" cy="100" r="3" fill="#D4AF37" fill-opacity="0.06"/>
+    <line x1="38" y1="100" x2="38" y2="88"/>
+  </g>
+</svg>

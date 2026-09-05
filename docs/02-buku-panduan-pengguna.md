@@ -212,6 +212,8 @@ Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda k
   - **Islamic Arabian Garden** (*Nuansa Islami & Sakral*): Ornamen lengkungan kubah Moorish / Arabesque Arch, bintang 8-sudut Rub el Hizb, bulan sabit Hilal bercahaya, doa QS. Ar-Rum: 21, palet Midnight Oasis, Arabian Teal & Royal Arabesque Gold.
   - **Minangkabau Royal Songket** (*Adat Tradisional*): Ornamen atap Rumah Gadang Gonjong megah, mahkota Suntiang emas bertingkat, ukiran Pucuak Rebung, pepatah Adat Basandi Syarak, palet Royal Crimson Maroon & Antique Songket Gold.
   - **Balinese Royal Temple** (*Adat Tradisional*): Ornamen Gapura Candi Bentar pura, payung Tedung Agung, penjor emas, ukiran Patra Punggel, kelopak Bunga Jepun (Kamboja) melayang, sloka Rgveda 10.85.42, salam Om Swastyastu & Matur Suksma, palet Sandstone Gold & Deep Brick Stone.
+  - **Batak Toba Royal Gorga** (*Adat Tradisional*): Ornamen ukiran Gorga Simeol-meol & Boraspati sakral, siluet Ruma Bolon dengan puncak tanduk kerbau, motif tenun Ulos Sadum, salam Horas Jala Gabe, palet Tolu Bolit merah marun, arang, dan emas tenun.
+  - **Spotify Interactive** (*Modern & Viral*): Konsep pemutar musik streaming Spotify dengan piringan hitam vinyl berputar 360°, lencana Verified Newlyweds, timeline kisah cinta berformat Album Tracklist, partikel not balok melayang, dan palet gelap Spotify Slate & Neon Green.
 * **Filter Kategori Tema**: Saring katalog berdasarkan tab *Semua*, *Adat Tradisional*, *Modern Minimalist*, atau *Nuansa Islami*.
 * **Titik Palet Warna Interaktif**: Setiap kartu tema memperlihatkan 3 warna khas tema tersebut.
 * **1-Klik Ganti Tema**: Klik tombol **"Gunakan Tema Ini"** untuk beralih tema seketika ke seluruh tamu secara instan tanpa perlu memprogram ulang.

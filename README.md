@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.24.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.25.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -262,6 +262,15 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 - **Checklist Kesiapan Logistik Hari-H**: Tombol centang 1-klik untuk memantau status persiapan vendor dan barang bawaan.
 - **Ekspor Rekapitulasi CSV (UTF-8 BOM)**: Unduh seluruh data finansial dan status vendor ke file spreadsheet untuk pelaporan bendahara dan keluarga.
 - **Redesain Estetika Light Theme Selaras Admin Panel (v1.22.1)**: Mengadopsi palet warna *warm light* terpadu (`bg-[#fcfaf7]`), kartu putih dengan aksen *sage green* & *warm gold*, badge kategori pastel lembut, tipografi berkejelasan tinggi, tabel data bersih dengan efek *hover*, serta modal form dan konfirmasi SweetAlert2 bernuansa terang elegan.
+
+### 🎵 Tema Spotify Interactive Edition ("Wedding Track & Love Playlist") (v1.25.0)
+- **Konsep Viral Pemutar Musik Streaming**: Mengadaptasi antarmuka aplikasi pemutar musik global Spotify bertema gelap modern (`#121212`, `#181818`) dengan aksen neon hijau Spotify (`#1DB954`) dan emas berkilau.
+- **Sampul Album Vinyl Berputar (Rotating Vinyl Cover)**: Sampul pembuka interaktif dengan piringan hitam vinyl beranimasi rotasi 360 derajat yang meluncur keluar dari jaket album pengantin, lengkap dengan alur gerigi (*vinyl grooves*) dan tombol hijau menyala *"BUKA & PUTAR UNDANGAN"*.
+- **Lencana Verified Newlyweds & Statistik Bulanan**: Header profil artis mempelai dilengkapi lencana centang biru-hijau *"VERIFIED NEWLYWEDS"*, penghitung *"1,250 Monthly Guests"*, tombol suka beranimasi hati, dan bilah kontrol interaktif (*Shuffle, Play, Share, Options*).
+- **Album Tracklist Kisah Cinta (Love Story)**: Perjalanan cinta kedua mempelai disajikan dalam tabel interaktif lagu pernikahan lengkap dengan nomor urut (`01`, `02`, dst.), durasi waktu menit:detik, ikon equalizer yang memantul, serta kartu akordeon deskripsi cerita.
+- **Profil Artis Mempelai (Featured Artists)**: Penataan vertikal terpusat (*vertical stack flex-col*) yang bebas clipping pada kontainer mobile 430px, menampilkan foto lingkaran artis, nama lengkap, orang tua, dan tautan Instagram.
+- **Dekorasi Animasi Partikel Nada Musik**: Hujan partikel not balok (♪, ♫, ♬, ♩) dan garis lengkung equalizer sudut beranimasi halus menggunakan `motion/react` dengan utilitas `pointer-events-none`.
+- **Paket Aset Mandiri Offline**: Dilengkapi `thumbnail.svg`, `pattern.svg`, dan `favicon.svg` di `public/assets/themes/spotify/` (*zero external CDN dependency*).
 
 ### 🪑 Manajemen Meja & Seating Chart Ballroom (v1.24.0)
 - **Denah Lantai Interaktif Ballroom (Floor Plan Layout)**: Visualisasi tata letak panggung pelaminan, meja VIP kehormatan, meja bundar keluarga besar & tamu umum, hingga area prasmanan/katering dengan zona terarah (*Depan, Tengah, Belakang, Samping Kiri, Samping Kanan*).

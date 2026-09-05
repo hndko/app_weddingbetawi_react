@@ -26,7 +26,7 @@ export const AnimatedJavaneseFiligree: React.FC<AnimatedJavaneseFiligreeProps> =
   return (
     <motion.div
       className={cn("absolute pointer-events-none drop-shadow-sm z-20", className)}
-      style={{ transform: getTransform(), transformOrigin: 'top left' }}
+      style={{ transform: getTransform(), transformOrigin: 'center' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, ease: "easeOut" }}
@@ -41,7 +41,7 @@ export const AnimatedJavaneseFiligree: React.FC<AnimatedJavaneseFiligreeProps> =
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        style={{ originX: 0, originY: 0 }}
+        style={{ originX: 0.5, originY: 0.5 }}
       >
         <svg
           width={size}

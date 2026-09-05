@@ -154,5 +154,23 @@ export const THEME_CATALOG: ThemeMeta[] = [
     status: 'ready',
     favicon: '/assets/themes/spotify/favicon.svg',
   },
+  {
+    id: 'netflix',
+    name: 'Netflix Premiere',
+    category: 'modern',
+    subtitle: 'Cinematic Wedding & Series',
+    description: 'Konsep viral streaming sinematik Netflix dengan efek audio Ta-Dum!, episode Akad & Resepsi, rating 99% Match, serta profil bintang Cast & Crew.',
+    thumbnail: '/assets/themes/netflix/thumbnail.svg',
+    previewColors: {
+      primary: '#E50914',
+      secondary: '#141414',
+      accent: '#FFFFFF',
+      bg: '#0F0F0F',
+    },
+    features: ['Ta-Dum Sound Effect', 'Episode 1 & 2 Series', 'Cast & Crew Profile', 'Trending 99% Match'],
+    status: 'ready',
+    favicon: '/assets/themes/netflix/favicon.svg',
+  },
 ];
+
 

@@ -51,6 +51,11 @@ const SpotifyOpeningCover = lazy(() => import('./spotify/OpeningCover').then(m =
 const SpotifyInvitationContent = lazy(() => import('./spotify/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const SpotifyAppFrame = lazy(() => import('./spotify/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
+// Lazy-loaded Netflix theme
+const NetflixOpeningCover = lazy(() => import('./netflix/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const NetflixInvitationContent = lazy(() => import('./netflix/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const NetflixAppFrame = lazy(() => import('./netflix/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
 export const THEMES: Record<string, ThemeDefinition> = {
   betawi: {
     meta: THEME_CATALOG[0],
@@ -130,6 +135,15 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: SpotifyOpeningCover,
       InvitationContent: SpotifyInvitationContent,
       AppFrame: SpotifyAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  netflix: {
+    meta: THEME_CATALOG[9],
+    components: {
+      OpeningCover: NetflixOpeningCover,
+      InvitationContent: NetflixInvitationContent,
+      AppFrame: NetflixAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="nfRedGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E50914"/>
+      <stop offset="100%" stop-color="#B81D24"/>
+    </linearGradient>
+    <linearGradient id="nfDarkRed" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#B81D24"/>
+      <stop offset="100%" stop-color="#831010"/>
+    </linearGradient>
+    <linearGradient id="nfGoldRing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="50%" stop-color="#E5C158"/>
+      <stop offset="100%" stop-color="#B38B22"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background Circle: Netflix Dark Slate -->
+  <circle cx="50" cy="50" r="48" fill="#141414"/>
+  <circle cx="50" cy="50" r="45" fill="none" stroke="url(#nfRedGrad)" stroke-width="2.5"/>
+  <circle cx="50" cy="50" r="42" fill="#0A0A0A"/>
+
+  <!-- Iconic Netflix Ribbon 'N' Shape -->
+  <g transform="translate(50, 48) scale(0.85)">
+    <!-- Left Vertical Column -->
+    <rect x="-24" y="-32" width="14" height="64" fill="url(#nfRedGrad)" rx="1"/>
+    <!-- Right Vertical Column -->
+    <rect x="10" y="-32" width="14" height="64" fill="url(#nfRedGrad)" rx="1"/>
+    <!-- Diagonal Ribbon with shadow -->
+    <path d="M-24,-32 L10,32 L24,32 L-10,-32 Z" fill="url(#nfDarkRed)"/>
+    <path d="M-24,-32 L10,32 L22,32 L-12,-32 Z" fill="url(#nfRedGrad)"/>
+    
+    <!-- Golden Wedding Rings Accent in Center -->
+    <circle cx="0" cy="0" r="14" fill="none" stroke="url(#nfGoldRing)" stroke-width="3" opacity="0.9"/>
+  </g>
+</svg>

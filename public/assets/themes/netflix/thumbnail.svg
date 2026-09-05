@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="nfThumbBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#240707"/>
+      <stop offset="40%" stop-color="#141414"/>
+      <stop offset="100%" stop-color="#0A0A0A"/>
+    </linearGradient>
+    <linearGradient id="nfRedGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E50914"/>
+      <stop offset="100%" stop-color="#B81D24"/>
+    </linearGradient>
+    <linearGradient id="nfGoldGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFF3C4"/>
+      <stop offset="50%" stop-color="#E5C158"/>
+      <stop offset="100%" stop-color="#B38B22"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Deep Netflix Cinema Dark Background -->
+  <rect width="800" height="500" fill="url(#nfThumbBg)"/>
+
+  <!-- Cinema Spotlight Ambient Cones -->
+  <path d="M0,0 L300,500 L100,500 Z" fill="#E50914" opacity="0.06"/>
+  <path d="M800,0 L500,500 L700,500 Z" fill="#E50914" opacity="0.06"/>
+
+  <!-- Border Frame -->
+  <rect x="25" y="25" width="750" height="450" fill="none" stroke="#282828" stroke-width="2" rx="16"/>
+  <rect x="25" y="25" width="750" height="450" fill="none" stroke="url(#nfRedGrad)" stroke-width="1.5" rx="16" opacity="0.4"/>
+
+  <!-- Center Netflix Style Ribbon 'N' -->
+  <g transform="translate(400, 160) scale(1.5)">
+    <rect x="-18" y="-36" width="10" height="72" fill="url(#nfRedGrad)" rx="1"/>
+    <rect x="8" y="-36" width="10" height="72" fill="url(#nfRedGrad)" rx="1"/>
+    <path d="M-18,-36 L8,36 L18,36 L-8,-36 Z" fill="#900E14"/>
+    <path d="M-18,-36 L8,36 L16,36 L-10,-36 Z" fill="url(#nfRedGrad)"/>
+    <!-- Intertwining Ring -->
+    <circle cx="0" cy="0" r="14" fill="none" stroke="url(#nfGoldGrad)" stroke-width="2.5"/>
+  </g>
+
+  <!-- Typography & Badges -->
+  <g transform="translate(400, 280)">
+    <!-- Brand Line -->
+    <text x="0" y="0" font-family="'Montserrat', sans-serif" font-size="11" font-weight="800" fill="#E50914" letter-spacing="5" text-anchor="middle">A NETFLIX ORIGINAL WEDDING</text>
+
+    <!-- Movie Title -->
+    <text x="0" y="45" font-family="'Cinzel', 'Playfair Display', serif" font-size="34" font-weight="700" fill="#FFFFFF" letter-spacing="4" text-anchor="middle">CECEP &amp; IPEH</text>
+    <text x="0" y="75" font-family="'Montserrat', sans-serif" font-size="14" font-weight="700" fill="url(#nfGoldGrad)" letter-spacing="6" text-anchor="middle">THE WEDDING PREMIERE</text>
+
+    <!-- Metadata Badges Row -->
+    <g transform="translate(0, 105)">
+      <!-- Top 1 Badge -->
+      <rect x="-175" y="-12" width="68" height="20" rx="3" fill="#E50914"/>
+      <text x="-141" y="2" font-family="'Montserrat', sans-serif" font-size="9" font-weight="800" fill="#FFFFFF" text-anchor="middle">TOP 1</text>
+
+      <text x="-80" y="2" font-family="'Montserrat', sans-serif" font-size="11" font-weight="700" fill="#46D369">99% Match</text>
+      <text x="-15" y="2" font-family="'Montserrat', sans-serif" font-size="11" fill="#AAAAAA">2026</text>
+
+      <rect x="15" y="-10" width="28" height="17" rx="2" fill="none" stroke="#777777" stroke-width="1"/>
+      <text x="29" y="2" font-family="'Montserrat', sans-serif" font-size="9" font-weight="700" fill="#CCCCCC" text-anchor="middle">SU</text>
+
+      <rect x="52" y="-10" width="48" height="17" rx="2" fill="none" stroke="#777777" stroke-width="1"/>
+      <text x="76" y="2" font-family="'Montserrat', sans-serif" font-size="8" font-weight="700" fill="#CCCCCC" text-anchor="middle">ULTRA HD</text>
+
+      <text x="135" y="2" font-family="'Montserrat', sans-serif" font-size="11" fill="#AAAAAA">2 Episodes</text>
+    </g>
+
+    <!-- Watch Button Pill Preview -->
+    <g transform="translate(0, 140)">
+      <rect x="-85" y="-14" width="170" height="30" rx="15" fill="#E50914"/>
+      <polygon points="-50,1 -60,-5 -60,7" fill="#FFFFFF"/>
+      <text x="5" y="5" font-family="'Montserrat', sans-serif" font-size="10" font-weight="800" fill="#FFFFFF" letter-spacing="2" text-anchor="middle">WATCH TRAILER</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="nfPatternLine" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E50914" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#D4AF37" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 35mm Film Strip Silhouette Pattern -->
+  <g fill="none" stroke="url(#nfPatternLine)" stroke-width="1.2">
+    <!-- Vertical Film Track Left -->
+    <line x1="8" y1="0" x2="8" y2="120"/>
+    <line x1="20" y1="0" x2="20" y2="120"/>
+    <!-- Film Perforation Holes (Left) -->
+    <rect x="10" y="8" width="8" height="12" rx="1.5" fill="#E50914" fill-opacity="0.06"/>
+    <rect x="10" y="28" width="8" height="12" rx="1.5" fill="#E50914" fill-opacity="0.06"/>
+    <rect x="10" y="48" width="8" height="12" rx="1.5" fill="#E50914" fill-opacity="0.06"/>
+    <rect x="10" y="68" width="8" height="12" rx="1.5" fill="#E50914" fill-opacity="0.06"/>
+    <rect x="10" y="88" width="8" height="12" rx="1.5" fill="#E50914" fill-opacity="0.06"/>
+    <rect x="10" y="108" width="8" height="12" rx="1.5" fill="#E50914" fill-opacity="0.06"/>
+
+    <!-- Subtle Cinematic Crosshairs in Center -->
+    <circle cx="70" cy="60" r="18" stroke-dasharray="3,4"/>
+    <line x1="70" y1="36" x2="70" y2="84"/>
+    <line x1="46" y1="60" x2="94" y2="60"/>
+    <circle cx="70" cy="60" r="3" fill="#D4AF37" fill-opacity="0.08"/>
+  </g>
+</svg>

@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif berbalut estetika budaya Betawi modern dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.25.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.26.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -262,6 +262,18 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 - **Checklist Kesiapan Logistik Hari-H**: Tombol centang 1-klik untuk memantau status persiapan vendor dan barang bawaan.
 - **Ekspor Rekapitulasi CSV (UTF-8 BOM)**: Unduh seluruh data finansial dan status vendor ke file spreadsheet untuk pelaporan bendahara dan keluarga.
 - **Redesain Estetika Light Theme Selaras Admin Panel (v1.22.1)**: Mengadopsi palet warna *warm light* terpadu (`bg-[#fcfaf7]`), kartu putih dengan aksen *sage green* & *warm gold*, badge kategori pastel lembut, tipografi berkejelasan tinggi, tabel data bersih dengan efek *hover*, serta modal form dan konfirmasi SweetAlert2 bernuansa terang elegan.
+
+### 🎬 Tema Netflix Cinematic Premiere ("The Wedding Premiere") (v1.26.0)
+- **Konsep Serial Streaming OTT Populer**: Mengadaptasi identitas visual bioskop streaming OTT global Netflix bertema gelap pekat (`#141414`) dengan aksen merah ikonis Netflix Red (`#E50914`), badge rating match 99%, dan kartu video sinematik.
+- **Synthesizer Suara Intro "Ta-Dum!" (Web Audio API)**: Suara intro ikonis "Ta-Dum!" disintesis secara murni di sisi peramban menggunakan Web Audio API (kompresor dinamis, sub-bass segitiga D1/D2 frekuensi 36.7-73.4 Hz, dan kilau harmonik A6 1760 Hz) saat tombol sampul *"TONTON TRAILER & BUKA"* diklik tanpa ketergantungan file MP3 eksternal (*zero external audio file*).
+- **Sampul Teaser Film & Tiket VIP Screening Pass**: Sampul pembuka bergaya poster rilis resmi dengan lencana *"TOP 1 IN MOVIES TODAY"*, rating *"99% Match"*, kartu undangan personal tamu *"VIP Screening Pass • Premiere Row"*, dan tombol play beranimasi denyut merah.
+- **Hero Billboard & Rangkaian Rilis Episode**:
+  - Banner billboard sinematik dengan status `99% Match • 2026 • SU • 4K ULTRA HD • ★5.0` dan tombol aksi cepat (*Daftar Saya, Beri Nilai, Bagikan, Pemeran*).
+  - Seksi acara berformat Episode Serial Streaming: **Episode 1: "Akad Nikah: The Sacred Vow"** dan **Episode 2: "Resepsi: The Grand Celebration"** berdurasi menit & navigasi Google Maps.
+- **Profil Bintang Utama & Produser (Cast & Crew)**: Penataan vertikal murni terpusat (*vertical stack flex-col*) yang bebas pemotongan (*anti-clipping*) pada kontainer mobile 430px dengan lencana *"LEAD ACTOR"* & *"LEAD ACTRESS"*, nama lengkap mempelai, silsilah keluarga, dan akun Instagram.
+- **Garis Waktu Musim Cinta (Series Timeline & Seasons)**: Kilas balik perjalanan cinta mempelai disajikan dalam format musim serial (Season 1 s/d Finale) dengan status kartu interaktif.
+- **Dekorasi Animasi Partikel Sinema**: Debu bintang dan partikel cahaya proyektor sinema beranimasi halus menggunakan `motion/react` dengan utilitas `pointer-events-none`.
+- **Paket Aset Mandiri Offline**: Dilengkapi `thumbnail.svg`, `pattern.svg`, dan `favicon.svg` di `public/assets/themes/netflix/` (*zero external CDN dependency*).
 
 ### 🎵 Tema Spotify Interactive Edition ("Wedding Track & Love Playlist") (v1.25.0)
 - **Konsep Viral Pemutar Musik Streaming**: Mengadaptasi antarmuka aplikasi pemutar musik global Spotify bertema gelap modern (`#121212`, `#181818`) dengan aksen neon hijau Spotify (`#1DB954`) dan emas berkilau.

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <defs>
+    <style>
+      .bg { fill: #8B1E19; }
+      .stroke-gold { stroke: #E5A93C; stroke-width: 1.2; fill: none; }
+      .stroke-white { stroke: #F5F0EB; stroke-width: 0.8; fill: none; opacity: 0.35; }
+      .fill-black { fill: #1A1A1A; }
+      .fill-gold { fill: #E5A93C; }
+    </style>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="80" height="80" class="bg" />
+
+  <!-- Geometric Toraja Pa'ssura Motif: Diamond & Spiral (Pa'tedong / Pa'barre Allo) -->
+  <g>
+    <!-- Center Diamond -->
+    <polygon points="40,5 75,40 40,75 5,40" class="stroke-gold" />
+    <polygon points="40,12 68,40 40,68 12,40" class="stroke-white" />
+    <polygon points="40,20 60,40 40,60 20,40" class="fill-black" stroke="#E5A93C" stroke-width="0.8" />
+
+    <!-- Center Sun (Pa'barre Allo) -->
+    <circle cx="40" cy="40" r="6" class="fill-gold" />
+    <circle cx="40" cy="40" r="3" fill="#8B1E19" />
+
+    <!-- Four Corner Motifs (Pa'tedong Horns) -->
+    <!-- Top Left -->
+    <path d="M 0,15 C 8,20 15,15 20,0" class="stroke-gold" />
+    <circle cx="0" cy="0" r="4" class="fill-gold" />
+
+    <!-- Top Right -->
+    <path d="M 80,15 C 72,20 65,15 60,0" class="stroke-gold" />
+    <circle cx="80" cy="0" r="4" class="fill-gold" />
+
+    <!-- Bottom Left -->
+    <path d="M 0,65 C 8,60 15,65 20,80" class="stroke-gold" />
+    <circle cx="0" cy="80" r="4" class="fill-gold" />
+
+    <!-- Bottom Right -->
+    <path d="M 80,65 C 72,60 65,65 60,80" class="stroke-gold" />
+    <circle cx="80" cy="80" r="4" class="fill-gold" />
+  </g>
+</svg>

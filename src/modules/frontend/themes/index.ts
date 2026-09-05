@@ -83,6 +83,21 @@ const VintageOpeningCover = lazy(() => import('./vintage/OpeningCover').then(m =
 const VintageInvitationContent = lazy(() => import('./vintage/InvitationContent').then(m => ({ default: m.InvitationContent })));
 const VintageAppFrame = lazy(() => import('./vintage/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
 
+// Lazy-loaded Toraja theme
+const TorajaOpeningCover = lazy(() => import('./toraja/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const TorajaInvitationContent = lazy(() => import('./toraja/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const TorajaAppFrame = lazy(() => import('./toraja/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
+// Lazy-loaded 8-Bit Arcade theme
+const ArcadeOpeningCover = lazy(() => import('./arcade/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const ArcadeInvitationContent = lazy(() => import('./arcade/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const ArcadeAppFrame = lazy(() => import('./arcade/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
+// Lazy-loaded Royal Decree theme
+const RoyalOpeningCover = lazy(() => import('./royal/OpeningCover').then(m => ({ default: m.OpeningCover })));
+const RoyalInvitationContent = lazy(() => import('./royal/InvitationContent').then(m => ({ default: m.InvitationContent })));
+const RoyalAppFrame = lazy(() => import('./royal/decorations/AppFrame').then(m => ({ default: m.AppFrame })));
+
 export const THEMES: Record<string, ThemeDefinition> = {
   betawi: {
     meta: THEME_CATALOG[0],
@@ -216,6 +231,33 @@ export const THEMES: Record<string, ThemeDefinition> = {
       OpeningCover: VintageOpeningCover,
       InvitationContent: VintageInvitationContent,
       AppFrame: VintageAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  toraja: {
+    meta: THEME_CATALOG[15],
+    components: {
+      OpeningCover: TorajaOpeningCover,
+      InvitationContent: TorajaInvitationContent,
+      AppFrame: TorajaAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  arcade: {
+    meta: THEME_CATALOG[16],
+    components: {
+      OpeningCover: ArcadeOpeningCover,
+      InvitationContent: ArcadeInvitationContent,
+      AppFrame: ArcadeAppFrame,
+      MusicPlayer: SharedMusicPlayer,
+    },
+  },
+  royal: {
+    meta: THEME_CATALOG[17],
+    components: {
+      OpeningCover: RoyalOpeningCover,
+      InvitationContent: RoyalInvitationContent,
+      AppFrame: RoyalAppFrame,
       MusicPlayer: SharedMusicPlayer,
     },
   },

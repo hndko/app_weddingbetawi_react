@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="100%" height="100%">
+  <defs>
+    <linearGradient id="torajaBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A1A1A" />
+      <stop offset="50%" stop-color="#3D0C09" />
+      <stop offset="100%" stop-color="#8B1E19" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF2B2" />
+      <stop offset="50%" stop-color="#E5A93C" />
+      <stop offset="100%" stop-color="#996515" />
+    </linearGradient>
+    <pattern id="torajaCarv" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M0,10 L10,0 L20,10 L10,20 Z" fill="none" stroke="#E5A93C" stroke-width="0.75" opacity="0.25"/>
+      <circle cx="10" cy="10" r="2" fill="#E5A93C" opacity="0.3"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="250" fill="url(#torajaBg)" />
+  <rect width="400" height="250" fill="url(#torajaCarv)" />
+
+  <!-- Outer Frame -->
+  <rect x="15" y="15" width="370" height="220" rx="12" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.85" />
+  <rect x="22" y="22" width="356" height="206" rx="8" fill="none" stroke="#F5F0EB" stroke-width="0.8" opacity="0.3" stroke-dasharray="4,4" />
+
+  <!-- Tongkonan Boat Roof Silhouette -->
+  <!-- Dramatic curving saddle roof extending high front and back -->
+  <g transform="translate(200, 115)">
+    <!-- Main Roof Curve -->
+    <path d="M -130,-55 C -80,-10 -40,15 0,15 C 40,15 80,-10 130,-55 C 90,-25 50,-5 0,-5 C -50,-5 -90,-25 -130,-55 Z" fill="url(#goldGrad)" />
+    <!-- Ridge Beam / Katik -->
+    <path d="M -135,-58 C -80,-12 -40,12 0,12 C 40,12 80,-12 135,-58" fill="none" stroke="#FFF2B2" stroke-width="2.5" stroke-linecap="round" />
+    <!-- Vertical Posts / Tiang Penyangga -->
+    <line x1="-60" y1="5" x2="-60" y2="45" stroke="#E5A93C" stroke-width="3" />
+    <line x1="-20" y1="15" x2="-20" y2="45" stroke="#E5A93C" stroke-width="3" />
+    <line x1="20" y1="15" x2="20" y2="45" stroke="#E5A93C" stroke-width="3" />
+    <line x1="60" y1="5" x2="60" y2="45" stroke="#E5A93C" stroke-width="3" />
+
+    <!-- Center Tulak Somba (Front Pillar) with Buffalo Horns -->
+    <rect x="-4" y="-5" width="8" height="55" fill="#1A1A1A" stroke="#E5A93C" stroke-width="1" />
+    <!-- Buffalo Horns Stack (Tanduk Kerbau / Pa'tedong) -->
+    <path d="M -22,10 C -12,18 0,18 0,18 C 0,18 12,18 22,10 C 14,14 0,14 0,14 C 0,14 -14,14 -22,10 Z" fill="url(#goldGrad)" />
+    <path d="M -26,20 C -14,28 0,28 0,28 C 0,28 14,28 26,20 C 16,24 0,24 0,24 C 0,24 -16,24 -26,20 Z" fill="url(#goldGrad)" />
+    <path d="M -30,30 C -16,38 0,38 0,38 C 0,38 16,38 30,30 C 18,34 0,34 0,34 C 0,34 -18,34 -30,30 Z" fill="url(#goldGrad)" />
+
+    <!-- Sun Motif (Pa'barre Allo) at center top -->
+    <circle cx="0" cy="-25" r="9" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" />
+    <circle cx="0" cy="-25" r="4" fill="#E5A93C" />
+    <!-- Sun Rays -->
+    <line x1="0" y1="-38" x2="0" y2="-34" stroke="#FFF2B2" stroke-width="1.5" />
+    <line x1="0" y1="-16" x2="0" y2="-12" stroke="#FFF2B2" stroke-width="1.5" />
+    <line x1="-13" y1="-25" x2="-9" y2="-25" stroke="#FFF2B2" stroke-width="1.5" />
+    <line x1="9" y1="-25" x2="13" y2="-25" stroke="#FFF2B2" stroke-width="1.5" />
+  </g>
+
+  <!-- Typography Banner -->
+  <text x="200" y="192" text-anchor="middle" font-family="'Cinzel', 'Playfair Display', serif" font-size="16" font-weight="900" fill="#FFF2B2" letter-spacing="3">TORAJA TONGKONAN</text>
+  <text x="200" y="208" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="600" fill="#E5A93C" letter-spacing="2">MAHAKARYA PA'SSURA &amp; KANDAURE EMAS</text>
+  <text x="200" y="222" text-anchor="middle" font-family="sans-serif" font-size="7.5" fill="#F5F0EB" opacity="0.8" letter-spacing="1">Tana Toraja Heritage • South Sulawesi</text>
+</svg>

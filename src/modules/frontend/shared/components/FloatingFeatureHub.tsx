@@ -1,6 +1,6 @@
 import { useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, X, Camera, Gamepad2, QrCode } from 'lucide-react';
+import { Sparkles, X, Camera, Gamepad2, QrCode, Armchair } from 'lucide-react';
 import { useGuestName } from '../../../../hooks/useGuestName';
 import { useThemeTokens } from '../../themes';
 import { cn } from '../../../../utils/cn';
@@ -14,12 +14,15 @@ const TriviaQuizModal = lazy(() =>
 const PhotoBoothModal = lazy(() =>
   import('./PhotoBoothModal').then((m) => ({ default: m.PhotoBoothModal }))
 );
+const GuestSeatingLookupModal = lazy(() =>
+  import('./GuestSeatingLookupModal').then((m) => ({ default: m.GuestSeatingLookupModal }))
+);
 
 interface FloatingFeatureHubProps {
   isOpened: boolean;
 }
 
-type ActiveModalType = 'none' | 'qr' | 'trivia' | 'photobooth';
+type ActiveModalType = 'none' | 'qr' | 'trivia' | 'photobooth' | 'seating';
 
 export function FloatingFeatureHub({ isOpened }: FloatingFeatureHubProps) {
   const guestName = useGuestName();
@@ -59,6 +62,14 @@ export function FloatingFeatureHub({ isOpened }: FloatingFeatureHubProps) {
       icon: QrCode,
       badge: 'Tiket',
       onClick: () => handleOpenFeature('qr')
+    },
+    {
+      id: 'seating' as const,
+      label: 'Denah Meja',
+      sublabel: 'Cari Nomor Duduk',
+      icon: Armchair,
+      badge: 'Denah',
+      onClick: () => handleOpenFeature('seating')
     }
   ];
 
@@ -223,6 +234,16 @@ export function FloatingFeatureHub({ isOpened }: FloatingFeatureHubProps) {
             onClose={() => setActiveModal('none')}
             guestName={guestName || 'Tamu Undangan'}
             guestPax={1}
+          />
+        </Suspense>
+      )}
+
+      {activeModal === 'seating' && (
+        <Suspense fallback={null}>
+          <GuestSeatingLookupModal
+            isOpen={activeModal === 'seating'}
+            onClose={() => setActiveModal('none')}
+            defaultGuestName={guestName || ''}
           />
         </Suspense>
       )}

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="100%" height="100%">
+  <defs>
+    <linearGradient id="arcadeBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#311042" />
+    </linearGradient>
+    <linearGradient id="neonPink" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F43F5E" />
+      <stop offset="100%" stop-color="#FB7185" />
+    </linearGradient>
+    <linearGradient id="neonCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#22D3EE" />
+    </linearGradient>
+    <pattern id="pixelGrid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <rect width="16" height="16" fill="none" stroke="#6366F1" stroke-width="0.5" opacity="0.15" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="250" fill="url(#arcadeBg)" />
+  <rect width="400" height="250" fill="url(#pixelGrid)" />
+
+  <!-- Pixelated Frame -->
+  <rect x="15" y="15" width="370" height="220" rx="4" fill="none" stroke="#22D3EE" stroke-width="3" opacity="0.8" />
+  <rect x="20" y="20" width="360" height="210" rx="2" fill="none" stroke="#F43F5E" stroke-width="1.5" opacity="0.5" />
+
+  <!-- 8-Bit Pixel Heart at Center -->
+  <g transform="translate(200, 85) scale(2.8)">
+    <!-- Row 1 -->
+    <rect x="-8" y="-7" width="3" height="2" fill="#F43F5E" />
+    <rect x="-3" y="-7" width="2" height="2" fill="#F43F5E" />
+    <rect x="1" y="-7" width="2" height="2" fill="#F43F5E" />
+    <rect x="5" y="-7" width="3" height="2" fill="#F43F5E" />
+    <!-- Row 2 -->
+    <rect x="-10" y="-5" width="20" height="3" fill="#F43F5E" />
+    <!-- Row 3 -->
+    <rect x="-10" y="-2" width="20" height="3" fill="#E11D48" />
+    <!-- Highlights -->
+    <rect x="-7" y="-5" width="3" height="2" fill="#FDA4AF" />
+    <!-- Row 4 -->
+    <rect x="-8" y="1" width="16" height="2.5" fill="#BE123C" />
+    <!-- Row 5 -->
+    <rect x="-6" y="3.5" width="12" height="2" fill="#BE123C" />
+    <!-- Row 6 -->
+    <rect x="-4" y="5.5" width="8" height="2" fill="#9F1239" />
+    <!-- Row 7 -->
+    <rect x="-2" y="7.5" width="4" height="2" fill="#881337" />
+  </g>
+
+  <!-- Arcade Marquee Text -->
+  <text x="200" y="165" text-anchor="middle" font-family="'Courier New', monospace" font-size="20" font-weight="900" fill="#22D3EE" letter-spacing="4">8-BIT ARCADE</text>
+  <text x="200" y="188" text-anchor="middle" font-family="'Courier New', monospace" font-size="11" font-weight="700" fill="#F59E0B" letter-spacing="3">PRESS START TO MARRY</text>
+  <text x="200" y="210" text-anchor="middle" font-family="monospace" font-size="9" fill="#10B981" letter-spacing="2">★ 2-PLAYER CO-OP WEDDING ★</text>
+</svg>

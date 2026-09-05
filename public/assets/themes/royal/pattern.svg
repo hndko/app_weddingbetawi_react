@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <!-- Parchment Base -->
+  <rect width="60" height="60" fill="#F5E6CA" />
+
+  <!-- Fleur-de-lis Royal Crest -->
+  <g transform="translate(30, 30) scale(0.6)" opacity="0.12">
+    <!-- Center Leaf -->
+    <path d="M 0,-20 C 5,-10 8,-2 0,10 C -8,-2 -5,-10 0,-20 Z" fill="#78350F" />
+    <!-- Left Leaf -->
+    <path d="M 0,2 C -12,0 -20,-10 -15,-18 C -10,-12 -5,-2 0,2 Z" fill="#78350F" />
+    <!-- Right Leaf -->
+    <path d="M 0,2 C 12,0 20,-10 15,-18 C 10,-12 5,-2 0,2 Z" fill="#78350F" />
+    <!-- Base Bar -->
+    <rect x="-10" y="3" width="20" height="3" rx="1" fill="#78350F" />
+    <path d="M -6,6 C -4,14 4,14 6,6 Z" fill="#78350F" />
+  </g>
+</svg>

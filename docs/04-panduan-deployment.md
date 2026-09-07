@@ -402,27 +402,34 @@ Klik tombol **Confirm** untuk memulai background service Node.js. Pastikan statu
 ---
 
 ### F. Konfigurasi Website Nginx (Frontend SPA + Reverse Proxy API)
-Proyek Node.js di langkah sebelumnya hanya menjalankan backend Express di port internal `5000`. Untuk melayani frontend SPA `dist/` ke pengunjung di port `80`/`443` dengan domain publik Anda:
+Proyek Node.js di langkah sebelumnya menjalankan backend Express di port internal `5000`. Untuk melayani frontend SPA `dist/` ke publik di port `80`/`443` menggunakan domain resmi Anda:
 
-1. Buka menu **Website** > tab **PHP/HTML project** (atau Nginx Web).
-2. Klik **Add site**:
-   - **Domain**: Masukkan domain Anda (contoh: `undangan.domainanda.com`).
-   - **Site Directory**: Arahkan ke `/www/wwwroot/app_weddingbetawi_react/dist`.
-   - **PHP Version**: Pilih `Pure HTML` (atau sembarang versi karena ini hanya melayani file statis).
-   - Klik **Submit**.
-3. **Konfigurasi SSL Let's Encrypt**:
-   - Klik nama domain yang baru dibuat > masuk ke tab **SSL**.
-   - Pilih tab **Let's Encrypt**, centang domain Anda, lalu klik **Apply**.
-   - Aktifkan toggle **Force HTTPS**.
-4. **Konfigurasi Nginx Virtual Host (Nginx Configuration File)**:
-   - Masuk ke tab **Configuration file** pada pengaturan website tersebut.
-   - Sesuaikan konfigurasi server block Nginx agar menyajikan `dist/` dan mem-proxy request backend:
+1. Buka menu **Website** > pilih tab **PHP Project** (atau menu Website utama).
+2. Klik tombol **Add site**. Pada tab modal **Create site**, konfigurasikan form persis seperti berikut:
+
+| Parameter Form | Nilai / Konfigurasi | Keterangan & Catatan Panduan |
+| :--- | :--- | :--- |
+| **Domain name** | `invitation.maripartner.com` | Masukkan subdomain undangan Anda. |
+| **Apply for SSL** | **Centang `[x]`** | Centang opsi ini agar aaPanel otomatis menerbitkan SSL Let's Encrypt gratis (pastikan DNS A record sudah mengarah ke IP server). |
+| **Description** | `invitation_maripartner_com` | Deskripsi situs (otomatis terisi oleh aaPanel). |
+| **Website Path** | `/www/wwwroot/app_weddingbetawi_react/dist` | **Wajib arahkan ke folder `dist`** (gunakan ikon folder untuk memilih direktori build). |
+| **FTP** | `Not create` | Pilih `Not create` (tidak diperlukan). |
+| **Database** | `Not create` | Pilih `Not create` (database MySQL sudah dibuat di menu Databases). |
+| **PHP version** | **`Static`** | **PENTING!** Pilih opsi `Static` dari dropdown (karena ini adalah situs statis SPA Vite). |
+| **Site category** | `Default category` | Kategori situs bawaan. |
+
+3. Klik tombol hijau **`Confirm`** untuk membuat website.
+4. **Konfigurasi SSL & Force HTTPS (Jika Belum Otomatis Aktif)**:
+   - Jika saat klik Confirm SSL belum terbit, klik nama domain di tabel > tab **SSL** > pilih tab **Let's Encrypt** > centang domain > klik **Apply** > aktifkan toggle **Force HTTPS**.
+5. **Konfigurasi Nginx Virtual Host (Configuration File)**:
+   - Klik nama domain di tabel > masuk ke tab **Configuration file**.
+   - Sesuaikan blok `server { ... }` dengan konfigurasi teruji berikut agar menyajikan `dist/` dan mem-proxy request backend ke port 5000:
 
 ```nginx
 server {
     listen 80;
     listen 443 ssl http2;
-    server_name undangan.domainanda.com;
+    server_name invitation.maripartner.com;
 
     # Root direktori mengarah ke folder build frontend (dist)
     root /www/wwwroot/app_weddingbetawi_react/dist;

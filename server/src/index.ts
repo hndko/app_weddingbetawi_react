@@ -79,6 +79,18 @@ app.use('/api/seating', createSeatingRouter(io));
 app.use('/api/trivia', createTriviaRouter(io));
 app.use('/api/checkins', createCheckinsRouter(io));
 
+// Serve frontend static build if dist directory exists (Production SPA support)
+const distPath = path.resolve(process.cwd(), 'dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/socket.io')) {
+      return next();
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
+
 // Start server
 server.listen(port, '0.0.0.0', () => {
   console.log(`========================================================`);

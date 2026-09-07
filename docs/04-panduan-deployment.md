@@ -372,25 +372,30 @@ chmod -R 775 server/uploads
 ---
 
 ### E. Konfigurasi Penambahan Proyek Node.js ("Add Node project")
-Buka menu **Website** > pilih tab **Node project** > klik tombol **Add Node project**.
+Buka menu **Website** > pilih tab **Node.js Project** > klik tombol **Add Project**.
 
-Konfigurasikan form modal persis seperti panduan berikut:
+Pada tab **Default Project**, konfigurasikan form persis sesuai tampilan antarmuka aaPanel:
 
 | Parameter Form | Nilai / Konfigurasi | Keterangan & Catatan Kritis |
 | :--- | :--- | :--- |
 | **Path** | `/www/wwwroot/app_weddingbetawi_react` | Arahkan ke folder utama proyek Anda. |
-| **Name** | `app_weddingbetawi_react` | Nama identitas service backend di aaPanel. |
-| **Run opt** | `Custom command` | Pilih opsi Custom command. |
-| **Command** | `npm run server` | Menjalankan Express & Socket.io backend di port 5000. |
-| **Port** | `5000` | Port tempat backend REST API mendengarkan request. |
+| **Name** | `app_weddingbetawi_react` | Nama identitas service di aaPanel. |
+| **Run opt** | `server [tsx server/src/index.ts]` | Pilih script `server` langsung dari dropdown, atau pilih `Custom command` (`npm run server`). |
+| **Port** | `5000` | Port backend Express & Socket.io. |
 | **User** | `www` | User eksekusi standar sistem aaPanel. |
-| **Node** | `v22.23.1` (atau versi LTS terpasang) | Pilih binary Node yang telah diinstal. |
+| **Node** | `v22.23.1` (atau versi LTS terpasang) | Pilih versi Node yang telah diinstal. |
 | **Pkg Manager** | ⚠️ **`npm`** | **KRITIS!** Ubah dari bawaan `pnpm` menjadi **`npm`**. Proyek ini menggunakan `package-lock.json` dan tidak kompatibel dengan `pnpm`. |
-| **Auto start on boot** | **Aktif (Toggle ON)** | Agar backend otomatis menyala saat server VPS restart. |
+| **Do not install node_module** | Biarkan tidak dicentang | Karena dependensi sudah dipasang via Terminal. |
+| **Remark** | `app_weddingbetawi_react` | Keterangan deskripsi proyek. |
+| **Domain name** | `invitation.maripartner.com` | Masukkan subdomain undangan Anda. aaPanel akan secara otomatis membuatkan konfigurasi Virtual Host Nginx untuk domain ini! |
+
+> [!NOTE]
+> **Sistem Autostart Bawaan aaPanel:**
+> Pada tab **Default Project**, aaPanel tidak memiliki toggle manual *"Auto start on boot"* karena service secara otomatis didaftarkan ke sistem (*daemon systemd*) oleh aaPanel sehingga akan otomatis selalu berjalan di latar belakang dan otomatis menyala (*auto-start*) saat VPS di-reboot. Toggle saklar *Auto Restart* hanya muncul jika Anda memilih tab alternatif *PM2 Project*.
 
 > [!WARNING]
 > **KESALAHAN UMUM PADA MODAL "Add Node project":**
-> Pada dropdown **Pkg Manager**, nilai default aaPanel sering kali terpilih **`pnpm`**. **WAJIB DIUBAH MENJADI `npm`**. Jika tetap dibiarkan `pnpm`, aaPanel akan memanggil `pnpm install` yang akan menyebabkan galat instalasi atau merusak pohon dependensi proyek.
+> Pada dropdown **Pkg Manager**, nilai default aaPanel sering kali terpilih **`pnpm`**. **WAJIB DIUBAH MENJADI `npm`** seperti yang sudah Anda lakukan pada foto. Jika tetap dibiarkan `pnpm`, aaPanel akan memanggil `pnpm install` yang akan menyebabkan galat instalasi atau merusak pohon dependensi proyek.
 
 Klik tombol **Confirm** untuk memulai background service Node.js. Pastikan status proyek di tabel menunjukkan badge hijau **Running**.
 

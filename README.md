@@ -673,23 +673,35 @@ npm install
 ```
 
 ### 3. Konfigurasi Environment Variables
-Salin template konfigurasi lingkungan:
+Salin template konfigurasi lingkungan dan buat kunci rahasia:
 
 ```bash
+# 1. Salin berkas template
 cp .env.example .env
+
+# 2. Hasilkan kunci rahasia acak berstandar keamanan tinggi untuk JWT_SECRET
+npm run secret:generate
 ```
 
 Buka file `.env` yang baru dibuat dan sesuaikan konfigurasi koneksi database MySQL Anda:
 ```env
-VITE_API_URL="http://localhost:5000"
+# Frontend Client Configuration
+VITE_API_URL=http://localhost:5000
+
+# Server Backend Configuration
 PORT=5000
-DB_HOST="127.0.0.1"
+NODE_ENV=development
+
+# Database MySQL aaPanel / Localhost
+DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_USER="root"
-DB_PASSWORD=""
-DB_NAME="db_weddingbetawi"
-JWT_SECRET="mari_partner_secret_local_key_2026"
-CORS_ORIGIN="http://localhost:3000"
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=db_weddingbetawi
+
+# Security & CORS
+JWT_SECRET=rahasia_jwt_acak_super_aman_2026_wedding
+CORS_ORIGIN=http://localhost:3000
 ```
 
 ### 4. Eksekusi Migrasi & Seeder Database

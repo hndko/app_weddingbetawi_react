@@ -268,3 +268,18 @@ sequenceDiagram
 6. **Langkah 6 (Lazy Mount)**: Daftarkan komponen seksi baru di adapter tema (`src/modules/frontend/themes/{id}/InvitationContent.tsx`) menggunakan `React.lazy()`.
 7. **Langkah 7 (Kompilasi & Verifikasi)**: Jalankan pengujian compiler dengan `npm run lint` dan `npm run build`.
 8. **Langkah 8 (Git Commit)**: Commit pekerjaan Anda menggunakan standar pesan konvensional (`git commit -m "feat(module): deskripsi perubahan"`).
+
+---
+
+## 🔐 9. Manajemen Kunci Rahasia & Environment Variables
+
+Proyek ini mewajibkan seluruh pengembang untuk menjaga konsistensi berkas `.env` dan `.env.example`:
+
+1. **Konsistensi Mutlak**: Setiap kali ada penambahan variabel lingkungan baru di backend maupun frontend, variabel tersebut wajib dicatatkan di `.env.example` dengan format dan penamaan yang identik.
+2. **Generator Otomatis `JWT_SECRET`**:
+   Untuk menghasilkan kunci rahasia berkekuatan kriptografi tinggi tanpa bergantung pada pustaka eksternal, gunakan perintah resmi:
+   ```bash
+   npm run secret:generate
+   ```
+   Perintah ini memanfaatkan modul native Node.js `crypto.randomBytes(32)` untuk memproduksi 64 karakter string heksadesimal acak.
+3. **Pemberian Nilai di Server Produksi**: Pada server deployment (VPS / aaPanel), salin output dari `npm run secret:generate` ke dalam konfigurasi `JWT_SECRET` pada berkas `.env` produksi.

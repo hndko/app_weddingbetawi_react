@@ -54,14 +54,24 @@ export async function migrate() {
         name VARCHAR(150) NOT NULL,
         phone VARCHAR(50) DEFAULT NULL,
         status VARCHAR(50) DEFAULT 'pending',
+        tier VARCHAR(50) DEFAULT 'regular',
+        vip_notes TEXT DEFAULT NULL,
         table_number VARCHAR(50) DEFAULT NULL,
         notes TEXT DEFAULT NULL,
         checked_in TINYINT(1) DEFAULT 0,
         checked_in_at DATETIME DEFAULT NULL,
+        souvenir_claimed TINYINT(1) DEFAULT 0,
+        souvenir_claimed_at DATETIME DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
+    try {
+      await pool.query(`ALTER TABLE guests ADD COLUMN IF NOT EXISTS tier VARCHAR(50) DEFAULT 'regular'`);
+      await pool.query(`ALTER TABLE guests ADD COLUMN IF NOT EXISTS vip_notes TEXT DEFAULT NULL`);
+      await pool.query(`ALTER TABLE guests ADD COLUMN IF NOT EXISTS souvenir_claimed TINYINT(1) DEFAULT 0`);
+      await pool.query(`ALTER TABLE guests ADD COLUMN IF NOT EXISTS souvenir_claimed_at DATETIME DEFAULT NULL`);
+    } catch {}
     console.log('[DB Migration] Tabel `guests` siap.');
 
     // 6. Buat tabel budget_items
@@ -150,13 +160,19 @@ export async function migrate() {
         name VARCHAR(150) NOT NULL,
         check_in_time VARCHAR(50) NOT NULL,
         actual_pax INT DEFAULT 1,
+        tier VARCHAR(50) DEFAULT 'regular',
         souvenir_claimed TINYINT(1) DEFAULT 1,
+        souvenir_claimed_at DATETIME DEFAULT NULL,
         table_number VARCHAR(50) DEFAULT NULL,
         source VARCHAR(50) DEFAULT 'qr_scan',
         notes TEXT DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
+    try {
+      await pool.query(`ALTER TABLE checkins ADD COLUMN IF NOT EXISTS tier VARCHAR(50) DEFAULT 'regular'`);
+      await pool.query(`ALTER TABLE checkins ADD COLUMN IF NOT EXISTS souvenir_claimed_at DATETIME DEFAULT NULL`);
+    } catch {}
     console.log('[DB Migration] Tabel `checkins` siap.');
 
     console.log('[DB Migration] Seluruh skema database berhasil dimigrasikan!');

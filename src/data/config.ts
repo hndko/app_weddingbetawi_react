@@ -90,5 +90,26 @@ export const config = {
     description: "Kami mengundang Anda untuk hadir di acara pernikahan kami.",
     keywords: "wedding, pernikahan, undangan digital, Cecep, Ipeh",
     image: "/assets/betawi-themes/images/og-image.jpg"
-  }
+  },
+  agencyBranding: {
+    mode: 'co_branded' as const,
+    agencyName: 'Mari Partner Wedding Organizer',
+    agencyTagline: 'Professional Wedding Planner & Digital Concierge',
+    agencyInstagram: '@maripartner.wedding',
+    agencyWebsite: 'https://maripartner.com',
+    agencyPhone: '+6281234567890',
+  },
+  liveRundown: {
+    isActive: false,
+    currentEvent: 'Akad Nikah & Ijab Qabul',
+    customNote: 'Silakan tamu menempati kursi yang telah disediakan di area akad',
+    updatedAt: new Date().toISOString(),
+  },
+  rundownSchedule: [
+    { id: 'rd-1', time: '08:30 - 09:00', title: 'Penyambutan Tamu & Keluarga', description: 'Registrasi buku tamu digital di meja resepsi', zone: 'Lobi Utama' },
+    { id: 'rd-2', time: '09:00 - 10:30', title: 'Akad Nikah & Ijab Qabul', description: 'Prosesi ijab qabul dan doa bersama keluarga inti', zone: 'Area Akad' },
+    { id: 'rd-3', time: '11:00 - 12:30', title: 'Prosesi Adat & Temu Pengantin', description: 'Upacara adat budaya dan sungkeman kedua orang tua', zone: 'Pelaminan' },
+    { id: 'rd-4', time: '12:30 - 14:00', title: 'Ramah Tamah & Prasmanan Resepsi', description: 'Santap siang prasmanan dan hiburan musik pengiring', zone: 'Ballroom' },
+    { id: 'rd-5', time: '14:00 - 15:00', title: 'Sesi Foto Bersama & Penutupan', description: 'Sesi foto VIP, rekan kerja, dan sahabat mempelai', zone: 'Panggung Utama' },
+  ]
 };

@@ -7,12 +7,23 @@ import {
   Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
   ArrowUpRight, ShieldCheck, Sparkles, BookOpen, Upload, UserPlus, 
   FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette, QrCode, Tv,
-  Wallet, Armchair, Gamepad2, Repeat, Repeat1, Shuffle, ListMusic, LayoutGrid, Volume2
+  Wallet, Armchair, Gamepad2, Repeat, Repeat1, Shuffle, ListMusic, LayoutGrid, Volume2,
+  Radio, Crown, Gift, Briefcase
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { api } from '../../services/api';
 import { socket } from '../../services/socket';
-import { WeddingConfig, RSVPResponse, Wish, GuestInvitation, GalleryLayoutStyle } from '../../types';
+import { 
+  WeddingConfig, 
+  RSVPResponse, 
+  Wish, 
+  GuestInvitation, 
+  GalleryLayoutStyle,
+  GuestTier,
+  LiveRundownStatus,
+  AgencyBranding
+} from '../../types';
+import { VipAccessBadge } from '../frontend/shared/components/VipAccessBadge';
 import { Login } from '../auth/Login';
 import { DragDropUpload } from './components/DragDropUpload';
 import { EventScheduleEditor } from './components/EventScheduleEditor';
@@ -39,6 +50,17 @@ export type AdminPanelProps = PanelProps;
 
 const compressImageFile = (file: File): Promise<string> => compressImageToDataUrl(file);
 
+const RUNDOWN_QUICK_PRESETS = [
+  { title: 'Akad Nikah', time: '08:00 - 09:30', note: 'Sedang berlangsung ijab kabul & prosesi akad sakral' },
+  { title: 'Temu Manten & Kirab', time: '10:30 - 11:00', note: 'Iring-iringan pengantin Betawi Palang Pintu memasuki ballroom' },
+  { title: 'Sesi Foto Keluarga', time: '11:00 - 11:30', note: 'Sesi pemotretan bersama keluarga besar mempelai' },
+  { title: 'Prasmanan Resepsi Dibuka', time: '11:30 - 13:30', note: 'Silakan menikmati hidangan resepsi di area buffet dan live station' },
+  { title: 'Live Music & Hiburan', time: '12:00 - 13:30', note: 'Penampilan musik akustik & persembahan lagu spesial' },
+  { title: 'Lempar Hand Bouquet', time: '13:00 - 13:20', note: 'Pemberian buket bunga untuk sahabat mempelai' },
+  { title: 'Ramah Tamah & Penutupan', time: '13:30 - 14:00', note: 'Terima kasih atas kehadiran & doa restu Bapak/Ibu/Saudara/i' },
+  { title: 'Acara Selesai', time: '14:00', note: 'Seluruh rangkaian resepsi pernikahan telah selesai dengan lancar' },
+];
+
 export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelProps) {
   const { weddingConfig, updateWeddingConfig } = useWeddingConfig();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -51,7 +73,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
 
   // Modern Dashboard Navigation State
   const [activeMenu, setActiveMenu] = useState<'overview' | 'reception' | 'seating' | 'generator' | 'config' | 'budget' | 'trivia' | 'rsvps' | 'wishes'>('overview');
-  const [configSubTab, setConfigSubTab] = useState<'theme' | 'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'seo'>('theme');
+  const [configSubTab, setConfigSubTab] = useState<'theme' | 'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'seo' | 'agency'>('theme');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Form state for config
@@ -74,6 +96,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   const [wishSearchQuery, setWishSearchQuery] = useState('');
   const [guestSearchQuery, setGuestSearchQuery] = useState('');
   const [guestStatusFilter, setGuestStatusFilter] = useState<'all' | 'pending' | 'sent'>('all');
+  const [guestTierFilter, setGuestTierFilter] = useState<'all' | GuestTier>('all');
   const [guestViewMode, setGuestViewMode] = useState<'list' | 'single'>('list');
 
   // Add guest modal state
@@ -81,7 +104,17 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   const [isWhatsAppBroadcastModalOpen, setIsWhatsAppBroadcastModalOpen] = useState(false);
   const [newGuestName, setNewGuestName] = useState('');
   const [newGuestPhone, setNewGuestPhone] = useState('');
+  const [newGuestTier, setNewGuestTier] = useState<GuestTier>('regular');
+  const [newGuestTableNumber, setNewGuestTableNumber] = useState('');
+  const [newGuestVipNotes, setNewGuestVipNotes] = useState('');
   const [isSubmittingGuest, setIsSubmittingGuest] = useState(false);
+
+  // Live Rundown Broadcaster states
+  const [isBroadcastingRundown, setIsBroadcastingRundown] = useState(false);
+  const [rundownActive, setRundownActive] = useState<boolean>(() => Boolean(weddingConfig?.liveRundown?.active));
+  const [rundownCurrentEvent, setRundownCurrentEvent] = useState<string>(() => weddingConfig?.liveRundown?.currentEvent || 'Resepsi Pernikahan');
+  const [rundownCurrentTime, setRundownCurrentTime] = useState<string>(() => weddingConfig?.liveRundown?.currentEventTime || '');
+  const [rundownMessage, setRundownMessage] = useState<string>(() => weddingConfig?.liveRundown?.broadcastMessage || '');
 
   // Change password modal state
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -120,7 +153,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   };
 
   // Upload loading state
-  const [uploadingAvatar, setUploadingAvatar] = useState<'groom' | 'bride' | 'seo' | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState<'groom' | 'bride' | 'seo' | 'agency' | null>(null);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
 
   // Countdown timer calculation for overview widget
@@ -134,6 +167,12 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   useEffect(() => {
     if (weddingConfig) {
       setFormData(weddingConfig);
+      if (weddingConfig.liveRundown) {
+        setRundownActive(Boolean(weddingConfig.liveRundown.active));
+        if (weddingConfig.liveRundown.currentEvent) setRundownCurrentEvent(weddingConfig.liveRundown.currentEvent);
+        if (weddingConfig.liveRundown.currentEventTime) setRundownCurrentTime(weddingConfig.liveRundown.currentEventTime);
+        if (weddingConfig.liveRundown.broadcastMessage) setRundownMessage(weddingConfig.liveRundown.broadcastMessage);
+      }
     }
   }, [weddingConfig]);
 
@@ -168,12 +207,16 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     const fetchGuests = () => api.getGuests().then(setGuests).catch(console.warn);
     fetchGuests();
     const onCreated = (g: GuestInvitation) => setGuests(prev => [g, ...prev.filter(x => x.id !== g.id)]);
-    const onUpdated = (g: any) => setGuests(prev => prev.map(x => x.id === g.id ? { ...x, ...g } : x));
+    const onUpdated = (g: Partial<GuestInvitation> & { id: string }) => setGuests(prev => prev.map(x => x.id === g.id ? { ...x, ...g } : x));
+    const onSouvenirClaimed = (data: { id: string; souvenirClaimed: boolean; souvenirClaimedAt: string | null }) => {
+      setGuests(prev => prev.map(x => x.id === data.id ? { ...x, souvenirClaimed: data.souvenirClaimed, souvenirClaimedAt: data.souvenirClaimedAt || undefined } : x));
+    };
     const onDeleted = (id: string) => setGuests(prev => prev.filter(x => x.id !== id));
     const onReset = () => setGuests([]);
     socket.on('guest:created', onCreated);
     socket.on('guest:updated', onUpdated);
     socket.on('guest:checked_in', onUpdated);
+    socket.on('guest:souvenir_claimed', onSouvenirClaimed);
     socket.on('guest:deleted', onDeleted);
     socket.on('guests:imported', fetchGuests);
     socket.on('guests:reset', onReset);
@@ -181,6 +224,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
       socket.off('guest:created', onCreated);
       socket.off('guest:updated', onUpdated);
       socket.off('guest:checked_in', onUpdated);
+      socket.off('guest:souvenir_claimed', onSouvenirClaimed);
       socket.off('guest:deleted', onDeleted);
       socket.off('guests:imported', fetchGuests);
       socket.off('guests:reset', onReset);
@@ -532,7 +576,145 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     }
   };
 
-  // Live in-memory filtered RSVP & Wishes
+  const handleUploadAgencyLogo = async (files: File[]) => {
+    if (!files[0]) return;
+    setUploadingAvatar('agency');
+    try {
+      const compressed = await compressImageToFile(files[0], { maxWidth: 800, maxHeight: 800, quality: 0.85 });
+      const res = await api.uploadFile(compressed);
+      setFormData(prev => ({
+        ...prev,
+        agencyBranding: {
+          ...(prev.agencyBranding || { mode: 'disabled' }),
+          agencyLogoUrl: res.url,
+        },
+      }));
+      showToast('success', 'Logo Wedding Organizer berhasil diunggah (teroptimasi WebP)!');
+    } catch {
+      try {
+        const dataUrl = await compressImageToDataUrl(files[0], { maxWidth: 600, maxHeight: 600, quality: 0.8 });
+        setFormData(prev => ({
+          ...prev,
+          agencyBranding: {
+            ...(prev.agencyBranding || { mode: 'disabled' }),
+            agencyLogoUrl: dataUrl,
+          },
+        }));
+        showToast('success', 'Logo Wedding Organizer berhasil disimpan!');
+      } catch {
+        showToast('error', 'Gagal memproses logo Wedding Organizer.');
+      }
+    } finally {
+      setUploadingAvatar(null);
+    }
+  };
+
+  const handleBroadcastRundown = async (overrides?: Partial<LiveRundownStatus>) => {
+    setIsBroadcastingRundown(true);
+    try {
+      const payload: LiveRundownStatus = {
+        active: overrides?.active !== undefined ? overrides.active : rundownActive,
+        currentEvent: overrides?.currentEvent !== undefined ? overrides.currentEvent : rundownCurrentEvent,
+        currentEventTime: overrides?.currentEventTime !== undefined ? overrides.currentEventTime : rundownCurrentTime,
+        broadcastMessage: overrides?.broadcastMessage !== undefined ? overrides.broadcastMessage : rundownMessage,
+        lastUpdated: new Date().toISOString(),
+      };
+
+      await api.broadcastRundown(payload);
+      setRundownActive(payload.active);
+      setRundownCurrentEvent(payload.currentEvent);
+      setRundownCurrentTime(payload.currentEventTime || '');
+      setRundownMessage(payload.broadcastMessage || '');
+
+      setFormData(prev => ({
+        ...prev,
+        liveRundown: payload,
+      }));
+
+      showToast(
+        'success',
+        payload.active
+          ? `Status rundown "${payload.currentEvent}" berhasil disiarkan secara live ke seluruh tamu!`
+          : 'Siaran status live rundown telah dinonaktifkan.'
+      );
+    } catch {
+      showToast('error', 'Gagal menyiarkan status rundown ke server.');
+    } finally {
+      setIsBroadcastingRundown(false);
+    }
+  };
+
+  const handleApplyRundownPreset = async (preset: { title: string; time: string; note: string }) => {
+    setRundownActive(true);
+    setRundownCurrentEvent(preset.title);
+    setRundownCurrentTime(preset.time);
+    setRundownMessage(preset.note);
+    await handleBroadcastRundown({
+      active: true,
+      currentEvent: preset.title,
+      currentEventTime: preset.time,
+      broadcastMessage: preset.note,
+    });
+  };
+
+  const handleToggleGuestSouvenir = async (guest: GuestInvitation) => {
+    if (!guest.id) return;
+    const newStatus = !guest.souvenirClaimed;
+    // Optimistic update
+    setGuests(prev =>
+      prev.map(g =>
+        g.id === guest.id
+          ? { ...g, souvenirClaimed: newStatus, souvenirClaimedAt: newStatus ? new Date().toISOString() : undefined }
+          : g
+      )
+    );
+
+    try {
+      await api.claimGuestSouvenir(guest.id, newStatus);
+      showToast(
+        'success',
+        `Status suvenir tamu "${guest.name}" ${newStatus ? 'berhasil diserahkan' : 'dibatalkan'}!`
+      );
+    } catch {
+      // Rollback on failure
+      setGuests(prev =>
+        prev.map(g => (g.id === guest.id ? { ...g, souvenirClaimed: !newStatus } : g))
+      );
+      showToast('error', 'Gagal memperbarui status suvenir tamu.');
+    }
+  };
+
+  // Add Single Guest Form Handler
+  const handleAddSingleGuest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedName = newGuestName.trim();
+    if (!trimmedName) {
+      showToast('error', 'Nama tamu tidak boleh kosong.');
+      return;
+    }
+    setIsSubmittingGuest(true);
+    try {
+      const cleanedPhone = newGuestPhone ? sanitizePhoneNumber(newGuestPhone) : '';
+      await api.createGuest({
+        name: trimmedName,
+        phone: cleanedPhone,
+        tier: newGuestTier,
+        tableNumber: newGuestTableNumber.trim() || undefined,
+        vipNotes: newGuestVipNotes.trim() || undefined,
+      });
+      showToast('success', `Tamu "${trimmedName}" (${newGuestTier.toUpperCase()}) berhasil ditambahkan!`);
+      setNewGuestName('');
+      setNewGuestPhone('');
+      setNewGuestTier('regular');
+      setNewGuestTableNumber('');
+      setNewGuestVipNotes('');
+      setIsAddGuestModalOpen(false);
+    } catch {
+      showToast('error', 'Gagal menambahkan tamu ke database.');
+    } finally {
+      setIsSubmittingGuest(false);
+    }
+  };
   const filteredRsvps = useMemo(() => {
     const q = rsvpSearchQuery.trim().toLowerCase();
     if (!q) return rsvps;
@@ -653,19 +835,28 @@ Wassalamu'alaikum Wr. Wb.`;
     if (guestStatusFilter !== 'all') {
       result = result.filter(g => g.status === guestStatusFilter);
     }
+    if (guestTierFilter !== 'all') {
+      result = result.filter(g => (g.tier || 'regular') === guestTierFilter);
+    }
     const q = guestSearchQuery.trim().toLowerCase();
     if (q) {
       result = result.filter(g => 
         g.name.toLowerCase().includes(q) ||
-        (g.phone && g.phone.includes(q))
+        (g.phone && g.phone.includes(q)) ||
+        (g.tableNumber && g.tableNumber.toLowerCase().includes(q)) ||
+        (g.tier && g.tier.toLowerCase().includes(q)) ||
+        (g.vipNotes && g.vipNotes.toLowerCase().includes(q))
       );
     }
     return result;
-  }, [guests, guestStatusFilter, guestSearchQuery]);
+  }, [guests, guestStatusFilter, guestTierFilter, guestSearchQuery]);
 
   const totalGuestsCount = guests.length;
   const sentGuestsCount = useMemo(() => guests.filter(g => g.status === 'sent').length, [guests]);
   const pendingGuestsCount = totalGuestsCount - sentGuestsCount;
+  const vvipGuestsCount = useMemo(() => guests.filter(g => g.tier === 'vvip').length, [guests]);
+  const vipGuestsCount = useMemo(() => guests.filter(g => g.tier === 'vip').length, [guests]);
+  const familyGuestsCount = useMemo(() => guests.filter(g => g.tier === 'family').length, [guests]);
 
   // Single Guest Actions
   const handleSendGuestWhatsapp = async (guest: GuestInvitation) => {
@@ -745,32 +936,6 @@ Wassalamu'alaikum Wr. Wb.`;
     } catch (err) {
       console.warn('Failed to download guest pass:', err);
       showToast('error', 'Gagal membuat kartu pass digital.');
-    }
-  };
-
-  // Add Single Guest Form Handler
-  const handleAddSingleGuest = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmedName = newGuestName.trim();
-    if (!trimmedName) {
-      showToast('error', 'Nama tamu tidak boleh kosong.');
-      return;
-    }
-    setIsSubmittingGuest(true);
-    try {
-      const cleanedPhone = newGuestPhone ? sanitizePhoneNumber(newGuestPhone) : '';
-      await api.createGuest({
-        name: trimmedName,
-        phone: cleanedPhone,
-      });
-      showToast('success', `Tamu "${trimmedName}" berhasil ditambahkan!`);
-      setNewGuestName('');
-      setNewGuestPhone('');
-      setIsAddGuestModalOpen(false);
-    } catch {
-      showToast('error', 'Gagal menambahkan tamu ke database.');
-    } finally {
-      setIsSubmittingGuest(false);
     }
   };
 
@@ -1602,6 +1767,148 @@ Wassalamu'alaikum Wr. Wb.`;
                 </div>
               </div>
 
+              {/* LIVE WEDDING RUNDOWN BROADCAST CONTROL (WO Hari-H Suite) */}
+              <div className="bg-gradient-to-br from-gray-900 via-gray-850 to-gray-900 text-white rounded-3xl p-6 border border-gray-700/60 shadow-xl relative overflow-hidden">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-gray-750">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${
+                      rundownActive ? 'bg-red-500/20 text-red-400 ring-2 ring-red-500/30 animate-pulse' : 'bg-gray-800 text-gray-400'
+                    }`}>
+                      <Radio size={24} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-heading text-base font-bold">
+                          Live Wedding Rundown Broadcaster
+                        </h3>
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          rundownActive ? 'bg-red-500 text-white animate-pulse' : 'bg-gray-750 text-gray-400'
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${rundownActive ? 'bg-white' : 'bg-gray-500'}`} />
+                          {rundownActive ? 'Siaran Live Aktif' : 'Nonaktif'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        Siarkan status rangkaian acara hari-H secara instan (real-time via Socket.io) ke floating banner di layar ponsel tamu undangan.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      disabled={isBroadcastingRundown}
+                      onClick={() => handleBroadcastRundown({ active: !rundownActive })}
+                      className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md ${
+                        rundownActive
+                          ? 'bg-red-600 hover:bg-red-700 text-white'
+                          : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                      }`}
+                    >
+                      <Radio size={14} />
+                      <span>{rundownActive ? 'Matikan Siaran Live' : 'Nyalakan Siaran Live'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Broadcast Inputs & 1-Click Presets */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-5">
+                  {/* Left (5 cols): Active Custom Inputs */}
+                  <div className="lg:col-span-5 flex flex-col gap-3.5">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                        Nama Agenda / Sesi Saat Ini
+                      </label>
+                      <input
+                        type="text"
+                        value={rundownCurrentEvent}
+                        onChange={(e) => setRundownCurrentEvent(e.target.value)}
+                        placeholder="Contoh: Prasmanan Resepsi Telah Dibuka"
+                        className="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-sage"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                          Waktu / Durasi
+                        </label>
+                        <input
+                          type="text"
+                          value={rundownCurrentTime}
+                          onChange={(e) => setRundownCurrentTime(e.target.value)}
+                          placeholder="Contoh: 11:30 - 13:30"
+                          className="w-full bg-gray-800/80 border border-gray-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-sage"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                          Aksi Cepat
+                        </label>
+                        <button
+                          type="button"
+                          disabled={isBroadcastingRundown}
+                          onClick={() => handleBroadcastRundown({ active: true })}
+                          className="w-full bg-sage-dark hover:bg-sage text-white py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                        >
+                          <Send size={13} />
+                          <span>Siarkan Sekarang</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                        Pesan Pengumuman Singkat untuk Tamu (Opsional)
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={rundownMessage}
+                        onChange={(e) => setRundownMessage(e.target.value)}
+                        placeholder="Contoh: Silakan menikmati hidangan utama dan aneka stall di area ballroom..."
+                        className="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-xs text-white placeholder:text-gray-500 resize-none focus:outline-none focus:ring-1 focus:ring-sage"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right (7 cols): Quick 1-Click Status Presets */}
+                  <div className="lg:col-span-7 flex flex-col gap-2.5">
+                    <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider">
+                      Preset 1-Klik Rangkaian Hari-H (Wedding Organizer Fast Switch)
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {RUNDOWN_QUICK_PRESETS.map((p, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleApplyRundownPreset(p)}
+                          className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1 group ${
+                            rundownCurrentEvent === p.title && rundownActive
+                              ? 'bg-amber-500/20 border-amber-400 text-amber-300'
+                              : 'bg-gray-800/60 hover:bg-gray-800 border-gray-700 text-gray-300'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-mono text-gray-400 group-hover:text-gray-200">
+                              {p.time}
+                            </span>
+                            {rundownCurrentEvent === p.title && rundownActive && (
+                              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                            )}
+                          </div>
+                          <span className="text-xs font-bold leading-tight line-clamp-2">
+                            {p.title}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[11px] text-gray-400 italic mt-1">
+                      Klik salah satu preset di atas untuk langsung menyiarkan status agenda hari-H ke floating pill banner di seluruh ponsel tamu undangan tanpa perlu reload halaman.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Quick Action Shortcuts Grid */}
               <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col gap-3">
                 <h3 className="font-heading text-sm font-bold text-text-dark">Aksi Cepat</h3>
@@ -1936,6 +2243,57 @@ Wassalamu'alaikum Wr. Wb.`;
                         </button>
                       </div>
 
+                      {/* Tier Filter Pills */}
+                      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0 pt-2 border-t border-gray-100">
+                        <span className="text-[11px] font-semibold text-gray-400 mr-1 shrink-0 flex items-center gap-1">
+                          <Crown size={12} className="text-amber-500" /> Tier Akses:
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setGuestTierFilter('all')}
+                          className={`px-3 py-1 rounded-xl text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                            guestTierFilter === 'all'
+                              ? 'bg-gray-800 text-white shadow-2xs'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200/70'
+                          }`}
+                        >
+                          Semua Tier
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setGuestTierFilter('vvip')}
+                          className={`px-3 py-1 rounded-xl text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                            guestTierFilter === 'vvip'
+                              ? 'bg-amber-600 text-white shadow-2xs'
+                              : 'bg-amber-50 text-amber-800 border border-amber-200/60 hover:bg-amber-100/70'
+                          }`}
+                        >
+                          👑 VVIP ({vvipGuestsCount})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setGuestTierFilter('vip')}
+                          className={`px-3 py-1 rounded-xl text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                            guestTierFilter === 'vip'
+                              ? 'bg-blue-600 text-white shadow-2xs'
+                              : 'bg-blue-50 text-blue-800 border border-blue-200/60 hover:bg-blue-100/70'
+                          }`}
+                        >
+                          ⭐ VIP ({vipGuestsCount})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setGuestTierFilter('family')}
+                          className={`px-3 py-1 rounded-xl text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                            guestTierFilter === 'family'
+                              ? 'bg-emerald-600 text-white shadow-2xs'
+                              : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60 hover:bg-emerald-100/70'
+                          }`}
+                        >
+                          🤝 Keluarga ({familyGuestsCount})
+                        </button>
+                      </div>
+
                       {/* Toolbar Action Buttons (Icon + Text) */}
                       <div className="flex items-center flex-wrap gap-2">
                         <button
@@ -2092,9 +2450,11 @@ Wassalamu'alaikum Wr. Wb.`;
                             <tr className="bg-gray-50/90 border-b border-gray-200 text-gray-600 font-semibold uppercase tracking-wider text-[11px]">
                               <th className="py-3 px-3.5 text-center w-12">#</th>
                               <th className="py-3 px-4">Nama Tamu Undangan</th>
-                              <th className="py-3 px-4 w-44">WhatsApp</th>
+                              <th className="py-3 px-3 text-center w-32">Tier Akses</th>
+                              <th className="py-3 px-4 w-36">WhatsApp</th>
                               <th className="py-3 px-4 hidden md:table-cell">Tautan Personal</th>
-                              <th className="py-3 px-3 text-center w-36">Status</th>
+                              <th className="py-3 px-3 text-center w-32">Status WA</th>
+                              <th className="py-3 px-3 text-center w-28">Suvenir</th>
                               <th className="py-3 px-3 text-center w-48">Aksi</th>
                             </tr>
                           </thead>
@@ -2116,8 +2476,20 @@ Wassalamu'alaikum Wr. Wb.`;
                                       <div className="w-7 h-7 rounded-lg bg-sage/10 text-sage-dark flex items-center justify-center font-bold text-xs shrink-0">
                                         {guest.name.charAt(0).toUpperCase()}
                                       </div>
-                                      <span className="truncate max-w-xs">{guest.name}</span>
+                                      <div className="flex flex-col">
+                                        <span className="truncate max-w-xs">{guest.name}</span>
+                                        {guest.tableNumber && (
+                                          <span className="text-[10px] text-gray-400 font-normal">
+                                            Meja: {guest.tableNumber}
+                                          </span>
+                                        )}
+                                      </div>
                                     </div>
+                                  </td>
+
+                                  {/* Tier Akses */}
+                                  <td className="py-3.5 px-3 text-center whitespace-nowrap">
+                                    <VipAccessBadge tier={guest.tier || 'regular'} size="sm" />
                                   </td>
 
                                   {/* WhatsApp Number */}
@@ -2150,7 +2522,7 @@ Wassalamu'alaikum Wr. Wb.`;
                                     </div>
                                   </td>
 
-                                  {/* Status Badge */}
+                                  {/* Status WA */}
                                   <td className="py-3.5 px-3 text-center whitespace-nowrap">
                                     {guest.status === 'sent' ? (
                                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
@@ -2163,6 +2535,32 @@ Wassalamu'alaikum Wr. Wb.`;
                                         <span>Belum Dikirim</span>
                                       </span>
                                     )}
+                                  </td>
+
+                                  {/* Suvenir Claim Toggle */}
+                                  <td className="py-3.5 px-3 text-center whitespace-nowrap">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleToggleGuestSouvenir(guest)}
+                                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all cursor-pointer ${
+                                        guest.souvenirClaimed
+                                          ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                                          : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
+                                      }`}
+                                      title={guest.souvenirClaimed ? 'Klaim dibatalkan' : 'Klaim suvenir'}
+                                    >
+                                      {guest.souvenirClaimed ? (
+                                        <>
+                                          <CheckCircle2 size={11} className="text-emerald-600" />
+                                          <span>Sudah</span>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Gift size={11} className="text-amber-600" />
+                                          <span>Belum</span>
+                                        </>
+                                      )}
+                                    </button>
                                   </td>
 
                                   {/* Table Action Buttons (Icon-Only Rule) */}
@@ -2447,6 +2845,19 @@ Wassalamu'alaikum Wr. Wb.`;
                 >
                   <Globe size={14} />
                   <span>SEO & Metadata</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setConfigSubTab('agency')}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                    configSubTab === 'agency'
+                      ? 'bg-amber-700 text-white shadow-xs'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <Crown size={14} className="text-amber-400" />
+                  <span>Agensi & White-Label</span>
                 </button>
               </div>
 
@@ -3405,6 +3816,281 @@ Wassalamu'alaikum Wr. Wb.`;
                   </div>
                 )}
 
+                {/* SUB-PILL 7: AGENSI & WHITE-LABEL (WO LUXURY SUITE) */}
+                {configSubTab === 'agency' && (
+                  <div className="flex flex-col gap-6">
+                    {/* Header Card */}
+                    <div className="bg-gradient-to-r from-amber-500/15 via-white to-amber-500/5 rounded-3xl p-6 border border-amber-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div>
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider mb-2">
+                          <Crown size={13} className="text-amber-600" />
+                          <span>White-Label Agency Suite</span>
+                        </div>
+                        <h3 className="font-heading text-lg font-bold text-text-dark">
+                          Pengaturan Agensi & Mode White-Label
+                        </h3>
+                        <p className="text-xs text-text-dark/60 mt-1 max-w-xl leading-relaxed">
+                          Ubah branding undangan menjadi milik Wedding Organizer / Agensi Anda seutuhnya. Pasang logo WO, tagline kemewahan, media sosial, dan nomor kontak resmi Anda.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Mode Selector Card */}
+                    <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-4">
+                      <h4 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                        <Briefcase size={16} className="text-amber-600" />
+                        <span>Mode Lisensi & Visibilitas Brand</span>
+                      </h4>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {/* Option 1: Disabled */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              agencyBranding: {
+                                ...(formData.agencyBranding || { mode: 'disabled' }),
+                                mode: 'disabled',
+                                hideMariPartnerBranding: false,
+                              },
+                            })
+                          }
+                          className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col gap-2 ${
+                            (formData.agencyBranding?.mode || 'disabled') === 'disabled'
+                              ? 'bg-sage/10 border-sage-dark ring-2 ring-sage/20'
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-text-dark">Standard Default</span>
+                            {(formData.agencyBranding?.mode || 'disabled') === 'disabled' && (
+                              <CheckCircle2 size={16} className="text-sage-dark" />
+                            )}
+                          </div>
+                          <p className="text-[11px] text-gray-500 leading-relaxed">
+                            Menggunakan identitas resmi Mari Partner Digital Invitation pada footer dan dokumen ekspor.
+                          </p>
+                        </button>
+
+                        {/* Option 2: Co-Branded */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              agencyBranding: {
+                                ...(formData.agencyBranding || { mode: 'co_branded' }),
+                                mode: 'co_branded',
+                                hideMariPartnerBranding: false,
+                              },
+                            })
+                          }
+                          className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col gap-2 ${
+                            formData.agencyBranding?.mode === 'co_branded'
+                              ? 'bg-blue-50/70 border-blue-600 ring-2 ring-blue-500/20'
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-text-dark">Co-Branded Mode</span>
+                            {formData.agencyBranding?.mode === 'co_branded' && (
+                              <CheckCircle2 size={16} className="text-blue-600" />
+                            )}
+                          </div>
+                          <p className="text-[11px] text-gray-500 leading-relaxed">
+                            "Dipersembahkan oleh [Nama WO] & Mari Partner". Menampilkan logo dan link agensi bersama partner teknologi.
+                          </p>
+                        </button>
+
+                        {/* Option 3: 100% Pure White Label */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              agencyBranding: {
+                                ...(formData.agencyBranding || { mode: 'white_label' }),
+                                mode: 'white_label',
+                                hideMariPartnerBranding: true,
+                              },
+                            })
+                          }
+                          className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col gap-2 ${
+                            formData.agencyBranding?.mode === 'white_label'
+                              ? 'bg-amber-50/70 border-amber-600 ring-2 ring-amber-500/20'
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                              <Crown size={14} className="text-amber-600" /> 100% Pure White-Label
+                            </span>
+                            {formData.agencyBranding?.mode === 'white_label' && (
+                              <CheckCircle2 size={16} className="text-amber-600" />
+                            )}
+                          </div>
+                          <p className="text-[11px] text-gray-500 leading-relaxed">
+                            Seluruh jejak pengembang dihilangkan 100%. WO terlihat memiliki platform teknologi dan divisi IT eksklusif sendiri.
+                          </p>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Agency Profile Details Form */}
+                    <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-5">
+                      <h4 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                        <Building size={16} className="text-sage" />
+                        <span>Profil & Informasi Wedding Organizer</span>
+                      </h4>
+
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 text-xs">
+                        <div>
+                          <label className="block text-gray-700 font-semibold mb-1">
+                            Nama Agensi / Wedding Organizer
+                          </label>
+                          <div className="relative flex items-center">
+                            <Building className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.agencyBranding?.agencyName || ''}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  agencyBranding: {
+                                    ...(formData.agencyBranding || { mode: 'disabled' }),
+                                    agencyName: e.target.value,
+                                  },
+                                })
+                              }
+                              placeholder="Contoh: Royal Heritage Wedding Planner"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-gray-700 font-semibold mb-1">
+                            Tagline Kemewahan WO
+                          </label>
+                          <div className="relative flex items-center">
+                            <Sparkles className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.agencyBranding?.agencyTagline || ''}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  agencyBranding: {
+                                    ...(formData.agencyBranding || { mode: 'disabled' }),
+                                    agencyTagline: e.target.value,
+                                  },
+                                })
+                              }
+                              placeholder="Contoh: Exquisite Traditional & Luxury Wedding Specialist"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-gray-700 font-semibold mb-1">
+                            Website Resmi Agensi
+                          </label>
+                          <div className="relative flex items-center">
+                            <Globe className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="url"
+                              value={formData.agencyBranding?.agencyWebsite || ''}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  agencyBranding: {
+                                    ...(formData.agencyBranding || { mode: 'disabled' }),
+                                    agencyWebsite: e.target.value,
+                                  },
+                                })
+                              }
+                              placeholder="Contoh: https://royalheritage.id"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-gray-700 font-semibold mb-1">
+                            Akun Instagram Resmi
+                          </label>
+                          <div className="relative flex items-center">
+                            <Share2 className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.agencyBranding?.agencyInstagram || ''}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  agencyBranding: {
+                                    ...(formData.agencyBranding || { mode: 'disabled' }),
+                                    agencyInstagram: e.target.value,
+                                  },
+                                })
+                              }
+                              placeholder="Contoh: @royalheritage.wo"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-gray-700 font-semibold mb-1">
+                            Nomor WhatsApp Konsultasi / CS
+                          </label>
+                          <div className="relative flex items-center">
+                            <Phone className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                            <input
+                              type="text"
+                              value={formData.agencyBranding?.agencyWhatsapp || ''}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  agencyBranding: {
+                                    ...(formData.agencyBranding || { mode: 'disabled' }),
+                                    agencyWhatsapp: e.target.value,
+                                  },
+                                })
+                              }
+                              placeholder="Contoh: 081234567890"
+                              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-gray-700 font-semibold mb-1">
+                            Logo Resmi Wedding Organizer
+                          </label>
+                          <DragDropUpload
+                            id="agency-logo-upload"
+                            label="Tarik & lepas logo WO (format PNG transparan dianjurkan)"
+                            value={formData.agencyBranding?.agencyLogoUrl || ''}
+                            isUploading={uploadingAvatar === 'agency'}
+                            onFileSelect={handleUploadAgencyLogo}
+                            onRemove={() =>
+                              setFormData({
+                                ...formData,
+                                agencyBranding: {
+                                  ...(formData.agencyBranding || { mode: 'disabled' }),
+                                  agencyLogoUrl: '',
+                                },
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Floating Save Action Bar */}
                 <div className="sticky bottom-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-gray-200/90 shadow-lg flex items-center justify-between gap-4">
                   <div>
@@ -3994,6 +4680,54 @@ Wassalamu'alaikum Wr. Wb.`;
                 <span className="text-[10px] text-gray-400 mt-1 block">
                   Jika diisi, tombol kirim WA akan langsung membuka obrolan ke nomor ini.
                 </span>
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">
+                  Tier Akses & Prioritas
+                </label>
+                <div className="relative flex items-center">
+                  <Crown className="absolute left-3 text-amber-500 pointer-events-none" size={15} />
+                  <select
+                    value={newGuestTier}
+                    onChange={(e) => setNewGuestTier(e.target.value as GuestTier)}
+                    className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 text-xs focus:ring-2 focus:ring-sage focus:border-sage bg-white text-gray-700"
+                  >
+                    <option value="regular">Tamu Reguler</option>
+                    <option value="family">Keluarga Besar (Family Pass)</option>
+                    <option value="vip">VIP Guest (Prioritas)</option>
+                    <option value="vvip">👑 VVIP Kehormatan (Gold Badge + Prioritas Utama)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">
+                  Nomor / Zona Meja <span className="text-gray-400 font-normal">(Opsional)</span>
+                </label>
+                <div className="relative flex items-center">
+                  <Armchair className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                  <input
+                    type="text"
+                    value={newGuestTableNumber}
+                    onChange={(e) => setNewGuestTableNumber(e.target.value)}
+                    placeholder="Contoh: Meja VIP 1, Baris Depan, atau Meja A2"
+                    className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 text-xs focus:ring-2 focus:ring-sage focus:border-sage placeholder:text-gray-400"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">
+                  Catatan Protokoler / Khusus <span className="text-gray-400 font-normal">(Opsional)</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={newGuestVipNotes}
+                  onChange={(e) => setNewGuestVipNotes(e.target.value)}
+                  placeholder="Contoh: Pejabat walikota / dikawal ajudan / dampingi ke ruang holding VIP..."
+                  className="w-full border border-gray-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-sage focus:border-sage placeholder:text-gray-400 resize-none"
+                />
               </div>
 
               <div className="flex items-center justify-end gap-2 mt-3 pt-3 border-t border-gray-100">

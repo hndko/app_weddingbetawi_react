@@ -5,6 +5,8 @@ import { BottomNavigation } from '../../shared/components/BottomNavigation';
 import { HeroSection } from './sections/HeroSection';
 import { IntroSection } from './sections/IntroSection';
 
+import { AgencyBrandingFooter } from '../../shared/components/AgencyBrandingFooter';
+
 // Lazy load Javanese cultural sections and shared domain sections
 const CoupleProfile = lazy(() => import('./sections/CoupleProfile').then(module => ({ default: module.CoupleProfile })));
 const CountdownSection = lazy(() => import('../../shared/sections/CountdownSection').then(module => ({ default: module.CountdownSection })));
@@ -51,6 +53,7 @@ export const InvitationContent: React.FC = () => {
           <RSVPSection />
           <div id="ucapan"><WishesSection /></div>
           <ClosingSection />
+          <AgencyBrandingFooter />
         </Suspense>
       </motion.div>
 

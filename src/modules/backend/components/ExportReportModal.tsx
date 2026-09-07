@@ -130,13 +130,21 @@ export function ExportReportModal({
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-bold">Pusat Laporan & Ekspor Data</h3>
                 <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  WO Suite
+                  {weddingConfig.agencyBranding?.mode === 'white_label' && weddingConfig.agencyBranding.agencyName
+                    ? weddingConfig.agencyBranding.agencyName
+                    : 'WO Suite'}
                 </span>
               </div>
               <p className="text-xs text-slate-300 flex items-center gap-2 mt-0.5">
                 <span>{getCoupleLabel(weddingConfig)}</span>
                 <span>•</span>
                 <span>{getEventDateLabel(weddingConfig)}</span>
+                {weddingConfig.agencyBranding?.mode === 'co_branded' && weddingConfig.agencyBranding.agencyName && (
+                  <>
+                    <span>•</span>
+                    <span className="text-amber-300">by {weddingConfig.agencyBranding.agencyName}</span>
+                  </>
+                )}
               </p>
             </div>
           </div>

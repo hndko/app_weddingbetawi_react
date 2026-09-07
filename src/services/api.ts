@@ -6,7 +6,9 @@ import {
   WeddingExpense, 
   WeddingTable, 
   TriviaQuestion,
-  CheckInRecord 
+  CheckInRecord,
+  GuestTier,
+  LiveRundownStatus
 } from '../types';
 
 const BASE_URL = '/api';
@@ -87,6 +89,11 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(config),
     }),
+  broadcastRundown: (data: { currentEvent: string; customNote?: string; isActive?: boolean }): Promise<{ success: boolean; liveRundown: LiveRundownStatus }> =>
+    request('/config/rundown', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 
   // Wishes (dengan dukungan pembatasan query / pagination)
   getWishes: (params?: { limit?: number; offset?: number; all?: boolean }): Promise<Wish[]> => {
@@ -109,7 +116,7 @@ export const api = {
 
   // RSVPs
   getRsvps: (): Promise<RSVPResponse[]> => request<RSVPResponse[]>('/rsvps'),
-  createRsvp: (data: { name: string; attendance: string; guestCount: number; notes: string }): Promise<{ success: boolean; data: RSVPResponse }> =>
+  createRsvp: (data: { name: string; attendance: string; guestCount: number; notes: string; tier?: GuestTier }): Promise<{ success: boolean; data: RSVPResponse }> =>
     request('/rsvps', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -121,12 +128,12 @@ export const api = {
 
   // Guests
   getGuests: (): Promise<GuestInvitation[]> => request<GuestInvitation[]>('/guests'),
-  createGuest: (data: { name: string; phone?: string; tableNumber?: string; notes?: string }): Promise<{ success: boolean; data: GuestInvitation }> =>
+  createGuest: (data: { name: string; phone?: string; tier?: GuestTier; vipNotes?: string; tableNumber?: string; notes?: string }): Promise<{ success: boolean; data: GuestInvitation }> =>
     request('/guests', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-  importGuests: (guests: Array<{ name: string; phone?: string; status?: string; tableNumber?: string; notes?: string }>): Promise<{ success: boolean; count: number }> =>
+  importGuests: (guests: Array<{ name: string; phone?: string; status?: string; tier?: GuestTier; vipNotes?: string; tableNumber?: string; notes?: string }>): Promise<{ success: boolean; count: number }> =>
     request('/guests', {
       method: 'POST',
       body: JSON.stringify({ guests }),
@@ -136,9 +143,15 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(updates),
     }),
-  checkInGuest: (id: string): Promise<{ success: boolean }> =>
+  checkInGuest: (id: string, options?: { autoClaimSouvenir?: boolean }): Promise<{ success: boolean }> =>
     request(`/guests/${encodeURIComponent(id)}/checkin`, {
       method: 'PATCH',
+      body: JSON.stringify(options || {}),
+    }),
+  claimGuestSouvenir: (id: string, claimed: boolean = true): Promise<{ success: boolean; souvenirClaimed: boolean }> =>
+    request(`/guests/${encodeURIComponent(id)}/souvenir`, {
+      method: 'PATCH',
+      body: JSON.stringify({ claimed }),
     }),
   deleteGuest: (id: string): Promise<{ success: boolean }> =>
     request(`/guests/${encodeURIComponent(id)}`, {
@@ -265,6 +278,11 @@ export const api = {
     request('/checkins', {
       method: 'POST',
       body: JSON.stringify(record),
+    }),
+  claimCheckinSouvenir: (id: string, claimed: boolean = true): Promise<{ success: boolean; souvenirClaimed: boolean }> =>
+    request(`/checkins/${encodeURIComponent(id)}/souvenir`, {
+      method: 'PATCH',
+      body: JSON.stringify({ claimed }),
     }),
   deleteCheckin: (id: string): Promise<{ success: boolean }> =>
     request(`/checkins/${encodeURIComponent(id)}`, {

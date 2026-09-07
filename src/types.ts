@@ -58,6 +58,37 @@ export interface SEOSettings {
 
 export type GalleryLayoutStyle = 'editorial' | 'masonry' | 'carousel' | 'polaroid';
 
+export interface AgencyBranding {
+  mode: 'disabled' | 'co_branded' | 'white_label';
+  agencyName?: string;
+  agencyLogoUrl?: string;
+  agencyTagline?: string;
+  agencyInstagram?: string;
+  agencyWebsite?: string;
+  agencyPhone?: string;
+  agencyWhatsapp?: string;
+  hideMariPartnerBranding?: boolean;
+}
+
+export interface LiveRundownStatus {
+  isActive?: boolean;
+  active?: boolean;
+  currentEvent: string;
+  currentEventTime?: string;
+  customNote?: string;
+  broadcastMessage?: string;
+  lastUpdated?: string;
+  updatedAt?: string;
+}
+
+export interface RundownScheduleItem {
+  id: string;
+  time: string;
+  title: string;
+  description?: string;
+  zone?: string;
+}
+
 export interface WeddingConfig {
   groom: PersonInfo;
   bride: PersonInfo;
@@ -73,6 +104,9 @@ export interface WeddingConfig {
   music?: MusicSettings;
   seo?: SEOSettings;
   theme?: string;
+  agencyBranding?: AgencyBranding;
+  liveRundown?: LiveRundownStatus;
+  rundownSchedule?: RundownScheduleItem[];
 }
 
 export interface Wish {
@@ -85,6 +119,8 @@ export interface Wish {
   audioDuration?: number;
 }
 
+export type GuestTier = 'regular' | 'family' | 'vip' | 'vvip';
+
 export interface RSVPResponse {
   id?: string;
   name: string;
@@ -96,7 +132,9 @@ export interface RSVPResponse {
   checkInTime?: string;
   actualPax?: number;
   souvenirClaimed?: boolean;
+  souvenirClaimedAt?: string;
   tableNumber?: string;
+  tier?: GuestTier;
 }
 
 export interface GuestInvitation {
@@ -110,7 +148,10 @@ export interface GuestInvitation {
   checkInTime?: string;
   actualPax?: number;
   souvenirClaimed?: boolean;
+  souvenirClaimedAt?: string;
   tableNumber?: string;
+  tier?: GuestTier;
+  vipNotes?: string;
 }
 
 export interface CheckInRecord {
@@ -120,7 +161,9 @@ export interface CheckInRecord {
   checkInTime: string;
   actualPax: number;
   souvenirClaimed: boolean;
+  souvenirClaimedAt?: string;
   tableNumber?: string;
+  tier?: GuestTier;
   source: 'qr_scan' | 'manual';
   notes?: string;
   createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;

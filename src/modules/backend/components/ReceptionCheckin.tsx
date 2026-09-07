@@ -28,7 +28,8 @@ import { useWeddingConfig } from '../../../context/WeddingContext';
 import { playSuccessBeep, playWarningBeep } from '../../../utils/audioBeep';
 import { parseGuestPayload, generateTicketCode } from '../../../utils/qrGenerator';
 import { renderGuestPassCanvas, downloadPassImage, downloadPassPDF } from '../../../utils/digitalPassGenerator';
-import type { GuestInvitation, RSVPResponse, CheckInRecord, WeddingTable } from '../../../types';
+import type { GuestInvitation, RSVPResponse, CheckInRecord, WeddingTable, GuestTier } from '../../../types';
+import { VipAccessBadge } from '../../frontend/shared/components/VipAccessBadge';
 
 interface ReceptionCheckinProps {
   guests: GuestInvitation[];
@@ -40,7 +41,11 @@ interface PendingCheckinData {
   guestId?: string;
   name: string;
   actualPax: number;
+  tier?: GuestTier;
+  vipNotes?: string;
   souvenirClaimed: boolean;
+  souvenirAlreadyClaimed?: boolean;
+  souvenirClaimedAt?: string;
   tableNumber: string;
   source: 'qr_scan' | 'manual';
   code: string;
@@ -214,6 +219,8 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
         )
       );
       const resolvedTable = matchedGuest?.tableNumber || matchedRsvp?.tableNumber || matchedTableFromCollection?.number || '';
+      const resolvedTier: GuestTier = matchedGuest?.tier || (existingCheckin?.tier as GuestTier) || 'regular';
+      const isSouvenirAlreadyClaimed = Boolean(matchedGuest?.souvenirClaimed || existingCheckin?.souvenirClaimed);
 
       if (existingCheckin) {
         playWarningBeep();
@@ -221,7 +228,11 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
           guestId: existingCheckin.guestId || matchedGuest?.id,
           name: existingCheckin.name,
           actualPax: existingCheckin.actualPax || resolvedPax,
-          souvenirClaimed: existingCheckin.souvenirClaimed ?? true,
+          tier: resolvedTier,
+          vipNotes: matchedGuest?.vipNotes,
+          souvenirClaimed: isSouvenirAlreadyClaimed,
+          souvenirAlreadyClaimed: isSouvenirAlreadyClaimed,
+          souvenirClaimedAt: existingCheckin.souvenirClaimedAt || matchedGuest?.souvenirClaimedAt,
           tableNumber: existingCheckin.tableNumber || resolvedTable,
           source: 'qr_scan',
           code: parsed.code,
@@ -229,12 +240,20 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
           previousCheckInTime: existingCheckin.checkInTime,
         });
       } else {
-        playSuccessBeep();
+        if (isSouvenirAlreadyClaimed) {
+          playWarningBeep();
+        } else {
+          playSuccessBeep();
+        }
         setPendingCheckin({
           guestId: matchedGuest?.id,
           name: guestNameClean,
           actualPax: resolvedPax,
-          souvenirClaimed: true, // Default souvenir true upon arrival
+          tier: resolvedTier,
+          vipNotes: matchedGuest?.vipNotes,
+          souvenirClaimed: !isSouvenirAlreadyClaimed,
+          souvenirAlreadyClaimed: isSouvenirAlreadyClaimed,
+          souvenirClaimedAt: matchedGuest?.souvenirClaimedAt,
           tableNumber: resolvedTable,
           source: 'qr_scan',
           code: parsed.code,
@@ -242,7 +261,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
         });
       }
     },
-    [checkins, guests, rsvps]
+    [checkins, guests, rsvps, tables]
   );
 
   // Scanner frame processing loop
@@ -330,6 +349,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
         name: pendingCheckin.name,
         checkInTime: timeStr,
         actualPax: pendingCheckin.actualPax,
+        tier: pendingCheckin.tier || 'regular',
         souvenirClaimed: pendingCheckin.souvenirClaimed,
         tableNumber: pendingCheckin.tableNumber || '',
         source: pendingCheckin.source,
@@ -338,7 +358,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       // 2. Also update matching guest doc if exists
       if (pendingCheckin.guestId) {
         try {
-          await api.checkInGuest(pendingCheckin.guestId);
+          await api.checkInGuest(pendingCheckin.guestId, { autoClaimSouvenir: pendingCheckin.souvenirClaimed });
         } catch {
           // Safe fallback
         }
@@ -355,6 +375,40 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       showToast('error', 'Gagal menyimpan check-in ke database.');
     } finally {
       setIsSubmittingCheckin(false);
+    }
+  };
+
+  // Toggle Souvenir Claim Status Directly from History Table
+  const handleToggleSouvenir = async (item: CheckInRecord) => {
+    if (!item.id) return;
+    const newStatus = !item.souvenirClaimed;
+    // Optimistic UI update
+    setCheckins((prev) =>
+      prev.map((c) =>
+        c.id === item.id
+          ? {
+              ...c,
+              souvenirClaimed: newStatus,
+              souvenirClaimedAt: newStatus ? new Date().toISOString() : undefined,
+            }
+          : c
+      )
+    );
+
+    try {
+      await api.claimCheckinSouvenir(item.id, newStatus);
+      showToast(
+        'success',
+        `Status suvenir tamu "${item.name}" ${newStatus ? 'berhasil diserahkan' : 'dibatalkan'}!`
+      );
+    } catch {
+      // Rollback on error
+      setCheckins((prev) =>
+        prev.map((c) =>
+          c.id === item.id ? { ...c, souvenirClaimed: !newStatus } : c
+        )
+      );
+      showToast('error', 'Gagal memperbarui status suvenir tamu.');
     }
   };
 
@@ -375,12 +429,28 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
   };
 
   // Manual Check-In trigger from search list
-  const handleInitiateManualCheckin = (guestItem: { id?: string; name: string; pax?: number; tableNumber?: string }) => {
+  const handleInitiateManualCheckin = (guestItem: {
+    id?: string;
+    name: string;
+    pax?: number;
+    tableNumber?: string;
+    tier?: GuestTier;
+    vipNotes?: string;
+  }) => {
     const existing = checkins.find(
       (c) =>
         c.name.toLowerCase() === guestItem.name.toLowerCase() ||
         (guestItem.id && c.guestId === guestItem.id)
     );
+
+    const matchedGuest = guests.find(
+      (g) =>
+        (guestItem.id && g.id === guestItem.id) ||
+        g.name.toLowerCase() === guestItem.name.toLowerCase()
+    );
+
+    const resolvedTier: GuestTier = guestItem.tier || matchedGuest?.tier || (existing?.tier as GuestTier) || 'regular';
+    const isSouvenirAlreadyClaimed = Boolean(matchedGuest?.souvenirClaimed || existing?.souvenirClaimed);
 
     if (existing) {
       playWarningBeep();
@@ -388,7 +458,11 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
         guestId: existing.guestId || guestItem.id,
         name: existing.name,
         actualPax: existing.actualPax || guestItem.pax || 1,
-        souvenirClaimed: existing.souvenirClaimed ?? true,
+        tier: resolvedTier,
+        vipNotes: matchedGuest?.vipNotes || guestItem.vipNotes,
+        souvenirClaimed: isSouvenirAlreadyClaimed,
+        souvenirAlreadyClaimed: isSouvenirAlreadyClaimed,
+        souvenirClaimedAt: existing.souvenirClaimedAt || matchedGuest?.souvenirClaimedAt,
         tableNumber: existing.tableNumber || guestItem.tableNumber || '',
         source: 'manual',
         code: generateTicketCode(existing.name, existing.guestId),
@@ -396,12 +470,20 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
         previousCheckInTime: existing.checkInTime,
       });
     } else {
-      playSuccessBeep();
+      if (isSouvenirAlreadyClaimed) {
+        playWarningBeep();
+      } else {
+        playSuccessBeep();
+      }
       setPendingCheckin({
         guestId: guestItem.id,
         name: guestItem.name,
         actualPax: guestItem.pax || 1,
-        souvenirClaimed: true,
+        tier: resolvedTier,
+        vipNotes: matchedGuest?.vipNotes || guestItem.vipNotes,
+        souvenirClaimed: !isSouvenirAlreadyClaimed,
+        souvenirAlreadyClaimed: isSouvenirAlreadyClaimed,
+        souvenirClaimedAt: matchedGuest?.souvenirClaimedAt,
         tableNumber: guestItem.tableNumber || '',
         source: 'manual',
         code: generateTicketCode(guestItem.name, guestItem.id),
@@ -435,7 +517,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
     };
 
     // Map unique guests by name
-    const map = new Map<string, { id?: string; name: string; phone?: string; pax?: number; tableNumber?: string; isCheckedIn: boolean }>();
+    const map = new Map<string, { id?: string; name: string; phone?: string; pax?: number; tableNumber?: string; tier?: GuestTier; vipNotes?: string; isCheckedIn: boolean }>();
 
     guests.forEach((g) => {
       const isChecked = checkins.some((c) => c.name.toLowerCase() === g.name.toLowerCase() || (g.id && c.guestId === g.id));
@@ -445,6 +527,8 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
         phone: g.phone,
         pax: g.actualPax || 1,
         tableNumber: g.tableNumber || resolveTableForGuest(g.name, g.id),
+        tier: g.tier || 'regular',
+        vipNotes: g.vipNotes,
         isCheckedIn: isChecked,
       });
     });
@@ -462,6 +546,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
           name: r.name,
           pax: r.guestCount || 1,
           tableNumber: r.tableNumber || resolveTableForGuest(r.name),
+          tier: 'regular',
           isCheckedIn: isChecked,
         });
       }
@@ -480,7 +565,8 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       (c) =>
         c.name.toLowerCase().includes(qLower) ||
         (c.tableNumber && c.tableNumber.toLowerCase().includes(qLower)) ||
-        (c.checkInTime && c.checkInTime.includes(qLower))
+        (c.checkInTime && c.checkInTime.includes(qLower)) ||
+        (c.tier && c.tier.toLowerCase().includes(qLower))
     );
   }, [checkins, historySearchQuery]);
 
@@ -491,11 +577,12 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       return;
     }
 
-    const headers = ['No', 'Waktu Masuk', 'Nama Tamu', 'Pax Hadir', 'Suvenir', 'Nomor Meja', 'Metode'];
+    const headers = ['No', 'Waktu Masuk', 'Nama Tamu', 'Tier Akses', 'Pax Hadir', 'Suvenir', 'Nomor Meja', 'Metode'];
     const rows = checkins.map((item, index) => [
       index + 1,
       `"${item.checkInTime || '-'}"`,
       `"${item.name.replace(/"/g, '""')}"`,
+      `"${(item.tier || 'regular').toUpperCase()}"`,
       item.actualPax || 1,
       item.souvenirClaimed ? 'Ya' : 'Belum',
       `"${item.tableNumber || '-'}"`,
@@ -770,6 +857,9 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <h4 className="text-xs font-bold text-text-dark truncate">{item.name}</h4>
+                      {item.tier && item.tier !== 'regular' && (
+                        <VipAccessBadge tier={item.tier} size="sm" />
+                      )}
                       {item.isCheckedIn && (
                         <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-semibold">
                           <Check size={10} />
@@ -859,6 +949,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                 <th className="py-3 px-3 w-12 text-center">#</th>
                 <th className="py-3 px-3">Waktu Masuk</th>
                 <th className="py-3 px-3">Nama Tamu</th>
+                <th className="py-3 px-3 text-center">Tier Akses</th>
                 <th className="py-3 px-3 text-center">Pax</th>
                 <th className="py-3 px-3 text-center">Suvenir</th>
                 <th className="py-3 px-3">Nomor Meja</th>
@@ -869,7 +960,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
             <tbody className="divide-y divide-gray-100">
               {filteredCheckins.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-text-dark/40 text-xs">
+                  <td colSpan={9} className="py-12 text-center text-text-dark/40 text-xs">
                     Belum ada riwayat kedatangan tamu yang tercatat.
                   </td>
                 </tr>
@@ -885,6 +976,9 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                     <td className="py-3 px-3 font-bold text-text-dark whitespace-nowrap">
                       {item.name}
                     </td>
+                    <td className="py-3 px-3 text-center whitespace-nowrap">
+                      <VipAccessBadge tier={item.tier || 'regular'} size="sm" />
+                    </td>
                     <td className="py-3 px-3 text-center">
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold text-[11px]">
                         <Users size={11} />
@@ -892,16 +986,28 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                       </span>
                     </td>
                     <td className="py-3 px-3 text-center">
-                      {item.souvenirClaimed ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold text-[11px]">
-                          <CheckCircle2 size={11} />
-                          Sudah
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-500 font-medium text-[11px]">
-                          Belum
-                        </span>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSouvenir(item)}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-semibold text-[11px] transition-all cursor-pointer ${
+                          item.souvenirClaimed
+                            ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
+                        }`}
+                        title={item.souvenirClaimed ? 'Klik untuk membatalkan status penyerahan suvenir' : 'Klik untuk menandai suvenir telah diserahkan'}
+                      >
+                        {item.souvenirClaimed ? (
+                          <>
+                            <CheckCircle2 size={11} className="text-emerald-600" />
+                            <span>Sudah</span>
+                          </>
+                        ) : (
+                          <>
+                            <Gift size={11} className="text-amber-600" />
+                            <span>Belum</span>
+                          </>
+                        )}
+                      </button>
                     </td>
                     <td className="py-3 px-3 text-text-dark/70">
                       {item.tableNumber ? (
@@ -1003,13 +1109,42 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
               {/* Form Body */}
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-text-dark/70 uppercase tracking-wider mb-1">
-                    Nama Tamu
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-[11px] font-semibold text-text-dark/70 uppercase tracking-wider">
+                      Nama Tamu Undangan
+                    </label>
+                    <VipAccessBadge tier={pendingCheckin.tier || 'regular'} size="sm" />
+                  </div>
                   <p className="text-base font-bold text-text-dark bg-gray-50 px-3.5 py-2.5 rounded-xl border border-gray-200">
                     {pendingCheckin.name}
                   </p>
+                  {pendingCheckin.vipNotes && (
+                    <div className="mt-2 p-2.5 bg-amber-50/80 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-start gap-2">
+                      <Sparkles size={14} className="text-amber-600 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold">Catatan Khusus VIP:</span>{' '}
+                        <span>{pendingCheckin.vipNotes}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
+
+                {/* Warning Alert if Souvenir was already claimed */}
+                {pendingCheckin.souvenirAlreadyClaimed && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2.5 text-red-800 text-xs">
+                    <AlertTriangle size={16} className="text-red-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold">Peringatan: Suvenir Sudah Pernah Diambil!</p>
+                      <p className="text-[11px] text-red-700 mt-0.5">
+                        Tamu ini terdata sudah mengambil paket suvenir{' '}
+                        {pendingCheckin.souvenirClaimedAt
+                          ? `pada ${new Date(pendingCheckin.souvenirClaimedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`
+                          : 'sebelumnya'}
+                        . Pastikan tidak menyerahkan suvenir ganda.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Pax Stepper Counter */}
                 <div>
@@ -1051,7 +1186,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                 {/* Souvenir Claim Toggle */}
                 <div>
                   <label className="block text-[11px] font-semibold text-text-dark/70 uppercase tracking-wider mb-1">
-                    Status Paket Suvenir
+                    Status Penyerahan Suvenir
                   </label>
                   <button
                     type="button"

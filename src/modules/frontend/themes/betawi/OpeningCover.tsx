@@ -1,7 +1,8 @@
 import { motion } from 'motion/react';
 import { MailOpen } from 'lucide-react';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
-import { useGuestName } from '../../../../hooks/useGuestName';
+import { useGuestDetails } from '../../../../hooks/useGuestName';
+import { VipAccessBadge } from '../../shared/components/VipAccessBadge';
 import { RumahKebaya } from './decorations/RumahKebaya';
 import { OndelOndel } from './decorations/OndelOndel';
 import { FloatingFlowers } from './decorations/FloatingFlowers';
@@ -13,7 +14,7 @@ import React from 'react';
 
 export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
   const { weddingConfig } = useWeddingConfig();
-  const guestName = useGuestName();
+  const { name: guestName, tier: guestTier } = useGuestDetails();
 
   return (
     <motion.div 
@@ -62,6 +63,9 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
             <path d="M388 360 C 375 360, 360 375, 360 388" stroke="var(--color-sage)" strokeWidth="1.5" fill="none" />
             <circle cx="374" cy="374" r="4" fill="var(--color-betawi-red)" opacity="0.8"/>
           </svg>
+          <div className="flex justify-center mb-2 relative z-10">
+            <VipAccessBadge tier={guestTier} size="sm" />
+          </div>
           <p className="text-xs text-text-dark/70 mb-2 tracking-wide relative z-10">Kepada Yth. Bapak/Ibu/Saudara/i</p>
           <p className="font-heading text-2xl text-text-dark mb-4 relative z-10">{guestName}</p>
           

@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.48.1`
+- **Versi Aplikasi Saat Ini**: `v1.49.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -155,6 +155,11 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
 11. **Master & Modular Export & Reporting Suite (`reportExporter.ts` & `ExportReportModal.tsx`)**:
     - Mendukung ekspor instan All-in-One Master Workbook Excel (`.xlsx` 4-sheet) dan Master Dokumen WO PDF (`.pdf` A4 print-ready) beserta tombol ekspor modular per-tab (Buku Tamu, RSVP, Susunan Meja, dan Anggaran & Vendor).
     - Seluruh proses sintesis berkas dilakukan 100% di browser klien (*client-side streaming*) menggunakan `xlsx` dan `jspdf`, menjamin *zero server load*, privasi data tinggi, dan performa generasi instan.
+12. **Suite Kemewahan & Kemitraan Wedding Organizer (Luxury & WO Partnership Suite)**:
+    - **VIP Guest Tiering & Dedicated Access Pass**: Klasifikasi tamu bertingkat (`vvip`, `vip`, `family`, `regular`) lengkap dengan lencana kemewahan emas/amber/emerald, alokasi meja prioritas, catatan protokoler VIP, dan passcard digital eksklusif.
+    - **Digital Souvenir & Photobooth Redemption Tracker**: Pelacak penukaran suvenir resepsi anti-ganda berbasis scanner dan toggle 1-klik di Reception Check-in & Buku Tamu, tersinkronisasi realtime ke database MySQL.
+    - **White-Label Agensi Mode**: Kustomisasi identitas penuh untuk Wedding Organizer (`co_branded` dan `white_label`), menampilkan logo WO, nama, tagline, tautan sosial/web/WA, serta opsi eliminasi 100% branding Mari Partner pada footer publik dan dokumen ekspor WO.
+    - **Live Wedding Rundown Broadcaster**: Siaran status rundown pernikahan hari-H secara langsung (*realtime broadcast* via Socket.io `rundown:updated`) dari HP tim WO, memunculkan floating banner siaran status hidup (`🔴 LIVE`) dan drawer linimasa acara pada layar seluruh tamu.
 
 ---
 

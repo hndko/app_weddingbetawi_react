@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Download, QrCode, CheckCircle2, Calendar, MapPin, Users, Loader2, FileText } from 'lucide-react';
+import { X, Download, QrCode, CheckCircle2, Calendar, MapPin, Users, Loader2, FileText, Gift } from 'lucide-react';
 import { api } from '../../../../services/api';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { useThemeTokens } from '../../themes';
+import { useGuestDetails } from '../../../../hooks/useGuestName';
 import { generateTicketCode, serializeGuestPayload, generateQRCodeDataURL } from '../../../../utils/qrGenerator';
 import { renderGuestPassCanvas, downloadPassImage, downloadPassPDF } from '../../../../utils/digitalPassGenerator';
-import type { WeddingTable } from '../../../../types';
+import type { WeddingTable, GuestTier } from '../../../../types';
+import { VipAccessBadge } from './VipAccessBadge';
 
 interface GuestQRPassModalProps {
   isOpen: boolean;
@@ -15,6 +17,8 @@ interface GuestQRPassModalProps {
   guestPax?: number;
   guestId?: string;
   tableNumber?: string;
+  guestTier?: GuestTier;
+  souvenirClaimed?: boolean;
 }
 
 export function GuestQRPassModal({
@@ -24,9 +28,16 @@ export function GuestQRPassModal({
   guestPax = 1,
   guestId,
   tableNumber,
+  guestTier: propGuestTier,
+  souvenirClaimed: propSouvenirClaimed,
 }: GuestQRPassModalProps) {
   const { weddingConfig } = useWeddingConfig();
   const { tokens } = useThemeTokens();
+  const urlGuestDetails = useGuestDetails();
+
+  const effectiveTier = propGuestTier || urlGuestDetails.tier || 'regular';
+  const effectiveSouvenirClaimed = propSouvenirClaimed !== undefined ? propSouvenirClaimed : false;
+
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [downloadingFormat, setDownloadingFormat] = useState<'png' | 'pdf' | null>(null);
@@ -148,6 +159,8 @@ export function GuestQRPassModal({
         guestName: displayName,
         guestPax,
         guestId,
+        guestTier: effectiveTier,
+        souvenirClaimed: effectiveSouvenirClaimed,
         tableNumber: assignedTable?.number || tableNumber,
         tableName: assignedTable?.name,
         weddingConfig,
@@ -225,6 +238,11 @@ export function GuestQRPassModal({
 
               {/* Guest Details */}
               <div className="my-2">
+                {effectiveTier !== 'regular' && (
+                  <div className="flex justify-center mb-1.5">
+                    <VipAccessBadge tier={effectiveTier} size="md" />
+                  </div>
+                )}
                 <p className="text-[10px] uppercase tracking-widest text-[#8C7851] font-medium mb-1">
                   Nama Tamu
                 </p>
@@ -249,6 +267,16 @@ export function GuestQRPassModal({
                     </div>
                   </div>
                 )}
+
+                {/* Souvenir Redemption Badge */}
+                <div className="mt-2 flex items-center justify-center">
+                  <div className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-semibold shadow-xs ${
+                    effectiveSouvenirClaimed ? 'bg-emerald-50 border border-emerald-300 text-emerald-900' : 'bg-amber-50 border border-amber-300 text-amber-900'
+                  }`}>
+                    <Gift size={12} className={effectiveSouvenirClaimed ? 'text-emerald-600' : 'text-amber-600'} />
+                    <span>Souvenir: <strong className="font-bold">{effectiveSouvenirClaimed ? 'Sudah Diambil' : 'Tersedia di Meja Resepsi'}</strong></span>
+                  </div>
+                </div>
               </div>
 
               {/* QR Code Container */}

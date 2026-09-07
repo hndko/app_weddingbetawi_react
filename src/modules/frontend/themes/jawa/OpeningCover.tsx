@@ -2,13 +2,14 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { MailOpen, Sparkles } from 'lucide-react';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
-import { useGuestName } from '../../../../hooks/useGuestName';
+import { useGuestDetails } from '../../../../hooks/useGuestName';
+import { VipAccessBadge } from '../../shared/components/VipAccessBadge';
 import { WayangGunungan } from './decorations/WayangGunungan';
 import { FloatingMelati } from './decorations/FloatingMelati';
 
 export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
   const { weddingConfig } = useWeddingConfig();
-  const guestName = useGuestName();
+  const guestDetails = useGuestDetails();
 
   return (
     <motion.div
@@ -85,12 +86,23 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
           <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b border-l border-[#E5C158]" />
           <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b border-r border-[#E5C158]" />
 
+          {guestDetails.tier !== 'regular' && (
+            <div className="mb-2.5">
+              <VipAccessBadge tier={guestDetails.tier} size="md" />
+            </div>
+          )}
+
           <p className="text-[11px] text-[#FAF7EE]/70 mb-1 tracking-wide font-light">
             Katur Dhumateng Panjenenganipun:
           </p>
-          <p className="font-heading text-xl text-[#FAF7EE] mb-4 font-bold text-center">
-            {guestName}
+          <p className="font-heading text-xl text-[#FAF7EE] mb-1 font-bold text-center">
+            {guestDetails.name}
           </p>
+          {guestDetails.tableNumber && (
+            <p className="text-[11px] text-[#E5C158] font-medium mb-3">
+              Alokasi: {guestDetails.tableNumber}
+            </p>
+          )}
 
           <button
             type="button"

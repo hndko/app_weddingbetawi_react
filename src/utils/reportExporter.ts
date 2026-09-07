@@ -114,9 +114,19 @@ function createExecutiveSummarySheet(data: ExportMasterData): XLSX.WorkSheet {
   const totalPaidAmount = expenses.reduce((acc, e) => acc + (Number(e.paidAmount) || 0), 0);
   const totalRemainingDebt = Math.max(0, (totalActualCost || totalEstimatedCost) - totalPaidAmount);
 
+  const isWhiteLabel = config.agencyBranding?.mode === 'white_label' && Boolean(config.agencyBranding.agencyName);
+  const isCoBranded = config.agencyBranding?.mode === 'co_branded' && Boolean(config.agencyBranding.agencyName);
+  const agencyName = config.agencyBranding?.agencyName || '';
+
+  const systemFooter = isWhiteLabel
+    ? `Dicetak secara otomatis via ${agencyName} Management System`
+    : isCoBranded
+    ? `Dicetak via ${agencyName} in partnership with Mari Partner System`
+    : 'Dicetak secara otomatis via Mari Partner Wedding System';
+
   const rows = [
-    ['LAPORAN REKAPITULASI OPERASIONAL PERNIKAHAN'],
-    ['WEDDING ORGANIZER EXECUTIVE SUMMARY'],
+    [isWhiteLabel ? `${agencyName.toUpperCase()} - LAPORAN REKAPITULASI OPERASIONAL` : 'LAPORAN REKAPITULASI OPERASIONAL PERNIKAHAN'],
+    [isWhiteLabel ? `${agencyName.toUpperCase()} WEDDING EXECUTIVE SUMMARY` : 'WEDDING ORGANIZER EXECUTIVE SUMMARY'],
     [],
     ['Mempelai', getCoupleLabel(config)],
     ['Tanggal Pernikahan', getEventDateLabel(config)],
@@ -149,7 +159,7 @@ function createExecutiveSummarySheet(data: ExportMasterData): XLSX.WorkSheet {
     ['Total Sisa Pembayaran Belum Lunas', formatCurrency(totalRemainingDebt)],
     ['Status Realisasi', totalActualCost > totalEstimatedCost ? 'Over Budget' : 'On Track / Sesuai Rencana'],
     [],
-    ['Dicetak secara otomatis via Mari Partner Wedding System']
+    [systemFooter]
   ];
 
   const ws = XLSX.utils.aoa_to_sheet(rows);
@@ -166,9 +176,19 @@ function createGuestsSheet(guests: GuestInvitation[], rsvps: RSVPResponse[]): XL
     if (r.name) rsvpMap.set(r.name.trim().toLowerCase(), r);
   });
 
+  const getTierLabel = (tier?: string) => {
+    switch (tier) {
+      case 'vvip': return 'VVIP Kehormatan';
+      case 'vip': return 'VIP Guest';
+      case 'family': return 'Keluarga Besar';
+      default: return 'Reguler';
+    }
+  };
+
   const header = [
     '#',
     'Nama Tamu',
+    'Tier Akses',
     'Nomor WhatsApp',
     'Status Pengiriman WA',
     'Status Konfirmasi RSVP',
@@ -177,6 +197,7 @@ function createGuestsSheet(guests: GuestInvitation[], rsvps: RSVPResponse[]): XL
     'Status Check-in Resepsi',
     'Waktu Check-in',
     'Souvenir Diambil',
+    'Catatan VIP / Protokol',
     'Pesan / Doa Restu'
   ];
 
@@ -193,6 +214,7 @@ function createGuestsSheet(guests: GuestInvitation[], rsvps: RSVPResponse[]): XL
     return [
       idx + 1,
       g.name || '-',
+      getTierLabel(g.tier),
       g.phone || '-',
       g.status === 'sent' ? 'Terkirim' : 'Pending (Belum)',
       rsvpStatus,
@@ -201,6 +223,7 @@ function createGuestsSheet(guests: GuestInvitation[], rsvps: RSVPResponse[]): XL
       g.checkedIn ? 'Sudah Hadir' : 'Belum',
       g.checkInTime ? formatTimestamp(g.checkInTime) : '-',
       g.souvenirClaimed ? 'Sudah' : 'Belum',
+      g.vipNotes || '-',
       rsvp?.notes || '-'
     ];
   });
@@ -210,6 +233,7 @@ function createGuestsSheet(guests: GuestInvitation[], rsvps: RSVPResponse[]): XL
     { wch: 6 },
     { wch: 28 },
     { wch: 18 },
+    { wch: 18 },
     { wch: 22 },
     { wch: 24 },
     { wch: 15 },
@@ -217,6 +241,7 @@ function createGuestsSheet(guests: GuestInvitation[], rsvps: RSVPResponse[]): XL
     { wch: 24 },
     { wch: 22 },
     { wch: 18 },
+    { wch: 30 },
     { wch: 45 }
   ];
   return ws;
@@ -473,6 +498,10 @@ function drawHeader(
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 14;
 
+  const isWhiteLabel = config.agencyBranding?.mode === 'white_label' && Boolean(config.agencyBranding.agencyName);
+  const isCoBranded = config.agencyBranding?.mode === 'co_branded' && Boolean(config.agencyBranding.agencyName);
+  const agencyName = config.agencyBranding?.agencyName || '';
+
   // Header background badge
   doc.setFillColor(248, 250, 252);
   doc.rect(margin, 12, pageWidth - margin * 2, 26, 'F');
@@ -483,9 +512,10 @@ function drawHeader(
 
   // Title
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(13);
+  doc.setFontSize(12.5);
   doc.setTextColor(30, 41, 59); // slate-800
-  doc.text(reportTitle.toUpperCase(), margin + 8, 20);
+  const renderedTitle = isWhiteLabel ? `${agencyName.toUpperCase()} — ${reportTitle.toUpperCase()}` : reportTitle.toUpperCase();
+  doc.text(renderedTitle, margin + 8, 20);
 
   // Couple names & Date
   doc.setFont('helvetica', 'normal');
@@ -497,7 +527,8 @@ function drawHeader(
   // Subtitle / Venue
   doc.setFontSize(8.5);
   doc.setTextColor(100, 116, 139); // slate-500
-  const subText = subtitle || `Lokasi: ${config.events?.resepsi?.venue || '-'} • Waktu Cetak: ${new Date().toLocaleString('id-ID')}`;
+  const defaultSub = `Lokasi: ${config.events?.resepsi?.venue || '-'} • Waktu Cetak: ${new Date().toLocaleString('id-ID')}`;
+  const subText = subtitle ? subtitle : isCoBranded ? `${defaultSub} • Powered by ${agencyName} & Mari Partner` : defaultSub;
   doc.text(subText, margin + 8, 32);
 
   // Horizontal line
@@ -511,11 +542,21 @@ function drawHeader(
 /**
  * Helper to draw footer page numbering
  */
-function applyPageNumbers(doc: jsPDF): void {
+function applyPageNumbers(doc: jsPDF, config?: WeddingConfig): void {
   const totalPages = doc.getNumberOfPages();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
+
+  const isWhiteLabel = config?.agencyBranding?.mode === 'white_label' && Boolean(config?.agencyBranding?.agencyName);
+  const isCoBranded = config?.agencyBranding?.mode === 'co_branded' && Boolean(config?.agencyBranding?.agencyName);
+  const agencyName = config?.agencyBranding?.agencyName || '';
+
+  const footerBrand = isWhiteLabel
+    ? `${agencyName} • Dokumen Resmi Wedding Organizer`
+    : isCoBranded
+    ? `${agencyName} & Mari Partner • Dokumen Resmi Wedding Organizer`
+    : 'Mari Partner Wedding System • Dokumen Resmi Wedding Organizer';
 
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
@@ -529,7 +570,7 @@ function applyPageNumbers(doc: jsPDF): void {
     doc.line(margin, pageHeight - 12, pageWidth - margin, pageHeight - 12);
 
     // Left info
-    doc.text('Mari Partner Wedding System • Dokumen Resmi Wedding Organizer', margin, pageHeight - 7);
+    doc.text(footerBrand, margin, pageHeight - 7);
 
     // Right page number
     const pageText = `Halaman ${i} dari ${totalPages}`;
@@ -731,15 +772,26 @@ export function exportMasterPDF(data: ExportMasterData): void {
   doc.addPage();
   currentY = drawHeader(doc, config, 'LAPORAN BUKU TAMU & REGISTRASI', 'Daftar Tamu Undangan dan Status Check-in');
 
+  const getTierShortLabel = (tier?: string) => {
+    switch (tier) {
+      case 'vvip': return 'VVIP';
+      case 'vip': return 'VIP';
+      case 'family': return 'Family';
+      default: return 'Reguler';
+    }
+  };
+
   const guestCols: PdfTableColumn[] = [
-    { header: 'No', width: 8, align: 'center' },
-    { header: 'Nama Tamu', width: 45 },
-    { header: 'No WhatsApp', width: 28 },
-    { header: 'Status WA', width: 20, align: 'center' },
-    { header: 'RSVP', width: 22, align: 'center' },
-    { header: 'Pax', width: 12, align: 'center' },
-    { header: 'Meja', width: 18, align: 'center' },
-    { header: 'Check-in', width: 29, align: 'center' },
+    { header: 'No', width: 7, align: 'center' },
+    { header: 'Nama Tamu', width: 40 },
+    { header: 'Tier', width: 16, align: 'center' },
+    { header: 'No WhatsApp', width: 25 },
+    { header: 'Status WA', width: 18, align: 'center' },
+    { header: 'RSVP', width: 16, align: 'center' },
+    { header: 'Pax', width: 10, align: 'center' },
+    { header: 'Meja', width: 16, align: 'center' },
+    { header: 'Check-in', width: 18, align: 'center' },
+    { header: 'Suvenir', width: 16, align: 'center' },
   ];
 
   const rsvpMap = new Map<string, RSVPResponse>();
@@ -760,12 +812,14 @@ export function exportMasterPDF(data: ExportMasterData): void {
     return [
       String(idx + 1),
       g.name || '-',
+      getTierShortLabel(g.tier),
       g.phone || '-',
       g.status === 'sent' ? 'Terkirim' : 'Pending',
       rsvpStatus,
       String(rsvp?.guestCount || (rsvp?.attendance === 'attending' ? 1 : 0)),
       g.tableNumber || '-',
-      g.checkedIn ? 'Hadir di Lokasi' : 'Belum Hadir',
+      g.checkedIn ? 'Hadir' : 'Belum',
+      g.souvenirClaimed ? 'Sudah' : 'Belum',
     ];
   });
 
@@ -811,7 +865,7 @@ export function exportMasterPDF(data: ExportMasterData): void {
 
   drawPdfTable(doc, currentY, budgetCols, budgetRows, config, 'ANGGARAN & VENDOR');
 
-  applyPageNumbers(doc);
+  applyPageNumbers(doc, config);
 
   const cleanCouple = getCoupleLabel(config).replace(/[^a-zA-Z0-9]/g, '_');
   doc.save(`Laporan_Master_WO_${cleanCouple}_${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -824,15 +878,26 @@ export function exportGuestsPDF(guests: GuestInvitation[], rsvps: RSVPResponse[]
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   let currentY = drawHeader(doc, config, 'BUKU TAMU & LEMBAR REGISTRASI RESEPSI');
 
+  const getTierShortLabel = (tier?: string) => {
+    switch (tier) {
+      case 'vvip': return 'VVIP';
+      case 'vip': return 'VIP';
+      case 'family': return 'Family';
+      default: return 'Reguler';
+    }
+  };
+
   const guestCols: PdfTableColumn[] = [
-    { header: 'No', width: 8, align: 'center' },
-    { header: 'Nama Tamu', width: 50 },
-    { header: 'No WhatsApp', width: 30 },
-    { header: 'Status WA', width: 22, align: 'center' },
-    { header: 'RSVP', width: 22, align: 'center' },
-    { header: 'Pax', width: 14, align: 'center' },
-    { header: 'Meja', width: 18, align: 'center' },
-    { header: 'Paraf / TTD Tamu', width: 18, align: 'center' },
+    { header: 'No', width: 7, align: 'center' },
+    { header: 'Nama Tamu', width: 42 },
+    { header: 'Tier', width: 16, align: 'center' },
+    { header: 'No WhatsApp', width: 25 },
+    { header: 'Status WA', width: 18, align: 'center' },
+    { header: 'RSVP', width: 16, align: 'center' },
+    { header: 'Pax', width: 10, align: 'center' },
+    { header: 'Meja', width: 16, align: 'center' },
+    { header: 'Suvenir', width: 14, align: 'center' },
+    { header: 'Paraf Tamu', width: 18, align: 'center' },
   ];
 
   const rsvpMap = new Map<string, RSVPResponse>();
@@ -853,17 +918,19 @@ export function exportGuestsPDF(guests: GuestInvitation[], rsvps: RSVPResponse[]
     return [
       String(idx + 1),
       g.name || '-',
+      getTierShortLabel(g.tier),
       g.phone || '-',
       g.status === 'sent' ? 'Terkirim' : 'Pending',
       rsvpStatus,
       String(rsvp?.guestCount || (rsvp?.attendance === 'attending' ? 1 : 0)),
       g.tableNumber || '-',
+      g.souvenirClaimed ? 'Sudah' : 'Belum',
       '', // blank for physical signature
     ];
   });
 
   drawPdfTable(doc, currentY, guestCols, guestRows, config, 'BUKU TAMU RESEPSI');
-  applyPageNumbers(doc);
+  applyPageNumbers(doc, config);
 
   const cleanCouple = getCoupleLabel(config).replace(/[^a-zA-Z0-9]/g, '_');
   doc.save(`Buku_Tamu_Resepsi_${cleanCouple}_${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -901,7 +968,7 @@ export function exportSeatingPDF(tables: WeddingTable[], config: WeddingConfig):
   });
 
   drawPdfTable(doc, currentY, seatingCols, seatingRows, config, 'PANDUAN PENEMPATAN MEJA');
-  applyPageNumbers(doc);
+  applyPageNumbers(doc, config);
 
   const cleanCouple = getCoupleLabel(config).replace(/[^a-zA-Z0-9]/g, '_');
   doc.save(`Panduan_Meja_WO_${cleanCouple}_${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -952,7 +1019,7 @@ export function exportBudgetPDF(expenses: WeddingExpense[], config: WeddingConfi
   });
 
   drawPdfTable(doc, currentY, budgetCols, budgetRows, config, 'ANGGARAN & VENDOR');
-  applyPageNumbers(doc);
+  applyPageNumbers(doc, config);
 
   const cleanCouple = getCoupleLabel(config).replace(/[^a-zA-Z0-9]/g, '_');
   doc.save(`Laporan_Anggaran_Vendor_${cleanCouple}_${new Date().toISOString().slice(0, 10)}.pdf`);

@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.48.1-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.49.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -46,6 +46,7 @@ Untuk panduan mendalam sesuai peran dan kebutuhan operasional, silakan telusuri 
 | 📖 **Buku Panduan Pengguna** | [`docs/02-buku-panduan-pengguna.md`](docs/02-buku-panduan-pengguna.md) | Manual book pengantin: generator link WhatsApp, ubah data, upload foto, & RSVP. |
 | 🛠️ **Panduan Pengembang** | [`docs/03-developer-guide.md`](docs/03-developer-guide.md) | Arsitektur SPA React 19 + Node.js Express, basis data MySQL, Socket.io, OWASP, & siklus fitur baru. |
 | ☁️ **Panduan Deployment** | [`docs/04-panduan-deployment.md`](docs/04-panduan-deployment.md) | Panduan rilis self-hosted ke VPS Linux Ubuntu (Nginx + PM2), cPanel (Node.js Selector), dan aaPanel. |
+| 💼 **Sales & Partnership Playbook** | [`docs/05-panduan-bisnis-kemitraan-dan-sales-playbook.md`](docs/05-panduan-bisnis-kemitraan-dan-sales-playbook.md) | Strategi kemitraan B2B WO, taktik pencarian prospek via Google Maps/IG, skrip penawaran, & objection handling. |
 
 ---
 
@@ -244,6 +245,26 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
 ---
 
 ## ✨ Fitur Utama
+
+### 👑 Luxury & Wedding Organizer (WO) Partnership Suite (v1.49.0)
+- **VIP Guest Tiering & Dedicated Access Pass**:
+  - Klasifikasi tamu bertingkat 4 level: `VVIP`, `VIP`, `Keluarga Besar (Family)`, dan `Reguler`.
+  - Lencana kemewahan tematik bergradien (Gold Crown untuk VVIP, Amber Star untuk VIP, Emerald Handshake untuk Family) yang terpampang di Opening Cover kartu tamu, e-ticket digital passcard, dan tabel admin.
+  - Alokasi nomor / zona meja prioritas baris depan (`tableNumber`) dan catatan protokoler VIP (`vipNotes`).
+  - Passcard digital eksklusif tamu yang dapat diunduh instan sebagai gambar HD PNG atau dokumen PDF e-ticket resmi siap cetak.
+- **Digital Souvenir & Photobooth Redemption Tracker**:
+  - Pelacak penukaran suvenir resepsi anti-ganda berbasis scanner QR dan toggle 1-klik di Reception Check-in & Panel Tamu.
+  - Peringatan sistem interaktif jika tamu terdeteksi sudah mengambil suvenir sebelumnya, mencegah duplikasi pengambilan dan kebocoran stok suvenir fisik.
+  - Sinkronisasi instan dua arah antara tabel `guests` dan `checkins` pada basis data MySQL.
+- **White-Label Agensi Mode (Full Identity Customization)**:
+  - 3 Mode fleksibel: `disabled`, `co_branded` (berdampingan dengan Mari Partner), dan `100% white_label` (murni nama agensi WO).
+  - Kostumisasi logo WO (upload PNG transparan), nama agensi, tagline kemewahan, website resmi, Instagram, dan nomor WhatsApp CS / konsultasi.
+  - Tampil di footer publik undangan, dialog modal, dan dokumen ekspor WO dengan opsi eliminasi total tulisan Mari Partner.
+- **Live Wedding Rundown Status Broadcaster**:
+  - Siaran langsung status prosesi acara hari-H secara realtime dari smartphone kru WO tanpa perlu reload (`Socket.io`).
+  - Floating pill banner (`🔴 LIVE`) dinamis di bagian atas layar tamu dengan penunjuk waktu, nama sesi acara (misal: "Sesi Foto Keluarga" atau "Prasmanan Resepsi Dibuka"), dan pesan khusus.
+  - Expandable drawer linimasa yang menampilkan rundown lengkap acara bagi tamu undangan.
+  - Tombol preset cepat di Admin Panel untuk perubahan status satu kali klik.
 
 ### 📸 Virtual Photo Booth Responsif & Sticky Studio Action Bar (v1.43.0)
 - **Pengalaman Photobooth Mobile Optimal (*Zero Button Cutoff*)**:

@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import { WeddingConfig } from '../types';
+import { WeddingConfig, GuestTier } from '../types';
 import { THEME_TOKENS, ThemeVisualTokens } from '../modules/frontend/themes/themeTokens';
 import { generateTicketCode, serializeGuestPayload, generateQRCodeDataURL } from './qrGenerator';
 
@@ -7,6 +7,9 @@ export interface RenderGuestPassOptions {
   guestName: string;
   guestPax?: number;
   guestId?: string;
+  guestTier?: GuestTier;
+  vipNotes?: string;
+  souvenirClaimed?: boolean;
   tableNumber?: string;
   tableName?: string;
   weddingConfig: WeddingConfig;
@@ -25,6 +28,9 @@ export async function renderGuestPassCanvas(options: RenderGuestPassOptions): Pr
     guestName,
     guestPax = 1,
     guestId,
+    guestTier,
+    vipNotes,
+    souvenirClaimed,
     tableNumber,
     tableName,
     weddingConfig,
@@ -189,6 +195,27 @@ export async function renderGuestPassCanvas(options: RenderGuestPassOptions): Pr
 
   // 8. Guest Name Section
   const guestStartY = perfY + 80;
+
+  // Render VIP Tier Badge if VIP/VVIP/Family
+  if (guestTier && guestTier !== 'regular') {
+    const tierText = guestTier === 'vvip' ? '★ VVIP GUEST ★' : guestTier === 'vip' ? '★ VIP GUEST ★' : '♥ KELUARGA INTI ♥';
+    ctx.save();
+    ctx.fillStyle = guestTier === 'vvip' ? '#D97706' : guestTier === 'vip' ? '#475569' : '#059669';
+    ctx.beginPath();
+    ctx.roundRect(CANVAS_WIDTH / 2 - 140, guestStartY - 48, 280, 36, 18);
+    ctx.fill();
+    ctx.strokeStyle = '#FDE68A';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 18px "Plus Jakarta Sans", sans-serif';
+    ctx.letterSpacing = '2px';
+    ctx.fillText(tierText, CANVAS_WIDTH / 2, guestStartY - 24);
+    ctx.letterSpacing = '0px';
+    ctx.restore();
+  }
+
   ctx.fillStyle = tokens.primary || '#D4AF37';
   ctx.font = 'bold 20px "Plus Jakarta Sans", sans-serif';
   ctx.letterSpacing = '3px';
@@ -331,6 +358,15 @@ export function downloadPassImage(canvas: HTMLCanvasElement, filename: string, f
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+/**
+ * One-call helper to render and trigger download of a guest pass as image
+ */
+export async function downloadGuestPassAsImage(options: RenderGuestPassOptions, filename?: string): Promise<void> {
+  const canvas = await renderGuestPassCanvas(options);
+  const targetName = filename || `Pass-${options.guestName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+  downloadPassImage(canvas, targetName, 'png');
 }
 
 /**

@@ -29,6 +29,8 @@ function extractUploadUrls(cfg: any): Set<string> {
     cfg.banks.forEach((b: any) => checkAndAdd(b?.qrisImage));
   }
 
+  checkAndAdd(cfg.agencyBranding?.agencyLogoUrl);
+
   return urls;
 }
 
@@ -112,6 +114,39 @@ export function createConfigRouter(io: SocketIOServer) {
     } catch (error) {
       console.error('[API Config Error] Gagal menyimpan konfigurasi:', error);
       res.status(500).json({ error: 'Gagal menyimpan konfigurasi ke database' });
+    }
+  });
+
+  // POST /api/config/rundown - Broadcast status rundown hari-H secara instan via Socket.io
+  router.post('/rundown', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { currentEvent, customNote, isActive } = req.body;
+      const [rows] = await pool.query('SELECT config_json FROM wedding_config WHERE id = 1 LIMIT 1');
+      const record = (rows as Array<{ config_json: string }>)[0];
+      const cfg = record?.config_json ? JSON.parse(record.config_json) : { ...defaultConfig };
+
+      const liveRundown = {
+        isActive: isActive !== false,
+        currentEvent: currentEvent || 'Acara Sedang Berlangsung',
+        customNote: customNote || '',
+        updatedAt: new Date().toISOString(),
+      };
+
+      cfg.liveRundown = liveRundown;
+
+      await pool.query(
+        `INSERT INTO wedding_config (id, config_json) VALUES (1, ?) 
+         ON DUPLICATE KEY UPDATE config_json = VALUES(config_json);`,
+        [JSON.stringify(cfg)]
+      );
+
+      io.emit('rundown:updated', liveRundown);
+      io.emit('config:updated', cfg);
+
+      res.json({ success: true, liveRundown });
+    } catch (error) {
+      console.error('[API Rundown Broadcast Error]:', error);
+      res.status(500).json({ error: 'Gagal menyiarkan status rundown' });
     }
   });
 

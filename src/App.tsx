@@ -5,6 +5,7 @@ import { resolveTheme, ThemeProvider, getThemeTokens } from './modules/frontend/
 import { SEO } from './modules/frontend/shared/components/SEO';
 import { MusicPlayer as DefaultMusicPlayer } from './modules/frontend/shared/components/MusicPlayer';
 import { FloatingFeatureHub } from './modules/frontend/shared/components/FloatingFeatureHub';
+import { LiveRundownBanner } from './modules/frontend/shared/components/LiveRundownBanner';
 import { cn } from './utils/cn';
 
 // Lazy-loaded route components for high performance and zero-overhead code splitting
@@ -185,6 +186,7 @@ function AppContent({ currentPath }: { currentPath: string }) {
             </AnimatePresence>
             <MusicPlayer isOpened={isOpened} />
             <FloatingFeatureHub isOpened={isOpened} />
+            {isOpened && <LiveRundownBanner />}
           </Suspense>
         </div>
       </div>

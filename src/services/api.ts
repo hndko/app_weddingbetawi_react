@@ -8,7 +8,6 @@ import {
   TriviaQuestion,
   CheckInRecord 
 } from '../types';
-import { debugStore, QueryLogEntry } from '../modules/dev/debugStore';
 
 const BASE_URL = '/api';
 
@@ -41,49 +40,9 @@ export function setAuthToken(token: string | null): void {
   }
 }
 
-function recordDevApiLog(
-  url: string,
-  method: string,
-  status: number,
-  durationMs: number,
-  responseHeaders: Headers,
-  requestPayload?: unknown,
-  responseBody?: unknown
-): void {
-  if (!import.meta.env.DEV) return;
-
-  const queries: QueryLogEntry[] = [];
-  const debugHeader = responseHeaders.get('X-Debug-Queries');
-  if (debugHeader) {
-    try {
-      const decoded = JSON.parse(atob(debugHeader));
-      if (Array.isArray(decoded.queries)) {
-        queries.push(...decoded.queries);
-      }
-    } catch {
-      // ignore
-    }
-  }
-
-  const serverTiming = responseHeaders.get('Server-Timing') || undefined;
-
-  debugStore.addApiLog({
-    url,
-    method,
-    status,
-    durationMs,
-    timestamp: Date.now(),
-    requestPayload,
-    responsePreview: responseBody,
-    queries,
-    serverTiming,
-  });
-}
-
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${BASE_URL}${endpoint}`;
   const token = getAuthToken();
-  const method = (options?.method || 'GET').toUpperCase();
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -91,41 +50,18 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     ...(options?.headers as Record<string, string> || {}),
   };
 
-  const startTime = performance.now();
-  let parsedPayload: unknown = undefined;
-  if (options?.body && typeof options.body === 'string') {
-    try {
-      parsedPayload = JSON.parse(options.body);
-    } catch {
-      parsedPayload = options.body;
-    }
-  }
-
-  let response: Response;
-  try {
-    response = await fetch(url, {
-      ...options,
-      headers,
-    });
-  } catch (err) {
-    const duration = Math.round((performance.now() - startTime) * 100) / 100;
-    recordDevApiLog(endpoint, method, 0, duration, new Headers(), parsedPayload, { error: (err as Error).message });
-    throw err;
-  }
-
-  const duration = Math.round((performance.now() - startTime) * 100) / 100;
+  const response = await fetch(url, {
+    ...options,
+    headers,
+  });
 
   if (!response.ok) {
     let errorMsg = `HTTP Error ${response.status}`;
-    let errData: unknown = undefined;
     try {
-      errData = await response.json();
-      if (errData && typeof errData === 'object' && 'error' in errData && typeof (errData as { error: unknown }).error === 'string') {
-        errorMsg = (errData as { error: string }).error;
-      }
-      recordDevApiLog(endpoint, method, response.status, duration, response.headers, parsedPayload, errData);
+      const errData = await response.json();
+      if (errData.error) errorMsg = errData.error;
     } catch {
-      recordDevApiLog(endpoint, method, response.status, duration, response.headers, parsedPayload, { error: errorMsg });
+      // ignore
     }
 
     // Jika token kedaluwarsa atau tidak valid, bersihkan sesi
@@ -140,9 +76,7 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     throw new Error(errorMsg);
   }
 
-  const data = await response.json();
-  recordDevApiLog(endpoint, method, response.status, duration, response.headers, parsedPayload, data);
-  return data;
+  return response.json();
 }
 
 export const api = {
@@ -220,7 +154,6 @@ export const api = {
     const formData = new FormData();
     formData.append('file', file);
     const token = getAuthToken();
-    const startTime = performance.now();
 
     const response = await fetch(`${BASE_URL}/upload`, {
       method: 'POST',
@@ -228,23 +161,17 @@ export const api = {
       body: formData,
     });
 
-    const duration = Math.round((performance.now() - startTime) * 100) / 100;
-
     if (!response.ok) {
-      recordDevApiLog('/upload', 'POST', response.status, duration, response.headers, { filename: file.name, size: file.size }, { error: `Upload failed with status ${response.status}` });
       throw new Error(`Upload failed with status ${response.status}`);
     }
 
-    const data = await response.json();
-    recordDevApiLog('/upload', 'POST', response.status, duration, response.headers, { filename: file.name, size: file.size }, data);
-    return data;
+    return response.json();
   },
 
   uploadMultipleFiles: async (files: File[]): Promise<{ success: boolean; urls: string[] }> => {
     const formData = new FormData();
     files.forEach((f) => formData.append('files', f));
     const token = getAuthToken();
-    const startTime = performance.now();
 
     const response = await fetch(`${BASE_URL}/upload/multiple`, {
       method: 'POST',
@@ -252,16 +179,11 @@ export const api = {
       body: formData,
     });
 
-    const duration = Math.round((performance.now() - startTime) * 100) / 100;
-
     if (!response.ok) {
-      recordDevApiLog('/upload/multiple', 'POST', response.status, duration, response.headers, { count: files.length }, { error: `Batch upload failed with status ${response.status}` });
       throw new Error(`Batch upload failed with status ${response.status}`);
     }
 
-    const data = await response.json();
-    recordDevApiLog('/upload/multiple', 'POST', response.status, duration, response.headers, { count: files.length }, data);
-    return data;
+    return response.json();
   },
 
   deleteUploadedFile: (url: string): Promise<{ success: boolean; message: string }> =>

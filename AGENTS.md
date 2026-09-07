@@ -152,11 +152,7 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
       1. *Floating Particles / Petals* (contoh: `FloatingFlowers` di Betawi, `FloatingMelati` di Jawa) yang melayang dengan rotasi perlahan, pergeseran sumbu X/Y lembut, dan variasi skala.
       2. *Swaying Corner Filigree / Vines* pada bingkai utama `AppFrame` (contoh: `AnimatedFloralVines` di Betawi, `AnimatedJavaneseFiligree` di Jawa).
     - Seluruh elemen dekorasi beranimasi WAJIB menyertakan kelas utilitas Tailwind `pointer-events-none` agar tidak menghalangi gestur sentuh pengguna, interaksi tombol, ataupun scroll pada layar perangkat seluler.
-11. **Amplop Interaktif & 3D Wax Seal Unfolding Suite (`InteractiveEnvelopeCoverCard`)**:
-    - Kartu pembuka pada seksi `OpeningCover` mengadopsi amplop fisik 3D dengan segel lilin (*wax seal*) timbul monogram kedua mempelai.
-    - Mengetuk segel lilin atau tombol *Buka Undangan* memicu efek audio sintetis Web Audio API (`playEnvelopeOpenSound()`), hamburan partikel emas (*sparkle burst*), lipatan penutup amplop 3D membuka ke atas (`rotateX(-180deg)`), dan kartu surat undangan meluncur naik keluar dari kantong amplop sebelum beralih ke isi undangan.
-    - Komponen wajib 100% netral budaya di layer bersama (`src/modules/frontend/shared/components/InteractiveEnvelopeCoverCard.tsx`) dan mengadaptasi palet warna tema aktif secara harmonis.
-12. **Master & Modular Export & Reporting Suite (`reportExporter.ts` & `ExportReportModal.tsx`)**:
+11. **Master & Modular Export & Reporting Suite (`reportExporter.ts` & `ExportReportModal.tsx`)**:
     - Mendukung ekspor instan All-in-One Master Workbook Excel (`.xlsx` 4-sheet) dan Master Dokumen WO PDF (`.pdf` A4 print-ready) beserta tombol ekspor modular per-tab (Buku Tamu, RSVP, Susunan Meja, dan Anggaran & Vendor).
     - Seluruh proses sintesis berkas dilakukan 100% di browser klien (*client-side streaming*) menggunakan `xlsx` dan `jspdf`, menjamin *zero server load*, privasi data tinggi, dan performa generasi instan.
 
@@ -200,8 +196,6 @@ Sebelum menyatakan tugas selesai atau melakukan commit, AI Assistant WAJIB melak
    Wajib menghasilkan exit code 0 tanpa error tipe apa pun.
 2. **Production Build Check**: Dilewati sesuai User Directive di atas, kecuali diminta secara eksplisit oleh pengguna.
 3. **Console Hygiene Check**: Pastikan tidak ada runtime crash atau error unhandled promise di browser.
-4. **Developer Floating DebugBar (`DeveloperDebugBar.tsx`)**:
-   - Di mode development (`import.meta.env.DEV`), gunakan floating DebugBar di pojok layar bawah (atau via `Ctrl + Shift + D`) untuk memverifikasi kueri MySQL Express, durasi REST API, log event Socket.io real-time, dan context tema secara langsung.
 
 ---
 

@@ -14,9 +14,6 @@ const AdminPanel = lazy(() =>
 const LiveWishesProjector = lazy(() => 
   import('./modules/frontend/shared/components/LiveWishesProjector').then(m => ({ default: m.LiveWishesProjector }))
 );
-const DeveloperDebugBar = lazy(() => 
-  import('./modules/dev/DeveloperDebugBar').then(m => ({ default: m.DeveloperDebugBar }))
-);
 
 export function navigateTo(path: string) {
   if (window.location.pathname !== path) {
@@ -201,11 +198,6 @@ export default function App() {
   return (
     <WeddingProvider>
       <AppContent currentPath={currentPath} />
-      {import.meta.env.DEV && (
-        <Suspense fallback={null}>
-          <DeveloperDebugBar />
-        </Suspense>
-      )}
     </WeddingProvider>
   );
 }

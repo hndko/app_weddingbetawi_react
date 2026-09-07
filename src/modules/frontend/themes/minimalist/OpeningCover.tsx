@@ -5,7 +5,6 @@ import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { useGuestName } from '../../../../hooks/useGuestName';
 import { BotanicalEucalyptus } from './decorations/BotanicalEucalyptus';
 import { FloatingBotanicalLeaves } from './decorations/FloatingBotanicalLeaves';
-import { InteractiveEnvelopeCoverCard } from '../../shared/components/InteractiveEnvelopeCoverCard';
 
 export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
   const { weddingConfig } = useWeddingConfig();
@@ -77,28 +76,31 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.8 }}
-        className="z-30 w-full max-w-[330px] shrink-0"
+        className="z-30 w-full max-w-[320px] shrink-0"
       >
-        <InteractiveEnvelopeCoverCard
-          onOpen={onOpen}
-          guestName={guestName}
-          recipientLabel="Dear Honored Guest:"
-          buttonText="Open Invitation"
-          themeStyle={{
-            envelopePocketBg: 'rgba(255, 255, 255, 0.94)',
-            envelopeFlapBg: 'rgba(247, 250, 252, 0.98)',
-            envelopeBorder: 'rgba(203, 213, 225, 0.65)',
-            waxColor: '#475569',
-            waxRingColor: '#94A3B8',
-            waxTextColor: '#FFFFFF',
-            letterBg: 'rgba(255, 255, 255, 0.98)',
-            letterBorder: 'rgba(226, 232, 240, 0.85)',
-            letterTextColor: '#1A202C',
-            letterMutedColor: '#718096',
-            buttonBg: 'linear-gradient(to right, #2D3748, #4A5568, #2D3748)',
-            buttonText: '#FFFFFF',
-          }}
-        />
+        <div className="bg-white/90 backdrop-blur-md px-5 py-5 rounded-2xl border border-[#E2E8F0] shadow-md relative overflow-hidden flex flex-col items-center">
+          {/* Subtle modern corner marks */}
+          <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t border-l border-[#9AA79C]" />
+          <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t border-r border-[#9AA79C]" />
+          <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b border-l border-[#9AA79C]" />
+          <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b border-r border-[#9AA79C]" />
+
+          <p className="text-[10px] text-[#718096] mb-1 tracking-widest uppercase font-sans font-light">
+            Dear Honored Guest:
+          </p>
+          <p className="font-heading text-xl text-[#1A202C] mb-4 font-normal text-center">
+            {guestName}
+          </p>
+
+          <button
+            type="button"
+            onClick={onOpen}
+            className="w-full bg-gradient-to-r from-[#2D3748] via-[#4A5568] to-[#2D3748] text-white font-medium py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:brightness-110 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer text-xs tracking-wider uppercase active:scale-98"
+          >
+            <MailOpen size={16} />
+            <span>Open Invitation</span>
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   );

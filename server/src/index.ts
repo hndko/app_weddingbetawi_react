@@ -17,7 +17,6 @@ import { createSeatingRouter } from './routes/seating';
 import { createTriviaRouter } from './routes/trivia';
 import { createAuthRouter } from './routes/auth';
 import { createCheckinsRouter } from './routes/checkins';
-import { debugTrackerMiddleware } from './middleware/debugTracker';
 
 // Load environment configuration
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -48,12 +47,10 @@ io.on('connection', (socket) => {
 app.use(cors({
   origin: corsOriginConfig,
   credentials: true,
-  exposedHeaders: ['X-Debug-Queries', 'Server-Timing', 'Retry-After'],
 }));
 app.use(compression());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use(debugTrackerMiddleware);
 
 // Static uploads directory dengan Cache-Control 30 hari (optimasi loading gambar)
 const uploadsPath = path.resolve(process.cwd(), 'server', 'uploads');

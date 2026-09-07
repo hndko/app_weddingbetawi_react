@@ -5,7 +5,6 @@ import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { useGuestName } from '../../../../hooks/useGuestName';
 import { MahkotaSiger } from './decorations/MahkotaSiger';
 import { FloatingJasmineRonce } from './decorations/FloatingJasmineRonce';
-import { InteractiveEnvelopeCoverCard } from '../../shared/components/InteractiveEnvelopeCoverCard';
 
 export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
   const { weddingConfig } = useWeddingConfig();
@@ -77,28 +76,31 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.8 }}
-        className="z-30 w-full max-w-[330px] shrink-0"
+        className="z-30 w-full max-w-[320px] shrink-0"
       >
-        <InteractiveEnvelopeCoverCard
-          onOpen={onOpen}
-          guestName={guestName}
-          recipientLabel="Kahatur Kasumpingan Para Wargi Sadaya:"
-          buttonText="Buka Serat Ulem"
-          themeStyle={{
-            envelopePocketBg: 'rgba(20, 38, 29, 0.94)',
-            envelopeFlapBg: 'rgba(25, 46, 36, 0.98)',
-            envelopeBorder: 'rgba(212, 175, 55, 0.45)',
-            waxColor: '#881337',
-            waxRingColor: '#D4AF37',
-            waxTextColor: '#FAF9F5',
-            letterBg: 'rgba(37, 68, 53, 0.96)',
-            letterBorder: 'rgba(212, 175, 55, 0.35)',
-            letterTextColor: '#FAF9F5',
-            letterMutedColor: '#E6D5B8',
-            buttonBg: 'linear-gradient(to right, #B38B22, #D4AF37, #B38B22)',
-            buttonText: '#14261D',
-          }}
-        />
+        <div className="bg-[#14261D]/85 backdrop-blur-md px-5 py-5 rounded-2xl border border-[#D4AF37]/40 shadow-xl relative overflow-hidden flex flex-col items-center">
+          {/* Subtle golden corner highlights */}
+          <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t border-l border-[#D4AF37]" />
+          <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t border-r border-[#D4AF37]" />
+          <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b border-l border-[#D4AF37]" />
+          <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b border-r border-[#D4AF37]" />
+
+          <p className="text-[11px] text-[#FAF9F5]/70 mb-1 tracking-wide font-light">
+            Kahatur Kasumpingan Para Wargi Sadaya:
+          </p>
+          <p className="font-heading text-xl text-[#FAF9F5] mb-4 font-bold text-center">
+            {guestName}
+          </p>
+
+          <button
+            type="button"
+            onClick={onOpen}
+            className="w-full bg-gradient-to-r from-[#B38B22] via-[#D4AF37] to-[#B38B22] text-[#14261D] font-semibold py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:brightness-110 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer text-xs tracking-wide uppercase"
+          >
+            <MailOpen size={16} />
+            <span>Buka Serat Ulem</span>
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   );

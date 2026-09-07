@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.46.1`
+- **Versi Aplikasi Saat Ini**: `v1.47.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -197,6 +197,8 @@ Sebelum menyatakan tugas selesai atau melakukan commit, AI Assistant WAJIB melak
    Wajib menghasilkan exit code 0 tanpa error tipe apa pun.
 2. **Production Build Check**: Dilewati sesuai User Directive di atas, kecuali diminta secara eksplisit oleh pengguna.
 3. **Console Hygiene Check**: Pastikan tidak ada runtime crash atau error unhandled promise di browser.
+4. **Developer Floating DebugBar (`DeveloperDebugBar.tsx`)**:
+   - Di mode development (`import.meta.env.DEV`), gunakan floating DebugBar di pojok layar bawah (atau via `Ctrl + Shift + D`) untuk memverifikasi kueri MySQL Express, durasi REST API, log event Socket.io real-time, dan context tema secara langsung.
 
 ---
 

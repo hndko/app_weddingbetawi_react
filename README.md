@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.46.1-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.47.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -634,6 +634,16 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
   - **Export Rekap Anggaran (CSV UTF-8 BOM)**: Unduh seluruh rincian anggaran, kontrak, dan sisa pembayaran ke berkas Excel.
 - **Menu 6: Buku Tamu RSVP & Export CSV**: Daftar konfirmasi kehadiran dengan pencarian latar *real-time*, penomoran urut otomatis 1-indexed (`#`), dan tombol **Export ke Excel (CSV)** berformat UTF-8 BOM.
 - **Menu 7: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan, dialog hapus SweetAlert2, serta tombol akses cepat **"Buka Layar Proyektor Panggung"** (`/live`).
+- **Developer Floating DebugBar Suite (v1.47.0)**:
+  - **In-App Full-Stack Profiler**: Terinspirasi dari *Laravel Debugbar*, panel pengembang melayang di layar aplikasi untuk memantau performa frontend dan backend secara *real-time* di lingkungan pengembangan (`import.meta.env.DEV`).
+  - **Pill Mengambang & Shortcut Cepat**: Tampil ringkas sebagai *floating pill* status cepat di sudut kiri bawah layar dan dapat dibuka/ditutup instan via pintasan keyboard **`Ctrl + Shift + D`**.
+  - **5 Tab Analitik Lengkap**:
+    1. *🗄️ Queries*: Inspeksi kueri SQL MySQL yang dieksekusi Express dengan durasi milidetik, parameter bindings, dan tombol 1-klik *Copy SQL*.
+    2. *🌐 REST API*: Riwayat permintaan API, durasi respons jaringan (ms), status HTTP (200, 401, 429), dan inspeksi data JSON bolak-balik.
+    3. *⚡ Realtime Socket*: Pemantau koneksi WebSocket Gateway, latensi ping, dan stream event real-time (`config:updated`, `wish:added`, dll).
+    4. *🎨 State & Tema*: Inspeksi token warna tema aktif, konfigurasi mempelai, dan parameter nama tamu URL (`?to=...`).
+    5. *⏱️ Performance*: Metrik waktu muat, ukuran layar viewport, dan lingkungan runtime.
+  - **Zero Production Leak**: Modul otomatis di-*tree-shake* habis pada build produksi sehingga ukuran bundle produksi tetap bersih 0 byte.
 - **Amplop Interaktif & 3D Wax Seal Unfolding Animation (v1.46.0)**:
   - **Amplop Fisik 3D & Segel Lilin Realistis**: Pengalaman pembuka undangan elegan dengan kantong amplop berbayangan realistis, segel lilin (*wax seal*) bertekstur organik timbul dengan monogram inisial mempelai otomatis (misal: `H & N`), serta efek kilauan (*sparkle hint*).
   - **Animasi Unfolding 3D & Micro-burst**: Mengetuk segel lilin atau tombol "Buka Undangan" memicu hamburan partikel kilau emas (*sparkle burst*), penutup amplop atas (*top flap*) melipat ke atas 180° menggunakan CSS 3D transforms (`rotateX(-180deg)`), dan kartu surat undangan meluncur naik keluar dari kantong secara dramatis sebelum beralih ke isi undangan.

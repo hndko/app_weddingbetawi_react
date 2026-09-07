@@ -234,6 +234,16 @@ Direktori `src/modules/frontend/shared/` mengisolasi komponen bersama (`BottomNa
 - **Acoustic Synthesizer Native (Web Audio API)**: [`src/utils/envelopeAudio.ts`](../src/utils/envelopeAudio.ts) mensintesis suara lilin pecah (*wax snap*), desiran kertas (*parchment rustle*), dan glissando harpa tanpa file audio eksternal.
 - **Fisika 3D Motion**: Memanfaatkan CSS 3D transforms (`rotateX(-180deg)`) untuk lipatan penutup amplop atas (*top flap*) dan gerakan meluncur kartu surat ke atas (*translateY(-75px)*).
 
+### G. Developer Floating DebugBar Suite (v1.47.0)
+- **Terinspirasi Laravel Debugbar**: Menampilkan metrik performa komprehensif langsung di layar browser saat mode development (`import.meta.env.DEV`).
+- **Pintasan Cepat**: Tampil sebagai pill mengambang di sudut kiri bawah dan dapat dibuka/tutup dengan shortcut **`Ctrl + Shift + D`**.
+- **5 Tab Analitik**:
+  1. *Queries*: Kueri SQL MySQL Express dengan durasi ms dan tombol *Copy SQL*.
+  2. *REST API*: Status HTTP, durasi respons jaringan, dan preview payload.
+  3. *Realtime Socket*: Status koneksi, ID socket, dan log stream event WebSocket.
+  4. *State & Tema*: Nilai token aktif, config mempelai, dan nama tamu.
+  5. *Performance*: Dimensi viewport layar dan runtime environment.
+
 ---
 
 ## 🧼 7. Standar Kerapian Kode (*Clean Code Standards*)

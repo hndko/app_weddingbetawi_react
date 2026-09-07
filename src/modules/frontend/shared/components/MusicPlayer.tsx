@@ -13,7 +13,6 @@ import {
   Play, 
   Pause, 
   X, 
-  SlidersHorizontal, 
   ChevronUp, 
   ChevronDown 
 } from 'lucide-react';
@@ -633,14 +632,30 @@ export function MusicPlayer({ isOpened }: MusicPlayerProps) {
                     </span>
                   )}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setIsExpanded(false)}
-                  className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors cursor-pointer"
-                  aria-label="Tutup panel audio"
-                >
-                  <X size={15} />
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={toggleMute}
+                    className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                    title={isMuted ? "Bunyikan Musik (Unmute)" : "Bisukan Musik (Mute)"}
+                    aria-label={isMuted ? "Bunyikan Musik (Unmute)" : "Bisukan Musik (Mute)"}
+                  >
+                    {isMuted || volume === 0 ? (
+                      <VolumeX size={15} className="text-red-500" />
+                    ) : (
+                      <Volume2 size={15} style={{ color: tokens.accent }} />
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsExpanded(false)}
+                    className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors cursor-pointer"
+                    aria-label="Tutup panel audio"
+                    title="Tutup Panel"
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
               </div>
 
               {/* Active Track Info */}
@@ -831,65 +846,55 @@ export function MusicPlayer({ isOpened }: MusicPlayerProps) {
         )}
       </AnimatePresence>
 
-      {/* Floating Audio Control Button Group (tampil anggun setelah cover dibuka) */}
+      {/* Floating Audio Control Button (1 Tombol Tunggal Show/Hide Studio & Audio Controls) */}
       {isOpened && (
         <div 
           className={cn(
-            "fixed md:absolute z-50 flex items-center gap-1.5",
+            "fixed md:absolute z-50 flex items-center",
             "bottom-[calc(85px+env(safe-area-inset-bottom))] right-5 md:right-6"
           )}
         >
-          {/* Quick Studio / Expand Controls Toggle Button */}
-          <button
+          {/* Single Consolidated Floating Button */}
+          <button 
             type="button"
             onClick={() => setIsExpanded(prev => !prev)}
             className={cn(
-              "p-2.5 rounded-full shadow-md border backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center",
-              isExpanded ? "scale-105" : ""
-            )}
-            style={{
-              backgroundColor: tokens.floatingBtnBg,
-              borderColor: tokens.floatingBtnBorder,
-              color: isExpanded ? tokens.accent : tokens.floatingBtnText,
-            }}
-            aria-label="Buka studio kontrol audio"
-            title="Buka Studio Kontrol Audio & Playlist"
-          >
-            <SlidersHorizontal size={14} />
-          </button>
-
-          {/* Primary Play/Pause Floating Button */}
-          <button 
-            type="button"
-            onClick={togglePlay}
-            className={cn(
               "p-3 rounded-full shadow-lg border backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center group relative",
+              isExpanded && "ring-2"
             )}
             style={{
               backgroundColor: tokens.floatingBtnBg,
-              borderColor: tokens.floatingBtnBorder,
+              borderColor: isExpanded ? tokens.accent : tokens.floatingBtnBorder,
               color: isPlaying ? tokens.floatingBtnActiveText : tokens.floatingBtnText,
               boxShadow: isPlaying ? `0 0 0 4px ${tokens.floatingBtnRing}, 0 10px 25px -5px rgba(0,0,0,0.3)` : '0 8px 20px -4px rgba(0,0,0,0.15)',
             }}
-            aria-label={isPlaying ? "Jeda musik latar" : "Putar musik latar"}
-            title={buttonTitle}
+            aria-label={isExpanded ? "Tutup panel studio audio" : (isPlaying ? "Buka pengaturan musik dan audio" : "Buka kontrol audio")}
+            title={isExpanded ? "Tutup Studio Audio" : (isPlaying ? "Buka Pengaturan Musik & Audio" : "Musik Hening - Buka Pengaturan Audio")}
           >
-            <div className={cn("transition-transform duration-700 flex items-center justify-center", isPlaying && "animate-spin [animation-duration:4s]")}>
-              {isPlaying ? <Music size={18} /> : <VolumeX size={18} />}
+            <div className={cn("transition-transform duration-700 flex items-center justify-center", isPlaying && !isExpanded && "animate-spin [animation-duration:4s]")}>
+              {isExpanded ? (
+                <X size={18} style={{ color: tokens.accent }} />
+              ) : isMuted || !isPlaying ? (
+                <VolumeX size={18} />
+              ) : (
+                <Music size={18} />
+              )}
             </div>
 
-            {/* Mini Playback Mode Indicator Badge */}
-            <div 
-              className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[9px] shadow-sm border border-white/40 transition-transform group-hover:scale-110"
-              style={{
-                backgroundColor: tokens.primary,
-                color: '#ffffff',
-              }}
-              title={`Mode: ${currentModeConfig.label}`}
-              aria-hidden="true"
-            >
-              <ModeIcon size={10} strokeWidth={2.5} />
-            </div>
+            {/* Mini Playback Mode Indicator Badge (tampil saat panel tidak terbuka) */}
+            {!isExpanded && (
+              <div 
+                className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[9px] shadow-sm border border-white/40 transition-transform group-hover:scale-110"
+                style={{
+                  backgroundColor: tokens.primary,
+                  color: '#ffffff',
+                }}
+                title={`Mode: ${currentModeConfig.label}`}
+                aria-hidden="true"
+              >
+                <ModeIcon size={10} strokeWidth={2.5} />
+              </div>
+            )}
           </button>
         </div>
       )}

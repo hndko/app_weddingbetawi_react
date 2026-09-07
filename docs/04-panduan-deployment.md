@@ -283,20 +283,201 @@ Cocok untuk pengguna yang memiliki hosting cPanel dengan fitur **Setup Node.js A
 
 ## 4. Deployment aaPanel Control Panel
 
-Jika Anda menggunakan control panel **aaPanel**:
+Panduan ini disusun secara spesifik untuk deployment menggunakan control panel **aaPanel** (Linux CentOS/Ubuntu/Debian) dengan arsitektur **Node.js Express + MySQL + Nginx Reverse Proxy**.
 
-1. **Instalasi Modul di aaPanel App Store**:
-   - Pasang **Nginx**, **MySQL**, dan **Node.js Version Manager** (pilih Node v20 LTS).
-2. **Buat Database MySQL**:
-   - Buka menu **Databases** > klik **Add database** > beri nama `db_weddingbetawi`.
-3. **Tambahkan Proyek Node.js**:
-   - Buka menu **Website** > tab **Node project** > klik **Add Node project**.
-   - **Path**: arahkan ke folder proyek Anda (`/www/wwwroot/wedding`).
-   - **Run Opt**: `npm run server` atau skrip PM2.
-   - **Port**: `5000`.
-4. **URL Rewrite & Reverse Proxy Nginx di aaPanel**:
-   - Di tab **Reverse proxy** pada domain website, tambahkan rule untuk `/api/` dan `/socket.io/` mengarah ke `http://127.0.0.1:5000`.
-   - Di tab **SSL**, pilih **Let's Encrypt** dan aktifkan **Force HTTPS**.
+### A. Persiapan Ekosistem Modul di aaPanel App Store
+Sebelum memulai, pastikan modul-modul berikut sudah terinstal via menu **App Store** di aaPanel:
+1. **Nginx** (disarankan Nginx 1.22 atau 1.24+).
+2. **MySQL** / **MariaDB** (disarankan MySQL 5.7/8.0 atau MariaDB 10.5+).
+3. **Node.js Version Manager**:
+   - Buka modul Node.js Version Manager, pasang versi Node LTS (disarankan **Node v20.x** atau **Node v22.x**).
+   - Pastikan versi tersebut dijadikan versi aktif (*default*).
+
+---
+
+### B. Pembuatan Database MySQL di aaPanel
+1. Buka menu **Databases** di sidebar aaPanel.
+2. Klik tombol **Add database**.
+3. Isi parameter:
+   - **DBName**: `db_weddingbetawi` (atau nama database yang Anda inginkan).
+   - **DBType**: `MySQL`.
+   - **Character Set**: `utf8mb4`.
+   - **Username**: Dibuat otomatis atau tentukan sendiri.
+   - **Password**: Salin kata sandi acak yang dibuatkan oleh aaPanel.
+   - **Access Permission**: `Local server` (127.0.0.1).
+4. Klik **Submit** dan catat kredensial database untuk file `.env`.
+
+---
+
+### C. Pengunggahan Proyek & Konfigurasi Berkas `.env`
+1. Letakkan kode proyek di direktori root web aaPanel, misalnya:
+   ```text
+   /www/wwwroot/app_weddingbetawi_react
+   ```
+   *(Bisa via Git clone di Terminal atau upload file zip via menu Files aaPanel lalu diekstrak)*.
+2. Buka menu **Files** di aaPanel > masuk ke `/www/wwwroot/app_weddingbetawi_react`.
+3. Buat berkas baru bernama `.env` (atau edit file `.env` yang ada) dan sesuaikan nilainya:
+   ```env
+   # Frontend Client Configuration
+   VITE_API_URL=https://undangan.domainanda.com
+
+   # Server Backend Configuration
+   PORT=5000
+   NODE_ENV=production
+
+   # Database MySQL aaPanel
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_USER=nama_user_db_aapanel
+   DB_PASSWORD=password_db_aapanel
+   DB_NAME=db_weddingbetawi
+
+   # Security & CORS
+   JWT_SECRET=rahasia_jwt_acak_super_aman_2026_wedding
+   CORS_ORIGIN=https://undangan.domainanda.com
+   ```
+   *(Pastikan `VITE_API_URL` dan `CORS_ORIGIN` menggunakan domain resmi Anda ber-HTTPS)*.
+
+---
+
+### D. Eksekusi Terminal aaPanel (Migrasi, Seed & Build)
+Buka menu **Terminal** di aaPanel, lalu jalankan perintah berikut secara berurutan:
+
+```bash
+# 1. Masuk ke direktori proyek
+cd /www/wwwroot/app_weddingbetawi_react
+
+# 2. Pasang dependensi menggunakan npm (DILARANG menggunakan pnpm atau bun!)
+npm install
+
+# 3. Jalankan migrasi skema tabel MySQL
+npm run db:migrate
+
+# 4. Masukkan data bawaan (seeding data awal dan akun admin default)
+npm run db:seed
+
+# 5. Kompilasi frontend React SPA ke direktori dist/
+npm run build
+
+# 6. Buat folder upload dan berikan hak akses kepemilikan ke user www
+mkdir -p server/uploads
+chown -R www:www /www/wwwroot/app_weddingbetawi_react
+chmod -R 775 server/uploads
+```
+
+> [!CAUTION]
+> **Kepemilikan Izin Akses (`chown -R www:www`):**
+> aaPanel menjalankan service web dan Node menggunakan user `www`. Jika folder `server/uploads` tidak diberikan izin kepemilikan kepada `www`, Express akan mengalami galat `500 Internal Server Error (EACCES: permission denied)` saat admin mengunggah foto mempelai atau gambar QRIS!
+
+---
+
+### E. Konfigurasi Penambahan Proyek Node.js ("Add Node project")
+Buka menu **Website** > pilih tab **Node project** > klik tombol **Add Node project**.
+
+Konfigurasikan form modal persis seperti panduan berikut:
+
+| Parameter Form | Nilai / Konfigurasi | Keterangan & Catatan Kritis |
+| :--- | :--- | :--- |
+| **Path** | `/www/wwwroot/app_weddingbetawi_react` | Arahkan ke folder utama proyek Anda. |
+| **Name** | `app_weddingbetawi_react` | Nama identitas service backend di aaPanel. |
+| **Run opt** | `Custom command` | Pilih opsi Custom command. |
+| **Command** | `npm run server` | Menjalankan Express & Socket.io backend di port 5000. |
+| **Port** | `5000` | Port tempat backend REST API mendengarkan request. |
+| **User** | `www` | User eksekusi standar sistem aaPanel. |
+| **Node** | `v22.23.1` (atau versi LTS terpasang) | Pilih binary Node yang telah diinstal. |
+| **Pkg Manager** | ⚠️ **`npm`** | **KRITIS!** Ubah dari bawaan `pnpm` menjadi **`npm`**. Proyek ini menggunakan `package-lock.json` dan tidak kompatibel dengan `pnpm`. |
+| **Auto start on boot** | **Aktif (Toggle ON)** | Agar backend otomatis menyala saat server VPS restart. |
+
+> [!WARNING]
+> **KESALAHAN UMUM PADA MODAL "Add Node project":**
+> Pada dropdown **Pkg Manager**, nilai default aaPanel sering kali terpilih **`pnpm`**. **WAJIB DIUBAH MENJADI `npm`**. Jika tetap dibiarkan `pnpm`, aaPanel akan memanggil `pnpm install` yang akan menyebabkan galat instalasi atau merusak pohon dependensi proyek.
+
+Klik tombol **Confirm** untuk memulai background service Node.js. Pastikan status proyek di tabel menunjukkan badge hijau **Running**.
+
+---
+
+### F. Konfigurasi Website Nginx (Frontend SPA + Reverse Proxy API)
+Proyek Node.js di langkah sebelumnya hanya menjalankan backend Express di port internal `5000`. Untuk melayani frontend SPA `dist/` ke pengunjung di port `80`/`443` dengan domain publik Anda:
+
+1. Buka menu **Website** > tab **PHP/HTML project** (atau Nginx Web).
+2. Klik **Add site**:
+   - **Domain**: Masukkan domain Anda (contoh: `undangan.domainanda.com`).
+   - **Site Directory**: Arahkan ke `/www/wwwroot/app_weddingbetawi_react/dist`.
+   - **PHP Version**: Pilih `Pure HTML` (atau sembarang versi karena ini hanya melayani file statis).
+   - Klik **Submit**.
+3. **Konfigurasi SSL Let's Encrypt**:
+   - Klik nama domain yang baru dibuat > masuk ke tab **SSL**.
+   - Pilih tab **Let's Encrypt**, centang domain Anda, lalu klik **Apply**.
+   - Aktifkan toggle **Force HTTPS**.
+4. **Konfigurasi Nginx Virtual Host (Nginx Configuration File)**:
+   - Masuk ke tab **Configuration file** pada pengaturan website tersebut.
+   - Sesuaikan konfigurasi server block Nginx agar menyajikan `dist/` dan mem-proxy request backend:
+
+```nginx
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name undangan.domainanda.com;
+
+    # Root direktori mengarah ke folder build frontend (dist)
+    root /www/wwwroot/app_weddingbetawi_react/dist;
+    index index.html;
+
+    # Gzip Compression
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml;
+    gzip_min_length 256;
+
+    # 1. Routing Frontend React Single Page Application (SPA)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 2. Reverse Proxy REST API ke Express Backend (Port 5000)
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 15M;
+    }
+
+    # 3. Reverse Proxy File Unggahan Statis (Foto Pengantin & QRIS)
+    location /uploads/ {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    # 4. Reverse Proxy WebSocket Real-Time (Socket.io)
+    location /socket.io/ {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Cache Aset Statis Vite
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    # Blokir akses ke file sensitif (.env, .git)
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+}
+```
+5. Klik tombol **Save**. Nginx otomatis me-reload konfigurasi.
+6. Buka domain Anda di browser untuk memastikan aplikasi berjalan 100% lancar!
 
 ---
 

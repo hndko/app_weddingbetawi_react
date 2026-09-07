@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.42.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.43.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -240,11 +240,25 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
 | **Tamu Undangan** *(Public Guest)* | Membuka URL undangan publik (`https://domain.com/?to=Nama+Tamu`) | - Membuka sampul undangan interaktif (*Opening Cover*).<br>- Memutar dan menjeda musik latar (*Floating Audio Player*).<br>- Menavigasi seksi undangan via *Bottom Navigation* & *ScrollSpy*.<br>- Melihat detail acara dan membuka rute lokasi ke Google Maps.<br>- Mengirim konfirmasi kehadiran pada formulir RSVP.<br>- Mengirim doa restu dan melihat dinding ucapan secara *real-time*.<br>- Menyalin nomor rekening bank & memindai kode QRIS untuk hadiah. |
 | **Mempelai / Admin** *(Administrator)* | Membuka URL rahasia `/login` dan memasukkan Username (`superadmin`) & Password (`password`) | - Mengakses **WhatsApp Link Generator** (membuat link custom nama tamu dan template pesan WA instan).<br>- Mengubah data profil kedua mempelai dan unggah foto.<br>- Mengubah jadwal, jam, venue, dan link Google Maps acara.<br>- Menambah, menyusun, dan menghapus foto galeri pernikahan.<br>- Mengelola daftar rekening bank & unggah gambar kode QRIS.<br>- Mengatur playlist musik latar (YouTube/Google Drive) dan mode putar.<br>- Mengonfigurasi metadata SEO & pratinjau thumbnail media sosial.<br>- Memantau statistik kehadiran RSVP (Total Hadir, Tidak Hadir, Total Respon).<br>- Mengelola meja resepsi dan pemindai QR pass tamu hari-H.<br>- Menghapus respon RSVP atau ucapan tamu yang tidak pantas (moderasi).<br>- Mengubah password admin secara mandiri via modal Ganti Password. |
 | **Operator Panggung / MC** *(Stage Display)* | Membuka rute publik mandiri `/live` atau `/projector` (atau via tombol jalan pintas di `/modules`) | - Menampilkan layar penuh 16:9 sinematik di proyektor/LED ballroom panggung pernikahan.<br>- Menampilkan QR Code interaktif untuk dipindai tamu dari meja.<br>- Memutar selebrasi spotlight & audio chime harmonis secara otomatis saat ada ucapan baru.<br>- Mengatur kecepatan putar otomatis (carousel) dan audio chime via floating control bar. |
-| **Operator Panggung / MC** *(Stage Display)* | Membuka rute publik mandiri `/live` atau `/projector` (atau via tombol jalan pintas di `/modules`) | - Menampilkan layar penuh 16:9 sinematik di proyektor/LED ballroom panggung pernikahan.<br>- Menampilkan QR Code interaktif untuk dipindai tamu dari meja.<br>- Memutar selebrasi spotlight & audio chime harmonis secara otomatis saat ada ucapan baru.<br>- Mengatur kecepatan putar otomatis (carousel) dan audio chime via floating control bar. |
 
 ---
 
 ## ✨ Fitur Utama
+
+### 📸 Virtual Photo Booth Responsif & Sticky Studio Action Bar (v1.43.0)
+- **Pengalaman Photobooth Mobile Optimal (*Zero Button Cutoff*)**:
+  - Mengeliminasi isu tombol aksi yang tertutup atau terpotong pada berbagai perangkat seluler melalui integrasi unit tinggi dinamis (`100dvh` / `h-[100dvh]`) dan pengamanan area bawah (*safe area padding* `env(safe-area-inset-bottom)`).
+  - **Sticky Bottom Action Bar**: Bilah aksi terkunci permanen di bagian bawah modal dengan latar belakang *backdrop blur* halus dan penyesuaian dinamis sesuai tahapan:
+    - **Langkah 1 (Setup)**: Tombol pemicu *"Mulai Pengambilan Foto (3 Pose / Single Polaroid)"*.
+    - **Langkah 2 (Capture Kamera)**: Tombol Shutter *"Ambil Foto Pose X"* berdampingan dengan tombol navigasi *"Kembali"*.
+    - **Langkah 2 (Capture Galeri)**: Tombol *"Lanjut ke Pratinjau Photostrip"* berdampingan dengan tombol *"Kembali"*.
+    - **Langkah 3 (Preview & Download)**: Tombol unduh utama *"Unduh Photostrip HD (PNG)"* bersanding dengan tombol sekunder *"Foto Ulang"* dan *"Ganti Format"*.
+  - **Jendela Bidik Kamera Adaptif**: Ketinggian kamera fleksibel (`max-h-[36vh] xs:max-h-[40vh] md:max-h-[340px]`) serta baris pratinjau thumbnail pose yang ringkas (`12x12` / `14x14`) menjaga seluruh visual tetap berada dalam satu layar nyaman tanpa perlu *scrolling*.
+- **Sintesis Photostrip HD di Sisi Klien (HTML5 Canvas API)**:
+  - 2 Pilihan layout: **3-Pose Photostrip** (Korean self-photo studio vertikal 600x1800 px) & **Single Polaroid Frame** (800x1000 px).
+  - 4 Pilihan filter warna artistik: *Natural*, *B&W Vintage*, *Sepia Retro*, dan *Warm Glow*.
+  - 4 Desain bingkai: *Theme Matched* (mengadaptasi palet tema aktif secara otomatis), *Black Studio*, *White Studio*, dan *Romantic Pastel*.
+  - Pemrosesan gambar 100% lokal di browser pengguna (*zero server upload & zero storage cost*).
 
 ### 🎵 Sinkronisasi Mutlak Mode Pemutaran Audio & Engine Playlist (v1.36.1)
 - **4 Mode Pemutaran Audio Responsif**: Sinkronisasi penuh antara Panel Admin Modules dan Audio Engine klien:
@@ -254,7 +268,7 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
   - *Linear (Sekali Jalan)*: Memutar urutan playlist satu kali dari awal hingga akhir, lalu berhenti otomatis setelah lagu terakhir selesai.
 - **Transisi Mulus YouTube IFrame API**: Menggunakan `loadVideoById` pada instance player aktif tanpa merusak DOM iframe, mencegah pemblokiran autoplay oleh browser seluler (iOS Safari & Android Chrome).
 - **Indikator Badge Mode Interaktif**: Floating button musik kini dilengkapi mini-badge ikon mode pemutaran (`Repeat`, `Repeat1`, `Shuffle`, `ListMusic`) serta *tooltip* informatif yang mencerminkan pilihan aktif dari Admin Panel.
-- **Normalisasi Data Firestore**: Penanganan fallback otomatis untuk struktur `weddingConfig.music` agar konfigurasi mode dan playlist selalu tersimpan dan termuat secara utuh.
+- **Normalisasi Data Backend**: Penanganan fallback otomatis untuk struktur `weddingConfig.music` agar konfigurasi mode dan playlist selalu tersimpan dan termuat secara utuh dari basis data MySQL.
 
 ### 🦅 Tema Dayak Kenyah Borneo & ⚡ Cyberpunk 2077 Night City (v1.36.0)
 - **Total 20 Tema Siap Pakai**: Menembus 20 variasi tema pernikahan digital yang kaya budaya adat Nusantara dan konsep modern futuristik.
@@ -268,11 +282,11 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
   - *Pengingat H-3*: Pengingat konfirmasi kehadiran RSVP agar katering dan meja tertata presisi.
   - *Pengingat H-1*: Pengingat hari menjelang pernikahan beserta link peta Google Maps & panduan lokasi.
   - *Template Kustom*: Fleksibel disesuaikan dengan variabel `{nama}`, `{mempelai}`, `{tanggal}`, `{venue}`, `{link}`.
-- **Otomatisasi Status Firestore**: Menandai tamu sebagai `Sudah Terkirim` secara otomatis begitu tombol kirim WhatsApp diklik.
+- **Otomatisasi Status Database**: Menandai tamu sebagai `Sudah Terkirim` secara otomatis pada basis data MySQL begitu tombol kirim WhatsApp diklik.
 
 ### 🎙️ Audio Guestbook / Voice Memo Wishes (v1.36.0)
 - **Perekaman Suara Klien Tanpa Biaya Server (*Zero Storage Cost*)**: Tamu dapat merekam pesan suara selamat dan doa restu hingga 20 detik langsung dari browser menggunakan MediaRecorder API.
-- **Kompresi Audio Base64 WebM/Opus**: Disimpan langsung ke dalam dokumen ucapan Firestore (~40-60KB) tanpa membutuhkan Firebase Storage berbayar.
+- **Kompresi Audio Base64 WebM/Opus**: Disimpan langsung ke dalam basis data MySQL (~40-60KB) tanpa memerlukan penyimpanan cloud berbayar.
 - **Waveform Audio Player Interaktif**: Pemutar audio terintegrasi pada Dinding Ucapan tamu dan Layar Panggung Proyektor (*Live Wishes Projector*) lengkap dengan animasi gelombang suara (*soundwave*).
 
 ### 🌺 Ornamen & Estetika Budaya Betawi
@@ -300,7 +314,7 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
 
 ### 📝 RSVP & Dinding Ucapan Real-Time
 - Formulir konfirmasi kehadiran yang interaktif.
-- Dinding ucapan doa restu yang terhubung dengan listener Firestore, sehingga ucapan baru langsung muncul tanpa perlu memuat ulang halaman (*zero reload*).
+- Dinding ucapan doa restu yang terhubung dengan WebSocket Socket.io dan REST API MySQL, sehingga ucapan baru langsung muncul seketika tanpa perlu memuat ulang halaman (*zero reload*).
 
 ### 🎵 Pemutar Musik Latar Fleksibel
 - Komponen audio mengambang dengan tombol *mute/unmute*.
@@ -358,7 +372,7 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
   - **Polaroid Stack (`polaroid`)**: Tampilan kartu foto polaroid putih dengan bayangan lembut realistis, efek rotasi kemiringan acak halus (-2° s/d +2°), hiasan pita perekat (*washi tape*), dan nomor urut momen manis.
 - **Visual Card Selector di Admin Panel (`/modules`)**:
   - Sub-tab "Galeri Foto" dilengkapi 4 kartu pemilih layout dengan ilustrasi mini-wireframe visual, badge kategori (*Default Populer, Rekomendasi, Interaktif, Artistik*), dan deskripsi karakteristik masing-masing gaya.
-  - Sinkronisasi instan ke state `formData.galleryLayout` dan tersimpan permanen ke Cloud Firestore.
+  - Sinkronisasi instan ke state `formData.galleryLayout` dan tersimpan permanen ke basis data MySQL.
 - **Universal Fullscreen Lightbox**:
   - Setiap foto pada seluruh 4 pilihan layout dapat diklik untuk membuka modal Lightbox resolusi tinggi dengan navigasi Next/Prev, dukungan keyboard (*Escape, Left/Right Arrow*), tombol tutup cepat, dan penghitung nomor foto aktif.
 - **Thematic Adaptive Styling**:
@@ -383,7 +397,7 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
   - **Panel Kiri (35%)**: Monogram emas inisial kedua mempelai beranimasi elegan, nama lengkap mempelai, tanggal akad/resepsi & nama gedung ballroom, *Live Counter* jumlah ucapan masuk, serta **QR Code Interaktif** berukuran besar yang dapat langsung dipindai oleh para tamu dari meja mereka untuk membuka formulir ucapan doa.
   - **Panel Aliran Kanan (65%)**: Aliran kartu ucapan mewah berlatar gelap malam (*Midnight Slate & Emerald*) dengan tipografi aksen emas bercahaya.
 - **Spotlight Celebration Pop-Up & Efek Konfeti**:
-  - Setiap kali ada ucapan baru yang masuk via Firestore listener, layar proyektor otomatis menampilkan pop-up modal selebrasi *Spotlight* dengan animasi partikel emas/konfeti berkilau selama 6,5 detik sebelum meluncur anggun ke posisi teratas daftar ucapan.
+  - Setiap kali ada ucapan baru yang masuk via siaran Socket.io, layar proyektor otomatis menampilkan pop-up modal selebrasi *Spotlight* dengan animasi partikel emas/konfeti berkilau selama 6,5 detik sebelum meluncur anggun ke posisi teratas daftar ucapan.
 - **Harmonic Audio Chime (Web Audio API Synthesizer)**:
   - Nada lonceng akor harmonis C5-E5-G5-C6 dengan peluruhan nada alami berdurasi 2,4 detik tanpa perlu aset file audio eksternal (*zero external network download*).
 - **Auto-Cycling Carousel & Kontrol Operator Mengambang**:
@@ -400,7 +414,7 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
 - **Integrasi Google Maps**: Tautan rute peta lokasi venue yang disematkan langsung di dalam deskripsi acara kalender dan tombol aksi navigasi cepat.
 
 ### 💰 Wedding Budget & Checklist Vendor Tracker (v1.21.0)
-- **Dasbor Finansial Real-Time**: 4 Kartu KPI finansial: Target Anggaran, Kontrak Aktual, Terbayar/DP, dan Sisa Tagihan Pelunasan yang tersinkronisasi langsung via Firestore listener.
+- **Dasbor Finansial Real-Time**: 4 Kartu KPI finansial: Target Anggaran, Kontrak Aktual, Terbayar/DP, dan Sisa Tagihan Pelunasan yang tersinkronisasi langsung via basis data MySQL.
 - **Kalkulasi Selisih & Efisiensi Otomatis**: Mendeteksi otomatis apakah kontrak berada di bawah anggaran (*hemat*) atau melebihi estimasi rencana (*over-budget*).
 - **Progress Bar Realisasi**: Indikator visual persentase pelunasan anggaran dan counter rasio kesiapan logistik hari-H.
 - **Manajemen Vendor & 1-Klik Chat WhatsApp**: Integrasi kontak nomor WhatsApp vendor yang otomatis membuka obrolan chat perorangan dengan format internasional `wa.me/62...`.
@@ -475,11 +489,11 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
   - Skor 60%: 💖 *Kolega Kompak & Suportif*
   - Skor <60%: 😄 *Yuk Ngobrol & Akrabin Lagi di Resepsi!*
 - **Tantang Teman via WhatsApp**: Tombol bagikan ke WhatsApp dengan template pesan tantangan seru yang memuat skor, persentase, gelar juara, dan tautan undangan personal.
-- **Papan Peringkat Real-Time (Live Leaderboard)**: Papan skor tamu real-time Firestore (`wedding_trivia_scores`) berhias medali emas 🥇, perak 🥈, dan perunggu 🥉.
+- **Papan Peringkat Real-Time (Live Leaderboard)**: Papan skor tamu real-time via REST API & basis data MySQL berhias medali emas 🥇, perak 🥈, dan perunggu 🥉.
 - **Manajemen Bank Soal & Skor di Admin Panel (`/modules`)**:
   - 4 Kartu KPI: Total Soal Aktif, Tamu Bermain, Rata-Rata Skor, dan Skor Sempurna (100%).
   - Bank soal interaktif: tambah/ubah/hapus pertanyaan, kunci jawaban, dan ulasan fakta seru.
-  - Tombol **"Muat 5 Soal Default Trivia"** (1-klik inisialisasi batch Firestore).
+  - Tombol **"Muat 5 Soal Default Trivia"** (1-klik inisialisasi batch ke basis data MySQL).
   - Ekspor seluruh nilai kuis tamu ke CSV (UTF-8 BOM).
 - **Aksesibilitas Ganda & Netral Budaya**: Tersedia via tombol mengambang gamepad (`TriviaFloatingButton`) dan kartu seksi undangan (`TriviaQuizSection`) yang kompatibel di seluruh 10 tema undangan aktif.
 
@@ -506,7 +520,7 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
 
 ### 🪑 Manajemen Meja & Seating Chart Ballroom (v1.24.0)
 - **Denah Lantai Interaktif Ballroom (Floor Plan Layout)**: Visualisasi tata letak panggung pelaminan, meja VIP kehormatan, meja bundar keluarga besar & tamu umum, hingga area prasmanan/katering dengan zona terarah (*Depan, Tengah, Belakang, Samping Kiri, Samping Kanan*).
-- **4 Kartu Indikator KPI Kapasitas**: Total Meja Aktif, Kapasitas Ballroom Keseluruhan, Kursi Terisi, dan Sisa Kursi Tersedia secara real-time tersinkronisasi via Firestore listener `wedding_tables`.
+- **4 Kartu Indikator KPI Kapasitas**: Total Meja Aktif, Kapasitas Ballroom Keseluruhan, Kursi Terisi, dan Sisa Kursi Tersedia secara real-time tersinkronisasi via basis data MySQL tabel `seating_tables`.
 - **12 Preset Meja Standar Ballroom (1-Klik)**: Tombol pemuatan instan 12 meja standar ballroom berkapasitas total 108 kursi (VIP Pengantin, Keluarga Pria & Wanita, VIP Pejabat, Kolega, dan Tamu Umum).
 - **Drawer Alokasi Tamu & Kursi (Guest Assignment)**: Panel interaktif untuk menempatkan atau mencabut tamu undangan (`guests`) ke meja tertentu dengan deteksi kapasitas otomatis (*Sisa Kursi*).
 - **Sinkronisasi Otomatis E-Ticket QR Pass & Meja Resepsi**:
@@ -563,7 +577,7 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
   - **Tiket Digital Tamu (E-Ticket & QR Pass)**: Tombol tiket mengambang dan tombol seksi RSVP pada sisi tamu yang menampilkan kartu tiket mewah berornamen emas, kode tiket unik, jumlah pax, QR Code resolusi tinggi, serta fitur unduh tiket langsung sebagai gambar PNG ke galeri ponsel via Canvas API.
 - **Menu 3: Generator & Manajemen Tamu WhatsApp (Import & Bulk Management)**:
   - **Dukungan Multi-Format Impor**: Mengimpor ratusan tamu sekaligus dari file **Excel (.xlsx, .xls)**, file **CSV (.csv, .txt)**, maupun **Salin-Tempel Teks Multiline**.
-  - **Sinkronisasi Cloud Firestore (`guests`)**: Data daftar tamu dan status pengiriman pesan tersimpan permanen di cloud sehingga pengantin dapat mengimpor via laptop dan mengirim pesan via smartphone.
+  - **Sinkronisasi Basis Data MySQL (`guests`)**: Data daftar tamu dan status pengiriman pesan tersimpan permanen di basis data MySQL sehingga pengantin dapat mengimpor via laptop dan mengirim pesan via smartphone.
   - **Direct WhatsApp Blasting**: Tombol kirim pesan 1-klik yang otomatis membuka chat WhatsApp langsung ke nomor tujuan (dengan sanitasi format internasional `628...`) dan mengubah status menjadi *Sudah Dikirim*.
   - **Statistik & Filter Pengiriman**: 3 Kartu indikator (Total Tamu, Belum Dikirim, Sudah Dikirim), filter status dinamis, dan live in-memory search.
   - **Unduh Template CSV**: Format berkas spreadsheet standar yang siap diisi dan diunggah ulang.
@@ -602,7 +616,7 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
       - **Islami (+4)**: `ottoman`, `moroccan`, `andalusia`, `nabawi`.
     - *Favicon & Meta Theme-Color Dinamis*: Favicon peramban otomatis berganti dan `meta theme-color` menyesuaikan palet tema aktif.
     - *Centralized Theme Registry*: Standarisasi kontrak antarmuka tema (`types.ts` & `catalog.ts`) untuk skalabilitas 34 tema.
-    - *Pemilih Tema Visual*: Pratinjau palet warna tema, badge kategori gaya, dan tombol aktivasi 1-klik yang tersinkronisasi ke Firestore.
+    - *Pemilih Tema Visual*: Pratinjau palet warna tema, badge kategori gaya, dan tombol aktivasi 1-klik yang tersinkronisasi ke basis data MySQL.
     - *Demo URL Preview*: Uji coba instan dengan parameter query `?theme={id}` (contoh: `?theme=dayak`, `?theme=cyberpunk`, `?theme=jawa`).
   - **Modal Lightbox Slider Berkas Terunggah**: Kartu pratinjau foto dapat diklik untuk membuka foto penuh dalam modal Lightbox interaktif berlatar gelap & blur, tombol geser Kiri/Kanan, counter foto, dan shortcut keyboard (`ArrowLeft`, `ArrowRight`, `Escape`).
   - **Reorder Timeline Kisah Cinta (Tombol Naik & Turun)**: Pengaturan kronologi momen kisah cinta fleksibel dengan tombol **Naik (`<ArrowUp />`)** dan **Turun (`<ArrowDown />`)** di samping penomoran dinamis (`#1`, `#2`, dst.), mengeliminasi keharusan menghapus dan mengetik ulang jika terjadi kesalahan urutan.
@@ -806,5 +820,5 @@ Proyek ini didistribusikan di bawah lisensi terbuka **MIT License**. Anda bebas 
 ---
 
 <div align="center">
-  <sub>Dibuat dengan penuh cinta dan dedikasi untuk melestarikan budaya Betawi dalam era digital. 🌺</sub>
+  <sub>Dibuat dengan penuh cinta dan dedikasi untuk melestarikan keindahan pernikahan Nusantara, Modern, dan Islami dalam era digital. 💍</sub>
 </div>

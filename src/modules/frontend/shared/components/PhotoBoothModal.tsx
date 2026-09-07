@@ -305,14 +305,14 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
 
   return (
     <div 
-      className="fixed inset-0 w-screen h-screen z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-0 md:p-4 overflow-y-auto"
+      className="fixed inset-0 w-screen h-[100dvh] max-h-[100dvh] z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-0 md:p-4 overflow-hidden"
       role="dialog"
       aria-modal="true"
       aria-label="Digital Photo Booth"
     >
       <div 
         className={cn(
-          "relative w-full md:max-w-[440px] h-full md:h-[92vh] md:max-h-[820px] md:rounded-[32px] overflow-hidden flex flex-col shadow-2xl transition-colors duration-300",
+          "relative w-full md:max-w-[440px] h-[100dvh] md:h-[92vh] md:max-h-[850px] md:rounded-[32px] overflow-hidden flex flex-col shadow-2xl transition-colors duration-300",
           isDark ? "bg-[#141416] text-white border border-white/10" : "bg-white text-stone-800 md:border md:border-stone-200"
         )}
       >
@@ -358,7 +358,7 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col">
+        <div className="flex-1 overflow-y-auto px-4 md:px-5 py-3 md:py-4 overscroll-contain flex flex-col">
           {/* STEP 1: SETUP */}
           {step === 'setup' && (
             <motion.div 
@@ -530,24 +530,8 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
                 </div>
               </div>
 
-              {/* CTA Next */}
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPhotos(new Array(totalPoses).fill(''));
-                    setActivePoseIndex(0);
-                    setStep('capture');
-                  }}
-                  className="w-full py-3 px-4 rounded-2xl font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 hover:opacity-95"
-                  style={{
-                    backgroundColor: tokens.primary,
-                    color: tokens.btnPrimaryText
-                  }}
-                >
-                  <Camera size={15} /> Mulai Pengambilan Foto ({totalPoses} Pose) <ChevronRight size={15} />
-                </button>
-              </div>
+              {/* STEP 1: SETUP */}
+              {/* Note: Action button moved to Sticky Bottom Action Bar */}
             </motion.div>
           )}
 
@@ -559,7 +543,7 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
               className="flex flex-col h-full space-y-3"
             >
               {/* Pose Indicator Bar */}
-              <div className="flex items-center justify-between px-1">
+              <div className="flex items-center justify-between px-1 shrink-0">
                 <span className="text-xs font-semibold flex items-center gap-1.5">
                   Pose {activePoseIndex + 1} dari {totalPoses}
                 </span>
@@ -589,7 +573,7 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
 
               {/* CAMERA MODE */}
               {source === 'camera' && (
-                <div className="flex-1 flex flex-col justify-between">
+                <div className="flex-1 flex flex-col justify-start">
                   {cameraError ? (
                     <div className="flex-1 flex flex-col items-center justify-center p-6 text-center border border-red-500/20 bg-red-500/10 rounded-2xl">
                       <Camera size={32} className="text-red-400 mb-2" />
@@ -604,7 +588,7 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
                       </button>
                     </div>
                   ) : (
-                    <div className="relative w-full aspect-[4/3] md:aspect-square bg-black rounded-2xl overflow-hidden shadow-inner flex items-center justify-center border border-white/10">
+                    <div className="relative w-full aspect-[4/3] max-h-[36vh] xs:max-h-[40vh] md:max-h-[340px] bg-black rounded-2xl overflow-hidden shadow-inner flex items-center justify-center border border-white/10 shrink-0">
                       {/* Video element */}
                       <video
                         ref={videoRef}
@@ -663,13 +647,13 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
                   )}
 
                   {/* Thumbnail Row of Captured Poses */}
-                  <div className="flex gap-2 my-2 overflow-x-auto py-1">
+                  <div className="flex gap-2 my-2 overflow-x-auto py-1 shrink-0">
                     {Array.from({ length: totalPoses }).map((_, idx) => (
                       <div
                         key={idx}
                         onClick={() => setActivePoseIndex(idx)}
                         className={cn(
-                          "w-16 h-16 rounded-xl overflow-hidden border-2 cursor-pointer relative shrink-0 transition-all bg-black/20 flex items-center justify-center",
+                          "w-12 h-12 xs:w-14 xs:h-14 rounded-xl overflow-hidden border-2 cursor-pointer relative shrink-0 transition-all bg-black/20 flex items-center justify-center",
                           idx === activePoseIndex ? "ring-2 shadow-md" : "opacity-60 hover:opacity-100"
                         )}
                         style={{
@@ -685,43 +669,18 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
                       </div>
                     ))}
                   </div>
-
-                  {/* Shutter Action Bar */}
-                  <div className="pt-2 flex items-center justify-between gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setStep('setup')}
-                      className="py-2.5 px-4 rounded-xl border border-white/20 text-xs font-medium cursor-pointer active:scale-95"
-                    >
-                      Kembali
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={startCountdownAndCapture}
-                      disabled={!isCameraReady || countdown !== null}
-                      className="flex-1 py-3 px-4 rounded-2xl font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 disabled:opacity-50"
-                      style={{
-                        backgroundColor: tokens.primary,
-                        color: tokens.btnPrimaryText
-                      }}
-                    >
-                      <Camera size={16} />
-                      {countdown !== null ? `Mengambil Foto...` : `Ambil Foto Pose ${activePoseIndex + 1}`}
-                    </button>
-                  </div>
                 </div>
               )}
 
               {/* UPLOAD MODE */}
               {source === 'upload' && (
-                <div className="space-y-4 flex-1 flex flex-col justify-between">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="space-y-3 flex-1 flex flex-col justify-start">
+                  <div className="grid grid-cols-1 xs:grid-cols-3 gap-2.5">
                     {Array.from({ length: totalPoses }).map((_, idx) => (
                       <div 
                         key={idx}
                         className={cn(
-                          "p-4 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center relative transition-all min-h-[140px]",
+                          "p-3 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center relative transition-all min-h-[120px]",
                           photos[idx] ? "border-solid border-emerald-500/50 bg-emerald-500/5" : "border-white/20 hover:border-white/40"
                         )}
                       >
@@ -730,12 +689,12 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
                             <img 
                               src={photos[idx]} 
                               alt={`Pose ${idx + 1}`} 
-                              className="w-24 h-24 object-cover rounded-xl shadow-md mb-2" 
+                              className="w-20 h-20 object-cover rounded-xl shadow-md mb-1.5" 
                             />
-                            <span className="text-[11px] font-bold text-emerald-500 flex items-center gap-1">
-                              <CheckCircle2 size={13} /> Pose {idx + 1} Terisi
+                            <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-1">
+                              <CheckCircle2 size={12} /> Pose {idx + 1} Terisi
                             </span>
-                            <label className="mt-2 text-[10px] underline opacity-70 hover:opacity-100 cursor-pointer">
+                            <label className="mt-1 text-[10px] underline opacity-70 hover:opacity-100 cursor-pointer">
                               Ganti Foto
                               <input
                                 type="file"
@@ -747,9 +706,9 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
                           </div>
                         ) : (
                           <label className="cursor-pointer flex flex-col items-center p-2 w-full h-full justify-center">
-                            <ImageIcon size={24} className="opacity-40 mb-1.5" />
-                            <span className="text-xs font-semibold block mb-0.5">Unggah Foto Pose {idx + 1}</span>
-                            <span className="text-[10px] opacity-50">Klik untuk pilih dari perangkat</span>
+                            <ImageIcon size={22} className="opacity-40 mb-1" />
+                            <span className="text-[11px] font-semibold block mb-0.5">Unggah Foto Pose {idx + 1}</span>
+                            <span className="text-[9px] opacity-50">Pilih dari HP</span>
                             <input
                               type="file"
                               accept="image/*"
@@ -761,32 +720,6 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
                       </div>
                     ))}
                   </div>
-
-                  <div className="pt-3 flex items-center justify-between gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setStep('setup')}
-                      className="py-2.5 px-4 rounded-xl border border-white/20 text-xs font-medium cursor-pointer active:scale-95"
-                    >
-                      Kembali
-                    </button>
-
-                    <button
-                      type="button"
-                      disabled={photos.filter(Boolean).length < totalPoses}
-                      onClick={() => {
-                        setStep('preview');
-                        playStripReadyChime();
-                      }}
-                      className="flex-1 py-3 px-4 rounded-2xl font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 disabled:opacity-40"
-                      style={{
-                        backgroundColor: tokens.primary,
-                        color: tokens.btnPrimaryText
-                      }}
-                    >
-                      <Sparkles size={16} /> Lanjut ke Pratinjau Photostrip ({photos.filter(Boolean).length}/{totalPoses})
-                    </button>
-                  </div>
                 </div>
               )}
             </motion.div>
@@ -797,7 +730,7 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
             <motion.div 
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="space-y-4"
+              className="space-y-3"
             >
               {/* Photo Filter Switcher */}
               <div>
@@ -869,62 +802,146 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
               </div>
 
               {/* Photostrip Canvas Preview Container */}
-              <div className="relative w-full max-w-[320px] mx-auto bg-black/40 rounded-2xl p-3 border border-white/10 flex items-center justify-center min-h-[320px] shadow-2xl">
+              <div className="relative w-full max-w-[280px] xs:max-w-[320px] mx-auto bg-black/40 rounded-2xl p-2.5 xs:p-3 border border-white/10 flex items-center justify-center min-h-[220px] shadow-2xl shrink-0">
                 {isRendering ? (
-                  <div className="flex flex-col items-center justify-center p-8 text-center text-white">
+                  <div className="flex flex-col items-center justify-center p-6 text-center text-white">
                     <RefreshCw size={24} className="animate-spin text-white/60 mb-2" />
                     <span className="text-xs font-semibold">Merakit Photostrip HD...</span>
                   </div>
                 ) : renderedStripUrl ? (
-                  <div className="relative group max-h-[440px] overflow-y-auto rounded-xl">
+                  <div className="relative group max-h-[36vh] xs:max-h-[42vh] md:max-h-[400px] overflow-y-auto rounded-xl">
                     <img
                       src={renderedStripUrl}
                       alt="Wedding Photostrip Result"
-                      className="w-full h-auto object-contain rounded-lg shadow-xl"
+                      className="w-full h-auto object-contain rounded-lg shadow-xl mx-auto"
                     />
                   </div>
                 ) : (
                   <span className="text-xs opacity-50">Menunggu foto...</span>
                 )}
               </div>
+            </motion.div>
+          )}
+        </div>
 
-              {/* Action Buttons */}
-              <div className="pt-2 space-y-2">
+        {/* Sticky Bottom Action Bar */}
+        <div 
+          className="p-3 md:px-5 md:py-3.5 border-t border-white/10 shrink-0 backdrop-blur-md pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] z-30"
+          style={{
+            backgroundColor: isDark ? 'rgba(20, 20, 22, 0.95)' : 'rgba(255, 255, 255, 0.95)'
+          }}
+        >
+          {step === 'setup' && (
+            <button
+              type="button"
+              onClick={() => {
+                setPhotos(new Array(totalPoses).fill(''));
+                setActivePoseIndex(0);
+                setStep('capture');
+              }}
+              className="w-full py-3 px-4 rounded-2xl font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 hover:opacity-95"
+              style={{
+                backgroundColor: tokens.primary,
+                color: tokens.btnPrimaryText
+              }}
+            >
+              <Camera size={15} /> Mulai Pengambilan Foto ({totalPoses} Pose) <ChevronRight size={15} />
+            </button>
+          )}
+
+          {step === 'capture' && source === 'camera' && (
+            <div className="flex items-center justify-between gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  stopCameraStream();
+                  setStep('setup');
+                }}
+                className="py-2.5 px-3.5 rounded-xl border border-white/20 text-xs font-medium cursor-pointer active:scale-95 shrink-0 hover:bg-white/5"
+              >
+                Kembali
+              </button>
+
+              <button
+                type="button"
+                onClick={startCountdownAndCapture}
+                disabled={!isCameraReady || countdown !== null}
+                className="flex-1 py-3 px-4 rounded-2xl font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 disabled:opacity-50"
+                style={{
+                  backgroundColor: tokens.primary,
+                  color: tokens.btnPrimaryText
+                }}
+              >
+                <Camera size={16} />
+                {countdown !== null ? `Mengambil Foto...` : `Ambil Foto Pose ${activePoseIndex + 1}`}
+              </button>
+            </div>
+          )}
+
+          {step === 'capture' && source === 'upload' && (
+            <div className="flex items-center justify-between gap-2.5">
+              <button
+                type="button"
+                onClick={() => setStep('setup')}
+                className="py-2.5 px-3.5 rounded-xl border border-white/20 text-xs font-medium cursor-pointer active:scale-95 shrink-0 hover:bg-white/5"
+              >
+                Kembali
+              </button>
+
+              <button
+                type="button"
+                disabled={photos.filter(Boolean).length < totalPoses}
+                onClick={() => {
+                  setStep('preview');
+                  playStripReadyChime();
+                }}
+                className="flex-1 py-3 px-4 rounded-2xl font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 disabled:opacity-40"
+                style={{
+                  backgroundColor: tokens.primary,
+                  color: tokens.btnPrimaryText
+                }}
+              >
+                <Sparkles size={16} /> Lanjut ke Pratinjau ({photos.filter(Boolean).length}/{totalPoses})
+              </button>
+            </div>
+          )}
+
+          {step === 'preview' && (
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={handleDownload}
+                disabled={!renderedStripUrl || isRendering}
+                className="w-full py-3 px-4 rounded-2xl font-bold text-xs shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 disabled:opacity-50 hover:opacity-95"
+                style={{
+                  backgroundColor: tokens.accent,
+                  color: '#FFFFFF'
+                }}
+              >
+                <Download size={16} /> Unduh Photostrip HD (PNG)
+              </button>
+
+              <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={handleDownload}
-                  disabled={!renderedStripUrl || isRendering}
-                  className="w-full py-3.5 px-4 rounded-2xl font-bold text-xs shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 disabled:opacity-50 hover:opacity-95"
-                  style={{
-                    backgroundColor: tokens.accent,
-                    color: '#FFFFFF'
+                  onClick={() => {
+                    setStep('capture');
+                    setActivePoseIndex(0);
                   }}
+                  className="flex-1 py-2 px-3 rounded-xl border border-white/15 text-[11px] font-medium flex items-center justify-center gap-1.5 cursor-pointer hover:bg-white/5 active:scale-98"
                 >
-                  <Download size={16} /> Unduh Photostrip HD (PNG)
+                  <RotateCcw size={13} /> Foto Ulang
                 </button>
 
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep('capture');
-                      setActivePoseIndex(0);
-                    }}
-                    className="flex-1 py-2.5 px-3 rounded-xl border border-white/15 text-xs font-medium flex items-center justify-center gap-1.5 cursor-pointer hover:bg-white/5 active:scale-98"
-                  >
-                    <RotateCcw size={14} /> Foto Ulang Pose
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    className="flex-1 py-2.5 px-3 rounded-xl border border-white/15 text-xs font-medium flex items-center justify-center gap-1.5 cursor-pointer hover:bg-white/5 active:scale-98"
-                  >
-                    <Layers size={14} /> Ganti Format
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="flex-1 py-2 px-3 rounded-xl border border-white/15 text-[11px] font-medium flex items-center justify-center gap-1.5 cursor-pointer hover:bg-white/5 active:scale-98"
+                >
+                  <Layers size={13} /> Ganti Format
+                </button>
               </div>
-            </motion.div>
+            </div>
           )}
         </div>
       </div>

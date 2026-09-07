@@ -443,6 +443,102 @@ Buka browser dan akses **`https://invitation.maripartner.com`** — undangan per
 
 ---
 
+### H. Aturan & Standar Konfigurasi Nginx di aaPanel (Tab Config)
+Jika Anda perlu mengedit berkas konfigurasi Nginx secara manual pada tab **Config** di modal Node.js Project aaPanel:
+
+1. **Konfigurasi Server Block Bersih & Teruji**:
+   Gunakan konfigurasi Nginx terstandarisasi berikut:
+   ```nginx
+   server
+   {
+       listen 80;
+       listen 443 ssl;
+       server_name invitation.maripartner.com;
+       index index.html index.htm default.htm default.html;
+       root /www/wwwroot/app_weddingbetawi_react/dist;
+       
+       # Pengaturan SSL Let's Encrypt
+       ssl_certificate    /www/server/panel/vhost/cert/app_weddingbetawi_react/fullchain.pem;
+       ssl_certificate_key    /www/server/panel/vhost/cert/app_weddingbetawi_react/privkey.pem;
+       ssl_protocols TLSv1.2 TLSv1.3;
+       ssl_ciphers EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5;
+       ssl_prefer_server_ciphers on;
+       ssl_session_cache shared:SSL:10m;
+       ssl_session_timeout 10m;
+       add_header Strict-Transport-Security "max-age=31536000";
+       error_page 497 https://$host$request_uri;
+       
+       # Proteksi file sensitif
+       location ~ ^/(\.user.ini|\.htaccess|\.git|\.svn|\.project|LICENSE|README.md|package.json|package-lock.json|\.env|node_modules) {
+           return 404;
+       }
+       
+       # Validasi challenge SSL Let's Encrypt
+       location /.well-known/ {
+           root  /www/wwwroot/app_weddingbetawi_react;
+       }
+
+       # Reverse Proxy ke Backend Node.js Port 5000
+       location / {
+           proxy_pass http://127.0.0.1:5000;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+           proxy_set_header REMOTE-HOST $remote_addr;
+           proxy_no_cache 1;
+           proxy_cache_bypass 1;
+           add_header X-Cache $upstream_cache_status;
+
+           proxy_connect_timeout 30s;
+           proxy_read_timeout 86400s;
+           proxy_send_timeout 30s;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection "upgrade";
+       }
+       
+       access_log  /www/wwwlogs/app_weddingbetawi_react.log;
+       error_log  /www/wwwlogs/app_weddingbetawi_react.error.log;
+   }
+   ```
+
+2. **Aturan Kompatibilitas Cloudflare (Pencegahan Redirect Loop)**:
+   - Jika Cloudflare menggunakan mode **Flexible**: **DILARANG** menambahkan blok redirect Nginx `if ($server_port !~ 443) { rewrite ... }`, karena Cloudflare berkomunikasi dengan VPS melalui port 80 (HTTP). Jika redirect dipasang, akan timbul galat browser *ERR_TOO_MANY_REDIRECTS*.
+   - Jika Cloudflare menggunakan mode **Full**: Pastikan sertifikat SSL di server VPS terpasang dan valid pada port 443.
+
+---
+
+### I. Pemecahan Masalah Nginx: Menghapus Sisa Konfigurasi & Cache "Hantu"
+Jika saat menekan tombol **Save** di aaPanel muncul pesan galat:
+`nginx: [emerg] mkdir() ".../proxy_cache_dir" failed (2: No such file or directory)`
+`nginx: configuration file ... test failed`
+
+Hal ini terjadi karena Nginx masih membaca sisa konfigurasi website lama yang foldernya telah dihapus dari disk. Nginx memblokir penyimpanan karena pengujian `nginx -t` gagal.
+
+**Langkah Pembersihan:**
+1. Di Terminal aaPanel, lacak berkas konfigurasi lama:
+   ```bash
+   grep -rn "nama_domain_lama" /www/server/
+   ```
+2. Hapus berkas konfigurasi usang tersebut:
+   ```bash
+   rm -f /www/server/panel/vhost/nginx/*nama_domain_lama*.conf
+   rm -f /www/server/panel/vhost/nginx/proxy/*nama_domain_lama*
+   ```
+3. Uji ulang sintaks Nginx:
+   ```bash
+   nginx -t
+   ```
+   Pastikan menampilkan output: `syntax is ok` dan `test is successful`.
+4. Muat ulang service Nginx:
+   ```bash
+   nginx -s reload
+   ```
+5. Kembali ke aaPanel dan klik tombol **Save** pada tab Config. Penyimpanan dijamin berhasil 100%!
+
+---
+
 ## 5. Konfigurasi Environment Variables Produksi (.env)
 
 Berikut adalah daftar variabel lingkungan yang wajib dikonfigurasi:

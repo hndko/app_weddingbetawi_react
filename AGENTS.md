@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.44.1`
+- **Versi Aplikasi Saat Ini**: `v1.44.2`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -61,12 +61,23 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 6. **Invarian Netral Budaya pada Layer Bersama (`shared/`)**:
    - Direktori `src/modules/frontend/shared/` mengisolasi komponen bersama (`BottomNavigation`, `MusicPlayer`, `SEO`) dan seksi data domain bersama (`RSVP`, `Wishes`, `Countdown`, `Event`, `Gallery`, `Location`, `LoveStory`, `WeddingGift`).
    - Seluruh berkas di `src/modules/frontend/shared/` WAJIB 100% netral budaya (*culturally agnostic*). DILARANG mengimpor atau merender ornamen khusus adat tertentu (seperti Ondel-ondel, siluet Monas, Rumah Kebaya, atau Gunungan Wayang). Gunakan ornamen pemisah netral (`SectionDivider`).
-7. **Standar Paket Aset Default Luring Tema (*Offline Default Theme Assets Suite*)**:
+8. **Standar Paket Aset Default Luring Tema (*Offline Default Theme Assets Suite*)**:
    - Setiap tema pada `THEME_CATALOG` (`src/modules/frontend/themes/index.ts`) WAJIB menyediakan paket aset lokal mandiri di `public/assets/themes/{theme_id}/`:
      - `thumbnail.jpg` atau `thumbnail.svg`
      - `pattern.svg`
      - `favicon.svg`
    - DILARANG mengandalkan URL eksternal (seperti Unsplash atau CDN pihak ketiga) untuk aset dasar tema guna menjamin aplikasi tetap mandiri, tahan gangguan jaringan, dan dapat diakses luring (*zero external dependency*).
+9. **Invarian Routing Express 5 & Penanganan SPA Fallback**:
+   - Pada runtime Express v5 (`express@5.x`), DILARANG menggunakan wildcard string `app.get('*', ...)` karena adanya *breaking change* pada pustaka `path-to-regexp` yang akan melempar galat fatal `PathError [TypeError]: Missing parameter name at index 1: *` saat server booting.
+   - Penanganan rute fallback Single Page Application (SPA) WAJIB menggunakan middleware tanpa path string:
+     ```typescript
+     app.use((req, res, next) => {
+       if (req.method === 'GET' && !req.path.startsWith('/api') && !req.path.startsWith('/uploads') && !req.path.startsWith('/socket.io')) {
+         return res.sendFile(path.join(distPath, 'index.html'));
+       }
+       next();
+     });
+     ```
 
 ---
 
@@ -86,6 +97,9 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
    - Rute panel admin dilindungi oleh autentikasi berbasis database MySQL tabel `users`.
    - Kata sandi wajib di-hash menggunakan algoritma `bcryptjs` (salt rounds 10). DILARANG menyimpan kata sandi dalam bentuk plaintext.
    - Fitur ganti password admin wajib memvalidasi panjang karakter dan meng-hash password baru sebelum memperbarui tabel `users`.
+5. **Aturan Konfigurasi Web Server Nginx & Kompatibilitas Cloudflare**:
+   - **Pencegahan Loop Redirect**: Jika domain publik menggunakan Cloudflare dengan mode enkripsi **Flexible**, DILARANG menyertakan blok redirect `if ($server_port !~ 443) { rewrite ... }` di konfigurasi Nginx server origin guna mencegah galat browser *ERR_TOO_MANY_REDIRECTS*.
+   - **Protokol Pembersihan Vhost Hantu (*Ghost Cache/Vhost Cleanup*)**: Apabila perintah `nginx -t` atau tombol Save di aaPanel gagal dengan galat `mkdir() ".../proxy_cache_dir" failed (2: No such file or directory)`, pengembang/agen wajib memeriksa sisa konfigurasi website usang dengan `grep -rn` di `/www/server/panel/vhost/nginx/`, menghapus berkas konfigurasi mati tersebut, dan memvalidasi kelulusan `nginx -t` sebelum me-reload Nginx.
 
 ---
 

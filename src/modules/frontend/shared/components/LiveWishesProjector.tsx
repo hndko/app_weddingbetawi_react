@@ -113,7 +113,7 @@ export function LiveWishesProjector() {
 
   // Real-time API & Socket.io sync for wishes
   useEffect(() => {
-    api.getWishes().then((docs) => {
+    api.getWishes({ all: true }).then((docs) => {
       setWishes(docs);
       if (docs.length > 0) {
         previousLatestIdRef.current = docs[0].id || null;

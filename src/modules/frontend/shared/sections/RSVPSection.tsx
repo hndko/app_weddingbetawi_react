@@ -49,9 +49,13 @@ export function RSVPSection() {
       });
       setIsSubmitted(true);
       localStorage.setItem('rsvp_submitted', 'true');
-    } catch (error) {
-      console.error('Error submitting RSVP:', error);
-      setErrorMessage('Gagal mengirim RSVP. Silakan periksa koneksi internet Anda dan coba lagi.');
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : '';
+      if (msg.includes('Terlalu banyak') || msg.includes('429')) {
+        setErrorMessage('Terlalu banyak pengiriman RSVP. Mohon tunggu 1 menit sebelum mencoba lagi.');
+      } else {
+        setErrorMessage(msg || 'Gagal mengirim RSVP. Silakan periksa koneksi internet Anda dan coba lagi.');
+      }
     } finally {
       setIsSubmitting(false);
     }

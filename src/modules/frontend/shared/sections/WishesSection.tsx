@@ -38,6 +38,9 @@ export function WishesSection() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMoreFromApi, setHasMoreFromApi] = useState(true);
+
   useEffect(() => {
     if (defaultGuestName && defaultGuestName !== 'Tamu Undangan') {
       setName(defaultGuestName);
@@ -46,12 +49,15 @@ export function WishesSection() {
 
   const loadWishes = useCallback(async () => {
     try {
-      const data = await api.getWishes();
+      const data = await api.getWishes({ limit: 50, offset: 0 });
       if (data && data.length > 0) {
         setWishes(data);
+        if (data.length < 50) {
+          setHasMoreFromApi(false);
+        }
       }
-    } catch (err) {
-      console.warn('[WishesSection] Menggunakan default wishes:', err);
+    } catch {
+      // Fallback to defaultWishes
     }
   }, []);
 
@@ -75,6 +81,31 @@ export function WishesSection() {
     };
   }, [loadWishes]);
 
+  const handleLoadMore = async () => {
+    if (visibleCount < wishes.length) {
+      setVisibleCount((prev) => prev + 5);
+      return;
+    }
+    if (!hasMoreFromApi || isLoadingMore) return;
+    setIsLoadingMore(true);
+    try {
+      const more = await api.getWishes({ limit: 50, offset: wishes.length });
+      if (more && more.length > 0) {
+        setWishes((prev) => [...prev, ...more]);
+        setVisibleCount((prev) => prev + Math.min(5, more.length));
+        if (more.length < 50) {
+          setHasMoreFromApi(false);
+        }
+      } else {
+        setHasMoreFromApi(false);
+      }
+    } catch {
+      setHasMoreFromApi(false);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !wishText.trim()) return;
@@ -93,9 +124,13 @@ export function WishesSection() {
       setAudioDuration(0);
       setSuccessMessage('Ucapan dan doa Anda berhasil dikirimkan!');
       setTimeout(() => setSuccessMessage(null), 4000);
-    } catch (err) {
-      console.error('Failed to submit wish:', err);
-      setErrorMessage('Gagal mengirim ucapan. Silakan periksa koneksi internet Anda dan coba lagi.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : '';
+      if (msg.includes('Terlalu banyak') || msg.includes('429')) {
+        setErrorMessage('Terlalu banyak pengiriman pesan. Mohon tunggu 1 menit sebelum mengirim ucapan lagi.');
+      } else {
+        setErrorMessage(msg || 'Gagal mengirim ucapan. Silakan periksa koneksi internet Anda dan coba lagi.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -241,14 +276,19 @@ export function WishesSection() {
               )}
             </motion.div>
           ))}
-          {wishes.length > visibleCount && (
+          {(wishes.length > visibleCount || hasMoreFromApi) && (
             <button
-              onClick={() => setVisibleCount(prev => prev + 5)}
-              className="mt-2 text-xs font-semibold hover:underline py-2 flex items-center justify-center gap-1.5 cursor-pointer"
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+              className="mt-2 text-xs font-semibold hover:underline py-2 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
               style={{ color: tokens.accent }}
             >
-              <ChevronDown size={14} />
-              <span>Lihat Lebih Banyak ({wishes.length - visibleCount})</span>
+              {isLoadingMore ? <Loader2 size={14} className="animate-spin" /> : <ChevronDown size={14} />}
+              <span>
+                {visibleCount < wishes.length
+                  ? `Lihat Lebih Banyak (${wishes.length - visibleCount})`
+                  : 'Muat Doa Sebelumnya'}
+              </span>
             </button>
           )}
         </div>

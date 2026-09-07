@@ -2,9 +2,13 @@ import { Router, Request, Response } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
 import { pool } from '../db/connection';
 import crypto from 'crypto';
+import { authenticateJwt } from '../middleware/auth';
 
 export function createBudgetRouter(io: SocketIOServer) {
   const router = Router();
+
+  // Seluruh endpoint manajemen anggaran wajib terautentikasi JWT Admin
+  router.use(authenticateJwt);
 
   // GET /api/budget - Ambil semua item anggaran
   router.get('/', async (_req: Request, res: Response): Promise<void> => {

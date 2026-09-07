@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
 import { pool } from '../db/connection';
 import crypto from 'crypto';
+import { authenticateJwt } from '../middleware/auth';
 
 export function createSeatingRouter(io: SocketIOServer) {
   const router = Router();
@@ -31,8 +32,8 @@ export function createSeatingRouter(io: SocketIOServer) {
     }
   });
 
-  // POST /api/seating - Tambah meja baru
-  router.post('/', async (req: Request, res: Response): Promise<void> => {
+  // POST /api/seating - Tambah meja baru (dilindungi JWT Admin)
+  router.post('/', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
       const { number, name, shape, zone, capacity, category, assignedGuests, notes, posX, posY } = req.body;
       const id = 'table_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
@@ -77,8 +78,8 @@ export function createSeatingRouter(io: SocketIOServer) {
     }
   });
 
-  // PUT /api/seating/:id - Update meja dan penetapan tamu
-  router.put('/:id', async (req: Request, res: Response): Promise<void> => {
+  // PUT /api/seating/:id - Update meja dan penetapan tamu (dilindungi JWT Admin)
+  router.put('/:id', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       const { number, name, shape, zone, capacity, category, assignedGuests, notes, posX, posY } = req.body;
@@ -119,8 +120,8 @@ export function createSeatingRouter(io: SocketIOServer) {
     }
   });
 
-  // DELETE /api/seating/:id - Hapus meja
-  router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
+  // DELETE /api/seating/:id - Hapus meja (dilindungi JWT Admin)
+  router.delete('/:id', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       await pool.query('DELETE FROM seating_tables WHERE id = ?', [id]);

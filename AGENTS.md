@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.44.3`
+- **Versi Aplikasi Saat Ini**: `v1.44.4`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -100,6 +100,13 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 5. **Aturan Konfigurasi Web Server Nginx & Kompatibilitas Cloudflare**:
    - **Pencegahan Loop Redirect**: Jika domain publik menggunakan Cloudflare dengan mode enkripsi **Flexible**, DILARANG menyertakan blok redirect `if ($server_port !~ 443) { rewrite ... }` di konfigurasi Nginx server origin guna mencegah galat browser *ERR_TOO_MANY_REDIRECTS*.
    - **Protokol Pembersihan Vhost Hantu (*Ghost Cache/Vhost Cleanup*)**: Apabila perintah `nginx -t` atau tombol Save di aaPanel gagal dengan galat `mkdir() ".../proxy_cache_dir" failed (2: No such file or directory)`, pengembang/agen wajib memeriksa sisa konfigurasi website usang dengan `grep -rn` di `/www/server/panel/vhost/nginx/`, menghapus berkas konfigurasi mati tersebut, dan memvalidasi kelulusan `nginx -t` sebelum me-reload Nginx.
+6. **Autentikasi JWT Bearer Token pada Endpoint Admin**:
+   - Seluruh endpoint mutasi konfigurasi dan data administratif (`/api/config`, `/api/guests`, `/api/budget`, `/api/checkins`, `/api/upload`, mutasi `/api/seating`, mutasi `/api/trivia`, pembacaan/penghapusan `/api/rsvps`, dan moderasi `/api/wishes`) WAJIB dilindungi oleh middleware `authenticateJwt` dengan validasi token `Bearer <token>`.
+   - Token ditandatangani dengan masa berlaku 7 hari menggunakan `JWT_SECRET`. Sisi klien (`src/services/api.ts`) otomatis menyertakan token dari `sessionStorage` dan merespons status HTTP 401 dengan melempar event `auth:unauthorized` serta pembersihan session.
+7. **Rate Limiting Anti-Spam Sliding Window**:
+   - Endpoint publik penerima data pengguna (`POST /api/wishes` dan `POST /api/rsvps`) WAJIB dilindungi oleh rate limiter sliding-window berbasis IP dengan batas ketat maksimum 2 permohonan per 60 detik per IP.
+   - Endpoint login admin (`POST /api/auth/login`) dibatasi maksimum 5 permohonan per 5 menit per IP guna mencegah serangan *brute-force*.
+   - Pelanggaran limit wajib mengembalikan status HTTP 429 Too Many Requests beserta header `Retry-After`.
 
 ---
 

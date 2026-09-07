@@ -2,11 +2,12 @@ import { Router, Request, Response } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
 import { pool } from '../db/connection';
 import crypto from 'crypto';
+import { authenticateJwt } from '../middleware/auth';
 
 export function createTriviaRouter(io: SocketIOServer) {
   const router = Router();
 
-  // GET /api/trivia - Ambil semua pertanyaan kuis trivia
+  // GET /api/trivia - Ambil semua pertanyaan kuis trivia (Publik untuk tamu yang bermain kuis)
   router.get('/', async (_req: Request, res: Response): Promise<void> => {
     try {
       const [rows] = await pool.query(
@@ -28,8 +29,8 @@ export function createTriviaRouter(io: SocketIOServer) {
     }
   });
 
-  // POST /api/trivia - Tambah pertanyaan trivia
-  router.post('/', async (req: Request, res: Response): Promise<void> => {
+  // POST /api/trivia - Tambah pertanyaan trivia (dilindungi JWT Admin)
+  router.post('/', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
       const { question, options, explanation } = req.body;
       const correctIndex = req.body.correctAnswerIndex ?? req.body.correctIndex ?? 0;
@@ -51,8 +52,8 @@ export function createTriviaRouter(io: SocketIOServer) {
     }
   });
 
-  // PUT /api/trivia/:id - Update pertanyaan trivia
-  router.put('/:id', async (req: Request, res: Response): Promise<void> => {
+  // PUT /api/trivia/:id - Update pertanyaan trivia (dilindungi JWT Admin)
+  router.put('/:id', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       const { question, options, explanation } = req.body;
@@ -78,8 +79,8 @@ export function createTriviaRouter(io: SocketIOServer) {
     }
   });
 
-  // DELETE /api/trivia/:id - Hapus pertanyaan trivia
-  router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
+  // DELETE /api/trivia/:id - Hapus pertanyaan trivia (dilindungi JWT Admin)
+  router.delete('/:id', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       await pool.query('DELETE FROM trivia_questions WHERE id = ?', [id]);

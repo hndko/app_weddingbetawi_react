@@ -147,7 +147,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
 
   // Sync Wishes from REST API + Socket.io
   useEffect(() => {
-    api.getWishes().then(setWishes).catch(console.warn);
+    api.getWishes({ all: true }).then(setWishes).catch(console.warn);
     const onCreated = (w: Wish) => setWishes(prev => [w, ...prev.filter(x => x.id !== w.id)]);
     const onDeleted = (id: string) => setWishes(prev => prev.filter(x => x.id !== id));
     socket.on('wish:created', onCreated);
@@ -239,6 +239,8 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     try {
       sessionStorage.removeItem('admin_authenticated');
       sessionStorage.removeItem('admin_user');
+      sessionStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_token');
     } catch {
       // Safe fallback
     }
@@ -249,6 +251,16 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
       window.history.pushState(null, '', '/login');
     }
   };
+
+  // Tangani sesi token kedaluwarsa dari respons API
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      showToast('error', 'Sesi login Anda telah kedaluwarsa. Silakan masuk kembali.');
+      handleLogout();
+    };
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
+  }, []);
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();

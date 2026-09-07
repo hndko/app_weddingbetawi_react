@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { pool } from '../db/connection';
 import { config as defaultConfig } from '../../../src/data/config';
+import { authenticateJwt } from '../middleware/auth';
 
 // Ekstraksi seluruh URL /uploads/... dari objek konfigurasi
 function extractUploadUrls(cfg: any): Set<string> {
@@ -54,8 +55,8 @@ export function createConfigRouter(io: SocketIOServer) {
     }
   });
 
-  // PUT /api/config - Simpan pembaruan konfigurasi & otomatis hapus berkas gambar lama yang diganti
-  router.put('/', async (req: Request, res: Response): Promise<void> => {
+  // PUT /api/config - Simpan pembaruan konfigurasi (dilindungi JWT) & otomatis hapus berkas lama
+  router.put('/', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
       const newConfig = req.body;
       if (!newConfig || typeof newConfig !== 'object') {

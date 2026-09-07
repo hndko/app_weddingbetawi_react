@@ -11,14 +11,48 @@ import {
 
 const BASE_URL = '/api';
 
+/**
+ * Mengambil token autentikasi JWT dari storage browser
+ */
+export function getAuthToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return sessionStorage.getItem('admin_token') || localStorage.getItem('admin_token');
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Menyimpan token autentikasi JWT ke session storage
+ */
+export function setAuthToken(token: string | null): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (token) {
+      sessionStorage.setItem('admin_token', token);
+    } else {
+      sessionStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_token');
+    }
+  } catch {
+    // Ignore storage quota error
+  }
+}
+
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${BASE_URL}${endpoint}`;
+  const token = getAuthToken();
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(options?.headers as Record<string, string> || {}),
+  };
+
   const response = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options?.headers || {}),
-    },
     ...options,
+    headers,
   });
 
   if (!response.ok) {
@@ -29,6 +63,16 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     } catch {
       // ignore
     }
+
+    // Jika token kedaluwarsa atau tidak valid, bersihkan sesi
+    if (response.status === 401 && token) {
+      setAuthToken(null);
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('admin_authenticated');
+        window.dispatchEvent(new Event('auth:unauthorized'));
+      }
+    }
+
     throw new Error(errorMsg);
   }
 
@@ -44,8 +88,15 @@ export const api = {
       body: JSON.stringify(config),
     }),
 
-  // Wishes
-  getWishes: (): Promise<Wish[]> => request<Wish[]>('/wishes'),
+  // Wishes (dengan dukungan pembatasan query / pagination)
+  getWishes: (params?: { limit?: number; offset?: number; all?: boolean }): Promise<Wish[]> => {
+    const query = new URLSearchParams();
+    if (params?.all) query.set('all', 'true');
+    if (params?.limit !== undefined) query.set('limit', String(params.limit));
+    if (params?.offset !== undefined) query.set('offset', String(params.offset));
+    const qs = query.toString();
+    return request<Wish[]>(`/wishes${qs ? `?${qs}` : ''}`);
+  },
   createWish: (data: { name: string; text: string; attendance?: string; time?: string }): Promise<{ success: boolean; data: Wish }> =>
     request('/wishes', {
       method: 'POST',
@@ -99,12 +150,14 @@ export const api = {
     }),
 
   // Uploads
-  uploadFile: async (file: File): Promise<{ success: boolean; url: string; filename: string }> => {
+  uploadFile: async (file: File): Promise<{ success: boolean; url: string; filename: string; size: number }> => {
     const formData = new FormData();
     formData.append('file', file);
+    const token = getAuthToken();
 
     const response = await fetch(`${BASE_URL}/upload`, {
       method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
     });
 
@@ -118,9 +171,11 @@ export const api = {
   uploadMultipleFiles: async (files: File[]): Promise<{ success: boolean; urls: string[] }> => {
     const formData = new FormData();
     files.forEach((f) => formData.append('files', f));
+    const token = getAuthToken();
 
     const response = await fetch(`${BASE_URL}/upload/multiple`, {
       method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
     });
 
@@ -138,11 +193,14 @@ export const api = {
     }),
 
   // Auth
-  login: (credentials: { username: string; password: string }): Promise<{ success: boolean; user: { id: string; username: string; role: string } }> =>
+  login: (credentials: { username: string; password: string }): Promise<{ success: boolean; token?: string; user: { id: string | number; username: string; role: string } }> =>
     request('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     }),
+
+  verifyAuth: (): Promise<{ success: boolean; user: { id: string | number; username: string; role: string } }> =>
+    request('/auth/me'),
 
   changePassword: (data: { username: string; oldPassword: string; newPassword: string }): Promise<{ success: boolean; message: string }> =>
     request('/auth/password', {

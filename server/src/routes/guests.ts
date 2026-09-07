@@ -2,9 +2,13 @@ import { Router, Request, Response } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
 import { pool } from '../db/connection';
 import crypto from 'crypto';
+import { authenticateJwt } from '../middleware/auth';
 
 export function createGuestsRouter(io: SocketIOServer) {
   const router = Router();
+
+  // Seluruh endpoint manajemen data tamu wajib terautentikasi JWT Admin
+  router.use(authenticateJwt);
 
   // GET /api/guests - Ambil semua daftar tamu undangan
   router.get('/', async (_req: Request, res: Response): Promise<void> => {

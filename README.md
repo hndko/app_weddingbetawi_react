@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.44.3-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.44.4-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -634,6 +634,14 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
   - **Export Rekap Anggaran (CSV UTF-8 BOM)**: Unduh seluruh rincian anggaran, kontrak, dan sisa pembayaran ke berkas Excel.
 - **Menu 6: Buku Tamu RSVP & Export CSV**: Daftar konfirmasi kehadiran dengan pencarian latar *real-time*, penomoran urut otomatis 1-indexed (`#`), dan tombol **Export ke Excel (CSV)** berformat UTF-8 BOM.
 - **Menu 7: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan, dialog hapus SweetAlert2, serta tombol akses cepat **"Buka Layar Proyektor Panggung"** (`/live`).
+- **Keamanan REST API & Autentikasi JWT Bearer Token (v1.44.4)**:
+  - Seluruh endpoint mutasi konfigurasi dan data administratif (`/api/config`, `/api/guests`, `/api/budget`, `/api/checkins`, `/api/upload`, mutasi `/api/seating`, mutasi `/api/trivia`, pembacaan/penghapusan `/api/rsvps`, dan moderasi `/api/wishes`) dilindungi middleware otorisasi JWT Bearer token valid 7 hari.
+  - Sisi klien (`src/services/api.ts`) otomatis menginjeksi token otentikasi dari `sessionStorage` dan melakukan pembersihan sesi instan (*auto-logout*) via event global `auth:unauthorized` ketika token kedaluwarsa (HTTP 401).
+- **Anti-Spam Sliding-Window Rate Limiting (v1.44.4)**:
+  - Pembatasan ketat 2 pengiriman per 60 detik per IP pada form publik RSVP & Doa (`POST /api/rsvps`, `POST /api/wishes`) serta 5 percobaan per 5 menit pada endpoint login admin (`POST /api/auth/login`) guna mencegah serangan *brute force* dan banjir bot.
+  - Mendukung ekstraksi IP pengunjung riil di balik reverse proxy Cloudflare/Nginx (`x-forwarded-for`) dan respons status HTTP 429 Too Many Requests yang ramah pengguna.
+- **Query Limits & Pagination Doa Dinamis (v1.44.4)**:
+  - Pengambilan data ucapan doa sisi tamu dibatasi default `LIMIT 50` dengan dukungan tombol paginasi "Muat Doa Sebelumnya" (*offset pagination*) untuk menghemat konsumsi memori dan bandwidth browser. Dukungan parameter `?all=true` untuk layar panggung pameran live (`/live`) dan Dasbor Admin.
 - **Penerapan Penuh 8 Pilar UI/UX Interaktif (`interactive-ux-standards`)**:
   1. *Toast Alerts*: Umpan balik status sukses dan error mengambang yang ramah pengguna (auto-dismiss 3,5 detik).
   2. *SweetAlert2 Confirmation Modals*: Dialog konfirmasi hapus data dengan badge bahaya dan tombol *Icon + Text*.

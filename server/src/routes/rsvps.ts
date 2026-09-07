@@ -2,12 +2,14 @@ import { Router, Request, Response } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
 import { pool } from '../db/connection';
 import crypto from 'crypto';
+import { authenticateJwt } from '../middleware/auth';
+import { submissionRateLimiter } from '../middleware/rateLimiter';
 
 export function createRsvpsRouter(io: SocketIOServer) {
   const router = Router();
 
-  // GET /api/rsvps - Ambil semua konfirmasi kehadiran RSVP
-  router.get('/', async (_req: Request, res: Response): Promise<void> => {
+  // GET /api/rsvps - Ambil semua konfirmasi kehadiran RSVP (dilindungi JWT Admin)
+  router.get('/', authenticateJwt, async (_req: Request, res: Response): Promise<void> => {
     try {
       const [rows] = await pool.query(
         'SELECT id, name, attendance, guest_count as guestCount, notes, created_at as createdAt FROM rsvps ORDER BY created_at DESC'
@@ -19,8 +21,8 @@ export function createRsvpsRouter(io: SocketIOServer) {
     }
   });
 
-  // POST /api/rsvps - Simpan konfirmasi kehadiran RSVP baru
-  router.post('/', async (req: Request, res: Response): Promise<void> => {
+  // POST /api/rsvps - Simpan konfirmasi kehadiran RSVP baru (dilindungi Anti-Spam Rate Limiter)
+  router.post('/', submissionRateLimiter, async (req: Request, res: Response): Promise<void> => {
     try {
       const { name, attendance, guestCount, notes } = req.body;
 
@@ -57,8 +59,8 @@ export function createRsvpsRouter(io: SocketIOServer) {
     }
   });
 
-  // DELETE /api/rsvps/:id - Hapus data RSVP
-  router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
+  // DELETE /api/rsvps/:id - Hapus data RSVP (dilindungi JWT Admin)
+  router.delete('/:id', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       await pool.query('DELETE FROM rsvps WHERE id = ?', [id]);

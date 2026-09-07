@@ -2,9 +2,13 @@ import { Router, Request, Response } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
 import { pool } from '../db/connection';
 import crypto from 'crypto';
+import { authenticateJwt } from '../middleware/auth';
 
 export function createCheckinsRouter(io: SocketIOServer) {
   const router = Router();
+
+  // Seluruh endpoint manajemen check-in resepsi wajib terautentikasi JWT Admin
+  router.use(authenticateJwt);
 
   // GET /api/checkins - Ambil semua log check-in
   router.get('/', async (_req: Request, res: Response): Promise<void> => {

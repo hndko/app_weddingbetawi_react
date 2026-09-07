@@ -46,6 +46,9 @@ app_weddingbetawi_react/
 │   │   │   ├── index.ts        # Koneksi pool MySQL (mysql2/promise)
 │   │   │   ├── migrate.ts      # Skrip DDL migrasi tabel otomatis
 │   │   │   └── seed.ts         # Skrip seeder data awal (superadmin & default config)
+│   │   ├── middleware/         # Middleware Keamanan & Proteksi
+│   │   │   ├── auth.ts         # Verifikasi JWT Bearer Token (7 hari)
+│   │   │   └── rateLimiter.ts  # Anti-Spam Sliding Window Rate Limiter
 │   │   ├── routes/             # Rute REST API Express
 │   │   │   ├── auth.ts         # Login & Ubah Password (bcryptjs)
 │   │   │   ├── config.ts       # Wedding Config & Auto-Unlink Disk Cleanup
@@ -283,3 +286,20 @@ Proyek ini mewajibkan seluruh pengembang untuk menjaga konsistensi berkas `.env`
    ```
    Perintah ini memanfaatkan modul native Node.js `crypto.randomBytes(32)` untuk memproduksi 64 karakter string heksadesimal acak.
 3. **Pemberian Nilai di Server Produksi**: Pada server deployment (VPS / aaPanel), salin output dari `npm run secret:generate` ke dalam konfigurasi `JWT_SECRET` pada berkas `.env` produksi.
+
+---
+
+## 🛡️ 10. Arsitektur Keamanan REST API & Rate Limiting
+
+Aplikasi menerapkan pengamanan berlapis pada seluruh antarmuka REST API:
+
+1. **JWT Bearer Token Middleware (`server/src/middleware/auth.ts`)**:
+   - Seluruh mutasi konfigurasi dan endpoint manajemen dilindungi oleh middleware `authenticateJwt`.
+   - Token ditandatangani saat login (`POST /api/auth/login`) dengan masa berlaku 7 hari dan divalidasi menggunakan rahasia `JWT_SECRET`.
+   - Sisi klien (`src/services/api.ts`) otomatis menyertakan token dari `sessionStorage` dan menangani error 401 dengan auto-logout serta event global `auth:unauthorized`.
+2. **Anti-Spam Sliding Window Rate Limiter (`server/src/middleware/rateLimiter.ts`)**:
+   - Endpoint publik penerima formulir (`POST /api/wishes` dan `POST /api/rsvps`) dibatasi maksimum 2 permintaan per 60 detik per IP.
+   - Endpoint login admin (`POST /api/auth/login`) dibatasi maksimum 5 permintaan per 5 menit per IP.
+   - Menggunakan algoritma in-memory sliding window dengan pembersihan berkala dan deteksi IP pengunjung di balik reverse proxy (`x-forwarded-for`).
+3. **Optimasi Beban Data & Paginasi Doa**:
+   - Kueri `GET /api/wishes` dibatasi default `LIMIT 50` dengan dukungan `offset` untuk paginasi inkremental di sisi klien, mencegah penurunan performa rendering DOM browser saat jumlah ucapan doa bertambah banyak. Mode `?all=true` tetap didukung untuk Dasbor Admin dan Layar Panggung Proyektor (`/live`).

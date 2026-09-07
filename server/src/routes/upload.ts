@@ -2,9 +2,13 @@ import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { authenticateJwt } from '../middleware/auth';
 
 export function createUploadRouter() {
   const router = Router();
+
+  // Seluruh endpoint unggah berkas wajib terautentikasi JWT Admin
+  router.use(authenticateJwt);
 
   // Pastikan folder server/uploads tersedia
   const uploadDir = path.resolve(process.cwd(), 'server', 'uploads');

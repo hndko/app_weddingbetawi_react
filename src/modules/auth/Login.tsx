@@ -45,6 +45,9 @@ export function Login({
         try {
           sessionStorage.setItem('admin_authenticated', 'true');
           sessionStorage.setItem('admin_user', JSON.stringify(res.user));
+          if (res.token) {
+            sessionStorage.setItem('admin_token', res.token);
+          }
         } catch {
           // Safe fallback
         }
@@ -53,9 +56,9 @@ export function Login({
         setErrorMessage('Username atau password tidak sesuai');
         triggerShake();
       }
-    } catch (err: any) {
-      console.warn('[Login Error]:', err);
-      setErrorMessage(err.message || 'Gagal login. Periksa username dan password Anda.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal login. Periksa username dan password Anda.';
+      setErrorMessage(msg);
       triggerShake();
     } finally {
       setIsLoading(false);

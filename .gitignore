@@ -63,3 +63,7 @@ test.html
 scratch/
 README_MUSIC.md
 README_SEO.md
+
+# Server Uploads
+server/uploads/*
+!server/uploads/.gitkeep

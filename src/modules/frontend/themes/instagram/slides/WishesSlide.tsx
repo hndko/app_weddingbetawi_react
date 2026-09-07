@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Send, Heart, MessageSquare, Check, Sparkles } from 'lucide-react';
-import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, limit } from 'firebase/firestore';
-import { db } from '../../../../../lib/firebase';
+import { api } from '../../../../../services/api';
+import { socket } from '../../../../../services/socket';
 import { useGuestName } from '../../../../../hooks/useGuestName';
 import { RSVPPollSticker } from '../components/InteractiveStickers';
 import { Wish } from '../../../../../types';
@@ -27,29 +27,20 @@ export const WishesSlide: React.FC = () => {
     }
   }, [defaultGuestName]);
 
-  // Firestore Real-Time listener with cleanup (Pilar 6)
+  // REST API + Socket.io Real-Time listener
   useEffect(() => {
-    const q = query(collection(db, 'wishes'), orderBy('createdAt', 'desc'), limit(20));
-    const unsub = onSnapshot(q, (snap) => {
-      if (!snap.empty) {
-        const list: Wish[] = snap.docs.map((doc) => {
-          const d = doc.data();
-          let timeFormatted = 'Baru saja';
-          if (d.createdAt?.toDate) {
-            const dt = d.createdAt.toDate();
-            timeFormatted = dt.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-          }
-          return {
-            id: doc.id,
-            name: d.name || 'Tamu',
-            text: d.text || '',
-            time: timeFormatted,
-          };
-        });
-        setWishes(list);
-      }
-    });
-    return () => unsub();
+    api.getWishes().then((data) => {
+      if (data && data.length > 0) setWishes(data.slice(0, 20));
+    }).catch(console.warn);
+
+    const onCreated = (newWish: Wish) => {
+      setWishes((prev) => [newWish, ...prev.filter((w) => w.id !== newWish.id)].slice(0, 20));
+    };
+
+    socket.on('wish:created', onCreated);
+    return () => {
+      socket.off('wish:created', onCreated);
+    };
   }, []);
 
   const handleSend = async (e: React.FormEvent) => {
@@ -59,10 +50,10 @@ export const WishesSlide: React.FC = () => {
     setIsSubmitting(true);
     playStoryPop();
     try {
-      await addDoc(collection(db, 'wishes'), {
+      await api.createWish({
         name: name.trim(),
         text: text.trim(),
-        createdAt: serverTimestamp(),
+        time: 'Baru saja',
       });
       setText('');
       setSentSuccess(true);

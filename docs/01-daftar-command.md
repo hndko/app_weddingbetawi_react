@@ -21,8 +21,17 @@ Dokumen ini memuat referensi perintah baris perintah (*Command Line Interface*) 
 Aplikasi telah dikonfigurasi untuk berjalan pada host `0.0.0.0` dan port `3000`:
 
 ```bash
-# Menjalankan dev server menggunakan npm
+# Menjalankan dev server frontend Vite menggunakan npm
 npm run dev
+
+# Menjalankan backend REST API & Socket.io Gateway (Port 5000)
+npm run server
+
+# Menjalankan migrasi skema tabel database MySQL Laragon
+npm run db:migrate
+
+# Mengimpor data awal bawaan ke database MySQL Laragon
+npm run db:seed
 ```
 
 > [!TIP]

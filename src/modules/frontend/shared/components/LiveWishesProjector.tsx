@@ -17,8 +17,8 @@ import {
   MapPin,
   Clock,
 } from 'lucide-react';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
-import { db } from '../../../../lib/firebase';
+import { api } from '../../../../services/api';
+import { socket } from '../../../../services/socket';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { generateQRCodeDataURL } from '../../../../utils/qrGenerator';
 import { playStageChime } from '../../../../utils/stageChime';
@@ -111,39 +111,43 @@ export function LiveWishesProjector() {
     };
   }, [handleMouseMove]);
 
-  // Real-time Firestore sync for wishes
+  // Real-time API & Socket.io sync for wishes
   useEffect(() => {
-    const q = query(collection(db, 'wishes'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-      })) as Wish[];
-
-      if (docs.length > 0) {
-        const newest = docs[0];
-
-        // If not initial load and a brand new wish arrived
-        if (!initialLoadRef.current && newest.id && newest.id !== previousLatestIdRef.current) {
-          // Play chime sound if not muted
-          if (!isAudioMuted) {
-            playStageChime();
-          }
-          // Show spotlight celebration modal for 6.5 seconds
-          setSpotlightWish(newest);
-          setTimeout(() => {
-            setSpotlightWish(null);
-          }, 6500);
-        }
-
-        previousLatestIdRef.current = newest.id || null;
-      }
-
-      initialLoadRef.current = false;
+    api.getWishes().then((docs) => {
       setWishes(docs);
+      if (docs.length > 0) {
+        previousLatestIdRef.current = docs[0].id || null;
+      }
+      initialLoadRef.current = false;
+    }).catch((err) => {
+      console.warn('[LiveWishesProjector] Gagal memuat data ucapan:', err);
+      initialLoadRef.current = false;
     });
 
-    return () => unsubscribe();
+    const handleWishCreated = (newWish: Wish) => {
+      if (!isAudioMuted) {
+        playStageChime();
+      }
+      setSpotlightWish(newWish);
+      setTimeout(() => {
+        setSpotlightWish(null);
+      }, 6500);
+
+      setWishes((prev) => [newWish, ...prev.filter((w) => w.id !== newWish.id)]);
+      previousLatestIdRef.current = newWish.id || null;
+    };
+
+    const handleWishDeleted = (deletedId: string) => {
+      setWishes((prev) => prev.filter((w) => w.id !== deletedId));
+    };
+
+    socket.on('wish:created', handleWishCreated);
+    socket.on('wish:deleted', handleWishDeleted);
+
+    return () => {
+      socket.off('wish:created', handleWishCreated);
+      socket.off('wish:deleted', handleWishDeleted);
+    };
   }, [isAudioMuted]);
 
   // Auto-cycle carousel timer

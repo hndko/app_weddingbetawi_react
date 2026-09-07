@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from 'motion/react';
-import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../../../lib/firebase';
+import { api } from '../../../../services/api';
+import { socket } from '../../../../services/socket';
 import { useGuestName } from '../../../../hooks/useGuestName';
 import { useThemeTokens } from '../../themes';
 import { cn } from '../../../../utils/cn';
@@ -44,37 +44,36 @@ export function WishesSection() {
     }
   }, [defaultGuestName]);
 
-  useEffect(() => {
-    const q = query(collection(db, 'wishes'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      if (!snapshot.empty) {
-        const fetchedWishes: Wish[] = snapshot.docs.map(doc => {
-          const data = doc.data();
-          let timeFormatted = 'Baru saja';
-          if (data.createdAt?.toDate) {
-            const date = data.createdAt.toDate();
-            timeFormatted = date.toLocaleDateString('id-ID', {
-              day: 'numeric',
-              month: 'short',
-              hour: '2-digit',
-              minute: '2-digit'
-            });
-          }
-          return {
-            id: doc.id,
-            name: data.name,
-            text: data.text,
-            time: timeFormatted,
-            audioUrl: data.audioUrl,
-            audioDuration: data.audioDuration,
-          };
-        });
-        setWishes(fetchedWishes);
+  const loadWishes = useCallback(async () => {
+    try {
+      const data = await api.getWishes();
+      if (data && data.length > 0) {
+        setWishes(data);
       }
-    });
-
-    return () => unsubscribe();
+    } catch (err) {
+      console.warn('[WishesSection] Menggunakan default wishes:', err);
+    }
   }, []);
+
+  useEffect(() => {
+    loadWishes();
+
+    const handleWishCreated = (newWish: Wish) => {
+      setWishes((prev) => [newWish, ...prev.filter((w) => w.id !== newWish.id)]);
+    };
+
+    const handleWishDeleted = (deletedId: string) => {
+      setWishes((prev) => prev.filter((w) => w.id !== deletedId));
+    };
+
+    socket.on('wish:created', handleWishCreated);
+    socket.on('wish:deleted', handleWishDeleted);
+
+    return () => {
+      socket.off('wish:created', handleWishCreated);
+      socket.off('wish:deleted', handleWishDeleted);
+    };
+  }, [loadWishes]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,17 +83,11 @@ export function WishesSection() {
     setErrorMessage(null);
     setSuccessMessage(null);
     try {
-      const payload: Record<string, unknown> = {
+      await api.createWish({
         name: name.trim(),
         text: wishText.trim(),
-        createdAt: serverTimestamp(),
-      };
-      if (audioUrl) {
-        payload.audioUrl = audioUrl;
-        payload.audioDuration = audioDuration;
-      }
-
-      await addDoc(collection(db, 'wishes'), payload);
+        time: 'Baru saja',
+      });
       setWishText('');
       setAudioUrl(null);
       setAudioDuration(0);

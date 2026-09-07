@@ -1,7 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
 import { motion } from 'motion/react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../../../lib/firebase';
+import { api } from '../../../../services/api';
 import { useGuestName } from '../../../../hooks/useGuestName';
 import { useThemeTokens } from '../../themes';
 import { cn } from '../../../../utils/cn';
@@ -42,12 +41,11 @@ export function RSVPSection() {
     setIsSubmitting(true);
     setErrorMessage(null);
     try {
-      await addDoc(collection(db, 'rsvps'), {
+      await api.createRsvp({
         name: name.trim(),
         guestCount: Number(guestCount),
         attendance,
         notes: notes.trim(),
-        createdAt: serverTimestamp(),
       });
       setIsSubmitted(true);
       localStorage.setItem('rsvp_submitted', 'true');

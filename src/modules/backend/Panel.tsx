@@ -10,8 +10,8 @@ import {
   Wallet, Armchair, Gamepad2, Repeat, Repeat1, Shuffle, ListMusic, LayoutGrid
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
-import { collection, onSnapshot, query, orderBy, deleteDoc, doc, addDoc, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
+import { api } from '../../services/api';
+import { socket } from '../../services/socket';
 import { WeddingConfig, RSVPResponse, Wish, GuestInvitation, GalleryLayoutStyle } from '../../types';
 import { Login } from '../auth/Login';
 import { DragDropUpload } from './components/DragDropUpload';
@@ -160,36 +160,54 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     }
   }, [weddingConfig]);
 
-  // Sync RSVPs from Firestore
+  // Sync RSVPs from REST API + Socket.io
   useEffect(() => {
-    const q = query(collection(db, 'rsvps'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as RSVPResponse));
-      setRsvps(docs);
-    });
-    return () => unsubscribe();
+    api.getRsvps().then(setRsvps).catch(console.warn);
+    const onCreated = (r: RSVPResponse) => setRsvps(prev => [r, ...prev.filter(x => x.id !== r.id)]);
+    const onDeleted = (id: string) => setRsvps(prev => prev.filter(x => x.id !== id));
+    socket.on('rsvp:created', onCreated);
+    socket.on('rsvp:deleted', onDeleted);
+    return () => {
+      socket.off('rsvp:created', onCreated);
+      socket.off('rsvp:deleted', onDeleted);
+    };
   }, []);
 
-  // Sync Wishes from Firestore
+  // Sync Wishes from REST API + Socket.io
   useEffect(() => {
-    const q = query(collection(db, 'wishes'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Wish));
-      setWishes(docs);
-    });
-    return () => unsubscribe();
+    api.getWishes().then(setWishes).catch(console.warn);
+    const onCreated = (w: Wish) => setWishes(prev => [w, ...prev.filter(x => x.id !== w.id)]);
+    const onDeleted = (id: string) => setWishes(prev => prev.filter(x => x.id !== id));
+    socket.on('wish:created', onCreated);
+    socket.on('wish:deleted', onDeleted);
+    return () => {
+      socket.off('wish:created', onCreated);
+      socket.off('wish:deleted', onDeleted);
+    };
   }, []);
 
-  // Sync Guests from Firestore
+  // Sync Guests from REST API + Socket.io
   useEffect(() => {
-    const q = query(collection(db, 'guests'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as GuestInvitation));
-      setGuests(docs);
-    }, () => {
-      // Safe fallback for permission/connection
-    });
-    return () => unsubscribe();
+    const fetchGuests = () => api.getGuests().then(setGuests).catch(console.warn);
+    fetchGuests();
+    const onCreated = (g: GuestInvitation) => setGuests(prev => [g, ...prev.filter(x => x.id !== g.id)]);
+    const onUpdated = (g: any) => setGuests(prev => prev.map(x => x.id === g.id ? { ...x, ...g } : x));
+    const onDeleted = (id: string) => setGuests(prev => prev.filter(x => x.id !== id));
+    const onReset = () => setGuests([]);
+    socket.on('guest:created', onCreated);
+    socket.on('guest:updated', onUpdated);
+    socket.on('guest:checked_in', onUpdated);
+    socket.on('guest:deleted', onDeleted);
+    socket.on('guests:imported', fetchGuests);
+    socket.on('guests:reset', onReset);
+    return () => {
+      socket.off('guest:created', onCreated);
+      socket.off('guest:updated', onUpdated);
+      socket.off('guest:checked_in', onUpdated);
+      socket.off('guest:deleted', onDeleted);
+      socket.off('guests:imported', fetchGuests);
+      socket.off('guests:reset', onReset);
+    };
   }, []);
 
   // Calculate live countdown
@@ -265,10 +283,10 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     try {
       await updateWeddingConfig(formData);
       setSaveSuccess(true);
-      showToast('success', 'Perubahan berhasil disimpan ke Firestore!');
+      showToast('success', 'Perubahan berhasil disimpan ke MySQL!');
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch {
-      showToast('error', 'Gagal menyimpan perubahan ke Firestore.');
+      showToast('error', 'Gagal menyimpan perubahan ke MySQL.');
     } finally {
       setIsSaving(false);
     }
@@ -329,28 +347,20 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     if (!deleteModal) return;
     try {
       if (deleteModal.type === 'wish') {
-        await deleteDoc(doc(db, 'wishes', deleteModal.id));
-        showToast('success', 'Data ucapan berhasil dihapus dari Firestore.');
+        await api.deleteWish(deleteModal.id);
+        showToast('success', 'Data ucapan berhasil dihapus.');
       } else if (deleteModal.type === 'rsvp') {
-        await deleteDoc(doc(db, 'rsvps', deleteModal.id));
-        showToast('success', 'Data RSVP berhasil dihapus dari Firestore.');
+        await api.deleteRsvp(deleteModal.id);
+        showToast('success', 'Data RSVP berhasil dihapus.');
       } else if (deleteModal.type === 'guest') {
-        await deleteDoc(doc(db, 'guests', deleteModal.id));
-        showToast('success', 'Data tamu berhasil dihapus dari Firestore.');
+        await api.deleteGuest(deleteModal.id);
+        showToast('success', 'Data tamu berhasil dihapus.');
       } else if (deleteModal.type === 'all_guests') {
-        const CHUNK_SIZE = 450;
-        for (let i = 0; i < guests.length; i += CHUNK_SIZE) {
-          const chunk = guests.slice(i, i + CHUNK_SIZE);
-          const batch = writeBatch(db);
-          for (const g of chunk) {
-            if (g.id) batch.delete(doc(db, 'guests', g.id));
-          }
-          await batch.commit();
-        }
+        await api.resetAllGuests();
         showToast('success', 'Seluruh data tamu berhasil direset.');
       }
     } catch {
-      showToast('error', 'Gagal menghapus data dari Firestore.');
+      showToast('error', 'Gagal menghapus data.');
     } finally {
       setDeleteModal(null);
     }
@@ -361,11 +371,17 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     if (!files[0]) return;
     setUploadingAvatar('groom');
     try {
-      const dataUrl = await compressImageFile(files[0]);
-      setFormData(prev => ({ ...prev, groom: { ...prev.groom, image: dataUrl } }));
-      showToast('success', 'Foto mempelai pria berhasil diunggah!');
+      const res = await api.uploadFile(files[0]);
+      setFormData(prev => ({ ...prev, groom: { ...prev.groom, image: res.url } }));
+      showToast('success', 'Foto mempelai pria berhasil diunggah ke server!');
     } catch {
-      showToast('error', 'Gagal memproses foto mempelai pria.');
+      try {
+        const dataUrl = await compressImageFile(files[0]);
+        setFormData(prev => ({ ...prev, groom: { ...prev.groom, image: dataUrl } }));
+        showToast('success', 'Foto mempelai pria berhasil disimpan!');
+      } catch {
+        showToast('error', 'Gagal memproses foto mempelai pria.');
+      }
     } finally {
       setUploadingAvatar(null);
     }
@@ -375,11 +391,17 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     if (!files[0]) return;
     setUploadingAvatar('bride');
     try {
-      const dataUrl = await compressImageFile(files[0]);
-      setFormData(prev => ({ ...prev, bride: { ...prev.bride, image: dataUrl } }));
-      showToast('success', 'Foto mempelai wanita berhasil diunggah!');
+      const res = await api.uploadFile(files[0]);
+      setFormData(prev => ({ ...prev, bride: { ...prev.bride, image: res.url } }));
+      showToast('success', 'Foto mempelai wanita berhasil diunggah ke server!');
     } catch {
-      showToast('error', 'Gagal memproses foto mempelai wanita.');
+      try {
+        const dataUrl = await compressImageFile(files[0]);
+        setFormData(prev => ({ ...prev, bride: { ...prev.bride, image: dataUrl } }));
+        showToast('success', 'Foto mempelai wanita berhasil disimpan!');
+      } catch {
+        showToast('error', 'Gagal memproses foto mempelai wanita.');
+      }
     } finally {
       setUploadingAvatar(null);
     }
@@ -389,11 +411,17 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     if (!files[0]) return;
     setUploadingAvatar('seo');
     try {
-      const dataUrl = await compressImageFile(files[0]);
-      setFormData(prev => ({ ...prev, seo: { ...prev.seo, image: dataUrl } }));
+      const res = await api.uploadFile(files[0]);
+      setFormData(prev => ({ ...prev, seo: { ...prev.seo, image: res.url } }));
       showToast('success', 'Foto thumbnail preview SEO berhasil diunggah!');
     } catch {
-      showToast('error', 'Gagal memproses thumbnail SEO.');
+      try {
+        const dataUrl = await compressImageFile(files[0]);
+        setFormData(prev => ({ ...prev, seo: { ...prev.seo, image: dataUrl } }));
+        showToast('success', 'Foto thumbnail preview SEO berhasil disimpan!');
+      } catch {
+        showToast('error', 'Gagal memproses thumbnail SEO.');
+      }
     } finally {
       setUploadingAvatar(null);
     }
@@ -403,14 +431,23 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     if (files.length === 0) return;
     setIsUploadingGallery(true);
     try {
-      const compressedList = await Promise.all(files.map(f => compressImageFile(f)));
+      const res = await api.uploadMultipleFiles(files);
       setFormData(prev => ({
         ...prev,
-        gallery: [...prev.gallery, ...compressedList]
+        gallery: [...prev.gallery, ...res.urls]
       }));
-      showToast('success', `${compressedList.length} foto berhasil ditambahkan ke galeri!`);
+      showToast('success', `${res.urls.length} foto berhasil ditambahkan ke galeri!`);
     } catch {
-      showToast('error', 'Gagal mengunggah foto galeri.');
+      try {
+        const compressedList = await Promise.all(files.map(f => compressImageFile(f)));
+        setFormData(prev => ({
+          ...prev,
+          gallery: [...prev.gallery, ...compressedList]
+        }));
+        showToast('success', `${compressedList.length} foto berhasil ditambahkan ke galeri!`);
+      } catch {
+        showToast('error', 'Gagal mengunggah foto galeri.');
+      }
     } finally {
       setIsUploadingGallery(false);
     }
@@ -419,12 +456,12 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   const handleUploadQris = async (files: File[], bankIdx: number) => {
     if (!files[0]) return;
     try {
-      const dataUrl = await compressImageFile(files[0]);
+      const res = await api.uploadFile(files[0]);
       setFormData(prev => {
         const newBanks = [...(prev.banks || (prev.bank ? [prev.bank] : []))];
         newBanks[bankIdx] = {
           ...newBanks[bankIdx],
-          qrisImage: dataUrl,
+          qrisImage: res.url,
           isQris: true,
           account: '-',
           holder: '-',
@@ -433,7 +470,23 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
       });
       showToast('success', 'Gambar barcode QRIS berhasil diunggah!');
     } catch {
-      showToast('error', 'Gagal mengunggah gambar QRIS.');
+      try {
+        const dataUrl = await compressImageFile(files[0]);
+        setFormData(prev => {
+          const newBanks = [...(prev.banks || (prev.bank ? [prev.bank] : []))];
+          newBanks[bankIdx] = {
+            ...newBanks[bankIdx],
+            qrisImage: dataUrl,
+            isQris: true,
+            account: '-',
+            holder: '-',
+          };
+          return { ...prev, banks: newBanks };
+        });
+        showToast('success', 'Gambar barcode QRIS berhasil disimpan!');
+      } catch {
+        showToast('error', 'Gagal mengunggah gambar QRIS.');
+      }
     }
   };
 
@@ -580,10 +633,7 @@ Wassalamu'alaikum Wr. Wb.`;
 
     if (guest.id && guest.status !== 'sent') {
       try {
-        await updateDoc(doc(db, 'guests', guest.id), {
-          status: 'sent',
-          sentAt: serverTimestamp(),
-        });
+        await api.updateGuest(guest.id, { status: 'sent' });
       } catch {
         // Continue opening WhatsApp
       }
@@ -601,10 +651,7 @@ Wassalamu'alaikum Wr. Wb.`;
     if (!guest.id) return;
     const newStatus = guest.status === 'sent' ? 'pending' : 'sent';
     try {
-      await updateDoc(doc(db, 'guests', guest.id), {
-        status: newStatus,
-        sentAt: newStatus === 'sent' ? serverTimestamp() : null,
-      });
+      await api.updateGuest(guest.id, { status: newStatus });
       showToast('success', `Status ${guest.name} diubah ke ${newStatus === 'sent' ? 'Sudah Terkirim' : 'Belum Terkirim'}`);
     } catch {
       showToast('error', 'Gagal memperbarui status pengiriman.');
@@ -612,10 +659,11 @@ Wassalamu'alaikum Wr. Wb.`;
   };
 
   const handleUpdateGuestStatusById = async (guestId: string, status: 'pending' | 'sent') => {
-    await updateDoc(doc(db, 'guests', guestId), {
-      status,
-      sentAt: status === 'sent' ? serverTimestamp() : null,
-    });
+    try {
+      await api.updateGuest(guestId, { status });
+    } catch {
+      // ignore
+    }
   };
 
   const copyGuestLink = async (guest: GuestInvitation) => {
@@ -669,18 +717,16 @@ Wassalamu'alaikum Wr. Wb.`;
     setIsSubmittingGuest(true);
     try {
       const cleanedPhone = newGuestPhone ? sanitizePhoneNumber(newGuestPhone) : '';
-      await addDoc(collection(db, 'guests'), {
+      await api.createGuest({
         name: trimmedName,
         phone: cleanedPhone,
-        status: 'pending',
-        createdAt: serverTimestamp(),
       });
       showToast('success', `Tamu "${trimmedName}" berhasil ditambahkan!`);
       setNewGuestName('');
       setNewGuestPhone('');
       setIsAddGuestModalOpen(false);
     } catch {
-      showToast('error', 'Gagal menambahkan tamu ke Firestore.');
+      showToast('error', 'Gagal menambahkan tamu ke database.');
     } finally {
       setIsSubmittingGuest(false);
     }
@@ -816,23 +862,15 @@ Wassalamu'alaikum Wr. Wb.`;
 
     setIsProcessingImport(true);
     try {
-      const CHUNK_SIZE = 450;
-      for (let i = 0; i < validGuests.length; i += CHUNK_SIZE) {
-        const chunk = validGuests.slice(i, i + CHUNK_SIZE);
-        const batch = writeBatch(db);
-        for (const item of chunk) {
-          const docRef = doc(collection(db, 'guests'));
-          batch.set(docRef, {
-            name: item.name.trim(),
-            phone: item.phone ? sanitizePhoneNumber(item.phone) : '',
-            status: 'pending',
-            createdAt: serverTimestamp(),
-          });
-        }
-        await batch.commit();
-      }
+      const formatted = validGuests.map((item) => ({
+        name: item.name.trim(),
+        phone: item.phone ? sanitizePhoneNumber(item.phone) : '',
+        status: 'pending' as const,
+      }));
 
-      showToast('success', `Berhasil mengimpor ${validGuests.length} tamu ke Firestore!`);
+      await api.importGuests(formatted);
+
+      showToast('success', `Berhasil mengimpor ${validGuests.length} tamu ke database!`);
       setIsImportModalOpen(false);
       setParsedGuestsPreview([]);
       setImportTextContent('');

@@ -2,14 +2,15 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.40.1-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.41.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+[![MySQL](https://img.shields.io/badge/MySQL-Laragon-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://laragon.org)
+[![Socket.io](https://img.shields.io/badge/Socket.io-Realtime-010101?style=for-the-badge&logo=socketdotio&logoColor=white)](https://socket.io)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
 [![Tailwind_CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Firebase](https://img.shields.io/badge/Firebase_Firestore-12.17-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com)
 [![Motion](https://img.shields.io/badge/Motion-12.23-0055FF?style=for-the-badge&logo=framer&logoColor=white)](https://motion.dev)
-[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
 ---

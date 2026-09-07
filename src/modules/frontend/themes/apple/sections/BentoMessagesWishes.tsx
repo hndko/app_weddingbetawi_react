@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, limit } from 'firebase/firestore';
 import { MessageCircle, Send, CheckCircle2, User, Users, Check, AlertCircle, Loader2 } from 'lucide-react';
-import { db } from '../../../../../lib/firebase';
+import { api } from '../../../../../services/api';
+import { socket } from '../../../../../services/socket';
 import { useGuestName } from '../../../../../hooks/useGuestName';
 import { Wish } from '../../../../../types';
 
@@ -32,36 +32,20 @@ export const BentoMessagesWishes: React.FC = () => {
     }
   }, [defaultGuestName]);
 
-  // Firestore Real-Time Listener with cleanup & limit(30) per Pilar 6
+  // REST API + Socket.io Real-Time Listener
   useEffect(() => {
-    const q = query(collection(db, 'wishes'), orderBy('createdAt', 'desc'), limit(30));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        if (!snapshot.empty) {
-          const fetched: Wish[] = snapshot.docs.map((doc) => {
-            const data = doc.data();
-            let timeStr = 'Baru saja';
-            if (data.createdAt?.toDate) {
-              const d = data.createdAt.toDate();
-              timeStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-            }
-            return {
-              id: doc.id,
-              name: data.name || 'Tamu',
-              text: data.text || '',
-              time: timeStr,
-            };
-          });
-          setWishes(fetched);
-        }
-      },
-      () => {
-        // Fallback gracefully on local error
-      }
-    );
+    api.getWishes().then((data) => {
+      if (data && data.length > 0) setWishes(data.slice(0, 30));
+    }).catch(console.warn);
 
-    return () => unsubscribe();
+    const onCreated = (newWish: Wish) => {
+      setWishes((prev) => [newWish, ...prev.filter((w) => w.id !== newWish.id)].slice(0, 30));
+    };
+
+    socket.on('wish:created', onCreated);
+    return () => {
+      socket.off('wish:created', onCreated);
+    };
   }, []);
 
   const handleSendWish = async (e: React.FormEvent) => {
@@ -71,10 +55,10 @@ export const BentoMessagesWishes: React.FC = () => {
     setIsSubmitting(true);
     setErrorMsg(null);
     try {
-      await addDoc(collection(db, 'wishes'), {
+      await api.createWish({
         name: name.trim(),
         text: text.trim(),
-        createdAt: serverTimestamp(),
+        time: 'Baru saja',
       });
       setText('');
       setSubmitSuccess(true);
@@ -91,12 +75,11 @@ export const BentoMessagesWishes: React.FC = () => {
     setIsSubmitting(true);
     setErrorMsg(null);
     try {
-      await addDoc(collection(db, 'rsvps'), {
+      await api.createRsvp({
         name: name.trim(),
         guestCount: Number(guestCount),
         attendance,
         notes: text.trim(),
-        createdAt: serverTimestamp(),
       });
       setRsvpSuccess(true);
       localStorage.setItem('apple_rsvp_submitted', 'true');

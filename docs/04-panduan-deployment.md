@@ -401,95 +401,45 @@ Klik tombol **Confirm** untuk memulai background service Node.js. Pastikan statu
 
 ---
 
-### F. Konfigurasi Website Nginx (Frontend SPA + Reverse Proxy API)
-Proyek Node.js di langkah sebelumnya menjalankan backend Express di port internal `5000`. Untuk melayani frontend SPA `dist/` ke publik di port `80`/`443` menggunakan domain resmi Anda:
+### F. Pengaturan Domain & SSL Let's Encrypt di aaPanel
 
-1. Buka menu **Website** > pilih tab **PHP Project** (atau menu Website utama).
-2. Klik tombol **Add site**. Pada tab modal **Create site**, konfigurasikan form persis seperti berikut:
+Karena pada langkah **4.E** Anda telah memasukkan nilai **`Domain name`** (`invitation.maripartner.com`) langsung pada modal **Node.js Project**, aaPanel **secara otomatis telah membuatkan Virtual Host Nginx** untuk domain tersebut.
 
-| Parameter Form | Nilai / Konfigurasi | Keterangan & Catatan Panduan |
-| :--- | :--- | :--- |
-| **Domain name** | `invitation.maripartner.com` | Masukkan subdomain undangan Anda. |
-| **Apply for SSL** | **Centang `[x]`** | Centang opsi ini agar aaPanel otomatis menerbitkan SSL Let's Encrypt gratis (pastikan DNS A record sudah mengarah ke IP server). |
-| **Description** | `invitation_maripartner_com` | Deskripsi situs (otomatis terisi oleh aaPanel). |
-| **Website Path** | `/www/wwwroot/app_weddingbetawi_react/dist` | **Wajib arahkan ke folder `dist`** (gunakan ikon folder untuk memilih direktori build). |
-| **FTP** | `Not create` | Pilih `Not create` (tidak diperlukan). |
-| **Database** | `Not create` | Pilih `Not create` (database MySQL sudah dibuat di menu Databases). |
-| **PHP version** | **`Static`** | **PENTING!** Pilih opsi `Static` dari dropdown (karena ini adalah situs statis SPA Vite). |
-| **Site category** | `Default category` | Kategori situs bawaan. |
+> [!NOTE]
+> **Catatan jika muncul notifikasi *"The domain you tried to add already exists!"*:**
+> Jika Anda mencoba menambahkan domain yang sama di menu **PHP Project**, aaPanel akan menolak karena domain tersebut **sudah terdaftar dan terikat pada Node.js Project Anda**. Anda **TIDAK PERLU** membuat situs baru di PHP Project!
 
-3. Klik tombol hijau **`Confirm`** untuk membuat website.
-4. **Konfigurasi SSL & Force HTTPS (Jika Belum Otomatis Aktif)**:
-   - Jika saat klik Confirm SSL belum terbit, klik nama domain di tabel > tab **SSL** > pilih tab **Let's Encrypt** > centang domain > klik **Apply** > aktifkan toggle **Force HTTPS**.
-5. **Konfigurasi Nginx Virtual Host (Configuration File)**:
-   - Klik nama domain di tabel > masuk ke tab **Configuration file**.
-   - Sesuaikan blok `server { ... }` dengan konfigurasi teruji berikut agar menyajikan `dist/` dan mem-proxy request backend ke port 5000:
+#### Langkah Pemasangan SSL Let's Encrypt pada Node.js Project:
+1. Buka menu **Website** > pilih tab **Node.js Project**.
+2. Pada tabel proyek Anda (`app_weddingbetawi_react`), perhatikan kolom **SSL** yang berstatus **`Not Set`** (warna oranye).
+3. Klik tulisan **`Not Set`** (atau klik link **`Modify`** di kolom kanan > pilih tab **SSL**).
+4. Di dalam modal SSL:
+   - Pilih tab **Let's Encrypt**.
+   - Centang kotak nama domain Anda (`invitation.maripartner.com`).
+   - Klik tombol hijau **Apply**.
+   - Setelah sertifikat berhasil diterbitkan, aktifkan saklar **Force HTTPS**.
+5. Simpan pengaturan.
 
-```nginx
-server {
-    listen 80;
-    listen 443 ssl http2;
-    server_name invitation.maripartner.com;
+---
 
-    # Root direktori mengarah ke folder build frontend (dist)
-    root /www/wwwroot/app_weddingbetawi_react/dist;
-    index index.html;
+### G. Menarik Kode Terbaru & Kompilasi Frontend di Server
+Agar backend Express otomatis menyajikan tampilan antarmuka undangan dari folder `dist/`:
 
-    # Gzip Compression
-    gzip on;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml;
-    gzip_min_length 256;
+Buka menu **Terminal** di aaPanel dan jalankan:
+```bash
+# Masuk ke direktori proyek
+cd /www/wwwroot/app_weddingbetawi_react
 
-    # 1. Routing Frontend React Single Page Application (SPA)
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
+# Tarik pembaruan kode terbaru dari repositori GitHub
+git pull origin main
 
-    # 2. Reverse Proxy REST API ke Express Backend (Port 5000)
-    location /api/ {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        client_max_body_size 15M;
-    }
-
-    # 3. Reverse Proxy File Unggahan Statis (Foto Pengantin & QRIS)
-    location /uploads/ {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        expires 30d;
-        add_header Cache-Control "public, no-transform";
-    }
-
-    # 4. Reverse Proxy WebSocket Real-Time (Socket.io)
-    location /socket.io/ {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "Upgrade";
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-
-    # Cache Aset Statis Vite
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
-        expires 1y;
-        add_header Cache-Control "public, no-transform";
-    }
-
-    # Blokir akses ke file sensitif (.env, .git)
-    location ~ /\. {
-        deny all;
-        access_log off;
-        log_not_found off;
-    }
-}
+# Kompilasi frontend React SPA ke folder dist/
+npm run build
 ```
-5. Klik tombol **Save**. Nginx otomatis me-reload konfigurasi.
-6. Buka domain Anda di browser untuk memastikan aplikasi berjalan 100% lancar!
+
+Setelah perintah di atas selesai, buka kembali tab **Node.js Project** di aaPanel, lalu klik tombol **Restart** (ikon putar / reload di samping status Running) agar Node.js memuat kode backend terbaru.
+
+Buka browser dan akses **`https://invitation.maripartner.com`** — undangan pernikahan Anda akan langsung tampil sempurna!
 
 ---
 

@@ -1,12 +1,12 @@
 # 🛠️ Panduan Pengembang & Arsitektur Sistem (Developer Guide)
 
-Dokumen ini ditujukan bagi *Software Engineers*, *Code Reviewers*, dan *Maintainers* proyek **app_weddingbetawi_react**. Panduan ini menguraikan arsitektur sistem, hirarki komponen, model data Firestore, prinsip keamanan OWASP, serta standar siklus penambahan fitur baru.
+Dokumen ini ditujukan bagi *Software Engineers*, *Code Reviewers*, dan *Maintainers* proyek **Mari Partner Digital Wedding Invitation SPA**. Panduan ini menguraikan arsitektur sistem, hirarki komponen, model data relasional MySQL & REST API, prinsip keamanan OWASP, serta standar siklus penambahan fitur baru.
 
 ---
 
 ## 🏛️ 1. Filosofi & Pola Arsitektur Sistem
 
-Aplikasi dibangun sebagai **Single Page Application (SPA)** berbasis **React 19** dan **TypeScript 5.8** dengan memanfaatkan pola arsitektur terdesentralisasi:
+Aplikasi dibangun sebagai **Single Page Application (SPA)** berbasis **React 19** dan **TypeScript 5.8** dengan backend mandiri **Node.js Express + MySQL + Socket.io** memanfaatkan pola arsitektur terdesentralisasi:
 
 ```mermaid
 graph TD
@@ -21,15 +21,15 @@ graph TD
         Content --> BottomNav["BottomNavigation.tsx (ScrollSpy Navigation)"]
         Content --> AudioEngine["MusicPlayer.tsx (ReactPlayer Background Audio)"]
     end
-    subgraph Cloud Infrastructure
-        Context <--> Firestore[("Google Cloud Firestore")]
+    subgraph Self-Hosted Infrastructure
+        Context <--> Backend[("Node.js Express + MySQL & Socket.io (Port 5000)")]
     end
 ```
 
 ### Prinsip Utama:
-1. **Separation of Concerns**: Logika bisnis dan sinkronisasi basis data diisolasi di dalam `WeddingContext.tsx`, sementara komponen seksi hanya bertanggung jawab atas rendering presentasi (*presentational components*).
+1. **Separation of Concerns**: Logika bisnis dan sinkronisasi basis data diisolasi di dalam `WeddingContext.tsx` dan `src/services/api.ts`, sementara komponen seksi hanya bertanggung jawab atas rendering presentasi (*presentational components*).
 2. **Performance Below-the-Fold**: Bagian seksi di bawah sampul (*Hero*, *Couple*, *Event*, *Gallery*, *RSVP*, *Wishes*) dimuat secara dinamis menggunakan `React.lazy()` dan `React.Suspense` untuk mempercepat *First Contentful Paint (FCP)* pada jaringan seluler 4G/3G.
-3. **Zero Storage Infrastructure**: Media gambar dikompresi di sisi peramban pengguna (*Client-side Canvas Image Compression*) menjadi string Base64 JPEG (kualitas 0.6, resolusi maksimal 1000px) sebelum disimpan langsung ke dokumen Firestore. Pola ini memangkas ketergantungan pada Google Cloud Storage / AWS S3 berbayar.
+3. **Penyimpanan Efisien & Pembersihan Disk Otomatis (*Zero Storage Leak*)**: Media foto profil mempelai, banner, dan gambar QRIS yang diunggah dikelola langsung oleh Multer pada backend di folder `server/uploads/` dengan sistem *auto-unlink* pembersihan disk otomatis. Saat foto diganti atau dihapus, file lama otomatis terhapus dari server. Selain itu, fitur photostrip studio dan tiket e-pass diproses 100% di sisi klien menggunakan HTML5 Canvas API dan jsPDF tanpa membebani penyimpanan server.
 
 ---
 
@@ -95,7 +95,7 @@ app_weddingbetawi_react/
 │   ├── index.css               # Styling tema Tailwind CSS v4 (@theme tokens)
 │   ├── main.tsx                # Titik masuk aplikasi (DOM root mount)
 │   ├── types.ts                # Deklarasi tipe data TypeScript (strict typing)
-│   ├── version.ts              # Single source of truth versi aplikasi (v1.42.0)
+│   ├── version.ts              # Single source of truth versi aplikasi (v1.43.0)
 │   └── vite-env.d.ts           # Deklarasi tipe variabel lingkungan Vite (ImportMetaEnv)
 ├── .env.example                # Template variabel lingkungan
 ├── package.json                # Metadata proyek, scripts, dan dependensi
@@ -131,13 +131,14 @@ Untuk menjaga efisiensi penyimpanan server, backend mengimplementasikan fungsi `
 
 ---
 
-## 🎨 4. Design System & Tema Budaya Betawi (Tailwind v4)
+## 🎨 4. Design System, Theme Tokens & Visual Engine (Tailwind v4)
 
-Warna dan token tema dikonfigurasi melalui sintaks `@theme` modern Tailwind CSS v4 di [`src/index.css`](../src/index.css):
+### A. Semantic Theme Tokens & Styling Tailwind v4
+Warna dan token tema dikonfigurasi melalui sintaks `@theme` modern Tailwind CSS v4 di [`src/index.css`](../src/index.css) dan dipetakan ke runtime melalui `ThemeVisualTokens` (`ThemeProvider`):
 
 ```css
 @theme {
-  /* Palet Warna Khas Budaya Betawi Kontemporer */
+  /* Palet Warna Khas Budaya Kontemporer */
   --color-sage: #8DA66B;
   --color-sage-soft: #B6C79A;
   --color-sage-dark: #566B46;
@@ -157,6 +158,13 @@ Warna dan token tema dikonfigurasi melalui sintaks `@theme` modern Tailwind CSS 
   --font-body: 'Plus Jakarta Sans', sans-serif;
 }
 ```
+
+### B. Arsitektur Virtual Photo Booth & Dynamic Viewport Handling (v1.43.0)
+Untuk memastikan seluruh antarmuka interaktif bekerja sempurna pada perangkat seluler tanpa ada tombol yang terpotong (*zero button cutoff*), komponen [`PhotoBoothModal.tsx`](../src/modules/frontend/shared/components/PhotoBoothModal.tsx) menerapkan prinsip:
+1. **Dynamic Viewport Units (`100dvh`)**: Kontainer modal menggunakan `fixed inset-0 w-screen h-[100dvh] max-h-[100dvh]` guna mengantisipasi perubahan ukuran viewport dinamis saat *address bar* atau *navigation bar* pada peramban seluler (iOS Safari & Android Chrome) muncul/hilang.
+2. **Sticky Bottom Action Bar**: Seluruh tombol tindakan (Mulai, Shutter, Lanjut, dan Unduh PNG) diisolasi di luar elemen *scrollable body* (`flex-1 overflow-y-auto min-h-0`) dan ditempatkan pada baris aksi bawah permanen (`shrink-0 backdrop-blur-md pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)]`).
+3. **Adaptive Camera Viewfinder**: Tinggi kontainer kamera dibatasi (`max-h-[36vh] xs:max-h-[40vh] md:max-h-[340px]`) dan thumbnail pose dibuat kompak (`12x12` / `14x14`) agar seluruh tahapan foto studio muat dalam satu layar tanpa perlu scroll vertikal.
+4. **Client-Side Canvas Image Synthesis**: Seluruh layout 3-pose strip maupun single polaroid disintesis murni di sisi peramban pengguna menggunakan HTML5 Canvas API dengan resolusi HD (600x1800 px / 800x1000 px) dengan filter warna (*Natural*, *B&W Vintage*, *Sepia Retro*, *Warm Glow*) tanpa membebani penyimpanan server.
 
 ---
 

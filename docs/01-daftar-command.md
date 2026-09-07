@@ -1,6 +1,6 @@
 # 📟 Daftar Perintah Wajib & Operasional (CLI Reference)
 
-Dokumen ini memuat referensi perintah baris perintah (*Command Line Interface*) lengkap untuk pengelolaan proyek **app_weddingbetawi_react** pada seluruh tahap siklus pengembangan: mulai dari instalasi, server lokal, pengujian tipe TypeScript, kompilasi produksi, hingga troubleshooting teknis.
+Dokumen ini memuat referensi perintah baris perintah (*Command Line Interface*) lengkap untuk pengelolaan proyek **Mari Partner Digital Wedding Invitation SPA** pada seluruh tahap siklus pengembangan: mulai dari instalasi, server lokal, pengujian tipe TypeScript, kompilasi produksi, hingga troubleshooting teknis.
 
 ---
 

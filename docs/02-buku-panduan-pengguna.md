@@ -1,12 +1,12 @@
 # 📖 Buku Panduan Pengguna & Manual Book Lengkap (User Manual)
 
-Buku panduan ini disusun khusus untuk calon pengantin, keluarga penyelenggara acara, maupun operator non-teknis dalam mengelola dan menyebarkan undangan pernikahan digital **Betawi Heritage Wedding Invitation**.
+Buku panduan ini disusun khusus untuk calon pengantin, keluarga penyelenggara acara, maupun operator non-teknis dalam mengelola dan menyebarkan undangan pernikahan digital **Mari Partner Digital Wedding Invitation SPA**.
 
 ---
 
 ## 💍 1. Profil Singkat Sistem & Manfaat Operasional
 
-Aplikasi ini adalah platform undangan pernikahan digital berbasis web responsif yang menggabungkan estetika adat Betawi dengan teknologi modern.
+Aplikasi ini adalah platform undangan pernikahan digital berbasis web responsif yang menggabungkan estetika adat Nusantara, modern pop culture, dan nuansa islami dengan teknologi modern.
 
 ### Nilai Utama untuk Pengguna:
 * **Hemat Biaya & Waktu**: Tidak perlu mencetak dan mendistribusikan ratusan undangan fisik secara manual.
@@ -134,11 +134,11 @@ graph LR
 
 ## 🔗 7. Modul Generator & Manajemen Tamu WhatsApp (Menu 3)
 
-Modul ini adalah pusat pengelolaan penyebaran undangan kepada keluarga, kerabat, dan sahabat secara personal. Dilengkapi dukungan impor massal dari file spreadsheet dan sinkronisasi cloud Firestore.
+Modul ini adalah pusat pengelolaan penyebaran undangan kepada keluarga, kerabat, dan sahabat secara personal. Dilengkapi dukungan impor massal dari file spreadsheet dan sinkronisasi basis data MySQL.
 
 ```mermaid
 graph LR
-    A["File Excel / CSV / Salin-Tempel Teks"] --> B["Impor ke Cloud Firestore"]
+    A["File Excel / CSV / Salin-Tempel Teks"] --> B["Impor ke Basis Data MySQL"]
     B --> C["Tabel Tamu Terorganisir (Filter & Live Search)"]
     C --> D["1-Klik Kirim WhatsApp (Otomatis Catat Status 'Sudah Dikirim')"]
 ```
@@ -151,7 +151,7 @@ graph LR
    - **Nomor WhatsApp** (Opsional): format lokal `0812...` atau internasional `62812...`.
 4. Klik tombol **"Impor Tamu"**.
 5. Tarik atau pilih file spreadsheet Anda. Sistem akan memindai baris data dan menampilkan kotak pratinjau daftar tamu.
-6. Klik **"Simpan & Impor Tamu"**. Ratusan data tamu akan tersimpan otomatis ke cloud Firestore secara instan.
+6. Klik **"Simpan & Impor Tamu"**. Ratusan data tamu akan tersimpan otomatis ke basis data MySQL secara instan.
 
 ### B. Impor Cepat via Salin-Tempel Teks (Multiline)
 1. Pada modal impor, pilih tab **"Salin-Tempel Teks (Multiline)"**.
@@ -224,14 +224,15 @@ Melalui modul ini, Anda dapat memperbarui seluruh isi undangan pernikahan Anda k
 ### F. Sub-Tab SEO & Metadata
 * **Judul Halaman**, **Deskripsi Singkat**, dan **Foto Thumbnail Preview** saat dibagikan ke WhatsApp dan media sosial.
 
-### G. Sub-Tab Tema Desain (Suite 34 Tema: 20 Siap Pakai & 14 Segera Hadir) (v1.39.0)
-Panel Admin menyediakan katalog tema paling komprehensif dengan total **34 tema** (20 siap pakai dan 14 segera hadir) yang mencakup berbagai konsep adat Nusantara, modern pop culture, dan nuansa islami syar'i:
+### G. Sub-Tab Tema Desain (Suite 35 Tema: 21 Siap Pakai & 14 Segera Hadir) (v1.43.0)
+Panel Admin menyediakan katalog tema paling komprehensif dengan total **35 tema** (21 siap pakai dan 14 segera hadir) yang mencakup berbagai konsep adat Nusantara, modern pop culture, dan nuansa islami syar'i:
 
-#### 1. Tema Siap Pakai (Status `ready` - 20 Tema):
-* **Adat Tradisional Nusantara (9 Tema)**:
+#### 1. Tema Siap Pakai (Status `ready` - 21 Tema):
+* **Adat Tradisional Nusantara (11 Tema)**:
   - **Betawi Heritage** (`betawi`): Ornamen Gigi Balang, siluet Ondel-ondel, arsitektur Rumah Kebaya, bunga melayang.
   - **Javanese Royal Kraton** (`jawa`): Ornamen Gunungan Wayang Kulit autentik, pembuka Serat Ulem Pawiwahan Ageng, ukiran keraton emas.
   - **Sundanese Parahyangan** (`sunda`): Mahkota Siger Sunda kembang tanjung, ronce melati suci, gerbang lengkung bambu Priangan.
+  - **Sundanese Royal Maroon** (`sunda_maroon`): Beludru merah maroon ningrat Priangan, mahkota Siger Sunda bertatahkan permata delima, ronce melati suci, aksen emas berkilau.
   - **Minangkabau Royal Songket** (`minang`): Atap Rumah Gadang Gonjong, mahkota Suntiang emas bertingkat, ukiran Pucuak Rebung.
   - **Balinese Royal Temple** (`bali`): Gapura Candi Bentar, payung Tedung Agung, penjor emas, ukiran Patra Punggel, kelopak Bunga Jepun melayang.
   - **Batak Toba Royal Gorga** (`batak`): Ukiran Gorga Simeol-meol & Boraspati sakral, siluet Ruma Bolon tanduk kerbau, tenun Ulos Sadum.
@@ -279,13 +280,13 @@ Panel Admin menyediakan katalog tema paling komprehensif dengan total **34 tema*
 * **Proteksi Tema Coming Soon**: Tema berstatus *coming soon* menampilkan badge status jam (*"Segera Hadir"*), menonaktifkan tombol aktivasi, dan menyembunyikan pratinjau live secara elegan.
 
 > [!IMPORTANT]
-> Selalu tekan tombol **"Simpan ke Firestore"** pada bilah aksi mengambang (*sticky save bar*) di bagian bawah setelah selesai memilih tema atau mengedit data.
+> Selalu tekan tombol **"Simpan Perubahan"** pada bilah aksi mengambang (*sticky save bar*) di bagian bawah setelah selesai memilih tema atau mengedit data agar data tersimpan permanen ke basis data MySQL.
 
 ---
 
 ## 💰 9. Modul Wedding Budget & Checklist Vendor Tracker (Menu 5)
 
-Modul ini adalah pusat pengelolaan anggaran finansial pernikahan dan pemantauan koordinasi vendor bagi kedua calon mempelai beserta keluarga. Dilengkapi sinkronisasi cloud real-time Firestore pada koleksi `wedding_expenses`.
+Modul ini adalah pusat pengelolaan anggaran finansial pernikahan dan pemantauan koordinasi vendor bagi kedua calon mempelai beserta keluarga. Dilengkapi sinkronisasi basis data MySQL pada tabel `budget_items`.
 
 ```mermaid
 graph LR
@@ -366,7 +367,7 @@ graph LR
 
 ### C. Efek Selebrasi Spotlight Pop-Up & Audio Chime:
 1. **Deteksi Real-Time Kilat**:
-   - Begitu seorang tamu menekan tombol "Kirim Doa Restu" di ponselnya, layar panggung langsung mendeteksi kedatangan data baru dalam hitungan milidetik melalui WebSocket Firestore.
+   - Begitu seorang tamu menekan tombol "Kirim Doa Restu" di ponselnya, layar panggung langsung mendeteksi kedatangan data baru dalam hitungan milidetik melalui siaran Socket.io dan REST API MySQL.
 2. **Modal Spotlight Pop-Up**:
    - Kartu doa tamu yang baru masuk langsung melayang ke tengah layar dengan latar redup dramatis, lingkaran halo emas bercahaya, dan partikel konfeti/bintang berkilau beranimasi selama 6,5 detik.
 3. **Harmonic Bell Chime (Web Audio API)**:
@@ -439,7 +440,7 @@ graph LR
 
 ## 🎮 14. Modul Wedding Trivia Quiz & Mini Games (Menu 9)
 
-Modul ini adalah pusat pengelolaan permainan interaktif seputar kedua mempelai yang dapat dimainkan oleh tamu undangan langsung dari ponsel cerdas mereka, tersinkronisasi langsung via Firestore pada koleksi `wedding_trivia_questions` dan `wedding_trivia_scores`.
+Modul ini adalah pusat pengelolaan permainan interaktif seputar kedua mempelai yang dapat dimainkan oleh tamu undangan langsung dari ponsel cerdas mereka, tersinkronisasi langsung via REST API Express dan basis data MySQL tabel `trivia_questions`.
 
 ### A. Fitur & Pengaturan Dasbor Trivia:
 1. **4 Kartu Indikator KPI Real-Time**:
@@ -449,7 +450,7 @@ Modul ini adalah pusat pengelolaan permainan interaktif seputar kedua mempelai y
    - **Skor Sempurna (100%)**: Jumlah tamu yang berhasil menjawab seluruh soal dengan benar tanpa salah.
 2. **Bank Soal Kuis (Tab 1)**:
    - Tombol **"+ Tambah Pertanyaan"**: Membuka modal formulir untuk menulis teks soal, 4 pilihan ganda (A/B/C/D), penandaan kunci jawaban benar, ulasan fakta seru pengantin, dan urutan soal.
-   - Tombol **"Muat 5 Soal Default Trivia"**: Memuat instan 5 set pertanyaan romantis & lucu siap pakai ke cloud Firestore.
+   - Tombol **"Muat 5 Soal Default Trivia"**: Memuat instan 5 set pertanyaan romantis & lucu siap pakai ke basis data MySQL.
    - Aksi **Ubah** dan **Hapus** soal dilengkapi dialog konfirmasi SweetAlert.
 3. **Papan Skor Tamu & Live Leaderboard (Tab 2)**:
    - Menampilkan daftar peringkat skor seluruh tamu secara *real-time*.
@@ -465,7 +466,7 @@ Modul ini adalah pusat pengelolaan permainan interaktif seputar kedua mempelai y
 
 ---
 
-## 📸 15. Virtual Photo Booth & Cetak Photostrip (v1.29.0)
+## 📸 15. Virtual Photo Booth & Cetak Photostrip Responsif (v1.43.0)
 
 Fitur ini menghadirkan pengalaman studio foto instan (*self-photo studio*) langsung di smartphone para tamu undangan tanpa perlu mengunduh aplikasi pihak ketiga:
 
@@ -478,7 +479,16 @@ graph LR
     E --> F["1-Klik Unduh PNG ke Galeri HP (100% Privasi)"]
 ```
 
-### A. Format & Desain yang Didukung:
+### A. Peningkatan Responsivitas Mobile & Sticky Action Bar (v1.43.0):
+- **Eliminasi Tombol Terpotong (*Zero Button Cutoff*)**: Memanfaatkan unit tinggi dinamis `100dvh` (`h-[100dvh] max-h-[100dvh]`) serta pengamanan area bawah (*safe area padding* `env(safe-area-inset-bottom)`) sehingga seluruh tombol aksi tidak pernah tertutup oleh bilah navigasi atau keyboard virtual ponsel.
+- **Sticky Bottom Action Bar**: Seluruh tombol tindakan utama disematkan secara lengket (*sticky*) di bagian bawah modal berlatar kaca kabur (*backdrop blur*), mempermudah navigasi satu tangan:
+  - **Langkah 1 (Setup)**: Tombol *"Mulai Pengambilan Foto (3 Pose / Single Polaroid)"*.
+  - **Langkah 2 (Capture Kamera)**: Tombol Shutter *"Ambil Foto Pose X"* bersanding dengan tombol *"Kembali"*.
+  - **Langkah 2 (Capture Unggah)**: Tombol *"Lanjut ke Pratinjau"* bersanding dengan tombol *"Kembali"*.
+  - **Langkah 3 (Preview)**: Tombol utama *"Unduh Photostrip HD (PNG)"* bersanding dengan tombol sekunder *"Foto Ulang"* dan *"Ganti Format"*.
+- **Jendela Bidik Kamera Adaptif**: Proporsi kamera (`max-h-[36vh] xs:max-h-[40vh] md:max-h-[340px]`) dan thumbnail pose yang ringkas (`12x12` / `14x14`) menjaga seluruh visual tetap berada dalam satu layar nyaman tanpa perlu *scrolling*.
+
+### B. Format & Desain yang Didukung:
 1. **Format Layout Ganda**:
    - **3-Pose Photostrip (Gaya Studio Korea)**: 3 frame foto bersusun vertikal (600x1800 px) dengan margin studio, garis batas ganda beraksen, serta footer nama mempelai, tanggal pernikahan, dan stempel terbatas.
    - **Single Polaroid Frame**: Format foto persegi klasik (800x1000 px) dengan dagu polaroid luas berhias teks nama kedua mempelai dan pesan manis.
@@ -490,7 +500,7 @@ graph LR
 3. **Filter Foto Artistik Real-Time**:
    - Pilihan filter instan: **Natural** (asli), **B&W Vintage** (monokrom kontras), **Sepia Retro** (hangat klasik), dan **Warm Glow** (kilau lembut).
 
-### B. Cara Penggunaan bagi Tamu:
+### C. Cara Penggunaan bagi Tamu:
 1. Ketuk tombol pemicu terapung berikon ✨ (**Floating Feature Hub**) di pojok kiri bawah lalu pilih tombol **Photo Booth**, atau ketuk tombol **"Buka Virtual Photo Booth"** pada seksi galeri undangan.
 2. Pilih format yang diinginkan (**3-Pose Strip** atau **Single Polaroid**).
 3. Pilih metode pengambilan:

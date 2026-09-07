@@ -6,15 +6,16 @@ Selamat datang di portal dokumentasi resmi **Mari Partner Digital Wedding Invita
 
 ## 🏛️ Peta Struktur Dokumentasi (`docs/`)
 
-Dokumentasi proyek ini terbagi ke dalam 4 dokumen inti spesialisasi:
+Dokumentasi proyek ini terbagi ke dalam 5 dokumen inti spesialisasi:
 
 ```text
 docs/
-├── README.md                    # Pusat Navigasi & Portal Dokumentasi (Documentation Hub)
-├── 01-daftar-command.md         # Daftar Perintah Wajib & Operasional (CLI Reference)
-├── 02-buku-panduan-pengguna.md  # Buku Panduan Pengguna & Manual Book Lengkap (User Manual)
-├── 03-developer-guide.md        # Panduan Pengembang & Arsitektur (Developer Guide)
-└── 04-panduan-deployment.md     # Panduan Deployment Multi-Platform (Local, VPS, cPanel, aaPanel)
+├── README.md                                    # Pusat Navigasi & Portal Dokumentasi (Documentation Hub)
+├── 01-daftar-command.md                         # Daftar Perintah Wajib & Operasional (CLI Reference)
+├── 02-buku-panduan-pengguna.md                  # Buku Panduan Pengguna & Manual Book Lengkap (User Manual)
+├── 03-developer-guide.md                        # Panduan Pengembang & Arsitektur (Developer Guide)
+├── 04-panduan-deployment.md                     # Panduan Deployment Multi-Platform (Local, VPS, cPanel, aaPanel)
+└── 05-panduan-bisnis-kemitraan-dan-sales-playbook.md # Panduan Bisnis, Sales Playbook & Kemitraan WO
 ```
 
 ---
@@ -28,6 +29,7 @@ docs/
 | [**02-buku-panduan-pengguna.md**](02-buku-panduan-pengguna.md) | **Buku Panduan Pengguna (User Manual)** | *Mempelai / Admin Operasional* | Panduan akses Admin Panel (`superadmin` / `password`), fitur ganti password, generator WhatsApp, modifikasi konten, monitoring RSVP, dan meja resepsi. |
 | [**03-developer-guide.md**](03-developer-guide.md) | **Panduan Arsitektur & Pengembang** | *Frontend / Full-Stack Engineer* | Arsitektur SPA React 19 + Node.js Express + MySQL + Socket.io, skema basis data relasional, REST API, sistem pembersihan disk otomatis (*auto-unlink*), dan multi-tema (35 tema). |
 | [**04-panduan-deployment.md**](04-panduan-deployment.md) | **Panduan Deployment Multi-Platform** | *DevOps / SysAdmin / Webmaster* | Penerbitan produksi arsitektur *self-hosted* ke **VPS Linux Ubuntu (Nginx + PM2)**, **Shared Hosting cPanel (Node.js Selector)**, dan **aaPanel**, lengkap dengan SSL Let's Encrypt. |
+| [**05-panduan-bisnis-kemitraan-dan-sales-playbook.md**](05-panduan-bisnis-kemitraan-dan-sales-playbook.md) | **Panduan Bisnis & Sales Playbook** | *Owner / Business Dev / Sales* | Strategi kemitraan Wedding Organizer, taktik lead gen via Google Maps & Bridestory, cold outreach scripts, skema bagi hasil, dan objection handling. |
 
 ---
 

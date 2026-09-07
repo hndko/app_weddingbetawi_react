@@ -22,12 +22,14 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const app = express();
 const server = http.createServer(app);
-const port = parseInt(process.env.SERVER_PORT || '5000', 10);
+const port = parseInt(process.env.PORT || process.env.SERVER_PORT || '5000', 10);
+const allowedOrigin = process.env.CORS_ORIGIN || '*';
+const corsOriginConfig = allowedOrigin === '*' ? '*' : allowedOrigin.split(',').map((s) => s.trim());
 
 // Setup Socket.io Gateway
 const io = new SocketIOServer(server, {
   cors: {
-    origin: '*',
+    origin: corsOriginConfig,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   },
 });
@@ -41,7 +43,10 @@ io.on('connection', (socket) => {
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: corsOriginConfig,
+  credentials: true,
+}));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 

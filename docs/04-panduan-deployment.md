@@ -489,13 +489,31 @@ Berikut adalah daftar variabel lingkungan yang wajib dikonfigurasi:
 | :--- | :---: | :--- | :--- |
 | `VITE_API_URL` | **Ya** | `https://undangan.domainanda.com` | URL basis API backend yang diakses oleh frontend browser. |
 | `PORT` | **Ya** | `5000` | Port lokal tempat service Express mendengarkan traffic internal. |
-| `DB_HOST` | **Ya** | `localhost` atau `127.0.0.1` | Host server database MySQL. |
+| `NODE_ENV` | **Ya** | `production` | Mode lingkungan aplikasi (`production` atau `development`). |
+| `DB_HOST` | **Ya** | `127.0.0.1` | Host server database MySQL. |
 | `DB_PORT` | **Ya** | `3306` | Port koneksi MySQL. |
-| `DB_USER` | **Ya** | `wedding_user` | Nama user database MySQL. |
-| `DB_PASSWORD` | **Ya** | `PasswordKuatDB2026!` | Kata sandi user database MySQL. |
+| `DB_USER` | **Ya** | `nama_user_db_aapanel` | Nama user database MySQL. |
+| `DB_PASSWORD` | **Ya** | `password_db_aapanel` | Kata sandi user database MySQL. |
 | `DB_NAME` | **Ya** | `db_weddingbetawi` | Nama database MySQL. |
-| `JWT_SECRET` | **Ya** | `kunci_acak_string_panjang_rahasia` | Kunci enkripsi token autentikasi sesi admin. |
+| `JWT_SECRET` | **Ya** | `589adf0ceeba1ac02b37daa11a1883a32dab6b5f352371c1c8870c71e216a1f0` | Kunci enkripsi token sesi admin dengan standar entropi tinggi. |
 | `CORS_ORIGIN` | **Ya** | `https://undangan.domainanda.com` | Domain asal frontend yang diizinkan melakukan request ke backend API. |
+
+### 🔑 Cara Otomatis Menghasilkan `JWT_SECRET` Acak yang Aman
+DILARANG menggunakan string pendek atau tebakan manual untuk `JWT_SECRET`. Gunakan salah satu metode otomatis berikut:
+
+1. **Menggunakan Shortcut npm Proyek (Paling Praktis)**:
+   ```bash
+   npm run secret:generate
+   ```
+2. **Menggunakan Baris Perintah Node.js Native**:
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+3. **Menggunakan OpenSSL di Terminal Linux / aaPanel**:
+   ```bash
+   openssl rand -hex 32
+   ```
+Salin *output* 64 karakter heksadesimal yang dihasilkan ke variabel `JWT_SECRET` pada berkas `.env` Anda.
 
 ---
 

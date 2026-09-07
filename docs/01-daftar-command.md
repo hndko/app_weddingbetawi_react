@@ -32,6 +32,9 @@ npm run db:migrate
 
 # Mengimpor data awal bawaan ke database MySQL Laragon
 npm run db:seed
+
+# Menghasilkan kunci rahasia acak (Cryptographically Secure Hex) untuk JWT_SECRET di .env
+npm run secret:generate
 ```
 
 > [!TIP]

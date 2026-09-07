@@ -1,7 +1,7 @@
 {
   "name": "app_weddingbetawi_react",
   "private": true,
-  "version": "1.43.1",
+  "version": "1.44.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
@@ -11,7 +11,8 @@
     "lint": "tsc --noEmit",
     "server": "tsx server/src/index.ts",
     "db:migrate": "tsx server/src/db/migrate.ts",
-    "db:seed": "tsx server/src/db/seed.ts"
+    "db:seed": "tsx server/src/db/seed.ts",
+    "secret:generate": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",

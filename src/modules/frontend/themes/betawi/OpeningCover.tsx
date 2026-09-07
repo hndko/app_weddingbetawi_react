@@ -8,6 +8,7 @@ import { FloatingFlowers } from './decorations/FloatingFlowers';
 import { HouseBackgroundFlowers } from './decorations/HouseBackgroundFlowers';
 import { FloralDivider } from './decorations/FloralDivider';
 import { OndelFloralDecoration } from './decorations/OndelFloralDecoration';
+import { InteractiveEnvelopeCoverCard } from '../../shared/components/InteractiveEnvelopeCoverCard';
 
 import React from 'react';
 
@@ -45,39 +46,28 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
           {weddingConfig.dateStr.toUpperCase()}
         </div>
 
-        <div className="bg-white/70 backdrop-blur-md px-6 py-6 rounded-3xl border border-white/50 shadow-sm w-full max-w-[320px] mb-8 relative z-30 overflow-hidden">
-          {/* Ornate Beautiful SVG Frame Background */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40" preserveAspectRatio="none" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="12" y="12" width="376" height="376" rx="20" stroke="var(--color-gold)" strokeWidth="2" opacity="0.6"/>
-            <rect x="18" y="18" width="364" height="364" rx="14" stroke="var(--color-sage)" strokeWidth="1" strokeDasharray="4 4" opacity="0.8"/>
-            <path d="M12 60 C 30 60, 60 30, 60 12" stroke="var(--color-gold)" strokeWidth="2" fill="none" />
-            <path d="M12 40 C 25 40, 40 25, 40 12" stroke="var(--color-sage)" strokeWidth="1.5" fill="none" />
-            <circle cx="26" cy="26" r="4" fill="var(--color-betawi-red)" opacity="0.8"/>
-            <path d="M388 60 C 370 60, 340 30, 340 12" stroke="var(--color-gold)" strokeWidth="2" fill="none" />
-            <path d="M388 40 C 375 40, 360 25, 360 12" stroke="var(--color-sage)" strokeWidth="1.5" fill="none" />
-            <circle cx="374" cy="26" r="4" fill="var(--color-betawi-red)" opacity="0.8"/>
-            <path d="M12 340 C 30 340, 60 370, 60 388" stroke="var(--color-gold)" strokeWidth="2" fill="none" />
-            <path d="M12 360 C 25 360, 40 375, 40 388" stroke="var(--color-sage)" strokeWidth="1.5" fill="none" />
-            <circle cx="26" cy="374" r="4" fill="var(--color-betawi-red)" opacity="0.8"/>
-            <path d="M388 340 C 370 340, 340 370, 340 388" stroke="var(--color-gold)" strokeWidth="2" fill="none" />
-            <path d="M388 360 C 375 360, 360 375, 360 388" stroke="var(--color-sage)" strokeWidth="1.5" fill="none" />
-            <circle cx="374" cy="374" r="4" fill="var(--color-betawi-red)" opacity="0.8"/>
-          </svg>
-          <p className="text-xs text-text-dark/70 mb-2 tracking-wide relative z-10">Kepada Yth. Bapak/Ibu/Saudara/i</p>
-          <p className="font-heading text-2xl text-text-dark mb-4 relative z-10">{guestName}</p>
-          
-          <div className="flex justify-center mb-6 relative z-10">
+        <InteractiveEnvelopeCoverCard
+          onOpen={onOpen}
+          guestName={guestName}
+          recipientLabel="Kepada Yth. Bapak/Ibu/Saudara/i"
+          buttonText="Buka Undangan"
+          themeStyle={{
+            envelopePocketBg: 'rgba(255, 255, 255, 0.88)',
+            envelopeFlapBg: 'rgba(244, 248, 244, 0.96)',
+            envelopeBorder: 'rgba(92, 131, 116, 0.35)',
+            waxColor: '#991B1B',
+            waxRingColor: '#D4AF37',
+            waxTextColor: '#FFFDF9',
+            letterBg: 'rgba(255, 255, 255, 0.95)',
+            letterBorder: 'rgba(92, 131, 116, 0.25)',
+            buttonBg: 'var(--color-sage, #5C8374)',
+            buttonText: '#FFFFFF',
+          }}
+        >
+          <div className="my-1 scale-90">
             <FloralDivider />
           </div>
-          
-          <button 
-             onClick={onOpen}
-            className="w-full bg-sage text-white py-3.5 px-6 rounded-full flex items-center justify-center gap-3 hover:bg-sage-dark transition-colors duration-300 shadow-sm hover:shadow-md cursor-pointer relative z-50"
-          >
-            <MailOpen size={18} />
-            <span className="text-sm font-medium tracking-wide">Buka Undangan</span>
-          </button>
-        </div>
+        </InteractiveEnvelopeCoverCard>
       </motion.div>
 
       {/* Rumah Kebaya & Ondel-ondel Scene at bottom */}

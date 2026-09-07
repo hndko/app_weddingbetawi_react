@@ -229,6 +229,11 @@ Direktori `src/modules/frontend/shared/` mengisolasi komponen bersama (`BottomNa
 - **Auto-Ducking**: Saat pesan suara diputar, volume latar turun otomatis ke 15% dan kembali ke volume pengguna setelah pesan suara selesai atau dijeda.
 - **Floating Audio Studio Card**: Menyediakan visualisasi piringan hitam, marquee judul lagu, equalizer animasi, slider volume 0-100%, mute toggle, navigasi Prev/Next, serta laci daftar putar multi-track.
 
+### F. Amplop Interaktif & 3D Wax Seal Unfolding Animation (v1.46.0)
+- **Komponen Bersama Netral Budaya**: [`InteractiveEnvelopeCoverCard.tsx`](../src/modules/frontend/shared/components/InteractiveEnvelopeCoverCard.tsx) menyediakan amplop fisik 3D dengan segel lilin (*wax seal*) monogram otomatis (`H & N`).
+- **Acoustic Synthesizer Native (Web Audio API)**: [`src/utils/envelopeAudio.ts`](../src/utils/envelopeAudio.ts) mensintesis suara lilin pecah (*wax snap*), desiran kertas (*parchment rustle*), dan glissando harpa tanpa file audio eksternal.
+- **Fisika 3D Motion**: Memanfaatkan CSS 3D transforms (`rotateX(-180deg)`) untuk lipatan penutup amplop atas (*top flap*) dan gerakan meluncur kartu surat ke atas (*translateY(-75px)*).
+
 ---
 
 ## 🧼 7. Standar Kerapian Kode (*Clean Code Standards*)

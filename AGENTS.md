@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.45.0`
+- **Versi Aplikasi Saat Ini**: `v1.46.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -152,6 +152,10 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
       1. *Floating Particles / Petals* (contoh: `FloatingFlowers` di Betawi, `FloatingMelati` di Jawa) yang melayang dengan rotasi perlahan, pergeseran sumbu X/Y lembut, dan variasi skala.
       2. *Swaying Corner Filigree / Vines* pada bingkai utama `AppFrame` (contoh: `AnimatedFloralVines` di Betawi, `AnimatedJavaneseFiligree` di Jawa).
     - Seluruh elemen dekorasi beranimasi WAJIB menyertakan kelas utilitas Tailwind `pointer-events-none` agar tidak menghalangi gestur sentuh pengguna, interaksi tombol, ataupun scroll pada layar perangkat seluler.
+11. **Amplop Interaktif & 3D Wax Seal Unfolding Suite (`InteractiveEnvelopeCoverCard`)**:
+    - Kartu pembuka pada seksi `OpeningCover` mengadopsi amplop fisik 3D dengan segel lilin (*wax seal*) timbul monogram kedua mempelai.
+    - Mengetuk segel lilin atau tombol *Buka Undangan* memicu efek audio sintetis Web Audio API (`playEnvelopeOpenSound()`), hamburan partikel emas (*sparkle burst*), lipatan penutup amplop 3D membuka ke atas (`rotateX(-180deg)`), dan kartu surat undangan meluncur naik keluar dari kantong amplop sebelum beralih ke isi undangan.
+    - Komponen wajib 100% netral budaya di layer bersama (`src/modules/frontend/shared/components/InteractiveEnvelopeCoverCard.tsx`) dan mengadaptasi palet warna tema aktif secara harmonis.
 
 ---
 

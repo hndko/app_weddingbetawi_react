@@ -5,6 +5,7 @@ import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { useGuestName } from '../../../../hooks/useGuestName';
 import { WayangGunungan } from './decorations/WayangGunungan';
 import { FloatingMelati } from './decorations/FloatingMelati';
+import { InteractiveEnvelopeCoverCard } from '../../shared/components/InteractiveEnvelopeCoverCard';
 
 export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
   const { weddingConfig } = useWeddingConfig();
@@ -76,31 +77,28 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.8 }}
-        className="z-30 w-full max-w-[320px] shrink-0"
+        className="z-30 w-full max-w-[330px] shrink-0"
       >
-        <div className="bg-[#102417]/80 backdrop-blur-md px-5 py-5 rounded-2xl border border-[#E5C158]/40 shadow-xl relative overflow-hidden flex flex-col items-center">
-          {/* Subtle golden corner highlights */}
-          <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t border-l border-[#E5C158]" />
-          <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t border-r border-[#E5C158]" />
-          <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b border-l border-[#E5C158]" />
-          <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b border-r border-[#E5C158]" />
-
-          <p className="text-[11px] text-[#FAF7EE]/70 mb-1 tracking-wide font-light">
-            Katur Dhumateng Panjenenganipun:
-          </p>
-          <p className="font-heading text-xl text-[#FAF7EE] mb-4 font-bold text-center">
-            {guestName}
-          </p>
-
-          <button
-            type="button"
-            onClick={onOpen}
-            className="w-full bg-gradient-to-r from-[#C5A059] via-[#E5C158] to-[#C5A059] text-[#132A1C] font-semibold py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:brightness-110 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer text-xs tracking-wide uppercase"
-          >
-            <MailOpen size={16} />
-            <span>Buka Serat Ulem</span>
-          </button>
-        </div>
+        <InteractiveEnvelopeCoverCard
+          onOpen={onOpen}
+          guestName={guestName}
+          recipientLabel="Katur Dhumateng Panjenenganipun:"
+          buttonText="Buka Serat Ulem"
+          themeStyle={{
+            envelopePocketBg: 'rgba(16, 36, 23, 0.94)',
+            envelopeFlapBg: 'rgba(19, 42, 28, 0.98)',
+            envelopeBorder: 'rgba(229, 193, 88, 0.45)',
+            waxColor: '#7F1D1D',
+            waxRingColor: '#E5C158',
+            waxTextColor: '#FAF7EE',
+            letterBg: 'rgba(27, 59, 43, 0.96)',
+            letterBorder: 'rgba(229, 193, 88, 0.35)',
+            letterTextColor: '#FAF7EE',
+            letterMutedColor: '#E5C158',
+            buttonBg: 'linear-gradient(to right, #C5A059, #E5C158, #C5A059)',
+            buttonText: '#132A1C',
+          }}
+        />
       </motion.div>
     </motion.div>
   );

@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.47.0`
+- **Versi Aplikasi Saat Ini**: `v1.48.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -156,6 +156,9 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
     - Kartu pembuka pada seksi `OpeningCover` mengadopsi amplop fisik 3D dengan segel lilin (*wax seal*) timbul monogram kedua mempelai.
     - Mengetuk segel lilin atau tombol *Buka Undangan* memicu efek audio sintetis Web Audio API (`playEnvelopeOpenSound()`), hamburan partikel emas (*sparkle burst*), lipatan penutup amplop 3D membuka ke atas (`rotateX(-180deg)`), dan kartu surat undangan meluncur naik keluar dari kantong amplop sebelum beralih ke isi undangan.
     - Komponen wajib 100% netral budaya di layer bersama (`src/modules/frontend/shared/components/InteractiveEnvelopeCoverCard.tsx`) dan mengadaptasi palet warna tema aktif secara harmonis.
+12. **Master & Modular Export & Reporting Suite (`reportExporter.ts` & `ExportReportModal.tsx`)**:
+    - Mendukung ekspor instan All-in-One Master Workbook Excel (`.xlsx` 4-sheet) dan Master Dokumen WO PDF (`.pdf` A4 print-ready) beserta tombol ekspor modular per-tab (Buku Tamu, RSVP, Susunan Meja, dan Anggaran & Vendor).
+    - Seluruh proses sintesis berkas dilakukan 100% di browser klien (*client-side streaming*) menggunakan `xlsx` dan `jspdf`, menjamin *zero server load*, privasi data tinggi, dan performa generasi instan.
 
 ---
 

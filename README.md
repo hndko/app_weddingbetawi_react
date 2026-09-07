@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.47.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.48.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -633,7 +633,12 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
   - **10 Template Pos Anggaran Nusantara (1-Klik)**: Tombol pemuatan otomatis 10 pos biaya umum pernikahan adat Nusantara.
   - **Export Rekap Anggaran (CSV UTF-8 BOM)**: Unduh seluruh rincian anggaran, kontrak, dan sisa pembayaran ke berkas Excel.
 - **Menu 6: Buku Tamu RSVP & Export CSV**: Daftar konfirmasi kehadiran dengan pencarian latar *real-time*, penomoran urut otomatis 1-indexed (`#`), dan tombol **Export ke Excel (CSV)** berformat UTF-8 BOM.
-- **Menu 7: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan, dialog hapus SweetAlert2, serta tombol akses cepat **"Buka Layar Proyektor Panggung"** (`/live`).
+- **Export & Reporting Suite untuk Wedding Organizer & Klien (v1.48.0)**:
+  - **All-in-One Master Workbook Excel (.xlsx)**: Mengunduh seluruh data operasional pernikahan dalam 1 workbook multi-sheet terstruktur: *Sheet 1: Ringkasan Eksekutif* (KPI & metrik statistik), *Sheet 2: Buku Tamu & RSVP* (plot meja, check-in, ucapan), *Sheet 3: Susunan Meja WO* (zona, kapasitas, terisi, daftar tamu), dan *Sheet 4: Rincian Anggaran & Vendor* (estimasi vs aktual, status lunas/DP, sisa hutang).
+  - **Dokumen Print-Ready PDF Berstandar WO (.pdf)**: Layout resmi A4 dengan kop nama mempelai, tanggal acara, ringkasan KPI eksekutif di pembuka, penomoran halaman otomatis (*Halaman X dari Y*), serta tabel bersih siap cetak di lokasi resepsi.
+  - **Pusat Laporan & Ekspor Modal**: Modal interaktif di Admin Panel untuk mengunduh master bundle 1-klik atau lembaran dokumen terpisah per divisi lapangan.
+  - **Tombol Ekspor Terintegrasi di Tiap Modul**: Akses cepat ekspor Excel (.xlsx) dan PDF langsung dari tab Buku Tamu, RSVP, Susunan Meja, dan Pelacak Anggaran.
+  - **Zero Server Overhead**: Pembuatan file disintesis 100% di browser pengguna (*client-side streaming*) dengan pustaka `xlsx` dan `jspdf`, menghemat bandwidth dan CPU server.
 - **Developer Floating DebugBar Suite (v1.47.0)**:
   - **In-App Full-Stack Profiler**: Terinspirasi dari *Laravel Debugbar*, panel pengembang melayang di layar aplikasi untuk memantau performa frontend dan backend secara *real-time* di lingkungan pengembangan (`import.meta.env.DEV`).
   - **Pill Mengambang & Shortcut Cepat**: Tampil ringkas sebagai *floating pill* status cepat di sudut kiri bawah layar dan dapat dibuka/ditutup instan via pintasan keyboard **`Ctrl + Shift + D`**.

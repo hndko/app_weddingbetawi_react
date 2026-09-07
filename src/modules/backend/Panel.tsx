@@ -23,6 +23,8 @@ import { BudgetVendorTracker } from './components/BudgetVendorTracker';
 import { SeatingChartManager } from './components/SeatingChartManager';
 import { TriviaQuizManager } from './components/TriviaQuizManager';
 import { WhatsAppBroadcastModal } from './components/WhatsAppBroadcastModal';
+import { ExportReportModal } from './components/ExportReportModal';
+import { exportGuestsExcel, exportGuestsPDF, exportRsvpsExcel } from '../../utils/reportExporter';
 import { renderGuestPassCanvas, downloadPassImage, downloadPassPDF } from '../../utils/digitalPassGenerator';
 import { APP_VERSION } from '../../version';
 import { compressImageToFile, compressImageToDataUrl } from '../../utils/imageCompressor';
@@ -95,6 +97,9 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   const [parsedGuestsPreview, setParsedGuestsPreview] = useState<Array<{ name: string; phone?: string; isValid: boolean; errorReason?: string }>>([]);
   const [isProcessingImport, setIsProcessingImport] = useState(false);
   const [importFileName, setImportFileName] = useState('');
+
+  // Export & Report modal state
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   // Confirmation modal & toast state
   const [deleteModal, setDeleteModal] = useState<{
@@ -1053,6 +1058,17 @@ Wassalamu'alaikum Wr. Wb.`;
             <span className="hidden sm:inline">Lihat Web</span>
           </button>
 
+          {/* Export & Report Suite Button */}
+          <button
+            type="button"
+            onClick={() => setIsExportModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100/90 border border-amber-200/80 rounded-xl transition-all shadow-2xs cursor-pointer active:scale-98"
+            title="Pusat Laporan & Ekspor Data (Excel & PDF)"
+          >
+            <Download size={14} className="text-amber-600" />
+            <span className="hidden sm:inline">Laporan & Ekspor</span>
+          </button>
+
           {/* Change Password Button */}
           <button
             type="button"
@@ -1464,6 +1480,16 @@ Wassalamu'alaikum Wr. Wb.`;
                     <p className="text-xs sm:text-sm text-gray-200 leading-relaxed">
                       {formData.dateStr || 'Minggu, 20 September 2026'} &bull; {formData.events.akad.venue || 'Masjid Raya Betawi'}
                     </p>
+                    <div className="mt-2.5">
+                      <button
+                        type="button"
+                        onClick={() => setIsExportModalOpen(true)}
+                        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-white text-xs font-semibold backdrop-blur-sm transition-all cursor-pointer shadow-xs active:scale-98"
+                      >
+                        <Download size={14} className="text-gold" />
+                        <span>Ekspor Laporan Pernikahan (Excel / PDF)</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* Live Countdown Timer Cards */}
@@ -1952,11 +1978,39 @@ Wassalamu'alaikum Wr. Wb.`;
                         <button
                           type="button"
                           onClick={downloadGuestTemplate}
-                          className="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-700 border border-emerald-200/80 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs active:scale-98"
+                          className="px-3 py-2 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs active:scale-98"
                           title="Unduh format template CSV contoh"
                         >
                           <FileSpreadsheet size={14} />
                           <span className="hidden sm:inline">Template CSV</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            exportGuestsExcel(guests, rsvps, weddingConfig);
+                            showToast('success', 'Buku Tamu (.xlsx) berhasil diunduh!');
+                          }}
+                          disabled={guests.length === 0}
+                          className="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-700 border border-emerald-200/80 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs active:scale-98 disabled:opacity-50"
+                          title="Ekspor buku tamu ke format Excel"
+                        >
+                          <FileSpreadsheet size={14} />
+                          <span className="hidden sm:inline">Ekspor Excel</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            exportGuestsPDF(guests, rsvps, weddingConfig);
+                            showToast('success', 'Buku Tamu Registrasi (.pdf) berhasil diunduh!');
+                          }}
+                          disabled={guests.length === 0}
+                          className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs active:scale-98 disabled:opacity-50"
+                          title="Cetak buku tamu & lembar registrasi PDF"
+                        >
+                          <FileText size={14} />
+                          <span className="hidden sm:inline">Cetak PDF</span>
                         </button>
 
                         {guests.length > 0 && (
@@ -3405,15 +3459,43 @@ Wassalamu'alaikum Wr. Wb.`;
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      exportRsvpsExcel(rsvps, weddingConfig);
+                      showToast('success', 'Rekap RSVP (.xlsx) berhasil diunduh!');
+                    }}
+                    disabled={rsvps.length === 0}
+                    className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer disabled:opacity-50 active:scale-98"
+                    title="Download Rekap RSVP ke format Excel (.xlsx)"
+                  >
+                    <FileSpreadsheet size={14} />
+                    <span>Ekspor Excel</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={exportRsvpToCsv}
-                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer w-full sm:w-auto active:scale-98"
-                    title="Download Rekap Tamu ke format Excel / CSV"
+                    className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold transition-all cursor-pointer active:scale-98"
+                    title="Download format CSV"
                   >
-                    <Download size={15} />
-                    <span>Ekspor CSV</span>
+                    <Download size={14} />
+                    <span>CSV</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      exportGuestsPDF(guests, rsvps, weddingConfig);
+                      showToast('success', 'Buku Tamu Registrasi (.pdf) berhasil diunduh!');
+                    }}
+                    disabled={guests.length === 0 && rsvps.length === 0}
+                    className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer disabled:opacity-50 active:scale-98"
+                    title="Cetak lembar buku tamu PDF untuk Wedding Organizer"
+                  >
+                    <FileText size={14} />
+                    <span>Cetak PDF WO</span>
                   </button>
                 </div>
               </div>
@@ -4079,6 +4161,15 @@ Wassalamu'alaikum Wr. Wb.`;
         weddingConfig={weddingConfig}
         onUpdateGuestStatus={handleUpdateGuestStatusById}
         onToast={showToast}
+      />
+
+      {/* Export & Report Center Suite Modal */}
+      <ExportReportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        onNotify={showToast}
+        initialGuests={guests}
+        initialRsvps={rsvps}
       />
 
       {/* SweetAlert2-Style Full-Screen Viewport Confirmation Modal */}

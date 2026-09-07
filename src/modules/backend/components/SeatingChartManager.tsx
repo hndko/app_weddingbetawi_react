@@ -3,9 +3,11 @@ import {
   Users, Plus, Trash2, Edit2, Download, Search, CheckCircle2,
   AlertCircle, Sparkles, X, Check, AlertTriangle, Crown,
   Layers, MapPin, UserPlus, UserX, ArrowRight, CornerDownRight,
-  ChevronRight, RefreshCw, Info, HelpCircle
+  ChevronRight, RefreshCw, Info, HelpCircle, FileSpreadsheet, FileText
 } from 'lucide-react';
 import { api } from '../../../services/api';
+import { useWeddingConfig } from '../../../context/WeddingContext';
+import { exportSeatingExcel, exportSeatingPDF } from '../../../utils/reportExporter';
 import {
   WeddingTable, TableShape, TableZone, TableGuestAssignment,
   GuestInvitation, RSVPResponse
@@ -164,6 +166,8 @@ const DEFAULT_TABLE_PRESETS: Array<Omit<WeddingTable, 'id' | 'createdAt' | 'upda
 ];
 
 export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
+  const { weddingConfig } = useWeddingConfig();
+
   // State: Tables from Firestore
   const [tables, setTables] = useState<WeddingTable[]>([]);
   const [loadingTables, setLoadingTables] = useState(true);
@@ -605,12 +609,40 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
 
           <button
             type="button"
+            onClick={() => {
+              exportSeatingExcel(tables, weddingConfig);
+              onNotify?.('Susunan Meja (.xlsx) berhasil diunduh!', 'success');
+            }}
+            disabled={tables.length === 0}
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition shadow-2xs cursor-pointer disabled:opacity-50"
+            title="Ekspor susunan meja ke format Excel (.xlsx)"
+          >
+            <FileSpreadsheet size={14} className="text-emerald-600" />
+            <span>Ekspor Excel</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              exportSeatingPDF(tables, weddingConfig);
+              onNotify?.('Panduan Penempatan Meja WO (.pdf) berhasil diunduh!', 'success');
+            }}
+            disabled={tables.length === 0}
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-white hover:bg-slate-900 transition shadow-2xs cursor-pointer disabled:opacity-50"
+            title="Cetak panduan denah & meja PDF untuk Usher / WO"
+          >
+            <FileText size={14} className="text-amber-400" />
+            <span>Cetak PDF WO</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handleExportCSV}
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:text-gray-900 transition shadow-xs cursor-pointer"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:text-gray-900 transition shadow-2xs cursor-pointer"
             title="Ekspor CSV untuk Liaison Officer / Usher"
           >
-            <Download size={15} className="text-gray-600" />
-            <span>Ekspor CSV Usher</span>
+            <Download size={14} className="text-gray-600" />
+            <span>CSV</span>
           </button>
 
           <button

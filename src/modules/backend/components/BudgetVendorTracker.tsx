@@ -3,9 +3,11 @@ import {
   Wallet, DollarSign, Plus, Trash2, Edit2, Download, Search, CheckCircle2, 
   Clock, AlertCircle, Phone, Sparkles, Building, Utensils, Shirt, Flower2, 
   Camera, Music, Gift, HeartHandshake, Truck, ExternalLink, X, Check,
-  AlertTriangle, RefreshCw
+  AlertTriangle, RefreshCw, FileSpreadsheet, FileText
 } from 'lucide-react';
 import { api } from '../../../services/api';
+import { useWeddingConfig } from '../../../context/WeddingContext';
+import { exportBudgetExcel, exportBudgetPDF } from '../../../utils/reportExporter';
 import { WeddingExpense, ExpenseCategory, PaymentStatus } from '../../../types';
 
 interface BudgetVendorTrackerProps {
@@ -174,6 +176,7 @@ const sanitizePhoneForWhatsApp = (phone: string): string => {
 };
 
 export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
+  const { weddingConfig } = useWeddingConfig();
   const [expenses, setExpenses] = useState<WeddingExpense[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -561,12 +564,40 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
 
           <button
             type="button"
+            onClick={() => {
+              exportBudgetExcel(expenses, weddingConfig);
+              onNotify?.('Rekap Anggaran (.xlsx) berhasil diunduh!', 'success');
+            }}
+            disabled={expenses.length === 0}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 rounded-xl text-xs font-semibold shadow-2xs transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            title="Ekspor rekap anggaran ke format Excel (.xlsx)"
+          >
+            <FileSpreadsheet size={14} className="text-emerald-600" />
+            <span>Ekspor Excel</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              exportBudgetPDF(expenses, weddingConfig);
+              onNotify?.('Laporan Keuangan & Vendor (.pdf) berhasil diunduh!', 'success');
+            }}
+            disabled={expenses.length === 0}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold shadow-2xs transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            title="Cetak laporan rekapitulasi keuangan & vendor PDF"
+          >
+            <FileText size={14} className="text-amber-400" />
+            <span>Cetak PDF WO</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handleExportCSV}
             disabled={expenses.length === 0}
             className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white border border-gray-200 text-text-dark/80 hover:text-text-dark hover:border-gray-300 rounded-xl text-xs font-semibold shadow-2xs transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             <Download size={14} />
-            <span>Export CSV</span>
+            <span>CSV</span>
           </button>
 
           <button

@@ -244,6 +244,19 @@ Direktori `src/modules/frontend/shared/` mengisolasi komponen bersama (`BottomNa
   4. *State & Tema*: Nilai token aktif, config mempelai, dan nama tamu.
   5. *Performance*: Dimensi viewport layar dan runtime environment.
 
+### H. Export & Reporting Suite untuk Wedding Organizer (v1.48.0)
+- **Client-Side Synthesis (Zero Server Overhead)**: Pembuatan berkas Excel (`.xlsx`) dan PDF (`.pdf`) berjalan 100% di browser klien menggunakan pustaka `xlsx` dan `jspdf` tanpa beban komputasi server.
+- **Master Workbook Excel Multi-Sheet**:
+  - `Sheet 1: Ringkasan Eksekutif`: Rekap statistik kehadiran, total pax, keterisian meja, dan realisasi anggaran vs estimasi.
+  - `Sheet 2: Daftar Tamu & Kehadiran`: Nomor WA, status pengiriman, status konfirmasi RSVP, plot meja, dan check-in fisik.
+  - `Sheet 3: Susunan Meja (WO)`: Nomor meja, zona penempatan, kapasitas, pax terisi, dan daftar tamu terplot.
+  - `Sheet 4: Rincian Anggaran & Vendor`: Kategori pos, nama vendor, kontak, biaya aktual, terbayar, dan sisa.
+- **Dokumen Print-Ready PDF Berstandar WO**:
+  - Layout A4 standar dengan kop resmi nama kedua mempelai, tanggal acara, styling emas/slate elegan, penomoran halaman otomatis (*Halaman X dari Y*), serta auto-wrap teks dan auto-pagination.
+- **Komponen Modular**:
+  - [`src/utils/reportExporter.ts`](../src/utils/reportExporter.ts): Engine sintesis data Excel & PDF.
+  - [`src/modules/backend/components/ExportReportModal.tsx`](../src/modules/backend/components/ExportReportModal.tsx): Antarmuka Pusat Laporan & Ekspor 1-klik di panel admin.
+
 ---
 
 ## 🧼 7. Standar Kerapian Kode (*Clean Code Standards*)

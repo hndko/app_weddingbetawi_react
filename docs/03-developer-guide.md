@@ -224,6 +224,11 @@ Setiap tema pada `THEME_CATALOG` (`src/modules/frontend/themes/catalog.ts`) **WA
 ### D. Invarian Netralitas Budaya pada Layer Bersama (Pilar 2 Rule 6)
 Direktori `src/modules/frontend/shared/` mengisolasi komponen bersama (`BottomNavigation`, `MusicPlayer`, `SEO`) dan seksi domain bersama (`RSVP`, `Wishes`, `Countdown`, `Event`, `Gallery`, `Location`, `LoveStory`, `WeddingGift`). Seluruh berkas pada layer ini **WAJIB 100% netral budaya** (*culturally agnostic*) tanpa mengimpor ornamen adat spesifik.
 
+### E. Arsitektur Audio Multi-Track & Smart Auto-Ducking (v1.45.0)
+- **Komunikasi Terisolasi Event Bus**: Pemutaran musik latar (`MusicPlayer.tsx`) dan pesan suara/audio doa (`WishAudioPlayer.tsx`) saling terisolasi tanpa *tight coupling* melalui CustomEvent `window.dispatchEvent(new CustomEvent('wedding:voice-memo-play', { detail: { isPlaying } }))`.
+- **Auto-Ducking**: Saat pesan suara diputar, volume latar turun otomatis ke 15% dan kembali ke volume pengguna setelah pesan suara selesai atau dijeda.
+- **Floating Audio Studio Card**: Menyediakan visualisasi piringan hitam, marquee judul lagu, equalizer animasi, slider volume 0-100%, mute toggle, navigasi Prev/Next, serta laci daftar putar multi-track.
+
 ---
 
 ## 🧼 7. Standar Kerapian Kode (*Clean Code Standards*)

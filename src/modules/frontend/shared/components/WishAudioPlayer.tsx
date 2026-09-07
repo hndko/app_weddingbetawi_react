@@ -20,6 +20,16 @@ export function WishAudioPlayer({
   const [duration, setDuration] = useState<number>(durationSeconds);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const notifyPlaybackChange = (active: boolean) => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('wedding:voice-memo-play', {
+          detail: { isPlaying: active, url: audioUrl },
+        })
+      );
+    }
+  };
+
   useEffect(() => {
     const audio = new Audio(audioUrl);
     audioRef.current = audio;
@@ -37,15 +47,32 @@ export function WishAudioPlayer({
     audio.onended = () => {
       setIsPlaying(false);
       setCurrentTime(0);
+      notifyPlaybackChange(false);
     };
 
     audio.onerror = () => {
       setIsPlaying(false);
+      notifyPlaybackChange(false);
     };
+
+    // Hentikan pemutaran audio ini jika voice memo lain di halaman mulai diputar
+    const handleOtherVoiceMemo = (e: Event) => {
+      const customEvent = e as CustomEvent<{ url?: string }>;
+      if (customEvent.detail?.url && customEvent.detail.url !== audioUrl) {
+        if (audioRef.current && !audioRef.current.paused) {
+          audioRef.current.pause();
+          setIsPlaying(false);
+        }
+      }
+    };
+
+    window.addEventListener('wedding:voice-memo-start', handleOtherVoiceMemo);
 
     return () => {
       audio.pause();
+      notifyPlaybackChange(false);
       audioRef.current = null;
+      window.removeEventListener('wedding:voice-memo-start', handleOtherVoiceMemo);
     };
   }, [audioUrl]);
 
@@ -55,12 +82,22 @@ export function WishAudioPlayer({
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
+      notifyPlaybackChange(false);
     } else {
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch(() => {
-        setIsPlaying(false);
-      });
+      // Siarkan ke voice memo lain agar berhenti
+      window.dispatchEvent(
+        new CustomEvent('wedding:voice-memo-start', { detail: { url: audioUrl } })
+      );
+      audioRef.current
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+          notifyPlaybackChange(true);
+        })
+        .catch(() => {
+          setIsPlaying(false);
+          notifyPlaybackChange(false);
+        });
     }
   };
 

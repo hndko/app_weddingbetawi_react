@@ -39,11 +39,14 @@ export interface LoveStoryItem {
 
 export interface MusicTrack {
   url: string;
+  title?: string;
+  artist?: string;
 }
 
 export interface MusicSettings {
   playlist: MusicTrack[];
   mode: 'repeat-all' | 'repeat-one' | 'shuffle' | 'linear';
+  defaultVolume?: number;
 }
 
 export interface SEOSettings {

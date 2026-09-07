@@ -77,9 +77,13 @@ export const config = {
   musicUrl: "https://www.youtube.com/watch?v=RO75uUZiAw0",
   music: {
     playlist: [
-      { url: "https://www.youtube.com/watch?v=RO75uUZiAw0" }
+      { 
+        url: "https://www.youtube.com/watch?v=RO75uUZiAw0",
+        title: "Kidung Asmaradana (Instrumental)",
+      }
     ],
-    mode: 'repeat-all' as const
+    mode: 'repeat-all' as const,
+    defaultVolume: 75
   },
   seo: {
     title: "The Wedding of Cecep & Ipeh | Wedding Invitation",

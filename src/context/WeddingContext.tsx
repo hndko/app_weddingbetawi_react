@@ -58,11 +58,18 @@ export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       musicUrl: data.musicUrl || (data.music?.playlist?.[0]?.url) || defaultConfig.musicUrl,
       music: {
         playlist: (data.music?.playlist && data.music.playlist.length > 0)
-          ? data.music.playlist
-          : (data.musicUrl ? [{ url: data.musicUrl }] : defaultConfig.music!.playlist),
+          ? data.music.playlist.map((item) => ({
+              url: item.url,
+              title: item.title?.trim() || undefined,
+              artist: item.artist?.trim() || undefined,
+            }))
+          : (data.musicUrl ? [{ url: data.musicUrl, title: 'Lagu Utama' }] : defaultConfig.music!.playlist),
         mode: (data.music?.mode && ['repeat-all', 'repeat-one', 'shuffle', 'linear'].includes(data.music.mode))
           ? data.music.mode
           : 'repeat-all',
+        defaultVolume: typeof data.music?.defaultVolume === 'number' 
+          ? Math.max(0, Math.min(100, data.music.defaultVolume))
+          : (defaultConfig.music?.defaultVolume ?? 75),
       },
       seo: { ...defaultConfig.seo, ...(data.seo || {}) },
     };

@@ -7,7 +7,7 @@ import {
   Download, ExternalLink, Menu, LayoutDashboard, SlidersHorizontal, 
   ArrowUpRight, ShieldCheck, Sparkles, BookOpen, Upload, UserPlus, 
   FileSpreadsheet, Phone, Send, Clock4, Filter, CheckCheck, ArrowUp, ArrowDown, Palette, QrCode, Tv,
-  Wallet, Armchair, Gamepad2, Repeat, Repeat1, Shuffle, ListMusic, LayoutGrid
+  Wallet, Armchair, Gamepad2, Repeat, Repeat1, Shuffle, ListMusic, LayoutGrid, Volume2
 } from 'lucide-react';
 import { useWeddingConfig } from '../../context/WeddingContext';
 import { api } from '../../services/api';
@@ -2963,22 +2963,57 @@ Wassalamu'alaikum Wr. Wb.`;
                         </div>
                       </div>
 
+                      {/* Default Music Volume Slider */}
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <label className="block text-gray-600 font-medium flex items-center gap-1.5">
+                            <Volume2 size={15} className="text-sage-dark" />
+                            <span>Volume Bawaan Undangan</span>
+                          </label>
+                          <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-sage/10 text-sage-dark">
+                            {formData.music?.defaultVolume ?? 75}%
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min={0}
+                          max={100}
+                          value={formData.music?.defaultVolume ?? 75}
+                          onChange={(e) => {
+                            const newVol = Number(e.target.value);
+                            setFormData({
+                              ...formData,
+                              music: {
+                                mode: formData.music?.mode || 'repeat-all',
+                                playlist: formData.music?.playlist || (formData.musicUrl ? [{ url: formData.musicUrl }] : []),
+                                defaultVolume: newVol,
+                              },
+                            });
+                          }}
+                          className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-gray-200 accent-sage-dark"
+                        />
+                        <p className="text-[11px] text-gray-500">
+                          Tingkat volume awal saat tamu pertama kali membuka sampul undangan (0% = hening, 100% = maksimal).
+                        </p>
+                      </div>
+
                       {/* Playlist Tracks */}
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center justify-between">
-                          <label className="block text-gray-600 font-medium">Daftar Link Lagu YouTube</label>
+                          <label className="block text-gray-600 font-medium">Daftar Link Lagu YouTube & Audio</label>
                           <button
                             type="button"
                             onClick={() => {
                               const currentList = formData.music?.playlist?.length 
                                 ? formData.music.playlist 
                                 : (formData.musicUrl ? [{ url: formData.musicUrl }] : []);
-                              const newPlaylist = [...currentList, { url: '' }];
+                              const newPlaylist = [...currentList, { url: '', title: '' }];
                               setFormData({ 
                                 ...formData, 
                                 music: { 
                                   mode: formData.music?.mode || 'repeat-all', 
-                                  playlist: newPlaylist 
+                                  playlist: newPlaylist,
+                                  defaultVolume: formData.music?.defaultVolume ?? 75,
                                 },
                                 musicUrl: newPlaylist[0]?.url || formData.musicUrl || '',
                               });
@@ -2989,50 +3024,142 @@ Wassalamu'alaikum Wr. Wb.`;
                           </button>
                         </div>
 
-                        {(formData.music?.playlist || (formData.musicUrl ? [{url: formData.musicUrl}] : [])).map((track, idx) => (
-                          <div key={idx} className="flex gap-2 items-center">
-                            <div className="relative flex-1 flex items-center">
-                              <Music className="absolute left-2.5 text-gray-400 pointer-events-none" size={14} />
-                              <input
-                                type="text"
-                                value={track.url}
-                                onChange={(e) => {
-                                  const currentList = [...(formData.music?.playlist || (formData.musicUrl ? [{url: formData.musicUrl}] : []))];
-                                  currentList[idx] = { url: e.target.value };
-                                  setFormData({ 
-                                    ...formData, 
-                                    music: { 
-                                      mode: formData.music?.mode || 'repeat-all',
-                                      playlist: currentList 
-                                    },
-                                    musicUrl: currentList[0]?.url || '',
-                                  });
-                                }}
-                                className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-gray-50 focus:bg-white font-mono text-[11px] focus:ring-1 focus:ring-sage"
-                                placeholder="https://www.youtube.com/watch?v=..."
-                              />
+                        {(formData.music?.playlist || (formData.musicUrl ? [{ url: formData.musicUrl }] : [])).map((track, idx) => {
+                          const currentPlaylist = (formData.music?.playlist || (formData.musicUrl ? [{ url: formData.musicUrl }] : []));
+                          return (
+                            <div key={idx} className="p-3 bg-gray-50/80 border border-gray-200/80 rounded-xl flex flex-col gap-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-mono font-bold text-sage-dark uppercase tracking-wider">
+                                  #{idx + 1} Lagu {idx === 0 ? '(Utama)' : ''}
+                                </span>
+                                <div className="flex items-center gap-1">
+                                  {/* Tombol Geser Naik */}
+                                  <button
+                                    type="button"
+                                    disabled={idx === 0}
+                                    onClick={() => {
+                                      if (idx === 0) return;
+                                      const updated = [...currentPlaylist];
+                                      const [moved] = updated.splice(idx, 1);
+                                      updated.splice(idx - 1, 0, moved);
+                                      setFormData({
+                                        ...formData,
+                                        music: {
+                                          mode: formData.music?.mode || 'repeat-all',
+                                          playlist: updated,
+                                          defaultVolume: formData.music?.defaultVolume ?? 75,
+                                        },
+                                        musicUrl: updated[0]?.url || '',
+                                      });
+                                    }}
+                                    className="p-1 rounded bg-white hover:bg-gray-100 border border-gray-200 text-gray-600 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                                    title="Pindahkan ke atas"
+                                    aria-label="Pindahkan ke atas"
+                                  >
+                                    <ArrowUp size={13} />
+                                  </button>
+
+                                  {/* Tombol Geser Turun */}
+                                  <button
+                                    type="button"
+                                    disabled={idx === currentPlaylist.length - 1}
+                                    onClick={() => {
+                                      if (idx === currentPlaylist.length - 1) return;
+                                      const updated = [...currentPlaylist];
+                                      const [moved] = updated.splice(idx, 1);
+                                      updated.splice(idx + 1, 0, moved);
+                                      setFormData({
+                                        ...formData,
+                                        music: {
+                                          mode: formData.music?.mode || 'repeat-all',
+                                          playlist: updated,
+                                          defaultVolume: formData.music?.defaultVolume ?? 75,
+                                        },
+                                        musicUrl: updated[0]?.url || '',
+                                      });
+                                    }}
+                                    className="p-1 rounded bg-white hover:bg-gray-100 border border-gray-200 text-gray-600 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                                    title="Pindahkan ke bawah"
+                                    aria-label="Pindahkan ke bawah"
+                                  >
+                                    <ArrowDown size={13} />
+                                  </button>
+
+                                  {/* Tombol Hapus */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updated = currentPlaylist.filter((_, i) => i !== idx);
+                                      setFormData({ 
+                                        ...formData, 
+                                        music: { 
+                                          mode: formData.music?.mode || 'repeat-all', 
+                                          playlist: updated,
+                                          defaultVolume: formData.music?.defaultVolume ?? 75,
+                                        },
+                                        musicUrl: updated[0]?.url || '',
+                                      });
+                                    }}
+                                    className="p-1 rounded bg-white hover:bg-red-50 border border-gray-200 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                                    title="Hapus lagu ini"
+                                    aria-label="Hapus lagu ini"
+                                  >
+                                    <Trash2 size={13} />
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                {/* Input Judul Lagu */}
+                                <div className="relative flex items-center">
+                                  <FileText className="absolute left-2.5 text-gray-400 pointer-events-none" size={13} />
+                                  <input
+                                    type="text"
+                                    value={track.title || ''}
+                                    onChange={(e) => {
+                                      const updated = [...currentPlaylist];
+                                      updated[idx] = { ...updated[idx], title: e.target.value };
+                                      setFormData({ 
+                                        ...formData, 
+                                        music: { 
+                                          mode: formData.music?.mode || 'repeat-all',
+                                          playlist: updated,
+                                          defaultVolume: formData.music?.defaultVolume ?? 75,
+                                        },
+                                      });
+                                    }}
+                                    className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white font-medium text-[11px] focus:ring-1 focus:ring-sage"
+                                    placeholder="Judul Lagu (misal: Kidung Asmaradana)"
+                                  />
+                                </div>
+
+                                {/* Input URL Lagu */}
+                                <div className="relative flex items-center">
+                                  <Music className="absolute left-2.5 text-gray-400 pointer-events-none" size={13} />
+                                  <input
+                                    type="text"
+                                    value={track.url}
+                                    onChange={(e) => {
+                                      const updated = [...currentPlaylist];
+                                      updated[idx] = { ...updated[idx], url: e.target.value };
+                                      setFormData({ 
+                                        ...formData, 
+                                        music: { 
+                                          mode: formData.music?.mode || 'repeat-all',
+                                          playlist: updated,
+                                          defaultVolume: formData.music?.defaultVolume ?? 75,
+                                        },
+                                        musicUrl: updated[0]?.url || '',
+                                      });
+                                    }}
+                                    className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 bg-white font-mono text-[11px] focus:ring-1 focus:ring-sage"
+                                    placeholder="https://www.youtube.com/watch?v=..."
+                                  />
+                                </div>
+                              </div>
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const currentList = (formData.music?.playlist || (formData.musicUrl ? [{url: formData.musicUrl}] : [])).filter((_, i) => i !== idx);
-                                setFormData({ 
-                                  ...formData, 
-                                  music: { 
-                                    mode: formData.music?.mode || 'repeat-all',
-                                    playlist: currentList 
-                                  },
-                                  musicUrl: currentList[0]?.url || '',
-                                });
-                              }}
-                              className="text-gray-400 hover:text-red-500 p-2 shrink-0 bg-gray-50 hover:bg-red-50 border border-gray-200 rounded-lg transition-colors cursor-pointer"
-                              title="Hapus lagu ini"
-                              aria-label="Hapus lagu ini"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
 

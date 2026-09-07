@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.44.4`
+- **Versi Aplikasi Saat Ini**: `v1.45.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -172,6 +172,9 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
    - `WeddingContext` memanfaatkan sinkronisasi ganda: data dimuat seketika dari cache `localStorage` (0ms delay rendering, menghilangkan spinner tunggu) dan secara asinkron diselaraskan dengan backend melalui REST API dan event Socket.io `config:updated`.
 7. **Peta Google Maps Dinamis Smart Hybrid (`getEmbedMapUrl`)**:
    - Komponen peta (`LocationSection.tsx`) DILARANG MENGGUNAKAN URL IFRAME HARDCODED. URL iframe embed WAJIB diproses secara dinamis menggunakan helper `getEmbedMapUrl` yang mampu mengekstrak tag `<iframe>`, link embed resmi, link share Google Maps (`maps.app.goo.gl`), atau mensintesis otomatis dari nama tempat (*venue*) dan alamat lengkap (*address*) tanpa memerlukan API key berbayar.
+8. **Audio Auto-Ducking & Mutex Pesan Suara (`wedding:voice-memo-play`)**:
+   - Pemutaran audio latar (`MusicPlayer.tsx`) dan pesan suara ucapan tamu (`WishAudioPlayer.tsx`) dikomunikasikan secara terisolasi melalui CustomEvent bus `wedding:voice-memo-play`.
+   - Ketika tamu memutar pesan suara doa, background music wajib otomatis meredup (*auto-ducking*) ke volume rendah (15%) dan kembali pulih normal saat pemutaran selesai. Hanya boleh 1 pesan suara yang aktif dalam 1 waktu (*mutex playback* via event `wedding:voice-memo-start`).
 
 ---
 

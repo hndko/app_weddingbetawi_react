@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.44.4-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.45.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -634,6 +634,10 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
   - **Export Rekap Anggaran (CSV UTF-8 BOM)**: Unduh seluruh rincian anggaran, kontrak, dan sisa pembayaran ke berkas Excel.
 - **Menu 6: Buku Tamu RSVP & Export CSV**: Daftar konfirmasi kehadiran dengan pencarian latar *real-time*, penomoran urut otomatis 1-indexed (`#`), dan tombol **Export ke Excel (CSV)** berformat UTF-8 BOM.
 - **Menu 7: Moderasi Ucapan & Doa**: Pengawasan doa restu tamu dengan pencarian instan, dialog hapus SweetAlert2, serta tombol akses cepat **"Buka Layar Proyektor Panggung"** (`/live`).
+- **Playlist Multi-Track Audio Studio & Smart Auto-Ducking (v1.45.0)**:
+  - **Smart Voice-Memo Auto-Ducking**: Integrasi event bus `wedding:voice-memo-play` yang secara cerdas meredupkan (*ducking*) volume musik latar dari 75% ke 15% secara halus ketika tamu memutar pesan suara/audio doa pada kartu ucapan, dan mengembalikannya ke volume normal saat audio selesai.
+  - **Floating Audio Studio Card**: Antarmuka kontrol musik melayang dengan panel piringan hitam (*vinyl disc*), bar equalizer animasi, marquee judul lagu yang sedang diputar, slider volume interaktif (0%–100%), tombol mute/unmute cepat, navigasi Prev/Next, serta laci mini-tracklist daftar putar.
+  - **Manajemen Playlist Dinamis di Panel Admin**: Konfigurasi judul lagu (*track title*), pengurutan urutan lagu dengan tombol panah naik/turun (*reorder*), slider persentase volume awal undangan (*default volume*), dan sinkronisasi instan multi-perangkat via WebSocket.
 - **Keamanan REST API & Autentikasi JWT Bearer Token (v1.44.4)**:
   - Seluruh endpoint mutasi konfigurasi dan data administratif (`/api/config`, `/api/guests`, `/api/budget`, `/api/checkins`, `/api/upload`, mutasi `/api/seating`, mutasi `/api/trivia`, pembacaan/penghapusan `/api/rsvps`, dan moderasi `/api/wishes`) dilindungi middleware otorisasi JWT Bearer token valid 7 hari.
   - Sisi klien (`src/services/api.ts`) otomatis menginjeksi token otentikasi dari `sessionStorage` dan melakukan pembersihan sesi instan (*auto-logout*) via event global `auth:unauthorized` ketika token kedaluwarsa (HTTP 401).

@@ -88,5 +88,31 @@ export function createUploadRouter() {
     }
   });
 
+  // DELETE /api/upload - Hapus berkas spesifik dari server/uploads
+  router.delete('/', (req: Request, res: Response): void => {
+    try {
+      const url = (req.body?.url || req.query?.url) as string;
+      if (!url || typeof url !== 'string' || !url.startsWith('/uploads/')) {
+        res.status(400).json({ error: 'URL berkas tidak valid' });
+        return;
+      }
+
+      // Ambil hanya nama berkas untuk mencegah path traversal attack (OWASP Pilar 3)
+      const filename = path.basename(url);
+      const targetFile = path.resolve(uploadDir, filename);
+
+      if (fs.existsSync(targetFile)) {
+        fs.unlinkSync(targetFile);
+        console.log(`[Storage Cleanup] Berkas fisik ${filename} berhasil dihapus.`);
+        res.json({ success: true, message: `Berkas ${filename} berhasil dihapus dari storage` });
+      } else {
+        res.json({ success: true, message: 'Berkas tidak ditemukan atau sudah dihapus' });
+      }
+    } catch (error) {
+      console.error('[API Delete Upload Error]:', error);
+      res.status(500).json({ error: 'Gagal menghapus berkas dari storage' });
+    }
+  });
+
   return router;
 }

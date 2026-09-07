@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Lock, Eye, EyeOff, ArrowLeft, ShieldCheck, AlertCircle, Loader2, KeyRound } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft, ShieldCheck, AlertCircle, Loader2, KeyRound, User } from 'lucide-react';
+import { api } from '../../services/api';
 
 export interface LoginProps {
   groomName: string;
@@ -15,42 +16,50 @@ export function Login({
   onLoginSuccess,
   onNavigateBack,
 }: LoginProps) {
-  const [passcode, setPasscode] = useState('');
-  const [showPasscode, setShowPasscode] = useState(false);
+  const [username, setUsername] = useState('superadmin');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isShaking, setIsShaking] = useState(false);
 
-  const handleSubmit = (e?: React.FormEvent, customValue?: string) => {
+  const handleSubmit = async (e?: React.FormEvent, customUser?: string, customPass?: string) => {
     if (e) e.preventDefault();
     if (isLoading) return;
 
-    const valueToTest = (customValue !== undefined ? customValue : passcode).trim().toLowerCase();
-    
-    if (!valueToTest) {
-      setHasError(true);
+    const u = (customUser !== undefined ? customUser : username).trim();
+    const p = (customPass !== undefined ? customPass : password);
+
+    if (!u || !p) {
+      setErrorMessage('Username dan password wajib diisi');
       triggerShake();
       return;
     }
 
     setIsLoading(true);
-    setHasError(false);
+    setErrorMessage(null);
 
-    // Intentional 400ms visual delay for UX polish and brute-force mitigation
-    setTimeout(() => {
-      if (valueToTest === 'password' || valueToTest === 'admin123' || valueToTest === 'admin') {
+    try {
+      const res = await api.login({ username: u, password: p });
+      if (res.success) {
         try {
           sessionStorage.setItem('admin_authenticated', 'true');
+          sessionStorage.setItem('admin_user', JSON.stringify(res.user));
         } catch {
-          // Safe fallback for restricted storage environments
+          // Safe fallback
         }
         onLoginSuccess();
       } else {
-        setIsLoading(false);
-        setHasError(true);
+        setErrorMessage('Username atau password tidak sesuai');
         triggerShake();
       }
-    }, 400);
+    } catch (err: any) {
+      console.warn('[Login Error]:', err);
+      setErrorMessage(err.message || 'Gagal login. Periksa username dan password Anda.');
+      triggerShake();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const triggerShake = () => {
@@ -59,9 +68,10 @@ export function Login({
   };
 
   const handleQuickFill = () => {
-    setPasscode('password');
-    setHasError(false);
-    handleSubmit(undefined, 'password');
+    setUsername('superadmin');
+    setPassword('password');
+    setErrorMessage(null);
+    handleSubmit(undefined, 'superadmin', 'password');
   };
 
   return (
@@ -82,7 +92,7 @@ export function Login({
         transition={{ duration: isShaking ? 0.4 : 0.35, ease: 'easeOut' }}
         className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-stone-200/80 overflow-hidden relative z-10 flex flex-col"
       >
-        {/* Top Betawi Gigi Balang Motif Accent */}
+        {/* Top Accent Stripe */}
         <div className="w-full h-3 bg-gradient-to-r from-betawi-red via-gold to-sage-dark relative flex items-center justify-center overflow-hidden">
           <svg className="w-full h-3 text-white/30" preserveAspectRatio="none" viewBox="0 0 120 12">
             <path d="M0,0 L6,12 L12,0 L18,12 L24,0 L30,12 L36,0 L42,12 L48,0 L54,12 L60,0 L66,12 L72,0 L78,12 L84,0 L90,12 L96,0 L102,12 L108,0 L114,12 L120,0 Z" fill="currentColor" />
@@ -107,17 +117,48 @@ export function Login({
             Panel Pengelola Undangan
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 max-w-xs mb-6">
-            Masukkan passcode resmi untuk mengelola data mempelai, jadwal acara, RSVP, dan doa restu.
+            Masuk dengan akun terdaftar untuk mengelola data mempelai, jadwal acara, RSVP, dan doa restu.
           </p>
 
           {/* Form */}
-          <form onSubmit={(e) => handleSubmit(e)} className="w-full flex flex-col gap-4">
-            <div className="flex flex-col text-left gap-1.5">
+          <form onSubmit={(e) => handleSubmit(e)} className="w-full flex flex-col gap-4 text-left">
+            {/* Username Input */}
+            <div className="flex flex-col gap-1.5">
               <label 
-                htmlFor="admin-passcode-input" 
+                htmlFor="admin-username-input" 
                 className="text-xs font-semibold text-gray-700 tracking-wide flex items-center justify-between"
               >
-                <span>Passcode Akses</span>
+                <span>Username</span>
+                <span className="text-[11px] font-normal text-gray-400">Default: superadmin</span>
+              </label>
+              
+              <div className="relative flex items-center">
+                <div className="absolute left-3.5 text-gray-400 pointer-events-none flex items-center">
+                  <User size={18} />
+                </div>
+                <input
+                  id="admin-username-input"
+                  type="text"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
+                  placeholder="Masukkan username..."
+                  disabled={isLoading}
+                  autoComplete="username"
+                  className="w-full pl-10 pr-4 py-3 text-sm rounded-xl border border-gray-200 bg-warm-white/50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white focus:border-sage-dark focus:ring-2 focus:ring-sage/20 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Password Input */}
+            <div className="flex flex-col gap-1.5">
+              <label 
+                htmlFor="admin-password-input" 
+                className="text-xs font-semibold text-gray-700 tracking-wide flex items-center justify-between"
+              >
+                <span>Password</span>
                 <span className="text-[11px] font-normal text-gray-400">Default: password</span>
               </label>
               
@@ -126,43 +167,43 @@ export function Login({
                   <KeyRound size={18} />
                 </div>
                 <input
-                  id="admin-passcode-input"
-                  type={showPasscode ? 'text' : 'password'}
-                  value={passcode}
+                  id="admin-password-input"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
                   onChange={(e) => {
-                    setPasscode(e.target.value);
-                    if (hasError) setHasError(false);
+                    setPassword(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
                   }}
-                  placeholder="Ketik passcode..."
+                  placeholder="Masukkan password..."
                   disabled={isLoading}
                   autoComplete="current-password"
-                  className={`w-full pl-10 pr-11 py-3.5 text-sm sm:text-base rounded-xl border transition-all duration-200 bg-warm-white/50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white ${
-                    hasError 
+                  className={`w-full pl-10 pr-11 py-3 text-sm rounded-xl border transition-all duration-200 bg-warm-white/50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white ${
+                    errorMessage 
                       ? 'border-red-400 ring-2 ring-red-100' 
                       : 'border-gray-200 focus:border-sage-dark focus:ring-2 focus:ring-sage/20'
                   }`}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPasscode(!showPasscode)}
+                  onClick={() => setShowPassword(!showPassword)}
                   disabled={isLoading}
                   className="absolute right-3 p-1.5 text-gray-400 hover:text-gray-600 rounded-lg transition-colors cursor-pointer"
-                  title={showPasscode ? 'Sembunyikan passcode' : 'Lihat passcode'}
-                  aria-label={showPasscode ? 'Sembunyikan passcode' : 'Lihat passcode'}
+                  title={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+                  aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
                 >
-                  {showPasscode ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
 
               {/* Error Message */}
-              {hasError && (
+              {errorMessage && (
                 <motion.div 
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-center gap-1.5 mt-1 text-xs text-red-600 font-medium"
                 >
                   <AlertCircle size={14} className="shrink-0" />
-                  <span>Passcode tidak cocok. Coba kembali atau gunakan passcode bawaan.</span>
+                  <span>{errorMessage}</span>
                 </motion.div>
               )}
             </div>
@@ -171,12 +212,12 @@ export function Login({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-2 bg-sage-dark hover:bg-sage text-white py-3.5 px-5 rounded-xl text-sm font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+              className="w-full mt-2 bg-sage-dark hover:bg-sage text-white py-3 px-5 rounded-xl text-sm font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  <span>Memverifikasi...</span>
+                  <span>Memverifikasi Akun...</span>
                 </>
               ) : (
                 <>
@@ -196,29 +237,21 @@ export function Login({
               className="text-xs text-sage-dark hover:text-deep-red font-medium py-1.5 px-3 rounded-lg hover:bg-sage/10 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
               <KeyRound size={13} />
-              <span>Isi Otomatis Passcode Bawaan (password)</span>
+              <span>Isi Otomatis Akun Default (superadmin / password)</span>
             </button>
 
-            {/* Back to Wedding Invitation Link */}
             <button
               type="button"
               onClick={onNavigateBack}
               disabled={isLoading}
-              className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors cursor-pointer py-1"
+              className="text-xs text-gray-500 hover:text-gray-800 transition-colors flex items-center gap-1.5 cursor-pointer"
             >
-              <ArrowLeft size={14} />
+              <ArrowLeft size={13} />
               <span>Kembali ke Halaman Undangan</span>
             </button>
           </div>
-        </div>
-
-        {/* Bottom Platform Footer Accent */}
-        <div className="bg-gray-50/80 px-6 py-3 border-t border-gray-100 flex items-center justify-center text-[11px] text-gray-400">
-          <span>Dilindungi Firebase Firestore • Mari Partner Wedding Invitation</span>
         </div>
       </motion.div>
     </div>
   );
 }
-
-export const AdminAuth = Login;

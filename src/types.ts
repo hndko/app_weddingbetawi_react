@@ -1,4 +1,4 @@
-import type { Timestamp } from 'firebase/firestore';
+export type Timestamp = { toDate?: () => Date; seconds?: number; nanoseconds?: number } | string;
 
 export interface PersonInfo {
   nickname: string;

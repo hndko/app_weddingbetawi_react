@@ -23,18 +23,7 @@ import {
   FileText,
 } from 'lucide-react';
 import jsQR from 'jsqr';
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  doc,
-  updateDoc,
-  deleteDoc,
-  serverTimestamp,
-} from 'firebase/firestore';
-import { db } from '../../../lib/firebase';
+import { api } from '../../../services/api';
 import { useWeddingConfig } from '../../../context/WeddingContext';
 import { playSuccessBeep, playWarningBeep } from '../../../utils/audioBeep';
 import { parseGuestPayload, generateTicketCode } from '../../../utils/qrGenerator';
@@ -122,38 +111,22 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
   const [deleteTarget, setDeleteTarget] = useState<CheckInRecord | null>(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
-  // Real-time sync for checkins and wedding_tables collection
+  // Load checkins and wedding tables from backend
+  const loadCheckinsAndTables = async () => {
+    try {
+      const [cList, tList] = await Promise.all([
+        api.getCheckins(),
+        api.getSeating(),
+      ]);
+      setCheckins(cList || []);
+      setTables(tList || []);
+    } catch {
+      // safe fallback
+    }
+  };
+
   useEffect(() => {
-    const qCheckins = query(collection(db, 'checkins'), orderBy('createdAt', 'desc'));
-    const unsubCheckins = onSnapshot(
-      qCheckins,
-      (snapshot) => {
-        const records = snapshot.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        })) as CheckInRecord[];
-        setCheckins(records);
-      },
-      () => {}
-    );
-
-    const qTables = query(collection(db, 'wedding_tables'), orderBy('number', 'asc'));
-    const unsubTables = onSnapshot(
-      qTables,
-      (snapshot) => {
-        const list = snapshot.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        })) as WeddingTable[];
-        setTables(list);
-      },
-      () => {}
-    );
-
-    return () => {
-      unsubCheckins();
-      unsubTables();
-    };
+    loadCheckinsAndTables();
   }, []);
 
   // Stop camera media stream
@@ -351,67 +324,27 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
         second: '2-digit',
       });
 
-      // 1. Check if record exists in checkins collection
-      const existing = checkins.find(
-        (c) =>
-          c.name.toLowerCase() === pendingCheckin.name.toLowerCase() ||
-          (pendingCheckin.guestId && c.guestId === pendingCheckin.guestId)
-      );
-
-      if (existing && existing.id) {
-        // Update existing record
-        await updateDoc(doc(db, 'checkins', existing.id), {
-          actualPax: pendingCheckin.actualPax,
-          souvenirClaimed: pendingCheckin.souvenirClaimed,
-          tableNumber: pendingCheckin.tableNumber,
-          notes: `Diperbarui pada ${timeStr}`,
-        });
-      } else {
-        // Insert new checkin
-        await addDoc(collection(db, 'checkins'), {
-          guestId: pendingCheckin.guestId || '',
-          name: pendingCheckin.name,
-          checkInTime: timeStr,
-          actualPax: pendingCheckin.actualPax,
-          souvenirClaimed: pendingCheckin.souvenirClaimed,
-          tableNumber: pendingCheckin.tableNumber || '',
-          source: pendingCheckin.source,
-          createdAt: serverTimestamp(),
-        });
-      }
+      // 1. Record checkin to database
+      await api.createCheckin({
+        guestId: pendingCheckin.guestId || '',
+        name: pendingCheckin.name,
+        checkInTime: timeStr,
+        actualPax: pendingCheckin.actualPax,
+        souvenirClaimed: pendingCheckin.souvenirClaimed,
+        tableNumber: pendingCheckin.tableNumber || '',
+        source: pendingCheckin.source,
+      });
 
       // 2. Also update matching guest doc if exists
       if (pendingCheckin.guestId) {
         try {
-          await updateDoc(doc(db, 'guests', pendingCheckin.guestId), {
-            checkedIn: true,
-            checkInTime: timeStr,
-            actualPax: pendingCheckin.actualPax,
-            souvenirClaimed: pendingCheckin.souvenirClaimed,
-            tableNumber: pendingCheckin.tableNumber || '',
-          });
+          await api.checkInGuest(pendingCheckin.guestId);
         } catch {
           // Safe fallback
         }
       }
 
-      // 3. Also update matching RSVP doc if exists
-      const matchedRsvp = rsvps.find(
-        (r) => r.name.toLowerCase() === pendingCheckin.name.toLowerCase()
-      );
-      if (matchedRsvp && matchedRsvp.id) {
-        try {
-          await updateDoc(doc(db, 'rsvps', matchedRsvp.id), {
-            checkedIn: true,
-            checkInTime: timeStr,
-            actualPax: pendingCheckin.actualPax,
-            souvenirClaimed: pendingCheckin.souvenirClaimed,
-            tableNumber: pendingCheckin.tableNumber || '',
-          });
-        } catch {
-          // Safe fallback
-        }
-      }
+      await loadCheckinsAndTables();
 
       showToast(
         'success',
@@ -419,7 +352,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       );
       setPendingCheckin(null);
     } catch {
-      showToast('error', 'Gagal menyimpan check-in ke Firestore.');
+      showToast('error', 'Gagal menyimpan check-in ke database.');
     } finally {
       setIsSubmittingCheckin(false);
     }
@@ -430,7 +363,8 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
     if (!deleteTarget || !deleteTarget.id) return;
     setIsDeleting(true);
     try {
-      await deleteDoc(doc(db, 'checkins', deleteTarget.id));
+      await api.deleteCheckin(deleteTarget.id);
+      await loadCheckinsAndTables();
       showToast('success', `Check-in "${deleteTarget.name}" berhasil dibatalkan.`);
       setDeleteTarget(null);
     } catch {

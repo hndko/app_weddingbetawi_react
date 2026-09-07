@@ -26,9 +26,6 @@ export default defineConfig(() => {
               ) {
                 return 'vendor-react';
               }
-              if (normalized.includes('/node_modules/firebase/') || normalized.includes('/node_modules/@firebase/')) {
-                return 'vendor-firebase';
-              }
               if (normalized.includes('/node_modules/motion/') || normalized.includes('/node_modules/framer-motion/')) {
                 return 'vendor-motion';
               }

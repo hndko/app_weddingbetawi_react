@@ -4,8 +4,7 @@ import {
   Search, X, MapPin, Users, Crown, Sparkles,
   Armchair, HelpCircle, LayoutGrid, Compass, Info
 } from 'lucide-react';
-import { collection, onSnapshot, query } from 'firebase/firestore';
-import { db } from '../../../../lib/firebase';
+import { api } from '../../../../services/api';
 import type { WeddingTable, TableZone } from '../../../../types';
 
 interface GuestSeatingLookupModalProps {
@@ -173,28 +172,27 @@ export function GuestSeatingLookupModal({
   const [searchQuery, setSearchQuery] = useState(defaultGuestName);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
 
-  // Sync tables from Firestore with fallback to presets
+  // Sync tables from database with fallback to presets
   useEffect(() => {
     if (!isOpen) return;
-    const q = query(collection(db, 'wedding_tables'));
-    const unsub = onSnapshot(
-      q,
-      (snapshot) => {
-        if (!snapshot.empty) {
-          const list = snapshot.docs.map((d) => ({
-            id: d.id,
-            ...d.data(),
-          })) as WeddingTable[];
+    let isMounted = true;
+
+    api.getSeating()
+      .then((list) => {
+        if (!isMounted) return;
+        if (list && list.length > 0) {
           setTables(list);
         } else {
           setTables(DEFAULT_PRESET_TABLES);
         }
-      },
-      () => {
-        setTables(DEFAULT_PRESET_TABLES);
-      }
-    );
-    return () => unsub();
+      })
+      .catch(() => {
+        if (isMounted) setTables(DEFAULT_PRESET_TABLES);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [isOpen]);
 
   // Set default search query when modal opens

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Bell, MapPin, Music2, CheckCircle2, Heart } from 'lucide-react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../../../../lib/firebase';
+import { api } from '../../../../../services/api';
 import { useGuestName } from '../../../../../hooks/useGuestName';
 import { playHeartChime } from '../utils/instagramAudio';
 
@@ -117,12 +116,11 @@ export const RSVPPollSticker: React.FC = () => {
     }
 
     try {
-      await addDoc(collection(db, 'rsvps'), {
+      await api.createRsvp({
         name: defaultGuestName || 'Tamu Instagram Story',
         guestCount: 1,
         attendance: choice,
         notes: 'Dikonfirmasi via Instagram Story Poll Sticker',
-        createdAt: serverTimestamp(),
       });
     } catch {
       // Non-blocking fallback

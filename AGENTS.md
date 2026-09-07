@@ -8,10 +8,10 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.41.0`
+- **Versi Aplikasi Saat Ini**: `v1.42.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
-- **Tipe Aplikasi**: Client-Side Single Page Application (SPA)
-- **Status CI/CD & Deploy**: Vercel Serverless Static Hosting
+- **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
+- **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
 
 ---
 
@@ -48,12 +48,12 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
    - `src/modules/backend/`: Modul pengelolaan data dan dasbor admin (`Panel.tsx`, `components/DragDropUpload.tsx`, `components/ThemeSelector.tsx`, `components/EventScheduleEditor.tsx`).
    - `src/modules/frontend/shared/`: Komponen dan seksi bersama lintas tema (`components/BottomNavigation.tsx`, `components/MusicPlayer.tsx`, `components/SEO.tsx`, `sections/RSVPSection.tsx`, `sections/WishesSection.tsx`, `sections/CountdownSection.tsx`, `sections/EventSection.tsx`, `sections/GallerySection.tsx`, `sections/LocationSection.tsx`, `sections/LoveStory.tsx`, `sections/WeddingGift.tsx`).
    - `src/modules/frontend/themes/`: Modul tema modular (`betawi/`, `jawa/`, `index.ts`, `types.ts`).
-   - `public/assets/themes/{theme_id}/`: Aset default lokal offline (thumbnail, favicon, pattern) per tema.
+   - `server/`: Backend Node.js Express + MySQL + Socket.io (`src/routes/`, `src/db/`, `uploads/`).
+   - `src/services/api.ts`: Client SDK REST API terpusat untuk komunikasi backend.
    - `src/types.ts`: Deklarasi tipe TypeScript global dan interface domain.
-   - `src/lib/firebase.ts`: Konfigurasi SDK Firebase dan instance Firestore.
    - `src/index.css`: Konfigurasi Tailwind CSS v4 dan styling global.
-2. **Thin Presentational Components**: Komponen antarmuka fokus pada rendering UI. Logika manipulasi state kompleks, integrasi database, atau format string wajib didelegasikan ke fungsi pembantu (*helper*) atau *custom hooks*.
-3. **Penyimpanan Gambar Efisien (Zero Storage Cost)**: Seluruh kompresi foto galeri atau QRIS dilakukan pada sisi klien via Canvas API (Base64 JPEG kompresi ~80-120KB) yang langsung disimpan ke Firestore tanpa memerlukan backend server atau Firebase Storage berbayar.
+2. **Thin Presentational Components**: Komponen antarmuka fokus pada rendering UI. Logika manipulasi state kompleks, integrasi database, atau format string wajib didelegasikan ke fungsi pembantu (*helper*), custom hooks, atau service SDK.
+3. **Penyimpanan Berkas Efisien & Pembersihan Disk Otomatis (*Zero Storage Leak*)**: Seluruh foto profil mempelai, banner, dan gambar QRIS yang diunggah dikelola oleh Multer di `server/uploads/` dengan sistem pembersihan disk otomatis (*auto-unlink*). File lama di server otomatis dihapus dari disk saat foto diganti atau dihapus untuk mencegah pembengkakan penyimpanan. Berkas fisik di `server/uploads/` diabaikan oleh Git via `.gitignore` dengan preservasi `.gitkeep`.
 4. **Single Page Routing**: Navigasi menggunakan state lokal dan *smooth scrolling* internal section. Rute admin dikelola via path khusus `/login` dan `/modules` dengan sinkronisasi History API, serta penanganan parameter query nama tamu (`?to=Nama+Tamu`) secara elegan.
 5. **Standarisasi Penamaan Folder Lowercase Murni (`src/modules/`)**:
    - Seluruh folder di dalam `src/modules/` WAJIB selalu menggunakan huruf kecil penuh: `auth/`, `backend/`, `frontend/`, `shared/`, `themes/`.
@@ -72,26 +72,27 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ### 🔒 3. Standar Keamanan & Sanitasi Input (Security & OWASP Guardrails)
 1. **Isolasi Rahasia & Kredensial (.env & .env.example)**:
-   - DILARANG KERAS mengekspos API Key produksi, Firebase Service Account, atau OAuth credentials ke repositori publik.
-   - Semua variabel lingkungan klien wajib menggunakan prefix `VITE_` (misal: `VITE_FIREBASE_API_KEY`).
+   - DILARANG KERAS mengekspos kredensial database, JWT Secret, atau API Key produksi ke repositori publik.
+   - Semua variabel lingkungan klien wajib menggunakan prefix `VITE_` (misal: `VITE_API_URL`).
+   - Variabel backend (`DB_*`, `JWT_SECRET`, `PORT`, `CORS_ORIGIN`) disimpan secara aman di `.env` lokal.
    - File kredensial lokal dan rahasia wajib selalu terdaftar di `.gitignore`.
    - **Konsistensi Mutlak `.env` dan `.env.example`**: Seluruh variabel lingkungan pada `.env` dan `.env.example` WAJIB 100% sinkron dan konsisten (kunci yang sama, urutan yang sama, dan format penamaan yang sama). Setiap kali ada penambahan atau modifikasi variabel baru pada `.env`, `.env.example` WAJIB langsung diperbarui dengan nilai placeholder/dummy, dan sebaliknya. Variabel usang atau tidak terpakai wajib dieliminasi dari kedua berkas.
 2. **Pencegahan Cross-Site Scripting (XSS)**:
    - Semua data dinamis dari pengguna (nama tamu, pesan ucapan, konfirmasi RSVP) wajib di-escape oleh React secara alami.
    - DILARANG menggunakan `dangerouslySetInnerHTML` tanpa pustaka sanitasi HTML pihak ketiga (seperti DOMPurify).
-3. **Aturan Keamanan Firestore (Firestore Security Rules)**:
-   - Pastikan aturan Firestore membatasi kuota panjang karakter (misal: nama maksimal 100 karakter, pesan doa maksimal 500 karakter).
-   - Dokumen konfigurasi admin (`settings`) hanya boleh dimutasi oleh admin terotentikasi.
-4. **Proteksi Panel Admin**:
-   - Rute panel admin wajib dilindungi oleh passcode atau verifikasi Firebase Auth.
-   - Cegah *brute-force* sederhana dengan penanganan delay visual pada UI.
+3. **Keamanan Basis Data MySQL & Prepared Statements (SQLi Guard)**:
+   - Seluruh kueri basis data pada REST API wajib menggunakan *parameterized queries* / *prepared statements* (`mysql2/promise`) untuk mencegah kerentanan SQL Injection.
+4. **Proteksi Panel Admin & Hashing Password**:
+   - Rute panel admin dilindungi oleh autentikasi berbasis database MySQL tabel `users`.
+   - Kata sandi wajib di-hash menggunakan algoritma `bcryptjs` (salt rounds 10). DILARANG menyimpan kata sandi dalam bentuk plaintext.
+   - Fitur ganti password admin wajib memvalidasi panjang karakter dan meng-hash password baru sebelum memperbarui tabel `users`.
 
 ---
 
 ### 💎 4. Kualitas Kode & Anti-Slop (Clean Code & Quality Invariants)
 1. **TypeScript Strict (Zero Tolerance for `any`)**:
-   - DILARANG menggunakan tipe `any`. Gunakan tipe data eksplisit, *union types*, atau `unknown` dengan *type guard*.
-   - Setiap entitas Firestore (`Wishes`, `RSVP`, `WeddingContent`, `MusicTrack`) wajib memiliki interface lengkap di `src/types.ts`.
+    - DILARANG menggunakan tipe `any`. Gunakan tipe data eksplisit, *union types*, atau `unknown` dengan *type guard*.
+    - Setiap entitas data (`Wish`, `RSVPResponse`, `WeddingConfig`, `MusicSettings`, `Guest`, `BudgetItem`, `SeatingTable`, `TriviaQuestion`, `Checkin`) wajib memiliki interface lengkap di `src/types.ts`.
 2. **Kebersihan Kode (Zero Dead Code & AI-Slop)**:
    - Hapus seluruh `console.log`, `alert()`, `confirm()`, atau `debugger` sisa pengujian.
    - Dilarang meninggalkan komentar generik khas AI (contoh: `// import React from react`, `// this is a function`). Komentar hanya ditulis untuk menjelaskan alasan arsitektural (*why*), bukan aksi kode (*what*).
@@ -126,18 +127,18 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
 9. **Desain Responsif & Estetika Budaya**:
    - Desain sempurna pada mobile (360px-430px) dengan tipografi berkelas, adaptasi palet warna tematik yang harmonis, dan proporsi elemen visual yang nyaman diakses satu tangan.
 10. **Paket Animasi Dekorasi Tematik (*Theme Animated Decorations Suite*)**:
-   - Setiap tema aktif (status `ready`) WAJIB menyertakan minimal dua varian dekorasi beranimasi halus menggunakan `motion/react`:
-     1. *Floating Particles / Petals* (contoh: `FloatingFlowers` di Betawi, `FloatingMelati` di Jawa) yang melayang dengan rotasi perlahan, pergeseran sumbu X/Y lembut, dan variasi skala.
-     2. *Swaying Corner Filigree / Vines* pada bingkai utama `AppFrame` (contoh: `AnimatedFloralVines` di Betawi, `AnimatedJavaneseFiligree` di Jawa).
-   - Seluruh elemen dekorasi beranimasi WAJIB menyertakan kelas utilitas Tailwind `pointer-events-none` agar tidak menghalangi gestur sentuh pengguna, interaksi tombol, ataupun scroll pada layar perangkat seluler.
+    - Setiap tema aktif (status `ready`) WAJIB menyertakan minimal dua varian dekorasi beranimasi halus menggunakan `motion/react`:
+      1. *Floating Particles / Petals* (contoh: `FloatingFlowers` di Betawi, `FloatingMelati` di Jawa) yang melayang dengan rotasi perlahan, pergeseran sumbu X/Y lembut, dan variasi skala.
+      2. *Swaying Corner Filigree / Vines* pada bingkai utama `AppFrame` (contoh: `AnimatedFloralVines` di Betawi, `AnimatedJavaneseFiligree` di Jawa).
+    - Seluruh elemen dekorasi beranimasi WAJIB menyertakan kelas utilitas Tailwind `pointer-events-none` agar tidak menghalangi gestur sentuh pengguna, interaksi tombol, ataupun scroll pada layar perangkat seluler.
 
 ---
 
-### ⚡ 6. Kinerja, Concurrency & Firestore Real-Time (Performance & Data Management)
-1. **Pembersihan Listener Real-Time (Cleanup Handlers)**:
-   - Setiap langganan `onSnapshot` Firestore WAJIB menyertakan fungsi *unsubscribe* pada *cleanup function* `useEffect` untuk mencegah kebocoran memori (*memory leak*).
+### ⚡ 6. Kinerja, Concurrency & Real-Time Data (Performance & Data Management)
+1. **Pembersihan Listener Real-Time (Socket.io Disconnect Handlers)**:
+   - Setiap langganan `socket.on` atau interval polling WAJIB menyertakan fungsi *cleanup* (`socket.off` / `disconnect`) pada *cleanup function* `useEffect` untuk mencegah kebocoran memori (*memory leak*).
 2. **Optimasi Beban Data (Query Limits & Pagination)**:
-   - Data ucapan doa dan RSVP wajib dibatasi (`limit(50)` atau pagination) agar konsumsi bandwidth dan Firestore Read tetap hemat dan cepat.
+   - Data ucapan doa dan RSVP wajib dibatasi (`LIMIT 50` atau pagination) agar konsumsi bandwidth dan kueri basis data tetap hemat dan cepat.
 3. **Aset & Audio Lazy-Loading**:
    - Elemen audio menggunakan mode streaming atau play-on-user-interaction.
    - Gambar didistribusikan dengan kompresi WebP/JPEG teroptimasi dan memanfaatkan atribut `loading="lazy"`.

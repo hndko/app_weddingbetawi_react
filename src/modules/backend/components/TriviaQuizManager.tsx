@@ -4,11 +4,7 @@ import {
   HelpCircle, Sparkles, Award, RotateCcw, X, Check, AlertTriangle, 
   Flame, User, MessageSquare, ListOrdered, Share2, Layers
 } from 'lucide-react';
-import { 
-  collection, onSnapshot, query, orderBy, doc, addDoc, updateDoc, 
-  deleteDoc, serverTimestamp, writeBatch 
-} from 'firebase/firestore';
-import { db } from '../../../lib/firebase';
+import { api } from '../../../services/api';
 import { TriviaQuestion, TriviaScore } from '../../../types';
 import { useWeddingConfig } from '../../../context/WeddingContext';
 
@@ -42,43 +38,32 @@ export function TriviaQuizManager({ onNotify }: TriviaQuizManagerProps) {
   // SweetAlert-style Delete Modal State (Pilar 5)
   const [deleteTarget, setDeleteTarget] = useState<{ type: 'question' | 'score' | 'reset_defaults'; id?: string; name?: string } | null>(null);
 
-  // 1. Subscribe to Questions
-  useEffect(() => {
-    const q = query(collection(db, 'wedding_trivia_questions'), orderBy('order', 'asc'));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const loaded: TriviaQuestion[] = snapshot.docs.map((docSnap) => ({
-          id: docSnap.id,
-          ...(docSnap.data() as Omit<TriviaQuestion, 'id'>)
-        }));
-        setQuestions(loaded);
-        setLoading(false);
-      },
-      () => {
-        setLoading(false);
+  const loadQuestions = async () => {
+    try {
+      setLoading(true);
+      const list = await api.getTrivia();
+      setQuestions(list || []);
+    } catch {
+      // safe fallback
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadScores = () => {
+    try {
+      const raw = localStorage.getItem('wedding_trivia_scores');
+      if (raw) {
+        setScores(JSON.parse(raw));
       }
-    );
+    } catch {
+      // safe fallback
+    }
+  };
 
-    return () => unsubscribe();
-  }, []);
-
-  // 2. Subscribe to Scores
   useEffect(() => {
-    const q = query(collection(db, 'wedding_trivia_scores'), orderBy('score', 'desc'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const loaded: TriviaScore[] = snapshot.docs.map((docSnap) => ({
-          id: docSnap.id,
-          ...(docSnap.data() as Omit<TriviaScore, 'id'>)
-        }));
-        setScores(loaded);
-      },
-      () => {}
-    );
-
-    return () => unsubscribe();
+    loadQuestions();
+    loadScores();
   }, []);
 
   // 4 KPI Calculations
@@ -161,20 +146,17 @@ export function TriviaQuizManager({ onNotify }: TriviaQuizManagerProps) {
         correctAnswerIndex: formCorrectIdx,
         explanation: formExplanation.trim(),
         order: Number(formOrder) || 1,
-        updatedAt: serverTimestamp()
       };
 
       if (editingQuestionId) {
-        await updateDoc(doc(db, 'wedding_trivia_questions', editingQuestionId), payload);
+        await api.updateTrivia(editingQuestionId, payload);
         onNotify?.('Pertanyaan trivia berhasil diperbarui', 'success');
       } else {
-        await addDoc(collection(db, 'wedding_trivia_questions'), {
-          ...payload,
-          createdAt: serverTimestamp()
-        });
+        await api.createTrivia(payload);
         onNotify?.('Pertanyaan trivia baru berhasil ditambahkan', 'success');
       }
 
+      await loadQuestions();
       setIsFormModalOpen(false);
       setIsSubmitting(false);
     } catch {
@@ -189,10 +171,13 @@ export function TriviaQuizManager({ onNotify }: TriviaQuizManagerProps) {
 
     try {
       if (deleteTarget.type === 'question' && deleteTarget.id) {
-        await deleteDoc(doc(db, 'wedding_trivia_questions', deleteTarget.id));
+        await api.deleteTrivia(deleteTarget.id);
+        await loadQuestions();
         onNotify?.('Pertanyaan trivia berhasil dihapus', 'success');
       } else if (deleteTarget.type === 'score' && deleteTarget.id) {
-        await deleteDoc(doc(db, 'wedding_trivia_scores', deleteTarget.id));
+        const updated = scores.filter((s) => s.id !== deleteTarget.id);
+        setScores(updated);
+        localStorage.setItem('wedding_trivia_scores', JSON.stringify(updated));
         onNotify?.('Skor tamu berhasil dihapus', 'success');
       } else if (deleteTarget.type === 'reset_defaults') {
         // Seed 5 default questions
@@ -263,17 +248,10 @@ export function TriviaQuizManager({ onNotify }: TriviaQuizManagerProps) {
           }
         ];
 
-        const batch = writeBatch(db);
-        defaultData.forEach((qItem) => {
-          const newDocRef = doc(collection(db, 'wedding_trivia_questions'));
-          batch.set(newDocRef, {
-            ...qItem,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-          });
-        });
-
-        await batch.commit();
+        for (const qItem of defaultData) {
+          await api.createTrivia(qItem);
+        }
+        await loadQuestions();
         onNotify?.('5 Soal Default Trivia berhasil dimuat!', 'success');
       }
       setDeleteTarget(null);
@@ -294,10 +272,12 @@ export function TriviaQuizManager({ onNotify }: TriviaQuizManagerProps) {
     const rows = scores.map((s, idx) => {
       let dateStr = '-';
       if (s.createdAt) {
-        if ('toDate' in s.createdAt && typeof s.createdAt.toDate === 'function') {
-          dateStr = s.createdAt.toDate().toLocaleString('id-ID');
+        if (typeof s.createdAt === 'string') {
+          dateStr = new Date(s.createdAt).toLocaleString('id-ID');
         } else if (s.createdAt instanceof Date) {
           dateStr = s.createdAt.toLocaleString('id-ID');
+        } else if (typeof s.createdAt === 'object' && s.createdAt && 'toDate' in s.createdAt && typeof (s.createdAt as any).toDate === 'function') {
+          dateStr = (s.createdAt as any).toDate().toLocaleString('id-ID');
         }
       }
 
@@ -632,10 +612,12 @@ export function TriviaQuizManager({ onNotify }: TriviaQuizManagerProps) {
 
                       let dateStr = '-';
                       if (item.createdAt) {
-                        if ('toDate' in item.createdAt && typeof item.createdAt.toDate === 'function') {
-                          dateStr = item.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                        if (typeof item.createdAt === 'string') {
+                          dateStr = new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
                         } else if (item.createdAt instanceof Date) {
                           dateStr = item.createdAt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                        } else if (typeof item.createdAt === 'object' && item.createdAt && 'toDate' in item.createdAt && typeof (item.createdAt as any).toDate === 'function') {
+                          dateStr = (item.createdAt as any).toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
                         }
                       }
 

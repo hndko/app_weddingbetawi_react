@@ -1,10 +1,39 @@
 import { Router, Request, Response } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
+import path from 'path';
+import fs from 'fs';
 import { pool } from '../db/connection';
 import { config as defaultConfig } from '../../../src/data/config';
 
+// Ekstraksi seluruh URL /uploads/... dari objek konfigurasi
+function extractUploadUrls(cfg: any): Set<string> {
+  const urls = new Set<string>();
+  if (!cfg || typeof cfg !== 'object') return urls;
+
+  const checkAndAdd = (val: any) => {
+    if (typeof val === 'string' && val.startsWith('/uploads/')) {
+      urls.add(val);
+    }
+  };
+
+  checkAndAdd(cfg.groom?.image);
+  checkAndAdd(cfg.bride?.image);
+  checkAndAdd(cfg.seo?.image);
+
+  if (Array.isArray(cfg.gallery)) {
+    cfg.gallery.forEach(checkAndAdd);
+  }
+
+  if (Array.isArray(cfg.banks)) {
+    cfg.banks.forEach((b: any) => checkAndAdd(b?.qrisImage));
+  }
+
+  return urls;
+}
+
 export function createConfigRouter(io: SocketIOServer) {
   const router = Router();
+  const uploadDir = path.resolve(process.cwd(), 'server', 'uploads');
 
   // GET /api/config - Ambil konfigurasi undangan pernikahan
   router.get('/', async (_req: Request, res: Response): Promise<void> => {
@@ -13,7 +42,6 @@ export function createConfigRouter(io: SocketIOServer) {
       const record = (rows as Array<{ config_json: string }>)[0];
 
       if (!record || !record.config_json) {
-        // Fallback jika belum ada baris
         res.json(defaultConfig);
         return;
       }
@@ -26,7 +54,7 @@ export function createConfigRouter(io: SocketIOServer) {
     }
   });
 
-  // PUT /api/config - Simpan pembaruan konfigurasi undangan pernikahan
+  // PUT /api/config - Simpan pembaruan konfigurasi & otomatis hapus berkas gambar lama yang diganti
   router.put('/', async (req: Request, res: Response): Promise<void> => {
     try {
       const newConfig = req.body;
@@ -35,6 +63,19 @@ export function createConfigRouter(io: SocketIOServer) {
         return;
       }
 
+      // 1. Dapatkan konfigurasi lama untuk mendeteksi berkas yang diganti/dihapus
+      let oldConfig: any = null;
+      try {
+        const [oldRows] = await pool.query('SELECT config_json FROM wedding_config WHERE id = 1 LIMIT 1');
+        const oldRecord = (oldRows as Array<{ config_json: string }>)[0];
+        if (oldRecord?.config_json) {
+          oldConfig = JSON.parse(oldRecord.config_json);
+        }
+      } catch {
+        // Safe fallback jika query lama gagal
+      }
+
+      // 2. Simpan konfigurasi baru ke MySQL
       const jsonStr = JSON.stringify(newConfig);
       await pool.query(
         `INSERT INTO wedding_config (id, config_json) VALUES (1, ?) 
@@ -42,7 +83,28 @@ export function createConfigRouter(io: SocketIOServer) {
         [jsonStr]
       );
 
-      // Broadcast pembaruan konfigurasi ke seluruh client aktif secara realtime
+      // 3. Deteksi dan hapus berkas lama dari server/uploads/ yang tidak lagi dipakai
+      if (oldConfig) {
+        const oldUrls = extractUploadUrls(oldConfig);
+        const newUrls = extractUploadUrls(newConfig);
+
+        for (const oldUrl of oldUrls) {
+          if (!newUrls.has(oldUrl)) {
+            try {
+              const filename = path.basename(oldUrl);
+              const targetPath = path.resolve(uploadDir, filename);
+              if (fs.existsSync(targetPath)) {
+                fs.unlinkSync(targetPath);
+                console.log(`[Storage Cleanup] Berkas gambar lama berhasil dihapus: ${filename}`);
+              }
+            } catch (unlinkErr) {
+              console.warn('[Storage Cleanup Warning] Gagal menghapus berkas usang:', unlinkErr);
+            }
+          }
+        }
+      }
+
+      // 4. Broadcast pembaruan konfigurasi ke seluruh client aktif secara realtime
       io.emit('config:updated', newConfig);
 
       res.json({ success: true, message: 'Konfigurasi berhasil disimpan ke MySQL', data: newConfig });

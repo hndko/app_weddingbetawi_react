@@ -14,6 +14,8 @@ import { createUploadRouter } from './routes/upload';
 import { createBudgetRouter } from './routes/budget';
 import { createSeatingRouter } from './routes/seating';
 import { createTriviaRouter } from './routes/trivia';
+import { createAuthRouter } from './routes/auth';
+import { createCheckinsRouter } from './routes/checkins';
 
 // Load environment configuration
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -61,6 +63,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 // Mount modular API routers
+app.use('/api/auth', createAuthRouter());
 app.use('/api/config', createConfigRouter(io));
 app.use('/api/wishes', createWishesRouter(io));
 app.use('/api/rsvps', createRsvpsRouter(io));
@@ -69,6 +72,7 @@ app.use('/api/upload', createUploadRouter());
 app.use('/api/budget', createBudgetRouter(io));
 app.use('/api/seating', createSeatingRouter(io));
 app.use('/api/trivia', createTriviaRouter(io));
+app.use('/api/checkins', createCheckinsRouter(io));
 
 // Start server
 server.listen(port, '0.0.0.0', () => {

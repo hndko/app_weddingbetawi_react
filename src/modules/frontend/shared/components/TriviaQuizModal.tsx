@@ -5,8 +5,7 @@ import {
   RotateCcw, Share2, Sparkles, User, HelpCircle, ChevronRight,
   Flame, Check, Loader2, PartyPopper
 } from 'lucide-react';
-import { collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../../../lib/firebase';
+import { api } from '../../../../services/api';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { TriviaQuestion, TriviaScore } from '../../../../types';
 import { playCorrectSound, playWrongSound, playVictoryFanfare } from '../utils/triviaAudioSynthesizer';
@@ -123,54 +122,40 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
     }
   }, [urlGuestName]);
 
-  // Load questions from Firestore
+  // Load questions from Database
   useEffect(() => {
-    const q = query(collection(db, 'wedding_trivia_questions'), orderBy('order', 'asc'));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        if (!snapshot.empty) {
-          const loaded: TriviaQuestion[] = snapshot.docs.map((docSnap) => ({
-            id: docSnap.id,
-            ...(docSnap.data() as Omit<TriviaQuestion, 'id'>)
-          }));
+    let isMounted = true;
+    api.getTrivia()
+      .then((loaded) => {
+        if (!isMounted) return;
+        if (loaded && loaded.length > 0) {
           setQuestions(loaded);
         } else {
           setQuestions(defaultQuestions);
         }
-      },
-      () => {
-        setQuestions(defaultQuestions);
-      }
-    );
+      })
+      .catch(() => {
+        if (isMounted) setQuestions(defaultQuestions);
+      });
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false;
+    };
   }, [defaultQuestions]);
 
   // Load leaderboard scores
   useEffect(() => {
-    const q = query(
-      collection(db, 'wedding_trivia_scores'),
-      orderBy('score', 'desc'),
-      limit(25)
-    );
-
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const loaded: TriviaScore[] = snapshot.docs.map((docSnap) => ({
-          id: docSnap.id,
-          ...(docSnap.data() as Omit<TriviaScore, 'id'>)
-        }));
-        setLeaderboard(loaded);
-        setLoadingLeaderboard(false);
-      },
-      () => {
-        setLoadingLeaderboard(false);
+    try {
+      const raw = localStorage.getItem('wedding_trivia_scores');
+      if (raw) {
+        const parsed: TriviaScore[] = JSON.parse(raw);
+        setLeaderboard(parsed);
       }
-    );
-
-    return () => unsubscribe();
+    } catch {
+      // ignore
+    } finally {
+      setLoadingLeaderboard(false);
+    }
   }, []);
 
   // Lock body scroll when modal is open
@@ -239,14 +224,18 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
     if (isSavingScore || scoreSaved) return;
     try {
       setIsSavingScore(true);
-      await addDoc(collection(db, 'wedding_trivia_scores'), {
+      const newScore: TriviaScore = {
+        id: 'score_' + Date.now(),
         guestName: guestName.trim() || 'Tamu Undangan',
         score: safeScore,
         totalQuestions: totalQ,
         percentage,
         title: rankInfo.title,
-        createdAt: serverTimestamp()
-      });
+        createdAt: new Date().toISOString(),
+      };
+      const existing = [...leaderboard, newScore].sort((a, b) => b.score - a.score).slice(0, 25);
+      setLeaderboard(existing);
+      localStorage.setItem('wedding_trivia_scores', JSON.stringify(existing));
       setScoreSaved(true);
       setIsSavingScore(false);
     } catch {

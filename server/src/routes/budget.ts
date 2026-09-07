@@ -10,14 +10,27 @@ export function createBudgetRouter(io: SocketIOServer) {
   router.get('/', async (_req: Request, res: Response): Promise<void> => {
     try {
       const [rows] = await pool.query(
-        `SELECT id, category, name, 
+        `SELECT id, category, name, name as title, 
                 estimated_cost as estimatedCost, 
                 actual_cost as actualCost, 
-                paid_cost as paidCost, 
-                status, vendor, notes, created_at as createdAt 
+                paid_cost as paidCost, paid_cost as paidAmount, 
+                status, status as paymentStatus, 
+                vendor, vendor as vendorName, 
+                vendor_phone as vendorPhone, 
+                due_date as dueDate, 
+                is_completed as isCompleted, 
+                notes, created_at as createdAt 
          FROM budget_items ORDER BY created_at ASC`
       );
-      res.json(rows);
+      const parsed = (rows as any[]).map((r) => ({
+        ...r,
+        title: r.title || r.name,
+        paidAmount: Number(r.paidAmount || r.paidCost || 0),
+        paymentStatus: r.paymentStatus || r.status || 'unpaid',
+        vendorName: r.vendorName || r.vendor || '',
+        isCompleted: !!r.isCompleted,
+      }));
+      res.json(parsed);
     } catch (error) {
       console.error('[API Budget Error]:', error);
       res.status(500).json({ error: 'Gagal mengambil data anggaran' });
@@ -27,16 +40,42 @@ export function createBudgetRouter(io: SocketIOServer) {
   // POST /api/budget - Tambah item anggaran
   router.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
-      const { category, name, estimatedCost, actualCost, paidCost, status, vendor, notes } = req.body;
+      const { category, notes } = req.body;
+      const itemName = req.body.title || req.body.name || 'Pengeluaran';
+      const estimatedCost = Number(req.body.estimatedCost) || 0;
+      const actualCost = Number(req.body.actualCost) || 0;
+      const paidCost = Number(req.body.paidAmount !== undefined ? req.body.paidAmount : req.body.paidCost) || 0;
+      const status = req.body.paymentStatus || req.body.status || 'draft';
+      const vendor = req.body.vendorName || req.body.vendor || null;
+      const vendorPhone = req.body.vendorPhone || null;
+      const dueDate = req.body.dueDate || null;
+      const isCompleted = req.body.isCompleted ? 1 : 0;
       const id = 'budget_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
 
       await pool.query(
-        `INSERT INTO budget_items (id, category, name, estimated_cost, actual_cost, paid_cost, status, vendor, notes) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id, category || 'other', name, estimatedCost || 0, actualCost || 0, paidCost || 0, status || 'draft', vendor || null, notes || null]
+        `INSERT INTO budget_items (id, category, name, estimated_cost, actual_cost, paid_cost, status, vendor, vendor_phone, due_date, is_completed, notes) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [id, category || 'logistics_other', itemName, estimatedCost, actualCost, paidCost, status, vendor, vendorPhone, dueDate, isCompleted, notes || null]
       );
 
-      const newItem = { id, category, name, estimatedCost, actualCost, paidCost, status, vendor, notes };
+      const newItem = {
+        id,
+        category: category || 'logistics_other',
+        title: itemName,
+        name: itemName,
+        estimatedCost,
+        actualCost,
+        paidAmount: paidCost,
+        paidCost,
+        paymentStatus: status,
+        status,
+        vendorName: vendor,
+        vendor,
+        vendorPhone,
+        dueDate,
+        isCompleted: !!isCompleted,
+        notes,
+      };
       io.emit('budget:created', newItem);
       res.status(201).json({ success: true, data: newItem });
     } catch (error) {
@@ -49,7 +88,16 @@ export function createBudgetRouter(io: SocketIOServer) {
   router.put('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const { category, name, estimatedCost, actualCost, paidCost, status, vendor, notes } = req.body;
+      const { category, notes } = req.body;
+      const itemName = req.body.title !== undefined ? req.body.title : req.body.name;
+      const estimatedCost = req.body.estimatedCost;
+      const actualCost = req.body.actualCost;
+      const paidCost = req.body.paidAmount !== undefined ? req.body.paidAmount : req.body.paidCost;
+      const status = req.body.paymentStatus !== undefined ? req.body.paymentStatus : req.body.status;
+      const vendor = req.body.vendorName !== undefined ? req.body.vendorName : req.body.vendor;
+      const vendorPhone = req.body.vendorPhone;
+      const dueDate = req.body.dueDate;
+      const isCompleted = req.body.isCompleted !== undefined ? (req.body.isCompleted ? 1 : 0) : undefined;
 
       await pool.query(
         `UPDATE budget_items 
@@ -60,9 +108,12 @@ export function createBudgetRouter(io: SocketIOServer) {
              paid_cost = COALESCE(?, paid_cost),
              status = COALESCE(?, status),
              vendor = COALESCE(?, vendor),
+             vendor_phone = COALESCE(?, vendor_phone),
+             due_date = COALESCE(?, due_date),
+             is_completed = COALESCE(?, is_completed),
              notes = COALESCE(?, notes)
          WHERE id = ?`,
-        [category, name, estimatedCost, actualCost, paidCost, status, vendor, notes, id]
+        [category, itemName, estimatedCost, actualCost, paidCost, status, vendor, vendorPhone, dueDate, isCompleted, notes, id]
       );
 
       io.emit('budget:updated', { id, ...req.body });

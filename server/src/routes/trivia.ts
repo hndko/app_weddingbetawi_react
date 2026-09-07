@@ -17,6 +17,8 @@ export function createTriviaRouter(io: SocketIOServer) {
       const parsed = (rows as any[]).map((r) => ({
         ...r,
         options: typeof r.options === 'string' ? JSON.parse(r.options) : (r.options || []),
+        correctAnswerIndex: r.correctIndex ?? 0,
+        order: r.orderIndex ?? 0,
       }));
 
       res.json(parsed);
@@ -29,16 +31,18 @@ export function createTriviaRouter(io: SocketIOServer) {
   // POST /api/trivia - Tambah pertanyaan trivia
   router.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
-      const { question, options, correctIndex, explanation, orderIndex } = req.body;
+      const { question, options, explanation } = req.body;
+      const correctIndex = req.body.correctAnswerIndex ?? req.body.correctIndex ?? 0;
+      const orderIndex = req.body.order ?? req.body.orderIndex ?? 0;
       const id = 'trivia_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
 
       await pool.query(
         `INSERT INTO trivia_questions (id, question, options, correct_index, explanation, order_index) 
          VALUES (?, ?, ?, ?, ?, ?)`,
-        [id, question, JSON.stringify(options || []), correctIndex || 0, explanation || null, orderIndex || 0]
+        [id, question, JSON.stringify(options || []), correctIndex, explanation || null, orderIndex]
       );
 
-      const newQ = { id, question, options: options || [], correctIndex: correctIndex || 0, explanation, orderIndex };
+      const newQ = { id, question, options: options || [], correctAnswerIndex: correctIndex, explanation, order: orderIndex };
       io.emit('trivia:created', newQ);
       res.status(201).json({ success: true, data: newQ });
     } catch (error) {
@@ -51,7 +55,9 @@ export function createTriviaRouter(io: SocketIOServer) {
   router.put('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const { question, options, correctIndex, explanation, orderIndex } = req.body;
+      const { question, options, explanation } = req.body;
+      const correctIndex = req.body.correctAnswerIndex !== undefined ? req.body.correctAnswerIndex : req.body.correctIndex;
+      const orderIndex = req.body.order !== undefined ? req.body.order : req.body.orderIndex;
 
       await pool.query(
         `UPDATE trivia_questions 

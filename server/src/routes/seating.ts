@@ -10,12 +10,17 @@ export function createSeatingRouter(io: SocketIOServer) {
   router.get('/', async (_req: Request, res: Response): Promise<void> => {
     try {
       const [rows] = await pool.query(
-        `SELECT id, name, capacity, category, assigned_guests as assignedGuests, created_at as createdAt 
-         FROM seating_tables ORDER BY created_at ASC`
+        `SELECT id, number, name, shape, zone, capacity, category, 
+                assigned_guests as assignedGuests, notes, 
+                pos_x as posX, pos_y as posY, created_at as createdAt 
+         FROM seating_tables ORDER BY number ASC, created_at ASC`
       );
 
       const parsed = (rows as any[]).map((r) => ({
         ...r,
+        number: r.number || r.name,
+        shape: r.shape || 'round',
+        zone: r.zone || 'regular_left',
         assignedGuests: typeof r.assignedGuests === 'string' ? JSON.parse(r.assignedGuests) : (r.assignedGuests || []),
       }));
 
@@ -29,16 +34,41 @@ export function createSeatingRouter(io: SocketIOServer) {
   // POST /api/seating - Tambah meja baru
   router.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
-      const { name, capacity, category, assignedGuests } = req.body;
+      const { number, name, shape, zone, capacity, category, assignedGuests, notes, posX, posY } = req.body;
       const id = 'table_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
+      const tableNumber = number || name || 'Meja';
 
       await pool.query(
-        `INSERT INTO seating_tables (id, name, capacity, category, assigned_guests) 
-         VALUES (?, ?, ?, ?, ?)`,
-        [id, name, capacity || 8, category || 'General', JSON.stringify(assignedGuests || [])]
+        `INSERT INTO seating_tables (id, number, name, shape, zone, capacity, category, assigned_guests, notes, pos_x, pos_y) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          id,
+          tableNumber,
+          name || tableNumber,
+          shape || 'round',
+          zone || 'regular_left',
+          capacity || 8,
+          category || 'General',
+          JSON.stringify(assignedGuests || []),
+          notes || null,
+          posX || 0,
+          posY || 0,
+        ]
       );
 
-      const newTable = { id, name, capacity: capacity || 8, category: category || 'General', assignedGuests: assignedGuests || [] };
+      const newTable = {
+        id,
+        number: tableNumber,
+        name: name || tableNumber,
+        shape: shape || 'round',
+        zone: zone || 'regular_left',
+        capacity: capacity || 8,
+        category: category || 'General',
+        assignedGuests: assignedGuests || [],
+        notes: notes || '',
+        posX: posX || 0,
+        posY: posY || 0,
+      };
       io.emit('seating:created', newTable);
       res.status(201).json({ success: true, data: newTable });
     } catch (error) {
@@ -51,19 +81,37 @@ export function createSeatingRouter(io: SocketIOServer) {
   router.put('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const { name, capacity, category, assignedGuests } = req.body;
+      const { number, name, shape, zone, capacity, category, assignedGuests, notes, posX, posY } = req.body;
 
       await pool.query(
         `UPDATE seating_tables 
-         SET name = COALESCE(?, name),
+         SET number = COALESCE(?, number),
+             name = COALESCE(?, name),
+             shape = COALESCE(?, shape),
+             zone = COALESCE(?, zone),
              capacity = COALESCE(?, capacity),
              category = COALESCE(?, category),
-             assigned_guests = COALESCE(?, assigned_guests)
+             assigned_guests = COALESCE(?, assigned_guests),
+             notes = COALESCE(?, notes),
+             pos_x = COALESCE(?, pos_x),
+             pos_y = COALESCE(?, pos_y)
          WHERE id = ?`,
-        [name, capacity, category, assignedGuests ? JSON.stringify(assignedGuests) : null, id]
+        [
+          number,
+          name,
+          shape,
+          zone,
+          capacity,
+          category,
+          assignedGuests ? JSON.stringify(assignedGuests) : null,
+          notes,
+          posX,
+          posY,
+          id,
+        ]
       );
 
-      io.emit('seating:updated', { id, name, capacity, category, assignedGuests });
+      io.emit('seating:updated', { id, ...req.body });
       res.json({ success: true, message: 'Meja berhasil diperbarui' });
     } catch (error) {
       console.error('[API Seating Error]:', error);

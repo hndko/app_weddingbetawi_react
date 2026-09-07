@@ -58,6 +58,20 @@ export async function seed() {
       console.log('[DB Seed] Contoh data tamu undangan berhasil ditambahkan.');
     }
 
+    // 6. Seed akun default superadmin
+    const [userRows] = await pool.query('SELECT COUNT(*) as count FROM users WHERE username = ?', ['superadmin']);
+    const userCount = (userRows as Array<{ count: number }>)[0]?.count || 0;
+
+    if (userCount === 0) {
+      const bcrypt = await import('bcryptjs');
+      const hashedPassword = await bcrypt.hash('password', 10);
+      await pool.query(
+        `INSERT INTO users (id, username, password, role) VALUES ('usr_superadmin', 'superadmin', ?, 'superadmin')`,
+        [hashedPassword]
+      );
+      console.log('[DB Seed] Akun `superadmin` default (password: password) berhasil ditambahkan.');
+    }
+
     console.log('[DB Seed] Database seeder selesai dengan sukses 100%!');
   } catch (error) {
     console.error('[DB Seed Error] Gagal menjalankan seeder:', error);

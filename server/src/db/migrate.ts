@@ -75,23 +75,45 @@ export async function migrate() {
         paid_cost DECIMAL(15,2) DEFAULT 0,
         status VARCHAR(50) DEFAULT 'draft',
         vendor VARCHAR(255) DEFAULT NULL,
+        vendor_phone VARCHAR(50) DEFAULT NULL,
+        due_date VARCHAR(50) DEFAULT NULL,
+        is_completed TINYINT(1) DEFAULT 0,
         notes TEXT DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
+    try {
+      await pool.query(`ALTER TABLE budget_items ADD COLUMN IF NOT EXISTS vendor_phone VARCHAR(50) DEFAULT NULL`);
+      await pool.query(`ALTER TABLE budget_items ADD COLUMN IF NOT EXISTS due_date VARCHAR(50) DEFAULT NULL`);
+      await pool.query(`ALTER TABLE budget_items ADD COLUMN IF NOT EXISTS is_completed TINYINT(1) DEFAULT 0`);
+    } catch {}
     console.log('[DB Migration] Tabel `budget_items` siap.');
 
     // 7. Buat tabel seating_tables
     await pool.query(`
       CREATE TABLE IF NOT EXISTS seating_tables (
         id VARCHAR(64) PRIMARY KEY,
+        number VARCHAR(50) DEFAULT NULL,
         name VARCHAR(100) NOT NULL,
+        shape VARCHAR(50) DEFAULT 'round',
+        zone VARCHAR(50) DEFAULT 'regular_left',
         capacity INT DEFAULT 8,
         category VARCHAR(100) DEFAULT 'General',
         assigned_guests JSON DEFAULT NULL,
+        notes TEXT DEFAULT NULL,
+        pos_x INT DEFAULT 0,
+        pos_y INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
+    try {
+      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS number VARCHAR(50) DEFAULT NULL`);
+      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS shape VARCHAR(50) DEFAULT 'round'`);
+      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS zone VARCHAR(50) DEFAULT 'regular_left'`);
+      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS notes TEXT DEFAULT NULL`);
+      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS pos_x INT DEFAULT 0`);
+      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS pos_y INT DEFAULT 0`);
+    } catch {}
     console.log('[DB Migration] Tabel `seating_tables` siap.');
 
     // 8. Buat tabel trivia_questions
@@ -106,6 +128,36 @@ export async function migrate() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
     console.log('[DB Migration] Tabel `trivia_questions` siap.');
+
+    // 9. Buat tabel users (Autentikasi Akun Login)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id VARCHAR(64) PRIMARY KEY,
+        username VARCHAR(100) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        role VARCHAR(50) DEFAULT 'admin',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    console.log('[DB Migration] Tabel `users` siap.');
+
+    // 10. Buat tabel checkins (Reception Check-in Logs)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS checkins (
+        id VARCHAR(64) PRIMARY KEY,
+        guest_id VARCHAR(64) DEFAULT NULL,
+        name VARCHAR(150) NOT NULL,
+        check_in_time VARCHAR(50) NOT NULL,
+        actual_pax INT DEFAULT 1,
+        souvenir_claimed TINYINT(1) DEFAULT 1,
+        table_number VARCHAR(50) DEFAULT NULL,
+        source VARCHAR(50) DEFAULT 'qr_scan',
+        notes TEXT DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    console.log('[DB Migration] Tabel `checkins` siap.');
 
     console.log('[DB Migration] Seluruh skema database berhasil dimigrasikan!');
   } catch (error) {

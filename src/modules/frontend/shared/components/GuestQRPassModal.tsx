@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Download, QrCode, CheckCircle2, Calendar, MapPin, Users, Loader2, FileText } from 'lucide-react';
-import { collection, onSnapshot, query } from 'firebase/firestore';
-import { db } from '../../../../lib/firebase';
+import { api } from '../../../../services/api';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { useThemeTokens } from '../../themes';
 import { generateTicketCode, serializeGuestPayload, generateQRCodeDataURL } from '../../../../utils/qrGenerator';
@@ -79,11 +78,11 @@ export function GuestQRPassModal({
 
   useEffect(() => {
     if (!isOpen) return;
-    const q = query(collection(db, 'wedding_tables'));
-    const unsub = onSnapshot(
-      q,
-      (snapshot) => {
-        const list = snapshot.docs.map((d) => d.data() as WeddingTable);
+    let isMounted = true;
+
+    api.getSeating()
+      .then((list) => {
+        if (!isMounted) return;
         const norm = displayName.toLowerCase().trim();
         const found = list.find((t) =>
           (t.assignedGuests || []).some(
@@ -103,15 +102,17 @@ export function GuestQRPassModal({
         } else {
           setAssignedTable(null);
         }
-      },
-      () => {
+      })
+      .catch(() => {
+        if (!isMounted) return;
         if (tableNumber) {
           setAssignedTable({ number: tableNumber, name: 'Meja Tamu' });
         }
-      }
-    );
+      });
 
-    return () => unsub();
+    return () => {
+      isMounted = false;
+    };
   }, [isOpen, displayName, guestId, tableNumber]);
 
   // Lock body scroll when modal is open

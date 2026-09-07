@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.41.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.42.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -27,8 +27,8 @@
 - [🚀 Panduan Instalasi](#-panduan-instalasi)
 - [💻 Panduan Penggunaan](#-panduan-penggunaan)
 - [🔐 Kredensial Default](#-kredensial-default)
-- [🔥 Panduan Setup Firebase & Environment Variables](#-panduan-setup-firebase--environment-variables)
-- [☁️ Panduan Deploy ke Vercel](#️-panduan-deploy-ke-vercel)
+- [🗄️ Panduan Setup Basis Data MySQL & Migrasi](#️-panduan-setup-basis-data-mysql--migrasi)
+- [☁️ Panduan Deployment Produksi (Self-Hosted)](#️-panduan-deployment-produksi-self-hosted)
 - [🤝 Panduan Kontribusi](#-panduan-kontribusi)
 - [📄 Lisensi](#-lisensi)
 
@@ -44,23 +44,23 @@ Untuk panduan mendalam sesuai peran dan kebutuhan operasional, silakan telusuri 
 | 📚 **Dokumentasi Hub** | [`docs/README.md`](docs/README.md) | Pusat navigasi, matriks panduan, dan jalan pintas cepat skenario umum. |
 | 📟 **Daftar Perintah CLI** | [`docs/01-daftar-command.md`](docs/01-daftar-command.md) | Cheatsheet CLI harian, dev server, type checking, build produksi, & housekeeping. |
 | 📖 **Buku Panduan Pengguna** | [`docs/02-buku-panduan-pengguna.md`](docs/02-buku-panduan-pengguna.md) | Manual book pengantin: generator link WhatsApp, ubah data, upload foto, & RSVP. |
-| 🛠️ **Panduan Pengembang** | [`docs/03-developer-guide.md`](docs/03-developer-guide.md) | Arsitektur SPA React 19, zero-storage canvas, model Firestore, OWASP, & siklus fitur baru. |
-| ☁️ **Panduan Deployment** | [`docs/04-panduan-deployment.md`](docs/04-panduan-deployment.md) | Panduan rilis ke Vercel, VPS Linux Nginx, cPanel (.htaccess), dan aaPanel. |
+| 🛠️ **Panduan Pengembang** | [`docs/03-developer-guide.md`](docs/03-developer-guide.md) | Arsitektur SPA React 19 + Node.js Express, basis data MySQL, Socket.io, OWASP, & siklus fitur baru. |
+| ☁️ **Panduan Deployment** | [`docs/04-panduan-deployment.md`](docs/04-panduan-deployment.md) | Panduan rilis self-hosted ke VPS Linux Ubuntu (Nginx + PM2), cPanel (Node.js Selector), dan aaPanel. |
 
 ---
 
 ## 📖 Tentang Proyek
 
-**Betawi Heritage Wedding Invitation** adalah aplikasi web *Single Page Application* (SPA) bertema pesta adat Betawi modern yang dirancang untuk memberikan pengalaman personal dan imersif kepada setiap tamu undangan. 
+**Mari Partner Digital Wedding Invitation** adalah aplikasi web *Single Page Application* (SPA) dengan rangkaian 35 tema adat Nusantara, modern, dan islami yang dirancang untuk memberikan pengalaman personal dan imersif kepada setiap tamu undangan. 
 
 Aplikasi ini menyelesaikan sejumlah tantangan utama dalam penyebaran undangan konvensional:
 1. **Efisiensi Biaya & Waktu**: Menggantikan undangan cetak fisik dengan undangan digital elegan yang dapat dibagikan secara instan melalui tautan WhatsApp.
 2. **Personalisasi Tamu**: Nama tamu dapat disematkan secara dinamis pada halaman sampul depan (*Opening Cover*) melalui parameter URL.
-3. **Interaktivitas Dua Arah**: Tamu dapat mengonfirmasi kehadiran (RSVP) serta mengirimkan doa restu secara langsung yang tersinkronisasi secara *real-time*.
+3. **Interaktivitas Dua Arah & Real-Time**: Tamu dapat mengonfirmasi kehadiran (RSVP) serta mengirimkan doa restu secara langsung yang tersinkronisasi seketika melalui WebSockets (Socket.io).
 4. **Kemudahan Digital Gift**: Menyediakan opsi transfer bank multi-rekening dengan tombol salin otomatis dan kode QRIS instan.
-5. **Panel Admin Mandiri**: Mempelai dapat mengubah jadwal acara, profil, foto galeri, lagu, nomor rekening, hingga memantau daftar hadir tanpa perlu menyentuh kode program.
+5. **Panel Admin Mandiri**: Mempelai dapat mengubah jadwal acara, profil, foto galeri, lagu, nomor rekening, mengganti password akun admin, hingga memantau daftar hadir tanpa perlu menyentuh kode program.
 
-Sistem ini didesain dengan prinsip **Zero Storage Cost**; seluruh media foto dan barcode QRIS dikonversi dan dikompresi di sisi peramban (*client-side canvas*) menjadi string Base64 yang disimpan langsung ke Firestore, sehingga pengguna tidak perlu membayar biaya hosting file/storage cloud tambahan.
+Sistem ini didesain dengan prinsip **Efisiensi Penyimpanan Mandiri (*Zero Storage Leak*)**; seluruh media foto profil mempelai, background, atau gambar QRIS dikelola langsung oleh backend Node.js Express di folder `server/uploads/` dengan sistem pembersihan otomatis (*auto-unlink garbage collection*). Saat foto diganti atau dihapus melalui Admin Panel, file lama otomatis terhapus dari disk server sehingga kapasitas hosting tetap hemat dan bersih.
 
 ---
 
@@ -70,15 +70,18 @@ Sistem ini didesain dengan prinsip **Zero Storage Cost**; seluruh media foto dan
 | :--- | :--- | :--- | :--- |
 | **Core Framework** | [React](https://react.dev) | `^19.0.1` | Pustaka UI deklaratif modern berbasis komponen. |
 | **Language** | [TypeScript](https://www.typescriptlang.org) | `~5.8.2` | Menjamin keandalan kode dengan *static typing*. |
+| **Backend Runtime** | [Node.js](https://nodejs.org) + [Express](https://expressjs.com) | `^5.2.1` | Server REST API mandiri dan serving berkas uploads. |
+| **Database** | [MySQL](https://laragon.org) (`mysql2/promise`) | `^3.24.3` | Basis data relasional dengan pooling dan *prepared statements*. |
+| **Realtime Engine** | [Socket.io](https://socket.io) | `^4.8.1` | Protokol WebSockets untuk siaran ucapan dan live feed proyektor. |
+| **Security & Auth** | [bcryptjs](https://github.com/dcodeIO/bcrypt.js) | `^3.0.3` | Hashing aman untuk kata sandi administrator. |
+| **File Uploader** | [Multer](https://github.com/expressjs/multer) | `^2.3.0` | Penanganan unggahan berkas foto multipart/form-data. |
 | **Build Tool & Bundler** | [Vite](https://vitejs.dev) | `^6.2.3` | *Development server* berkecepatan tinggi dan *bundling* produksi optimal. |
-| **Styling & CSS** | [Tailwind CSS](https://tailwindcss.com) | `^4.1.14` | *Utility-first CSS framework* v4 dengan skema tema khusus Betawi. |
+| **Styling & CSS** | [Tailwind CSS](https://tailwindcss.com) | `^4.1.14` | *Utility-first CSS framework* v4 dengan skema tema dinamis. |
 | **Animations** | [Motion](https://motion.dev) | `^12.23.24` | Menghadirkan animasi gerak halus, transisi cover, dan *stagger effects*. |
-| **Database & Realtime** | [Firebase Firestore](https://firebase.google.com) | `^12.17.1` | Basis data NoSQL dokumen dengan *WebSocket real-time listener*. |
 | **Media Player** | [React Player](https://github.com/cookpete/react-player) | `^3.4.0` | Pemutar audio fleksibel (mendukung YouTube, Google Drive, & file MP3). |
 | **Icons** | [Lucide React](https://lucide.dev) | `^0.546.0` | Set ikon antarmuka modern, tajam, dan ringan. |
 | **SEO & Meta Head** | [react-helmet-async](https://github.com/staylor/react-helmet-async) | `^3.0.0` | Manajemen tag `<head>` dinamis untuk pratinjau sosial media yang akurat. |
 | **Utility Classes** | `clsx` & `tailwind-merge` | `^2.1.1` / `^3.6.0` | Penggabungan kelas Tailwind yang dinamis tanpa benturan style. |
-| **Analytics** | `@vercel/analytics` | `^2.0.1` | Pelacakan analitik pengunjung ketika di-deploy pada platform Vercel. |
 
 ---
 
@@ -95,93 +98,138 @@ graph TD
     F --> G["Jadwal Akad & Resepsi + Navigasi Google Maps"]
     G --> H["Galeri Foto & Amplop Digital (Bank/QRIS)"]
     H --> I["Formulir RSVP & Ucapan Selamat"]
-    I -->|"Submit Data"| J[("Firebase Firestore: rsvps & wishes")]
-    J -->|"Realtime Listener"| K["Dinding Ucapan Terbarui Otomatis"]
+    I -->|"Submit Data via REST API"| J[("Express API & MySQL Database")]
+    J -->|"Socket.io Real-Time Broadcast"| K["Dinding Ucapan Terbarui Otomatis"]
 ```
 
 ### 2. Alur Pengelolaan Administrator (Admin Flow)
 ```mermaid
 graph LR
-    A["Akses URL: /login"] --> B{"Autentikasi Passcode"}
-    B -->|"Passcode Valid"| C["URL: /modules (Dashboard Admin)"]
-    B -->|"Passcode Salah"| D["Pesan Error"]
+    A["Akses URL: /login"] --> B{"Autentikasi MySQL (bcryptjs)"}
+    B -->|"Kredensial Valid"| C["URL: /modules (Dashboard Admin)"]
+    B -->|"Kredensial Salah"| D["Pesan Error"]
     C --> E["Link & WA Generator"]
     C --> F["Edit Data & Konten Website"]
     C --> G["Monitor & Rekapitulasi RSVP"]
     C --> H["Moderasi & Hapus Ucapan"]
-    F -->|"Simpan Perubahan"| I[("Firestore: wedding_config/main")]
-    I -->|"Otomatis Tayang"| J["Tampilan Publik Terupdate"]
+    C --> I["Modal Ganti Password Admin"]
+    F -->|"Simpan & Auto-Unlink File Lama"| J[("MySQL: wedding_config & uploads/")]
+    J -->|"Otomatis Tayang"| K["Tampilan Publik Terupdate"]
 ```
 
 ---
 
 ## 🗄️ Struktur Database
 
-Sistem memanfaatkan basis data **Google Cloud Firestore** (NoSQL). Struktur data terbagi ke dalam satu dokumen konfigurasi utama dan dua koleksi data interaksi:
+Sistem memanfaatkan basis data relasional **MySQL** (`db_weddingbetawi`) yang terstruktur dan terindeks:
 
-### 1. Dokumen Konfigurasi: `wedding_config/main`
+### 1. Tabel Kredensial Administrator: `users`
+Menyimpan akun pengguna admin dengan password ter-hash secara aman.
+
+| Nama Kolom | Tipe Data | Deskripsi |
+| :--- | :--- | :--- |
+| `id` | `INT AUTO_INCREMENT PRIMARY KEY` | ID unik pengguna. |
+| `username` | `VARCHAR(100) UNIQUE NOT NULL` | Nama pengguna admin (default: `superadmin`). |
+| `password` | `VARCHAR(255) NOT NULL` | Hash password aman algoritma `bcryptjs`. |
+| `role` | `VARCHAR(50) DEFAULT 'admin'` | Peran otorisasi pengguna. |
+| `created_at` / `updated_at` | `TIMESTAMP` | Waktu pembuatan & pembaruan akun. |
+
+### 2. Tabel Konfigurasi Utama: `wedding_config`
 Menyimpan seluruh konfigurasi dinamis yang dapat disesuaikan melalui Admin Panel.
 
-| Nama Field | Tipe Data | Deskripsi |
+| Nama Kolom | Tipe Data | Deskripsi |
 | :--- | :--- | :--- |
-| `groom` | `Map / Object` | Informasi mempelai pria (`nickname`, `fullName`, `parents`, `instagram`, `image`). |
-| `bride` | `Map / Object` | Informasi mempelai wanita (`nickname`, `fullName`, `parents`, `instagram`, `image`). |
-| `dateStr` | `String` | Tanggal pernikahan dalam format teks formal (misal: "Minggu, 20 September 2026"). |
-| `dateISO` | `String` | Timestamp format ISO 8601 untuk target hitung mundur *real-time*. |
-| `events` | `Map / Object` | Rincian acara `akad` dan `resepsi` (`title`, `day`, `date`, `time`, `venue`, `address`, `mapUrl`). |
-| `gallery` | `Array<String>` | Kumpulan URL gambar atau data URI gambar Base64 galeri foto. |
-| `banks` | `Array<Object>` | Pengaturan rekening & QRIS (`name`, `account`, `holder`, `isQris`, `qrisImage`). |
-| `loveStory` | `Array<Object>` | Perjalanan cinta kedua mempelai (`year`, `title`, `description`). |
-| `music` | `Map / Object` | Pengaturan audio: `playlist` (`url[]`) dan `mode` (`repeat-all`, `repeat-one`, `shuffle`, `linear`). |
-| `seo` | `Map / Object` | Metadata halaman: `title`, `description`, `keywords`, dan thumbnail `image`. |
+| `id` | `VARCHAR(50) PRIMARY KEY` | Kunci dokumen konfigurasi (`main`). |
+| `config_data` | `LONGTEXT NOT NULL` | JSON payload konfigurasi mempelai, tanggal, acara, galeri, bank, cerita, musik, dan SEO. |
+| `updated_at` | `TIMESTAMP` | Waktu pembaruan terakhir. |
 
-### 2. Koleksi RSVP: `rsvps`
+### 3. Tabel Konfirmasi Kehadiran: `rsvps`
 Menyimpan konfirmasi kehadiran dari para tamu.
 
-| Nama Field | Tipe Data | Deskripsi |
+| Nama Kolom | Tipe Data | Deskripsi |
 | :--- | :--- | :--- |
-| `name` | `String` | Nama tamu yang mengisi formulir konfirmasi. |
-| `attendance` | `String` | Status konfirmasi: `"hadir"` atau `"tidak_hadir"`. |
-| `guestCount` | `Number` | Jumlah tamu yang direncanakan hadir (apabila status hadir). |
-| `notes` | `String` | Catatan atau doa tambahan dari tamu. |
-| `createdAt` | `Timestamp` | Waktu pengiriman data RSVP. |
+| `id` | `INT AUTO_INCREMENT PRIMARY KEY` | ID unik RSVP. |
+| `name` | `VARCHAR(255) NOT NULL` | Nama tamu yang mengisi konfirmasi. |
+| `attendance` | `VARCHAR(50) NOT NULL` | Status konfirmasi: `"hadir"` atau `"tidak_hadir"`. |
+| `guest_count` | `INT DEFAULT 1` | Jumlah rombongan tamu yang hadir. |
+| `notes` | `TEXT` | Catatan atau doa tambahan dari tamu. |
+| `created_at` | `TIMESTAMP` | Waktu pengiriman data konfirmasi. |
 
-### 3. Koleksi Ucapan & Doa: `wishes`
-Menyimpan daftar ucapan doa restu tamu yang ditampilkan pada *wishes wall*.
+### 4. Tabel Ucapan & Doa: `wishes`
+Menyimpan daftar ucapan doa restu tamu yang disiarkan langsung ke *wishes wall* dan layar proyektor panggung.
 
-| Nama Field | Tipe Data | Deskripsi |
+| Nama Kolom | Tipe Data | Deskripsi |
 | :--- | :--- | :--- |
-| `name` | `String` | Nama pengirim ucapan. |
-| `text` | `String` | Isi pesan doa restu. |
-| `createdAt` | `Timestamp` | Waktu pengiriman ucapan. |
+| `id` | `INT AUTO_INCREMENT PRIMARY KEY` | ID unik ucapan. |
+| `name` | `VARCHAR(255) NOT NULL` | Nama pengirim doa restu. |
+| `text` | `TEXT NOT NULL` | Isi pesan doa restu. |
+| `created_at` | `TIMESTAMP` | Waktu pengiriman ucapan. |
 
-### 4. Koleksi Anggaran Pernikahan: `wedding_expenses`
-Menyimpan rincian target anggaran dan kontrak vendor acara pernikahan.
+### 5. Tabel Buku Tamu Undangan: `guests`
+Menyimpan buku tamu personal untuk generator link WhatsApp dan pembagian meja.
 
-| Nama Field | Tipe Data | Deskripsi |
+| Nama Kolom | Tipe Data | Deskripsi |
 | :--- | :--- | :--- |
-| `category` | `String` | Kategori pos biaya (Venue, Catering, MUA, Dekorasi, dll.). |
-| `name` | `String` | Nama pos atau item pengeluaran. |
-| `vendor` | `String` | Nama vendor atau penyedia jasa. |
-| `phone` | `String` | Nomor WhatsApp vendor untuk kontak cepat. |
-| `estimatedCost` | `Number` | Estimasi anggaran biaya yang direncanakan. |
-| `actualCost` | `Number` | Nilai kontrak riil yang disepakati dengan vendor. |
-| `paidAmount` | `Number` | Jumlah uang yang telah dibayarkan (DP / termin). |
-| `status` | `String` | Status pelunasan (`unpaid`, `partial`, `paid`). |
-| `isReady` | `Boolean` | Status kesiapan logistik hari-H. |
+| `id` | `INT AUTO_INCREMENT PRIMARY KEY` | ID unik tamu. |
+| `name` | `VARCHAR(255) NOT NULL` | Nama lengkap tamu. |
+| `phone` | `VARCHAR(50)` | Nomor telepon / WhatsApp tamu. |
+| `pax` | `INT DEFAULT 1` | Jumlah kuota undangan (pax). |
+| `status` | `VARCHAR(50) DEFAULT 'invited'` | Status undangan (`invited`, `confirmed`, `attended`). |
+| `assigned_table` | `VARCHAR(100)` | Nomor meja yang dialokasikan. |
+| `qr_code` | `VARCHAR(255)` | Kode QR unik tiket digital pass. |
 
-### 5. Koleksi Meja & Denah Ballroom: `wedding_tables`
-Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
+### 6. Tabel Pos Anggaran: `budget_items`
+Menyimpan target biaya, kontrak vendor, dan pelunasan termin pembayaran.
 
-| Nama Field | Tipe Data | Deskripsi |
+| Nama Kolom | Tipe Data | Deskripsi |
 | :--- | :--- | :--- |
-| `tableNumber` | `String` | Nomor/kode meja (misal: `VIP-01`, `TBL-02`). |
-| `tableName` | `String` | Nama label meja (misal: "VIP Utama & Tamu Kehormatan"). |
-| `zone` | `String` | Zona penempatan meja (`front`, `center`, `back`, `left_wing`, `right_wing`). |
-| `capacity` | `Number` | Daya tampung maksimal kursi di meja (2-20 kursi). |
-| `shape` | `String` | Bentuk meja (`round`, `rectangle`). |
-| `assignedGuests` | `Array<Object>` | Daftar tamu yang duduk (`id`, `guestName`, `pax`, `assignedAt`). |
-| `notes` | `String` | Catatan khusus meja (*opsional*). |
+| `id` | `INT AUTO_INCREMENT PRIMARY KEY` | ID unik pos anggaran. |
+| `category` | `VARCHAR(100) NOT NULL` | Kategori pos (Venue, Catering, MUA, dll.). |
+| `name` | `VARCHAR(255) NOT NULL` | Nama item pengeluaran. |
+| `vendor` | `VARCHAR(255)` | Nama vendor penyedia jasa. |
+| `phone` | `VARCHAR(50)` | Nomor kontak WhatsApp vendor. |
+| `estimated_cost` | `DECIMAL(15,2) DEFAULT 0` | Estimasi anggaran yang direncanakan. |
+| `actual_cost` | `DECIMAL(15,2) DEFAULT 0` | Nilai kontrak aktual yang disepakati. |
+| `paid_amount` | `DECIMAL(15,2) DEFAULT 0` | Total uang muka/termin yang telah dibayar. |
+| `status` | `VARCHAR(50) DEFAULT 'unpaid'` | Status pelunasan (`unpaid`, `partial`, `paid`). |
+| `is_ready` | `TINYINT(1) DEFAULT 0` | Kesiapan logistik hari-H. |
+
+### 7. Tabel Denah Meja: `seating_tables`
+Menyimpan denah ballroom dan pembagian kursi tamu.
+
+| Nama Kolom | Tipe Data | Deskripsi |
+| :--- | :--- | :--- |
+| `id` | `INT AUTO_INCREMENT PRIMARY KEY` | ID unik meja. |
+| `table_number` | `VARCHAR(50) NOT NULL` | Nomor/kode meja (misal: `VIP-01`). |
+| `table_name` | `VARCHAR(255) NOT NULL` | Nama label meja. |
+| `zone` | `VARCHAR(100) DEFAULT 'center'` | Posisi zona meja (`front`, `center`, `back`, dll.). |
+| `capacity` | `INT DEFAULT 10` | Kapasitas kursi. |
+| `shape` | `VARCHAR(50) DEFAULT 'round'` | Bentuk meja (`round`, `rectangle`). |
+| `assigned_guests` | `LONGTEXT` | JSON daftar tamu yang duduk di meja. |
+| `notes` | `TEXT` | Catatan khusus meja. |
+
+### 8. Tabel Kuis Trivia: `trivia_questions`
+Menyimpan pertanyaan kuis interaktif seputar kedua mempelai.
+
+| Nama Kolom | Tipe Data | Deskripsi |
+| :--- | :--- | :--- |
+| `id` | `INT AUTO_INCREMENT PRIMARY KEY` | ID unik kuis. |
+| `question` | `TEXT NOT NULL` | Pertanyaan kuis trivia. |
+| `options` | `LONGTEXT NOT NULL` | JSON array 4 pilihan jawaban. |
+| `correct_answer_index` | `INT NOT NULL` | Indeks jawaban yang benar (0-3). |
+| `explanation` | `TEXT` | Penjelasan jawaban. |
+
+### 9. Tabel Check-in Meja Resepsi: `checkins`
+Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
+
+| Nama Kolom | Tipe Data | Deskripsi |
+| :--- | :--- | :--- |
+| `id` | `INT AUTO_INCREMENT PRIMARY KEY` | ID unik check-in. |
+| `guest_id` | `INT` | ID referensi tamu (opsional). |
+| `guest_name` | `VARCHAR(255) NOT NULL` | Nama tamu yang hadir. |
+| `pax` | `INT DEFAULT 1` | Jumlah orang yang masuk. |
+| `souvenir_taken` | `TINYINT(1) DEFAULT 1` | Status penerimaan suvenir fisik. |
+| `checked_in_at` | `TIMESTAMP` | Waktu kedatangan tamu di meja resepsi. |
 
 ---
 
@@ -190,7 +238,8 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 | Role | Metode Akses | Hak Akses & Fitur yang Diizinkan |
 | :--- | :--- | :--- |
 | **Tamu Undangan** *(Public Guest)* | Membuka URL undangan publik (`https://domain.com/?to=Nama+Tamu`) | - Membuka sampul undangan interaktif (*Opening Cover*).<br>- Memutar dan menjeda musik latar (*Floating Audio Player*).<br>- Menavigasi seksi undangan via *Bottom Navigation* & *ScrollSpy*.<br>- Melihat detail acara dan membuka rute lokasi ke Google Maps.<br>- Mengirim konfirmasi kehadiran pada formulir RSVP.<br>- Mengirim doa restu dan melihat dinding ucapan secara *real-time*.<br>- Menyalin nomor rekening bank & memindai kode QRIS untuk hadiah. |
-| **Mempelai / Admin** *(Administrator)* | Membuka URL rahasia `/login` dan memasukkan passcode (setelah login dialihkan ke `/modules`) | - Mengakses **WhatsApp Link Generator** (membuat link custom nama tamu dan template pesan WA instan).<br>- Mengubah data profil kedua mempelai dan unggah foto.<br>- Mengubah jadwal, jam, venue, dan link Google Maps acara.<br>- Menambah, menyusun, dan menghapus foto galeri pernikahan.<br>- Mengelola daftar rekening bank & unggah gambar kode QRIS.<br>- Mengatur playlist musik latar (YouTube/Google Drive) dan mode putar.<br>- Mengonfigurasi metadata SEO & pratinjau thumbnail media sosial.<br>- Memantau statistik kehadiran RSVP (Total Hadir, Tidak Hadir, Total Respon).<br>- Mengelola meja resepsi dan pemindai QR pass tamu hari-H.<br>- Menghapus respon RSVP atau ucapan tamu yang tidak pantas (moderasi). |
+| **Mempelai / Admin** *(Administrator)* | Membuka URL rahasia `/login` dan memasukkan Username (`superadmin`) & Password (`password`) | - Mengakses **WhatsApp Link Generator** (membuat link custom nama tamu dan template pesan WA instan).<br>- Mengubah data profil kedua mempelai dan unggah foto.<br>- Mengubah jadwal, jam, venue, dan link Google Maps acara.<br>- Menambah, menyusun, dan menghapus foto galeri pernikahan.<br>- Mengelola daftar rekening bank & unggah gambar kode QRIS.<br>- Mengatur playlist musik latar (YouTube/Google Drive) dan mode putar.<br>- Mengonfigurasi metadata SEO & pratinjau thumbnail media sosial.<br>- Memantau statistik kehadiran RSVP (Total Hadir, Tidak Hadir, Total Respon).<br>- Mengelola meja resepsi dan pemindai QR pass tamu hari-H.<br>- Menghapus respon RSVP atau ucapan tamu yang tidak pantas (moderasi).<br>- Mengubah password admin secara mandiri via modal Ganti Password. |
+| **Operator Panggung / MC** *(Stage Display)* | Membuka rute publik mandiri `/live` atau `/projector` (atau via tombol jalan pintas di `/modules`) | - Menampilkan layar penuh 16:9 sinematik di proyektor/LED ballroom panggung pernikahan.<br>- Menampilkan QR Code interaktif untuk dipindai tamu dari meja.<br>- Memutar selebrasi spotlight & audio chime harmonis secara otomatis saat ada ucapan baru.<br>- Mengatur kecepatan putar otomatis (carousel) dan audio chime via floating control bar. |
 | **Operator Panggung / MC** *(Stage Display)* | Membuka rute publik mandiri `/live` atau `/projector` (atau via tombol jalan pintas di `/modules`) | - Menampilkan layar penuh 16:9 sinematik di proyektor/LED ballroom panggung pernikahan.<br>- Menampilkan QR Code interaktif untuk dipindai tamu dari meja.<br>- Memutar selebrasi spotlight & audio chime harmonis secara otomatis saat ada ucapan baru.<br>- Mengatur kecepatan putar otomatis (carousel) dan audio chime via floating control bar. |
 
 ---
@@ -588,8 +637,8 @@ Menyimpan denah meja dan alokasi tamu undangan resepsi pernikahan.
 Sebelum memulai instalasi, pastikan lingkungan komputer atau server Anda memenuhi spesifikasi berikut:
 
 - **Node.js**: Versi `18.0.0` atau lebih tinggi (Direkomendasikan: `v20.x` atau `v22.x LTS`).
-- **Package Manager**: Standar proyek menggunakan **`npm`** (`npm run lint`, `npm run build`).
-- **Akun Firebase**: Akun aktif di [Firebase Console](https://console.firebase.google.com) (Tersedia paket gratis *Spark Plan*).
+- **Basis Data Relasional**: MySQL 5.7+ / 8.0+ atau MariaDB (sudah tersedia otomatis di Laragon / XAMPP).
+- **Package Manager**: Standar proyek menggunakan **`npm`** (`npm run lint`, `npm run dev`, `npm run server`).
 - **Peramban Web Modern**: Google Chrome, Mozilla Firefox, Apple Safari, atau Microsoft Edge versi terbaru.
 
 ---
@@ -616,22 +665,39 @@ Salin template konfigurasi lingkungan:
 cp .env.example .env
 ```
 
-Buka file `.env` yang baru dibuat dan masukkan kredensial Firebase Anda:
+Buka file `.env` yang baru dibuat dan sesuaikan konfigurasi koneksi database MySQL Anda:
 ```env
-VITE_FIREBASE_API_KEY="AIzaSyB-xxxxxxxxxxxxxxxxxxxxxxxx"
-VITE_FIREBASE_AUTH_DOMAIN="proyek-anda.firebaseapp.com"
-VITE_FIREBASE_PROJECT_ID="proyek-anda"
-VITE_FIREBASE_STORAGE_BUCKET="proyek-anda.appspot.com"
-VITE_FIREBASE_MESSAGING_SENDER_ID="123456789012"
-VITE_FIREBASE_APP_ID="1:123456789012:web:abcdef123456"
-VITE_FIREBASE_DATABASE_ID=""
+VITE_API_URL="http://localhost:5000"
+PORT=5000
+DB_HOST="127.0.0.1"
+DB_PORT=3306
+DB_USER="root"
+DB_PASSWORD=""
+DB_NAME="db_weddingbetawi"
+JWT_SECRET="mari_partner_secret_local_key_2026"
+CORS_ORIGIN="http://localhost:3000"
+```
+
+### 4. Eksekusi Migrasi & Seeder Database
+Pastikan service MySQL di Laragon aktif, lalu jalankan perintah DDL dan inisialisasi akun:
+```bash
+npm run db:migrate
+npm run db:seed
 ```
 
 ---
 
 ## 💻 Panduan Penggunaan
 
-### Menjalankan Server Pengembangan (Localhost)
+### Menjalankan Server Backend (Port 5000)
+Buka terminal pertama dan jalankan:
+```bash
+npm run server
+```
+Server REST API dan Socket.io akan aktif pada `http://localhost:5000`.
+
+### Menjalankan Server Frontend (Port 3000)
+Buka terminal kedua dan jalankan:
 ```bash
 npm run dev
 ```
@@ -643,7 +709,7 @@ Tambahkan parameter `?to=` pada akhir URL undangan:
 - Mengundang keluarga: `http://localhost:3000/?to=Bapak+Ahmad+%26+Keluarga`
 
 ### Mengakses Halaman Admin
-Akses path `/login` pada peramban Anda (setelah memasukkan passcode valid, sistem otomatis mengalihkan URL ke `/modules`):
+Akses path `/login` pada peramban Anda (setelah memasukkan username & password valid, sistem otomatis mengalihkan URL ke `/modules`):
 - `http://localhost:3000/login`
 
 ### Melakukan Kompilasi Produksi (Production Build)
@@ -656,92 +722,59 @@ File hasil kompilasi yang siap di-hosting akan tersimpan di dalam folder `dist/`
 
 ## 🔐 Kredensial Default
 
-Untuk keperluan pengujian awal dan mode pengembangan, sistem menyediakan passcode bawaan untuk masuk ke Admin Panel:
+Untuk keperluan pengujian awal dan instalasi baru, sistem telah menyediakan akun administrator bawaan:
 
-| Tipe Akun | Lokasi Akses | Passcode Default |
-| :--- | :--- | :--- |
-| **Administrator** | URL `/login` (dialihkan ke `/modules`) | **`password`** <br> *(Alternatif valid: `admin`, `admin123`)* |
+| Tipe Akun | Lokasi Akses | Username | Password Default | Otoritas |
+| :--- | :--- | :--- | :--- | :--- |
+| **Administrator** | URL `/login` (dialihkan ke `/modules`) | **`superadmin`** | **`password`** | Akses penuh seluruh modul admin |
 
 > [!TIP]
-> Anda dapat mengganti atau memperketat verifikasi passcode ini pada berkas [AdminPanel.tsx](file:///d:/laragon/www/app_weddingbetawi_react/src/components/admin/AdminPanel.tsx#L64) sesuai preferensi keamanan Anda.
+> **Fitur Ganti Password Mandiri**: Anda dapat mengganti kata sandi administrator kapan saja langsung melalui antarmuka Admin Panel dengan mengklik tombol **"Ganti Password"** (`<KeyRound />`) di header dasbor. Password baru akan di-hash menggunakan algoritma `bcryptjs` dan diperbarui di basis data MySQL.
 
 ---
 
-## 🔥 Panduan Setup Firebase & Environment Variables
+## 🗄️ Panduan Setup Basis Data MySQL & Migrasi
 
-Apabila Anda ingin menggunakan database Firebase baru milik Anda sendiri:
+Aplikasi ini menggunakan basis data relasional mandiri tanpa ketergantungan pada layanan cloud pihak ketiga berbayar:
 
-### 1. Buat Proyek di Firebase Console
-1. Kunjungi **[Firebase Console](https://console.firebase.google.com/)** dan masuk menggunakan akun Google.
-2. Klik **"Add project"** dan masukkan nama proyek Anda (misal: `wedding-betawi`).
-3. Anda dapat menonaktifkan *Google Analytics* jika tidak dibutuhkan, lalu klik **Create Project**.
-
-### 2. Aktifkan Cloud Firestore Database
-1. Pada menu navigasi sebelah kiri, buka **Build > Firestore Database**.
-2. Klik tombol **Create database**.
-3. Pilih lokasi server terdekat (contoh: `asia-southeast2` untuk wilayah Jakarta).
-4. Pilih opsi **Start in production mode**, kemudian klik **Create**.
-5. Setelah database aktif, masuk ke tab **Rules** dan perbarui aturannya menjadi:
-   ```javascript
-   rules_version = '2';
-   service cloud.firestore {
-     match /databases/{database}/documents {
-       match /wedding_config/{document=**} {
-         allow read, write: if true;
-       }
-       match /wishes/{document=**} {
-         allow read, write: if true;
-       }
-       match /rsvps/{document=**} {
-         allow read, write: if true;
-       }
-     }
-   }
+### 1. Buat Basis Data di Laragon / phpMyAdmin
+1. Buka **Laragon** > klik **Database** (membuka HeidiSQL) atau buka `http://localhost/phpmyadmin`.
+2. Buat database baru bernama `db_weddingbetawi`:
+   ```sql
+   CREATE DATABASE db_weddingbetawi CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
-6. Klik tombol **Publish**.
 
-### 3. Daftarkan Web App & Ambil Kredensial
-1. Di halaman utama proyek Firebase, klik ikon roda gigi (⚙️ **Project Settings**) > tab **General**.
-2. Gulir ke bawah ke bagian **"Your apps"**, lalu klik tombol berikon **`</>` (Web)**.
-3. Masukkan nama aplikasi (misal: `wedding-web`), lalu klik **Register app**.
-4. Salin data kredensial konfigurasi `firebaseConfig` dan masukkan ke berkas `.env` aplikasi Anda.
+### 2. Jalankan Skrip Migrasi
+Di terminal proyek, jalankan:
+```bash
+npm run db:migrate
+```
+Perintah ini akan secara otomatis membuat 9 tabel terstruktur (`users`, `wedding_config`, `wishes`, `rsvps`, `guests`, `budget_items`, `seating_tables`, `trivia_questions`, `checkins`).
+
+### 3. Jalankan Skrip Seeder
+```bash
+npm run db:seed
+```
+Perintah ini akan menginisialisasi akun `superadmin` dengan password `password` yang telah di-hash dengan `bcryptjs` serta memuat konfigurasi default pernikahan ke tabel `wedding_config`.
 
 ---
 
-## ☁️ Panduan Deploy ke Vercel
+## ☁️ Panduan Deployment Produksi (Self-Hosted)
 
-Aplikasi ini telah disesuaikan untuk proses publikasi (*deployment*) secara instan ke [Vercel](https://vercel.com):
+Aplikasi ini dirancang untuk kemudahan deployment mandiri pada berbagai infrastruktur server:
 
-1. **Unggah Proyek ke GitHub**:
-   ```bash
-   git add .
-   git commit -m "feat: persiapkan rilis undangan"
-   git push origin main
-   ```
+1. **VPS Linux (Ubuntu 22.04 LTS + Nginx + PM2)**:
+   - Menjalankan backend Express & Socket.io secara persisten menggunakan process manager **PM2**.
+   - Melayani aset frontend statis (`dist/`) melalui **Nginx Web Server**.
+   - Mengonfigurasi reverse proxy Nginx untuk meneruskan trafik `/api/`, `/socket.io/`, dan `/uploads/` ke port 5000.
+   - Mengamankan koneksi dengan sertifikat SSL gratis **Let's Encrypt** (`certbot`).
+2. **Shared Hosting (cPanel)**:
+   - Memanfaatkan fitur **Setup Node.js App** di cPanel untuk menjalankan backend.
+   - Mengelola basis data MySQL melalui cPanel **MySQL Database Wizard**.
+3. **aaPanel Control Panel**:
+   - Menggunakan modul **Node.js Project Manager** dan Nginx Reverse Proxy.
 
-2. **Impor Proyek ke Dashboard Vercel**:
-   - Buka [Vercel Dashboard](https://vercel.com/dashboard) dan klik **Add New > Project**.
-   - Pilih repositori `app_weddingbetawi_react` dari akun GitHub Anda.
-
-3. **Pengaturan Build**:
-   Vercel akan secara otomatis mendeteksi preset **Vite**:
-   - **Framework Preset**: `Vite`
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-   - **Install Command**: `npm install`
-
-4. **Konfigurasi Environment Variables di Vercel**:
-   Masuk ke bagian **Environment Variables** pada halaman setup Vercel dan tambahkan variabel-variabel berikut:
-   - `VITE_FIREBASE_API_KEY`
-   - `VITE_FIREBASE_AUTH_DOMAIN`
-   - `VITE_FIREBASE_PROJECT_ID`
-   - `VITE_FIREBASE_STORAGE_BUCKET`
-   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
-   - `VITE_FIREBASE_APP_ID`
-
-5. **Deploy**:
-   - Klik tombol **Deploy**. Tunggu proses *build* selesai (sekitar 1 menit).
-   - Undangan digital pernikahan Anda telah aktif secara global dan siap dibagikan!
+> 📖 **Panduan Deployment Lengkap**: Untuk langkah-langkah konfigurasi server block Nginx, PM2 startup, dan SSL secara terperinci, silakan merujuk ke dokumen resmi [**`docs/04-panduan-deployment.md`**](docs/04-panduan-deployment.md).
 
 ---
 

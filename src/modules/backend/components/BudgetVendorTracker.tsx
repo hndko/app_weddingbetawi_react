@@ -5,8 +5,7 @@ import {
   Camera, Music, Gift, HeartHandshake, Truck, ExternalLink, X, Check,
   AlertTriangle, RefreshCw
 } from 'lucide-react';
-import { collection, onSnapshot, query, orderBy, doc, addDoc, updateDoc, deleteDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
-import { db } from '../../../lib/firebase';
+import { api } from '../../../services/api';
 import { WeddingExpense, ExpenseCategory, PaymentStatus } from '../../../types';
 
 interface BudgetVendorTrackerProps {
@@ -230,28 +229,22 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
     };
   }, [isFormOpen, deleteTarget]);
 
-  // Real-time Firestore Listener
+  // Load expenses from MySQL backend
+  const loadExpenses = async () => {
+    try {
+      setIsLoading(true);
+      const items = await api.getBudget();
+      setExpenses(items || []);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Error';
+      showToast('Gagal memuat data anggaran: ' + msg, 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const expensesRef = collection(db, 'wedding_expenses');
-    const q = query(expensesRef, orderBy('createdAt', 'desc'));
-
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const items: WeddingExpense[] = [];
-        snapshot.forEach((docSnap) => {
-          items.push({ id: docSnap.id, ...docSnap.data() } as WeddingExpense);
-        });
-        setExpenses(items);
-        setIsLoading(false);
-      },
-      (error) => {
-        showToast('Gagal memuat data anggaran: ' + error.message, 'error');
-        setIsLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
+    loadExpenses();
   }, []);
 
   // Filtered expenses
@@ -372,20 +365,17 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
         dueDate: formData.dueDate,
         notes: formData.notes.trim(),
         isCompleted: formData.isCompleted,
-        updatedAt: serverTimestamp(),
       };
 
       if (editingExpense?.id) {
-        await updateDoc(doc(db, 'wedding_expenses', editingExpense.id), payload);
+        await api.updateBudgetItem(editingExpense.id, payload);
         showToast('Data pos pengeluaran berhasil diperbarui!', 'success');
       } else {
-        await addDoc(collection(db, 'wedding_expenses'), {
-          ...payload,
-          createdAt: serverTimestamp(),
-        });
+        await api.createBudgetItem(payload);
         showToast('Pos pengeluaran baru berhasil ditambahkan!', 'success');
       }
 
+      await loadExpenses();
       handleCloseForm();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem';
@@ -397,10 +387,10 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
   const handleToggleCompleted = async (item: WeddingExpense) => {
     if (!item.id) return;
     try {
-      await updateDoc(doc(db, 'wedding_expenses', item.id), {
+      await api.updateBudgetItem(item.id, {
         isCompleted: !item.isCompleted,
-        updatedAt: serverTimestamp(),
       });
+      await loadExpenses();
       showToast(
         item.isCompleted
           ? `Status kesiapan "${item.title}" ditandai belum selesai.`
@@ -418,7 +408,8 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
     if (!deleteTarget?.id) return;
     setIsDeleting(true);
     try {
-      await deleteDoc(doc(db, 'wedding_expenses', deleteTarget.id));
+      await api.deleteBudgetItem(deleteTarget.id);
+      await loadExpenses();
       showToast(`Pos "${deleteTarget.title}" berhasil dihapus.`, 'success');
       setDeleteTarget(null);
     } catch (err: unknown) {
@@ -433,16 +424,10 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
   const handleApplyPresets = async () => {
     setIsApplyingPreset(true);
     try {
-      const batch = writeBatch(db);
-      DEFAULT_EXPENSE_PRESETS.forEach((preset) => {
-        const newDocRef = doc(collection(db, 'wedding_expenses'));
-        batch.set(newDocRef, {
-          ...preset,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
-      });
-      await batch.commit();
+      for (const preset of DEFAULT_EXPENSE_PRESETS) {
+        await api.createBudgetItem(preset);
+      }
+      await loadExpenses();
       showToast('10 Template Pos Anggaran Nusantara berhasil dimuat!', 'success');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal memuat template';

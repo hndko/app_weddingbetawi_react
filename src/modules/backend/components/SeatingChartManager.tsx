@@ -5,11 +5,7 @@ import {
   Layers, MapPin, UserPlus, UserX, ArrowRight, CornerDownRight,
   ChevronRight, RefreshCw, Info, HelpCircle
 } from 'lucide-react';
-import {
-  collection, onSnapshot, query, orderBy, doc, addDoc, updateDoc,
-  deleteDoc, serverTimestamp, writeBatch
-} from 'firebase/firestore';
-import { db } from '../../../lib/firebase';
+import { api } from '../../../services/api';
 import {
   WeddingTable, TableShape, TableZone, TableGuestAssignment,
   GuestInvitation, RSVPResponse
@@ -203,49 +199,31 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
   const [isPresetConfirmOpen, setIsPresetConfirmOpen] = useState(false);
   const [isLoadingPresets, setIsLoadingPresets] = useState(false);
 
-  // 1. Subscribe to Firestore collections
+  // 1. Load data from MySQL backend
+  const loadAllData = async () => {
+    try {
+      setLoadingTables(true);
+      const [tList, gList, rList] = await Promise.all([
+        api.getSeating(),
+        api.getGuests(),
+        api.getRsvps(),
+      ]);
+      setTables(tList || []);
+      setInvitations(gList || []);
+      setRsvps(rList || []);
+      setInspectingTable((prev) => {
+        if (!prev || !prev.id) return prev;
+        return (tList || []).find((t) => t.id === prev.id) || null;
+      });
+    } catch {
+      // safe fallback
+    } finally {
+      setLoadingTables(false);
+    }
+  };
+
   useEffect(() => {
-    const qTables = query(collection(db, 'wedding_tables'), orderBy('number', 'asc'));
-    const unsubTables = onSnapshot(
-      qTables,
-      (snapshot) => {
-        const list = snapshot.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        })) as WeddingTable[];
-        setTables(list);
-        setLoadingTables(false);
-
-        // Keep inspecting table up-to-date if open
-        setInspectingTable((prev) => {
-          if (!prev || !prev.id) return prev;
-          return list.find((t) => t.id === prev.id) || null;
-        });
-      },
-      () => {
-        setLoadingTables(false);
-      }
-    );
-
-    const qInvites = query(collection(db, 'guests'), orderBy('createdAt', 'desc'));
-    const unsubInvites = onSnapshot(qInvites, (snapshot) => {
-      setInvitations(
-        snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as GuestInvitation))
-      );
-    });
-
-    const qRsvps = query(collection(db, 'rsvps'), orderBy('createdAt', 'desc'));
-    const unsubRsvps = onSnapshot(qRsvps, (snapshot) => {
-      setRsvps(
-        snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as RSVPResponse))
-      );
-    });
-
-    return () => {
-      unsubTables();
-      unsubInvites();
-      unsubRsvps();
-    };
+    loadAllData();
   }, []);
 
   // 2. Lock body scroll on open modal
@@ -395,23 +373,22 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
       return;
     }
 
-    setIsSavingTable(true);
     try {
+      setIsSavingTable(true);
       if (editingTable?.id) {
         // Update existing table
-        await updateDoc(doc(db, 'wedding_tables', editingTable.id), {
+        await api.updateSeatingTable(editingTable.id, {
           number: tableFormNumber.trim(),
           name: tableFormName.trim(),
           shape: tableFormShape,
           zone: tableFormZone,
           capacity: Number(tableFormCapacity) || 8,
           notes: tableFormNotes.trim(),
-          updatedAt: serverTimestamp(),
         });
         onNotify?.(`Meja ${tableFormNumber} berhasil diperbarui`, 'success');
       } else {
         // Add new table
-        await addDoc(collection(db, 'wedding_tables'), {
+        await api.createSeatingTable({
           number: tableFormNumber.trim(),
           name: tableFormName.trim(),
           shape: tableFormShape,
@@ -419,11 +396,10 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
           capacity: Number(tableFormCapacity) || 8,
           assignedGuests: [],
           notes: tableFormNotes.trim(),
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
         });
         onNotify?.(`Meja baru ${tableFormNumber} berhasil ditambahkan`, 'success');
       }
+      await loadAllData();
       setIsTableModalOpen(false);
       resetTableForm();
     } catch {
@@ -438,12 +414,13 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
     if (!deleteConfirmTarget?.id) return;
     setIsDeletingTable(true);
     try {
-      await deleteDoc(doc(db, 'wedding_tables', deleteConfirmTarget.id));
+      await api.deleteSeatingTable(deleteConfirmTarget.id);
       onNotify?.(`Meja ${deleteConfirmTarget.number} berhasil dihapus`, 'success');
       setDeleteConfirmTarget(null);
       if (inspectingTable?.id === deleteConfirmTarget.id) {
         setInspectingTable(null);
       }
+      await loadAllData();
     } catch {
       onNotify?.('Gagal menghapus meja', 'error');
     } finally {
@@ -455,26 +432,15 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
   const handleLoadPresets = async () => {
     setIsLoadingPresets(true);
     try {
-      const batch = writeBatch(db);
+      for (const t of tables) {
+        if (t.id) await api.deleteSeatingTable(t.id);
+      }
 
-      // Clean old tables if any
-      tables.forEach((t) => {
-        if (t.id) {
-          batch.delete(doc(db, 'wedding_tables', t.id));
-        }
-      });
+      for (const preset of DEFAULT_TABLE_PRESETS) {
+        await api.createSeatingTable(preset);
+      }
 
-      // Insert 12 standard ballroom tables
-      DEFAULT_TABLE_PRESETS.forEach((preset) => {
-        const newDocRef = doc(collection(db, 'wedding_tables'));
-        batch.set(newDocRef, {
-          ...preset,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
-      });
-
-      await batch.commit();
+      await loadAllData();
       onNotify?.('12 Meja Ballroom Standar berhasil dimuat!', 'success');
       setIsPresetConfirmOpen(false);
     } catch {
@@ -517,9 +483,8 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
     ];
 
     try {
-      await updateDoc(doc(db, 'wedding_tables', targetTable.id), {
+      await api.updateSeatingTable(targetTable.id, {
         assignedGuests: updatedGuests,
-        updatedAt: serverTimestamp(),
       });
 
       // Also sync tableNumber to guests collection if guest exists there
@@ -527,11 +492,12 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
         (inv) => inv.name.toLowerCase() === guest.name.toLowerCase() || inv.id === guest.id
       );
       if (matchedInvite?.id) {
-        await updateDoc(doc(db, 'guests', matchedInvite.id), {
+        await api.updateGuest(matchedInvite.id, {
           tableNumber: targetTable.number,
         });
       }
 
+      await loadAllData();
       onNotify?.(`${guest.name} (${guest.pax} pax) dialokasikan ke ${targetTable.number}`, 'success');
     } catch {
       onNotify?.('Gagal mengalokasikan tamu ke meja', 'error');
@@ -545,9 +511,8 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
     const updated = existing.filter((g) => g.name.toLowerCase() !== guestName.toLowerCase());
 
     try {
-      await updateDoc(doc(db, 'wedding_tables', targetTable.id), {
+      await api.updateSeatingTable(targetTable.id, {
         assignedGuests: updated,
-        updatedAt: serverTimestamp(),
       });
 
       // Clear tableNumber on guests collection if exists
@@ -555,11 +520,12 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
         (inv) => inv.name.toLowerCase() === guestName.toLowerCase()
       );
       if (matchedInvite?.id) {
-        await updateDoc(doc(db, 'guests', matchedInvite.id), {
+        await api.updateGuest(matchedInvite.id, {
           tableNumber: '',
         });
       }
 
+      await loadAllData();
       onNotify?.(`Tamu ${guestName} dilepas dari ${targetTable.number}`, 'success');
     } catch {
       onNotify?.('Gagal melepas tamu dari meja', 'error');

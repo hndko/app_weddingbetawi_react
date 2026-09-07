@@ -48,14 +48,17 @@ Demi menjaga keanggunan tampilan undangan saat dibuka oleh tamu, **tombol akses 
 1. Buka peramban di ponsel atau komputer Anda.
 2. Ketik alamat website undangan Anda dengan menambahkan path `/login`:
    - Contoh di komputer lokal: `http://localhost:3000/login`
-   - Contoh di website publik: `https://undangan-saya.vercel.app/login`
-3. Layar login pengaman (*Passcode Gate*) akan muncul.
-4. Masukkan salah satu passcode bawaan:
-   - **`password`** (atau `admin`, `admin123`)
-5. Klik tombol **"Masuk"**. Sistem akan memverifikasi passcode, menyimpan sesi aktif di peramban (`sessionStorage`), dan otomatis mengalihkan URL Anda ke `/modules` (Dasbor Admin Panel).
-6. **Logout & Navigasi:**
-   - Untuk keluar dan mengakhiri sesi admin, klik tombol **"Logout"** di kanan atas header (sesi dibersihkan dan URL kembali ke `/login`).
-   - Untuk kembali melihat tampilan undangan utama tanpa logout, klik tombol silang (**✕**) di pojok kanan atas (kembali ke beranda `/`).
+   - Contoh di website publik: `https://undangan-saya.com/login`
+3. Layar login autentikasi (*Admin Login Gate*) akan muncul.
+4. Masukkan kredensial administrator bawaan:
+   - **Username**: `superadmin`
+   - **Password**: `password`
+   - *(Tersedia tombol pintas **"Quick Fill superadmin"** untuk mempermudah pengisian saat pengujian).*
+5. Klik tombol **"Masuk ke Admin Panel"**. Sistem akan memverifikasi kredensial ke database MySQL melalui REST API `/api/auth/login`, menyimpan sesi token aman di peramban (`localStorage`), dan otomatis mengalihkan URL Anda ke `/modules` (Dasbor Admin Panel).
+6. **Logout, Navigasi & Ganti Password:**
+   - **Ganti Password**: Klik tombol **"Ganti Password"** (`<KeyRound size={15}/>`) di header kanan atas untuk membuka modal ganti kata sandi. Masukkan password baru dan konfirmasi, sistem akan meng-hash password baru dengan `bcryptjs` dan menyimpannya ke database MySQL.
+   - **Logout**: Untuk keluar dan mengakhiri sesi admin, klik tombol **"Logout"** di kanan atas header (token dibersihkan dan URL kembali ke `/login`).
+   - **Lihat Undangan**: Untuk kembali melihat tampilan undangan utama tanpa logout, klik tombol **"Lihat Undangan"** atau tombol silang (**✕**) di pojok kanan atas (kembali ke beranda `/`).
 
 ---
 
@@ -339,7 +342,7 @@ Fitur ini dirancang khusus untuk memproyeksikan doa restu para tamu secara langs
 graph LR
     A["Tamu Duduk di Meja Ballroom"] --> B["Pindai QR Code di Layar Panggung"]
     B --> C["Kirim Ucapan Doa via HP"]
-    C --> D["Firestore Real-Time Listener"]
+    C --> D["Socket.io Real-Time Broadcast"]
     D --> E["Spotlight Pop-Up + Lonceng Harmonis di Layar Panggung!"]
     E --> F["Ucapan Mengalir Masuk ke Feed Carousel"]
 ```
@@ -347,7 +350,7 @@ graph LR
 ### A. Cara Membuka Layar Proyektor Panggung:
 1. Hubungkan laptop operator panggung / MC ke videotron LED atau proyektor panggung via HDMI.
 2. Buka peramban (Google Chrome / Edge) dan akses salah satu alamat berikut:
-   - Akses langsung mandiri: `https://undangan-anda.vercel.app/live` atau `/projector` (bebas tanpa perlu login passcode).
+   - Akses langsung mandiri: `https://undangan-anda.com/live` atau `http://localhost:3000/live` (bebas tanpa perlu login).
    - Melalui Admin Panel: Buka menu **Moderasi Ucapan** atau **Overview**, lalu klik tombol emas **"Buka Layar Proyektor Panggung"**.
 3. Tekan tombol **F11** atau klik ikon layar penuh (**Fullscreen**) pada bilah kontrol di bawah untuk pengalaman tampilan sinematik 16:9 tanpa gangguan antarmuka browser.
 
@@ -503,11 +506,11 @@ graph LR
 ### T: Apakah musik otomatis berputar saat tamu pertama kali membuka website?
 **J:** Kebijakan peramban modern (Chrome, Safari, iOS) melarang suara berputar otomatis (*autoplay*) sebelum ada interaksi fisik dari pengguna. Oleh sebab itu, aplikasi menyediakan gerbang **Opening Cover** dengan tombol *"Buka Undangan"*. Saat tamu mengetuk tombol tersebut, musik akan langsung berputar secara mulus.
 
-### T: Apakah foto yang saya upload akan menghabiskan kuota bayar Google Firebase?
-**J:** Tidak. Aplikasi ini dirancang dengan teknologi kompresi kanvas di peramban, di mana foto dikompresi menjadi teks Base64 yang sangat efisien dan disimpan langsung ke Firestore. Anda tidak memerlukan penyimpanan *Firebase Storage* berbayar.
+### T: Apakah foto yang saya upload menghabiskan biaya penyimpanan cloud?
+**J:** Tidak. Aplikasi ini menggunakan backend Node.js Express mandiri (*self-hosted*). Foto yang diunggah disimpan di folder `server/uploads/` dengan sistem pembersihan disk otomatis (*garbage collection / auto-unlink*). Setiap kali foto profil mempelai, banner, atau QRIS diganti/dihapus, file lama di server otomatis terhapus dari disk sehingga kapasitas penyimpanan server tetap hemat.
 
-### T: Bagaimana jika saya lupa passcode untuk masuk ke Admin Panel?
-**J:** Passcode default adalah `password`. Jika Anda ingin mengubah passcode ini, Anda dapat memintanya kepada developer untuk memperbarui variabel pada berkas `AdminPanel.tsx`.
+### T: Bagaimana jika saya lupa password untuk masuk ke Admin Panel?
+**J:** Akun default adalah username `superadmin` dan password `password`. Jika Anda telah mengganti password lalu lupa, Anda dapat meresetnya langsung di database MySQL (tabel `users`), atau menjalankan perintah seeder `npm run db:seed` di terminal proyek.
 
 ### T: Apakah nama tamu dengan karakter khusus (seperti gelar, tanda koma, atau "&") akan terbaca normal?
 **J:** Ya. Generator link WhatsApp pada Tab 1 sudah dilengkapi fitur *URL Encoding* otomatis, sehingga karakter khusus seperti `&`, spasi, titik, dan koma akan tetap tampil sempurna di layar tamu.

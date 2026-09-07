@@ -116,6 +116,13 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   const [newGuestPhone, setNewGuestPhone] = useState('');
   const [isSubmittingGuest, setIsSubmittingGuest] = useState(false);
 
+  // Change password modal state
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [oldPasswordInput, setOldPasswordInput] = useState('');
+  const [newPasswordInput, setNewPasswordInput] = useState('');
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
+  const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
+
   // Import modal state
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importActiveTab, setImportActiveTab] = useState<'file' | 'text'>('file');
@@ -253,7 +260,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
 
   // Body scroll lock on modal open
   useEffect(() => {
-    if (deleteModal || isMobileSidebarOpen || isImportModalOpen || isAddGuestModalOpen) {
+    if (deleteModal || isMobileSidebarOpen || isImportModalOpen || isAddGuestModalOpen || isPasswordModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -261,11 +268,12 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     return () => {
       document.body.style.overflow = '';
     };
-  }, [deleteModal, isMobileSidebarOpen, isImportModalOpen, isAddGuestModalOpen]);
+  }, [deleteModal, isMobileSidebarOpen, isImportModalOpen, isAddGuestModalOpen, isPasswordModalOpen]);
 
   const handleLogout = () => {
     try {
       sessionStorage.removeItem('admin_authenticated');
+      sessionStorage.removeItem('admin_user');
     } catch {
       // Safe fallback
     }
@@ -274,6 +282,51 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
       onNavigate('/login');
     } else {
       window.history.pushState(null, '', '/login');
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!oldPasswordInput || !newPasswordInput) {
+      showToast('error', 'Password lama dan password baru wajib diisi!');
+      return;
+    }
+    if (newPasswordInput.length < 6) {
+      showToast('error', 'Password baru minimal 6 karakter!');
+      return;
+    }
+    if (newPasswordInput !== confirmPasswordInput) {
+      showToast('error', 'Konfirmasi password baru tidak cocok!');
+      return;
+    }
+
+    setIsSubmittingPassword(true);
+    try {
+      let username = 'superadmin';
+      try {
+        const stored = sessionStorage.getItem('admin_user');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.username) username = parsed.username;
+        }
+      } catch {}
+
+      const res = await api.changePassword({
+        username,
+        oldPassword: oldPasswordInput,
+        newPassword: newPasswordInput,
+      });
+
+      showToast('success', res.message || 'Password admin berhasil diperbarui di database!');
+      setIsPasswordModalOpen(false);
+      setOldPasswordInput('');
+      setNewPasswordInput('');
+      setConfirmPasswordInput('');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal memperbarui password';
+      showToast('error', msg);
+    } finally {
+      setIsSubmittingPassword(false);
     }
   };
 
@@ -1014,6 +1067,17 @@ Wassalamu'alaikum Wr. Wb.`;
           >
             <ExternalLink size={14} className="text-sage-dark" />
             <span className="hidden sm:inline">Lihat Web</span>
+          </button>
+
+          {/* Change Password Button */}
+          <button
+            type="button"
+            onClick={() => setIsPasswordModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200/90 rounded-xl transition-all shadow-2xs cursor-pointer active:scale-98"
+            title="Ubah Password Akun Admin"
+          >
+            <KeyRound size={14} className="text-amber-600" />
+            <span className="hidden sm:inline">Ganti Password</span>
           </button>
 
           {/* Logout Button */}
@@ -3762,6 +3826,131 @@ Wassalamu'alaikum Wr. Wb.`;
                     <>
                       <Save size={14} />
                       <span>Simpan Tamu</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Full-Screen Viewport Backdrop Modal: Ubah Password Akun Admin */}
+      {isPasswordModalOpen && (
+        <div 
+          className="fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-200"
+          onClick={() => {
+            if (!isSubmittingPassword) setIsPasswordModalOpen(false);
+          }}
+        >
+          <div 
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-gray-100 flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-200"
+          >
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 flex items-center justify-center">
+                  <KeyRound size={20} />
+                </div>
+                <div>
+                  <h3 className="font-heading text-sm font-bold text-gray-900">
+                    Ubah Password Admin
+                  </h3>
+                  <p className="text-[11px] text-gray-500">Tersimpan aman di database MySQL</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPasswordModalOpen(false)}
+                disabled={isSubmittingPassword}
+                className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                title="Tutup Modal"
+                aria-label="Tutup Modal"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <form onSubmit={handleChangePassword} className="flex flex-col gap-3.5 text-xs">
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">
+                  Password Lama <span className="text-red-500">*</span>
+                </label>
+                <div className="relative flex items-center">
+                  <KeyRound className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                  <input
+                    type="password"
+                    required
+                    value={oldPasswordInput}
+                    onChange={(e) => setOldPasswordInput(e.target.value)}
+                    placeholder="Masukkan password saat ini (default: password)"
+                    className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 text-xs focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 placeholder:text-gray-400"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">
+                  Password Baru <span className="text-red-500">*</span>
+                </label>
+                <div className="relative flex items-center">
+                  <KeyRound className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={newPasswordInput}
+                    onChange={(e) => setNewPasswordInput(e.target.value)}
+                    placeholder="Minimal 6 karakter"
+                    className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 text-xs focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 placeholder:text-gray-400"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">
+                  Ulangi Password Baru <span className="text-red-500">*</span>
+                </label>
+                <div className="relative flex items-center">
+                  <KeyRound className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={confirmPasswordInput}
+                    onChange={(e) => setConfirmPasswordInput(e.target.value)}
+                    placeholder="Ketik ulang password baru Anda"
+                    className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 text-xs focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 placeholder:text-gray-400"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 mt-2 pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setIsPasswordModalOpen(false)}
+                  disabled={isSubmittingPassword}
+                  className="px-4 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-xs font-semibold text-gray-600 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <X size={15} />
+                  <span>Batal</span>
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingPassword || !oldPasswordInput || !newPasswordInput || !confirmPasswordInput}
+                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:bg-gray-300 text-white text-xs font-semibold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                >
+                  {isSubmittingPassword ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Menyimpan...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save size={15} />
+                      <span>Simpan Password</span>
                     </>
                   )}
                 </button>

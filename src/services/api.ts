@@ -5,7 +5,8 @@ import {
   GuestInvitation, 
   WeddingExpense, 
   WeddingTable, 
-  TriviaQuestion 
+  TriviaQuestion,
+  CheckInRecord 
 } from '../types';
 
 const BASE_URL = '/api';
@@ -130,6 +131,25 @@ export const api = {
     return response.json();
   },
 
+  deleteUploadedFile: (url: string): Promise<{ success: boolean; message: string }> =>
+    request('/upload', {
+      method: 'DELETE',
+      body: JSON.stringify({ url }),
+    }),
+
+  // Auth
+  login: (credentials: { username: string; password: string }): Promise<{ success: boolean; user: { id: string; username: string; role: string } }> =>
+    request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    }),
+
+  changePassword: (data: { username: string; oldPassword: string; newPassword: string }): Promise<{ success: boolean; message: string }> =>
+    request('/auth/password', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
   // Budget
   getBudget: (): Promise<WeddingExpense[]> => request<WeddingExpense[]>('/budget'),
   createBudgetItem: (item: Partial<WeddingExpense>): Promise<{ success: boolean; data: WeddingExpense }> =>
@@ -178,6 +198,18 @@ export const api = {
     }),
   deleteTrivia: (id: string): Promise<{ success: boolean }> =>
     request(`/trivia/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    }),
+
+  // Checkins
+  getCheckins: (): Promise<CheckInRecord[]> => request<CheckInRecord[]>('/checkins'),
+  createCheckin: (record: Partial<CheckInRecord>): Promise<{ success: boolean; data: CheckInRecord }> =>
+    request('/checkins', {
+      method: 'POST',
+      body: JSON.stringify(record),
+    }),
+  deleteCheckin: (id: string): Promise<{ success: boolean }> =>
+    request(`/checkins/${encodeURIComponent(id)}`, {
       method: 'DELETE',
     }),
 };

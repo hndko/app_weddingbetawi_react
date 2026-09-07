@@ -37,46 +37,57 @@ graph TD
 
 ```text
 app_weddingbetawi_react/
-├── docs/                       # Dokumentasi resmi proyek & blueprint skema Firestore
+├── docs/                       # Dokumentasi resmi proyek
 ├── public/                     # Aset publik statis (favicon, robots.txt, sitemap.xml, webmanifest)
 │   └── assets/themes/{theme_id}/ # Paket aset luring mandiri (thumbnail.svg, pattern.svg, favicon.svg)
+├── server/                     # Backend Node.js Express + MySQL + Socket.io
+│   ├── src/
+│   │   ├── db/
+│   │   │   ├── index.ts        # Koneksi pool MySQL (mysql2/promise)
+│   │   │   ├── migrate.ts      # Skrip DDL migrasi tabel otomatis
+│   │   │   └── seed.ts         # Skrip seeder data awal (superadmin & default config)
+│   │   ├── routes/             # Rute REST API Express
+│   │   │   ├── auth.ts         # Login & Ubah Password (bcryptjs)
+│   │   │   ├── config.ts       # Wedding Config & Auto-Unlink Disk Cleanup
+│   │   │   ├── wishes.ts       # Ucapan & Doa (+ Realtime Socket.io Broadcast)
+│   │   │   ├── rsvps.ts        # Konfirmasi Kehadiran Tamu
+│   │   │   ├── guests.ts       # Manajemen Tamu Undangan
+│   │   │   ├── budget.ts       # Pos Anggaran & Vendor Tracker
+│   │   │   ├── seating.ts      # Denah Meja & Alokasi Kursi
+│   │   │   ├── trivia.ts       # Kuis Interaktif Trivia Tamu
+│   │   │   ├── checkins.ts     # Check-in Resepsi Hari-H & Souvenir
+│   │   │   └── upload.ts       # Upload Berkas Multer & Auto-Unlink
+│   │   └── index.ts            # Entrypoint server Express & Socket.io (Port 5000)
+│   └── uploads/                # Direktori penyimpanan berkas (.gitkeep)
 ├── src/
 │   ├── modules/                # Arsitektur Modular Berbasis Domain (Lowercase Standard)
 │   │   ├── auth/
-│   │   │   └── Login.tsx       # Halaman autentikasi panel admin
+│   │   │   └── Login.tsx       # Halaman autentikasi panel admin (Username & Password)
 │   │   ├── backend/
-│   │   │   ├── components/     # Komponen sub-modul admin (ThemeSelector, DragDropUpload, dsb.)
-│   │   │   └── Panel.tsx       # Dasbor pengelolaan lengkap (Overview, Tamu WA, Konten, RSVP, Doa)
+│   │   │   ├── components/     # Komponen sub-modul admin (Budget, Seating, Checkin, Trivia, dll.)
+│   │   │   └── Panel.tsx       # Dasbor pengelolaan lengkap & Modal Ganti Password
 │   │   └── frontend/
 │   │       ├── shared/         # Komponen & Seksi domain bersama lintas tema (100% netral budaya)
 │   │       │   ├── components/ # BottomNavigation, MusicPlayer, SEO
 │   │       │   └── sections/   # Seksi netral (RSVP, Wishes, Countdown, Event, Gallery, dsb.)
-│   │       └── themes/         # Multi-Theme Architecture Engine (34 Tema: 20 Ready & 14 Coming Soon)
+│   │       └── themes/         # Multi-Theme Architecture Engine (35 Tema)
 │   │           ├── betawi/     # Adapter tema Betawi Heritage
 │   │           ├── jawa/       # Adapter tema Javanese Royal Kraton
 │   │           ├── sunda/      # Adapter tema Sundanese Parahyangan
-│   │           ├── minimalist/ # Adapter tema Modern Botanical Minimalist
-│   │           ├── islamic/    # Adapter tema Islamic Arabian Garden
-│   │           ├── minang/     # Adapter tema Minangkabau Royal Songket
-│   │           ├── bali/       # Adapter tema Balinese Royal Temple
-│   │           ├── batak/      # Adapter tema Batak Toba Royal Gorga
-│   │           ├── bugis/      # Adapter tema Bugis-Makassar Royal Baju Bodo
-│   │           ├── palembang/  # Adapter tema Palembang Sriwijaya Songket
-│   │           ├── toraja/     # Adapter tema Toraja Tongkonan Heritage
-│   │           ├── dayak/      # Adapter tema Dayak Kenyah Borneo
-│   │           ├── ...         # Adapter tema modern (spotify, netflix, apple, arcade, cyberpunk, dll.)
-│   │           ├── catalog.ts  # Katalog meta 34 tema (metadata, warna, fitur, status)
+│   │           ├── sunda_maroon/ # Adapter tema Sunda Priangan Maroon & Gold
+│   │           ├── ...         # Adapter tema modern (instagram, spotify, netflix, arcade, cyberpunk, dll.)
+│   │           ├── catalog.ts  # Katalog meta 35 tema (metadata, warna, fitur, status)
 │   │           ├── index.ts    # Centralized Registry (THEMES, resolveTheme, THEME_CATALOG)
 │   │           └── types.ts    # ThemeMeta & ThemeDefinition interface contracts
 │   ├── context/
-│   │   └── WeddingContext.tsx  # Context provider global untuk sinkronisasi data Firestore
+│   │   └── WeddingContext.tsx  # Context provider global untuk sinkronisasi state via REST API
 │   ├── data/
-│   │   └── config.ts           # Nilai default fallback ketika Firestore belum terinisialisasi
+│   │   └── config.ts           # Nilai default fallback ketika backend belum terhubung
 │   ├── hooks/
 │   │   ├── useGuestName.ts     # Hook ekstraksi & dekode parameter ?to= dari URL
 │   │   └── useScrollSpy.ts     # Hook pelacak ID seksi aktif saat pengguna melakukan scrolling
-│   ├── lib/
-│   │   └── firebase.ts         # Inisialisasi Firebase Client App & Firestore instance
+│   ├── services/
+│   │   └── api.ts              # Client SDK REST API terpusat untuk komunikasi backend
 │   ├── utils/
 │   │   ├── cn.ts               # Utility fungsi penggabung clsx dan twMerge
 │   │   └── digitalPassGenerator.ts # Generator tiket PNG HD & PDF via jsPDF (v1.37.0)
@@ -84,10 +95,9 @@ app_weddingbetawi_react/
 │   ├── index.css               # Styling tema Tailwind CSS v4 (@theme tokens)
 │   ├── main.tsx                # Titik masuk aplikasi (DOM root mount)
 │   ├── types.ts                # Deklarasi tipe data TypeScript (strict typing)
-│   ├── version.ts              # Single source of truth versi aplikasi (v1.39.0)
+│   ├── version.ts              # Single source of truth versi aplikasi (v1.42.0)
 │   └── vite-env.d.ts           # Deklarasi tipe variabel lingkungan Vite (ImportMetaEnv)
 ├── .env.example                # Template variabel lingkungan
-├── firestore.rules             # Berkas aturan keamanan database Firestore
 ├── package.json                # Metadata proyek, scripts, dan dependensi
 ├── tsconfig.json               # Konfigurasi compiler TypeScript
 └── vite.config.ts              # Konfigurasi bundler Vite & Tailwind v4 plugin
@@ -95,54 +105,29 @@ app_weddingbetawi_react/
 
 ---
 
-## 🗄️ 3. Skema Data & Model Firestore
+## 🗄️ 3. Skema Basis Data Relasional MySQL & REST API
 
-Sistem menggunakan model NoSQL berbasis dokumen tunggal dan koleksi transaksi terpisah.
+Sistem menggunakan basis data relasional **MySQL** (kompatibel dengan Laragon / MariaDB) yang dikelola melalui REST API Express dan skrip migrasi otomatis [`server/src/db/migrate.ts`](../server/src/db/migrate.ts).
 
-> [!TIP]
-> **Blueprint Skema Mesin (JSON Schema):**
-> Kamus skema data deklaratif dalam format JSON tersedia pada berkas [**`docs/firebase-blueprint.json`**](firebase-blueprint.json) untuk referensi pemetaan koleksi dan dokumen Firestore.
+### A. Tabel Basis Data:
 
-### 1. Dokumen Konfigurasi: `wedding_config/main`
-Tipe data didefinisikan secara ketat pada [`src/types.ts`](../src/types.ts):
+| Nama Tabel | Kolom Utama | Deskripsi |
+| :--- | :--- | :--- |
+| **`users`** | `id`, `username`, `password`, `role`, `created_at`, `updated_at` | Kredensial login admin dengan kata sandi ter-hash `bcryptjs`. |
+| **`wedding_config`** | `id`, `config_data` (LONGTEXT JSON), `updated_at` | Seluruh pengaturan mempelai, tanggal, rekening, galeri, musik, dan SEO. |
+| **`wishes`** | `id`, `name`, `text`, `created_at` | Ucapan doa tamu, dibroadcast real-time via Socket.io. |
+| **`rsvps`** | `id`, `name`, `attendance`, `guest_count`, `notes`, `created_at` | Konfirmasi kehadiran tamu undangan. |
+| **`guests`** | `id`, `name`, `phone`, `pax`, `status`, `assigned_table`, `qr_code`, `created_at`, `updated_at` | Buku tamu undangan & generator WhatsApp. |
+| **`budget_items`** | `id`, `category`, `name`, `vendor`, `phone`, `estimated_cost`, `actual_cost`, `paid_amount`, `status`, `is_ready`, `created_at`, `updated_at` | Pelacak pos anggaran pernikahan dan kesiapan vendor. |
+| **`seating_tables`** | `id`, `table_number`, `table_name`, `zone`, `capacity`, `shape`, `assigned_guests` (JSON), `notes`, `created_at`, `updated_at` | Denah meja & alokasi kursi resepsi. |
+| **`trivia_questions`** | `id`, `question`, `options` (JSON), `correct_answer_index`, `explanation`, `created_at`, `updated_at` | Kuis interaktif seputar kedua mempelai. |
+| **`checkins`** | `id`, `guest_id`, `guest_name`, `pax`, `souvenir_taken`, `checked_in_at` | Pencatatan kehadiran meja resepsi & pembagian suvenir hari-H. |
 
-```typescript
-export interface WeddingConfig {
-  groom: PersonInfo;
-  bride: PersonInfo;
-  dateStr: string;
-  dateISO: string;
-  events: EventsConfig;
-  gallery: string[];
-  banks?: BankInfo[];
-  loveStory: LoveStoryItem[];
-  music?: MusicSettings;
-  seo?: SEOSettings;
-}
-```
-
-### 2. Koleksi Konfirmasi Kehadiran: `rsvps`
-```typescript
-export interface RSVPResponse {
-  id?: string;
-  name: string;
-  attendance: 'hadir' | 'tidak_hadir';
-  guestCount: number;
-  notes: string;
-  createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
-}
-```
-
-### 3. Koleksi Doa & Ucapan: `wishes`
-```typescript
-export interface Wish {
-  id?: string;
-  name: string;
-  text: string;
-  time?: string;
-  createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
-}
-```
+### B. Mekanisme Pembersihan Disk Otomatis (*Garbage Collection / Auto-Unlink*):
+Untuk menjaga efisiensi penyimpanan server, backend mengimplementasikan fungsi `cleanupUnusedUploads` pada [`server/src/routes/config.ts`](../server/src/routes/config.ts) dan [`server/src/routes/upload.ts`](../server/src/routes/upload.ts):
+- Setiap kali foto baru diunggah (misal mengganti foto profil mempelai atau kode QRIS), path file lama diperiksa.
+- Jika file lama berada di folder `uploads/` lokal, backend secara otomatis memanggil `fs.promises.unlink()` untuk menghapus berkas fisik lama dari disk server.
+- Folder `server/uploads/` dilindungi oleh `.gitignore` sehingga berkas unggahan pengguna tidak akan terdorong ke repositori Git publik, sementara struktur folder dijaga melalui berkas `server/uploads/.gitkeep`.
 
 ---
 
@@ -186,16 +171,17 @@ Proyek mematuhi prinsip keamanan web modern:
    - Berkas [`public/robots.txt`](../public/robots.txt) memuat aturan `Disallow: /login`, `Disallow: /modules`, dan `Disallow: /admin`.
    - Komponen [`SEO.tsx`](../src/modules/frontend/shared/components/SEO.tsx) menyematkan tag `<meta name="robots" content="noindex, nofollow" />` pada rute `/login` dan `/modules`.
 3. **Penyembunyian & Proteksi Rute Admin**:
-   - Rute admin tidak diekspos melalui tautan publik.
-   - Pintu masuk dilindungi gerbang verifikasi passcode (`/login`) dan validasi sesi di peramban (`sessionStorage`) sebelum menampilkan dasbor `/modules`.
-4. **Sanitasi Input Firestore**:
-   - Fungsi pengiriman data melakukan `.trim()` pada string nama, doa, dan catatan sebelum dikirimkan ke koleksi `rsvps` maupun `wishes`.
+   - Rute admin dilindungi autentikasi pengguna (`superadmin`) dengan hashing `bcryptjs` berbasis basis data MySQL (`users`).
+   - Sesi login diverifikasi melalui token dan disimpan di peramban (`localStorage`), dengan proteksi akses rute `/modules`.
+4. **Sanitasi Input & Prepared Statements MySQL**:
+   - Seluruh kueri basis data pada REST API Node.js Express menggunakan *parameterized queries* / *prepared statements* (`mysql2/promise`) untuk mencegah SQL Injection (SQLi).
+   - Seluruh input teks tamu di-`.trim()` dan divalidasi sebelum disimpan ke basis data.
 
 ---
 
 ## 🎭 6. Arsitektur Multi-Tema & Protokol Aset Luring (AGENTS.md Pilar 2)
 
-Proyek mengadopsi arsitektur multi-tema modular terstandarisasi dengan **34 tema** (20 siap pakai dan 14 segera hadir):
+Proyek mengadopsi arsitektur multi-tema modular terstandarisasi dengan **35 tema** (21 siap pakai dan 14 segera hadir):
 
 ### A. Kontrak Interface Tema (`src/modules/frontend/themes/types.ts`)
 ```typescript
@@ -249,7 +235,7 @@ sequenceDiagram
     autonumber
     actor Dev as Developer
     participant Type as types.ts
-    participant DB as Firestore Schema
+    participant DB as MySQL DB & API
     participant Ctx as WeddingContext.tsx
     participant UI as NewSection.tsx
     participant Admin as Panel.tsx
@@ -257,7 +243,7 @@ sequenceDiagram
     participant Test as TypeCheck & Build
 
     Dev->>Type: 1. Definisikan tipe antarmuka fitur baru
-    Dev->>DB: 2. Tambahkan properti pada dokumen konfigurasi
+    Dev->>DB: 2. Tambahkan kolom tabel / field konfigurasi
     Dev->>Ctx: 3. Sinkronkan default fallback state
     Dev->>UI: 4. Buat komponen seksi presentasi visual
     Dev->>Admin: 5. Tambahkan form input di Panel.tsx

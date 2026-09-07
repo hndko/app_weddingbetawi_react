@@ -12,7 +12,7 @@ Dokumen ini memuat referensi perintah baris perintah (*Command Line Interface*) 
 | **Development Server** | Vite 6.2 | Mendukung Fast Refresh (HMR). |
 | **Port Default** | `3000` | Dikonfigurasi dengan binding `--host=0.0.0.0` agar dapat diakses dari smartphone pada jaringan Wi-Fi lokal yang sama. |
 | **Target Build Output** | `./dist` | Berisi berkas statis `index.html`, berkas `.js`, dan `.css` hasil minifikasi. |
-| **Database Engine** | Google Cloud Firestore (NoSQL) | Terhubung via Firebase Client SDK v12. |
+| **Database Engine** | MySQL 8.x / MariaDB (Laragon / Self-Hosted) | Terhubung via Node.js Express REST API & connection pool mysql2. |
 
 ---
 
@@ -108,19 +108,22 @@ npm install
 
 ---
 
-## 🔥 7. Manajemen Firebase & Security Rules
+## 🗄️ 7. Manajemen Database MySQL (Migrate, Seed & Backup)
 
-Jika Anda memiliki Firebase CLI (`firebase-tools`) terpasang secara global:
+Pengelolaan skema dan data database MySQL (Laragon / Self-Hosted Server):
 
 ```bash
-# Login ke akun Google Firebase Anda
-firebase login
+# Menjalankan migrasi skema tabel database MySQL (users, config, wishes, rsvps, guests, dll)
+npm run db:migrate
 
-# Memeriksa daftar proyek Firebase aktif
-firebase projects:list
+# Mengimpor data awal bawaan ke database MySQL (termasuk user superadmin default)
+npm run db:seed
 
-# Deploy aturan keamanan Firestore (firestore.rules) ke cloud
-firebase deploy --only firestore:rules
+# Melakukan backup basis data MySQL via mysqldump di Laragon / Terminal:
+mysqldump -u root -p db_weddingbetawi > backup_wedding_$(date +%Y%m%d).sql
+
+# Me-restore basis data MySQL dari berkas cadangan .sql:
+mysql -u root -p db_weddingbetawi < backup_wedding.sql
 ```
 
 ---
@@ -133,7 +136,7 @@ Proyek ini menerapkan standar pesan commit *Conventional Commits* untuk mempermu
 | :--- | :--- | :--- |
 | `feat:` | `git commit -m "feat: tambah integrasi countdown live"` | Penambahan fitur atau fungsi baru pada sistem. |
 | `fix:` | `git commit -m "fix: atasi layout shift pada sampul mobile"` | Perbaikan bug atau kesalahan logic/UI. |
-| `docs:` | `git commit -m "docs: perbarui panduan konfigurasi firebase"` | Penambahan atau pembaruan dokumentasi Markdown. |
+| `docs:` | `git commit -m "docs: perbarui panduan konfigurasi self-hosted"` | Penambahan atau pembaruan dokumentasi Markdown. |
 | `refactor:` | `git commit -m "refactor: eliminasi native alert menjadi modal"` | Restrukturisasi kode tanpa mengubah fungsionalitas luar. |
 | `style:` | `git commit -m "style: rapikan margin ornamen ondel-ondel"` | Penyesuaian formatting CSS, spasi, atau warna. |
 | `chore:` | `git commit -m "chore: perbarui dependensi package-lock.json"` | Pembaruan build tooling, library, atau maintenance berkala. |
@@ -142,11 +145,11 @@ Proyek ini menerapkan standar pesan commit *Conventional Commits* untuk mempermu
 
 ## 🛠️ 9. Troubleshooting & Diagnostik Masalah Umum
 
-### 1. Port 3000 Sedang Digunakan (Port Already in Use)
-Jika terminal menampilkan error `Port 3000 is in use, trying another one...`:
+### 1. Port 3000 atau 5000 Sedang Digunakan (Port Already in Use)
+Jika terminal menampilkan error `Port 3000 is in use` atau `Port 5000 is in use`:
 ```powershell
-# Cari proses yang memakai port 3000 di Windows
-Get-Process -Id (Get-NetTCPConnection -LocalPort 3000).OwningProcess
+# Cari proses yang memakai port di Windows (contoh: port 5000)
+Get-Process -Id (Get-NetTCPConnection -LocalPort 5000).OwningProcess
 
 # Matikan proses tersebut secara paksa (Ganti <PID> dengan Process ID yang ditemukan)
 Stop-Process -Id <PID> -Force
@@ -158,21 +161,20 @@ Jika saat build muncul error `Cannot find module @rollup/rollup-win32-x64-msvc`:
 npm install -D @rollup/rollup-win32-x64-msvc
 ```
 
-### 3. Masalah Koneksi Database Firestore
-- **Gejala**: Form RSVP atau ucapan gagal dikirim, atau data tidak muncul di layar.
+### 3. Masalah Koneksi Database MySQL Laragon
+- **Gejala**: Pesan error `ECONNREFUSED 127.0.0.1:3306` atau form RSVP/ucapan gagal disimpan ke database.
 - **Pemeriksaan Solusi**:
-  1. Pastikan berkas `.env` ada di root proyek dan memuat kredensial `VITE_FIREBASE_API_KEY` dan `VITE_FIREBASE_PROJECT_ID` yang benar.
-  2. Buka **Firebase Console > Firestore Database > Rules** dan pastikan rules mengizinkan operasi read/write:
-     ```javascript
-     rules_version = '2';
-     service cloud.firestore {
-       match /databases/{database}/documents {
-         match /{document=**} {
-           allow read, write: if true;
-         }
-       }
-     }
+  1. Pastikan servis **MySQL pada Laragon** telah berstatus **Start All** (indikator hijau, port 3306 aktif).
+  2. Periksa berkas `.env` di root direktori proyek, pastikan parameter konfigurasi basis data telah sesuai:
+     ```env
+     DB_HOST="127.0.0.1"
+     DB_PORT="3306"
+     DB_USER="root"
+     DB_PASSWORD=""
+     DB_NAME="db_weddingbetawi"
+     SERVER_PORT="5000"
      ```
+  3. Pastikan backend server Express telah berjalan pada terminal lain (`npm run server`).
 
 ---
 
@@ -180,9 +182,11 @@ npm install -D @rollup/rollup-win32-x64-msvc
 
 | Kebutuhan Operasional | Perintah Cepat CLI |
 | :--- | :--- |
-| Memulai pekerjaan harian (Dev server) | `npm run dev` |
+| Memulai backend server (Express + Socket.io) | `npm run server` |
+| Memulai frontend dev server (Vite) | `npm run dev` |
+| Menjalankan migrasi database MySQL | `npm run db:migrate` |
+| Mengisi data awal database (Seeding) | `npm run db:seed` |
 | Verifikasi tipe sebelum commit | `npm run lint` |
-| Menguji hasil kompilasi web | `npm run build && npm run preview` |
-| Menambahkan pustaka ikon baru | `npm install <nama-library>` |
+| Menguji hasil kompilasi web statis | `npm run build && npm run preview` |
+| Menambahkan pustaka dependensi baru | `npm install <nama-library>` |
 | Mengirim perubahan ke repositori | `git add . && git commit -m "feat: ..." && git push origin main` |
-| Deploy instan ke Vercel | `git push origin main` *(otomatis via Webhook Vercel)* |

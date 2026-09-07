@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import cors from 'cors';
+import compression from 'compression';
 import path from 'path';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -47,15 +48,22 @@ app.use(cors({
   origin: corsOriginConfig,
   credentials: true,
 }));
+app.use(compression());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Static uploads directory
+// Static uploads directory dengan Cache-Control 30 hari (optimasi loading gambar)
 const uploadsPath = path.resolve(process.cwd(), 'server', 'uploads');
 if (!fs.existsSync(uploadsPath)) {
   fs.mkdirSync(uploadsPath, { recursive: true });
 }
-app.use('/uploads', express.static(uploadsPath));
+app.use('/uploads', express.static(uploadsPath, {
+  maxAge: '30d',
+  etag: true,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'public, max-age=2592000, stale-while-revalidate=86400');
+  },
+}));
 
 // Health check endpoint
 app.get('/api/health', (_req, res) => {
@@ -82,7 +90,15 @@ app.use('/api/checkins', createCheckinsRouter(io));
 // Serve frontend static build if dist directory exists (Production SPA support)
 const distPath = path.resolve(process.cwd(), 'dist');
 if (fs.existsSync(distPath)) {
-  app.use(express.static(distPath));
+  app.use(express.static(distPath, {
+    maxAge: '1y',
+    immutable: true,
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.html') || filePath.endsWith('index.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      }
+    },
+  }));
   app.use((req, res, next) => {
     if (
       req.method === 'GET' &&

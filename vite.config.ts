@@ -41,6 +41,12 @@ export default defineConfig(() => {
               if (normalized.includes('/node_modules/xlsx/')) {
                 return 'vendor-xlsx';
               }
+              if (normalized.includes('/node_modules/socket.io-client/')) {
+                return 'vendor-socket';
+              }
+              if (normalized.includes('/node_modules/jspdf/')) {
+                return 'vendor-pdf';
+              }
             }
           },
         },

@@ -25,6 +25,7 @@ import { TriviaQuizManager } from './components/TriviaQuizManager';
 import { WhatsAppBroadcastModal } from './components/WhatsAppBroadcastModal';
 import { renderGuestPassCanvas, downloadPassImage, downloadPassPDF } from '../../utils/digitalPassGenerator';
 import { APP_VERSION } from '../../version';
+import { compressImageToFile, compressImageToDataUrl } from '../../utils/imageCompressor';
 
 export interface PanelProps {
   currentRoute?: 'login' | 'modules';
@@ -34,43 +35,7 @@ export interface PanelProps {
 
 export type AdminPanelProps = PanelProps;
 
-const compressImageFile = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error('Gagal membaca berkas foto'));
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onerror = () => reject(new Error('Gagal memproses gambar'));
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 1000;
-        const MAX_HEIGHT = 1000;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.65);
-        resolve(dataUrl);
-      };
-      img.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  });
-};
+const compressImageFile = (file: File): Promise<string> => compressImageToDataUrl(file);
 
 export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelProps) {
   const { weddingConfig, updateWeddingConfig } = useWeddingConfig();
@@ -419,17 +384,18 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     }
   };
 
-  // Upload handlers
+  // Upload handlers dengan kompresi otomatis client-side (WebP/JPEG ~150-250KB)
   const handleUploadGroom = async (files: File[]) => {
     if (!files[0]) return;
     setUploadingAvatar('groom');
     try {
-      const res = await api.uploadFile(files[0]);
+      const compressed = await compressImageToFile(files[0], { maxWidth: 1200, maxHeight: 1200, quality: 0.82 });
+      const res = await api.uploadFile(compressed);
       setFormData(prev => ({ ...prev, groom: { ...prev.groom, image: res.url } }));
-      showToast('success', 'Foto mempelai pria berhasil diunggah ke server!');
+      showToast('success', 'Foto mempelai pria berhasil diunggah (teroptimasi WebP)!');
     } catch {
       try {
-        const dataUrl = await compressImageFile(files[0]);
+        const dataUrl = await compressImageToDataUrl(files[0], { maxWidth: 1000, maxHeight: 1000, quality: 0.75 });
         setFormData(prev => ({ ...prev, groom: { ...prev.groom, image: dataUrl } }));
         showToast('success', 'Foto mempelai pria berhasil disimpan!');
       } catch {
@@ -444,12 +410,13 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     if (!files[0]) return;
     setUploadingAvatar('bride');
     try {
-      const res = await api.uploadFile(files[0]);
+      const compressed = await compressImageToFile(files[0], { maxWidth: 1200, maxHeight: 1200, quality: 0.82 });
+      const res = await api.uploadFile(compressed);
       setFormData(prev => ({ ...prev, bride: { ...prev.bride, image: res.url } }));
-      showToast('success', 'Foto mempelai wanita berhasil diunggah ke server!');
+      showToast('success', 'Foto mempelai wanita berhasil diunggah (teroptimasi WebP)!');
     } catch {
       try {
-        const dataUrl = await compressImageFile(files[0]);
+        const dataUrl = await compressImageToDataUrl(files[0], { maxWidth: 1000, maxHeight: 1000, quality: 0.75 });
         setFormData(prev => ({ ...prev, bride: { ...prev.bride, image: dataUrl } }));
         showToast('success', 'Foto mempelai wanita berhasil disimpan!');
       } catch {
@@ -464,12 +431,13 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     if (!files[0]) return;
     setUploadingAvatar('seo');
     try {
-      const res = await api.uploadFile(files[0]);
+      const compressed = await compressImageToFile(files[0], { maxWidth: 1200, maxHeight: 630, quality: 0.82 });
+      const res = await api.uploadFile(compressed);
       setFormData(prev => ({ ...prev, seo: { ...prev.seo, image: res.url } }));
-      showToast('success', 'Foto thumbnail preview SEO berhasil diunggah!');
+      showToast('success', 'Foto thumbnail preview SEO berhasil diunggah (teroptimasi)!');
     } catch {
       try {
-        const dataUrl = await compressImageFile(files[0]);
+        const dataUrl = await compressImageToDataUrl(files[0], { maxWidth: 1200, maxHeight: 630, quality: 0.75 });
         setFormData(prev => ({ ...prev, seo: { ...prev.seo, image: dataUrl } }));
         showToast('success', 'Foto thumbnail preview SEO berhasil disimpan!');
       } catch {
@@ -484,15 +452,18 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
     if (files.length === 0) return;
     setIsUploadingGallery(true);
     try {
-      const res = await api.uploadMultipleFiles(files);
+      const compressedFiles = await Promise.all(
+        files.map(f => compressImageToFile(f, { maxWidth: 1400, maxHeight: 1400, quality: 0.82 }))
+      );
+      const res = await api.uploadMultipleFiles(compressedFiles);
       setFormData(prev => ({
         ...prev,
         gallery: [...prev.gallery, ...res.urls]
       }));
-      showToast('success', `${res.urls.length} foto berhasil ditambahkan ke galeri!`);
+      showToast('success', `${res.urls.length} foto berhasil ditambahkan ke galeri (teroptimasi WebP)!`);
     } catch {
       try {
-        const compressedList = await Promise.all(files.map(f => compressImageFile(f)));
+        const compressedList = await Promise.all(files.map(f => compressImageToDataUrl(f)));
         setFormData(prev => ({
           ...prev,
           gallery: [...prev.gallery, ...compressedList]
@@ -509,7 +480,8 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   const handleUploadQris = async (files: File[], bankIdx: number) => {
     if (!files[0]) return;
     try {
-      const res = await api.uploadFile(files[0]);
+      const compressed = await compressImageToFile(files[0], { maxWidth: 1000, maxHeight: 1000, quality: 0.85 });
+      const res = await api.uploadFile(compressed);
       setFormData(prev => {
         const newBanks = [...(prev.banks || (prev.bank ? [prev.bank] : []))];
         newBanks[bankIdx] = {
@@ -521,10 +493,10 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
         };
         return { ...prev, banks: newBanks };
       });
-      showToast('success', 'Gambar barcode QRIS berhasil diunggah!');
+      showToast('success', 'Gambar barcode QRIS berhasil diunggah (teroptimasi)!');
     } catch {
       try {
-        const dataUrl = await compressImageFile(files[0]);
+        const dataUrl = await compressImageToDataUrl(files[0]);
         setFormData(prev => {
           const newBanks = [...(prev.banks || (prev.bank ? [prev.bank] : []))];
           newBanks[bankIdx] = {

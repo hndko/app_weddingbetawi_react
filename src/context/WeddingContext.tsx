@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { api } from '../services/api';
 import { socket } from '../services/socket';
 import { config as defaultConfig } from '../data/config';
@@ -11,6 +11,28 @@ interface WeddingContextType {
   refreshConfig: () => Promise<void>;
 }
 
+const CONFIG_CACHE_KEY = 'wedding_config_cache_v1';
+
+function getCachedConfig(): WeddingConfig | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(CONFIG_CACHE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as WeddingConfig;
+  } catch {
+    return null;
+  }
+}
+
+function saveConfigToCache(cfg: WeddingConfig): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify(cfg));
+  } catch {
+    // Abaikan galat storage quota jika memori penuh
+  }
+}
+
 const WeddingContext = createContext<WeddingContextType>({
   weddingConfig: defaultConfig as WeddingConfig,
   loading: true,
@@ -19,9 +41,6 @@ const WeddingContext = createContext<WeddingContextType>({
 });
 
 export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [weddingConfig, setWeddingConfig] = useState<WeddingConfig>(defaultConfig as WeddingConfig);
-  const [loading, setLoading] = useState(true);
-
   const normalizeConfig = useCallback((data: WeddingConfig): WeddingConfig => {
     return {
       ...defaultConfig,
@@ -49,28 +68,41 @@ export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
   }, []);
 
+  const cachedConfig = useMemo(() => getCachedConfig(), []);
+
+  // Stale-While-Revalidate: Jika cache ditemukan di browser, langsung render seketika (0ms delay)
+  const [weddingConfig, setWeddingConfig] = useState<WeddingConfig>(() => {
+    return cachedConfig ? normalizeConfig(cachedConfig) : (defaultConfig as WeddingConfig);
+  });
+
+  const [loading, setLoading] = useState<boolean>(() => !cachedConfig);
+
   const loadConfig = useCallback(async () => {
     try {
       const data = await api.getConfig();
       if (data) {
-        setWeddingConfig(normalizeConfig(data));
+        const normalized = normalizeConfig(data);
+        setWeddingConfig(normalized);
+        saveConfigToCache(normalized);
       }
-    } catch (err) {
-      console.warn('[WeddingContext] Gagal mengambil konfigurasi dari REST API, menggunakan default:', err);
-      setWeddingConfig(defaultConfig as WeddingConfig);
+    } catch {
+      if (!cachedConfig) {
+        setWeddingConfig(defaultConfig as WeddingConfig);
+      }
     } finally {
       setLoading(false);
     }
-  }, [normalizeConfig]);
+  }, [normalizeConfig, cachedConfig]);
 
   useEffect(() => {
-    // Muat konfigurasi awal dari REST API
+    // Sinkronisasi data terkini dari REST API di latar belakang
     loadConfig();
 
     // Dengarkan event realtime 'config:updated' dari Socket.io
     const handleConfigUpdated = (updatedConfig: WeddingConfig) => {
-      console.log('[WeddingContext] Menerima pembaruan realtime dari Socket.io');
-      setWeddingConfig(normalizeConfig(updatedConfig));
+      const normalized = normalizeConfig(updatedConfig);
+      setWeddingConfig(normalized);
+      saveConfigToCache(normalized);
     };
 
     socket.on('config:updated', handleConfigUpdated);
@@ -82,7 +114,9 @@ export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateWeddingConfig = async (newConfig: WeddingConfig) => {
     await api.updateConfig(newConfig);
-    setWeddingConfig(normalizeConfig(newConfig));
+    const normalized = normalizeConfig(newConfig);
+    setWeddingConfig(normalized);
+    saveConfigToCache(normalized);
   };
 
   return (

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Calendar, Clock, Building, MapPin, Link as LinkIcon, 
-  Sparkles, SlidersHorizontal, Check, Copy, CheckCircle2
+  Sparkles, SlidersHorizontal, Check, Copy, CheckCircle2,
+  Eye, EyeOff
 } from 'lucide-react';
 import { WeddingConfig } from '../../../types';
+import { getEmbedMapUrl } from '../../../utils/mapUrl';
 
 export const INDONESIAN_MONTHS = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -154,6 +156,8 @@ export function EventScheduleEditor({ formData, setFormData, showToast }: EventS
   // Manual customization toggles
   const [showAkadCustomDate, setShowAkadCustomDate] = useState(false);
   const [showResepsiCustomDate, setShowResepsiCustomDate] = useState(false);
+  const [showAkadMapPreview, setShowAkadMapPreview] = useState(false);
+  const [showResepsiMapPreview, setShowResepsiMapPreview] = useState(false);
   const [copiedIso, setCopiedIso] = useState(false);
 
   // Synchronize time state when formData from props updates externally
@@ -649,18 +653,48 @@ export function EventScheduleEditor({ formData, setFormData, showToast }: EventS
               className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white text-gray-800 focus:ring-1 focus:ring-sage shadow-2xs"
             />
           </div>
-          <div className="relative flex items-center sm:col-span-2">
-            <LinkIcon className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-            <input
-              type="text"
-              placeholder="Link Google Maps (https://maps.app.goo.gl/...)"
-              value={formData.events.akad.mapUrl}
-              onChange={(e) => setFormData({
-                ...formData,
-                events: { ...formData.events, akad: { ...formData.events.akad, mapUrl: e.target.value } }
-              })}
-              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white text-gray-800 focus:ring-1 focus:ring-sage font-mono text-[11px] shadow-2xs"
-            />
+          <div className="flex flex-col gap-2 sm:col-span-2">
+            <div className="flex items-center justify-between gap-2">
+              <label className="text-[11px] font-medium text-gray-500">Link / Embed Google Maps Akad</label>
+              <button
+                type="button"
+                onClick={() => setShowAkadMapPreview(prev => !prev)}
+                className="text-[11px] font-semibold text-sage-dark hover:text-sage flex items-center gap-1 cursor-pointer transition-colors"
+              >
+                {showAkadMapPreview ? <EyeOff size={13} /> : <Eye size={13} />}
+                <span>{showAkadMapPreview ? 'Tutup Pratinjau Peta' : 'Pratinjau Peta Embed'}</span>
+              </button>
+            </div>
+            <div className="relative flex items-center">
+              <LinkIcon className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+              <input
+                type="text"
+                placeholder="Link Share (https://maps.app.goo.gl/...) atau Kode Embed Iframe (<iframe ...>)"
+                value={formData.events.akad.mapUrl}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  events: { ...formData.events, akad: { ...formData.events.akad, mapUrl: e.target.value } }
+                })}
+                className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white text-gray-800 focus:ring-1 focus:ring-sage font-mono text-[11px] shadow-2xs"
+              />
+            </div>
+            <p className="text-[10.5px] text-gray-400 leading-relaxed">
+              💡 <span className="font-medium text-gray-500">Tips Peta Dinamis:</span> Masukkan link bagikan Google Maps, tempel kode embed <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">&lt;iframe&gt;</code>, atau kosongkan agar peta otomatis mencari berdasarkan Tempat &amp; Alamat di atas.
+            </p>
+
+            {showAkadMapPreview && (
+              <div className="mt-2 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 h-[220px] relative shadow-inner">
+                <iframe
+                  src={getEmbedMapUrl(formData.events.akad.mapUrl, formData.events.akad.venue, formData.events.akad.address)}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  title="Pratinjau Peta Akad"
+                  className="w-full h-full"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -886,18 +920,48 @@ export function EventScheduleEditor({ formData, setFormData, showToast }: EventS
               className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white text-gray-800 focus:ring-1 focus:ring-sage shadow-2xs"
             />
           </div>
-          <div className="relative flex items-center sm:col-span-2">
-            <LinkIcon className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
-            <input
-              type="text"
-              placeholder="Link Google Maps (https://maps.app.goo.gl/...)"
-              value={formData.events.resepsi.mapUrl}
-              onChange={(e) => setFormData({
-                ...formData,
-                events: { ...formData.events, resepsi: { ...formData.events.resepsi, mapUrl: e.target.value } }
-              })}
-              className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white text-gray-800 focus:ring-1 focus:ring-sage font-mono text-[11px] shadow-2xs"
-            />
+          <div className="flex flex-col gap-2 sm:col-span-2">
+            <div className="flex items-center justify-between gap-2">
+              <label className="text-[11px] font-medium text-gray-500">Link / Embed Google Maps Resepsi</label>
+              <button
+                type="button"
+                onClick={() => setShowResepsiMapPreview(prev => !prev)}
+                className="text-[11px] font-semibold text-sage-dark hover:text-sage flex items-center gap-1 cursor-pointer transition-colors"
+              >
+                {showResepsiMapPreview ? <EyeOff size={13} /> : <Eye size={13} />}
+                <span>{showResepsiMapPreview ? 'Tutup Pratinjau Peta' : 'Pratinjau Peta Embed'}</span>
+              </button>
+            </div>
+            <div className="relative flex items-center">
+              <LinkIcon className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+              <input
+                type="text"
+                placeholder="Link Share (https://maps.app.goo.gl/...) atau Kode Embed Iframe (<iframe ...>)"
+                value={formData.events.resepsi.mapUrl}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  events: { ...formData.events, resepsi: { ...formData.events.resepsi, mapUrl: e.target.value } }
+                })}
+                className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white text-gray-800 focus:ring-1 focus:ring-sage font-mono text-[11px] shadow-2xs"
+              />
+            </div>
+            <p className="text-[10.5px] text-gray-400 leading-relaxed">
+              💡 <span className="font-medium text-gray-500">Tips Peta Dinamis:</span> Masukkan link bagikan Google Maps, tempel kode embed <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">&lt;iframe&gt;</code>, atau kosongkan agar peta otomatis mencari berdasarkan Tempat &amp; Alamat di atas.
+            </p>
+
+            {showResepsiMapPreview && (
+              <div className="mt-2 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 h-[220px] relative shadow-inner">
+                <iframe
+                  src={getEmbedMapUrl(formData.events.resepsi.mapUrl, formData.events.resepsi.venue, formData.events.resepsi.address)}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  title="Pratinjau Peta Resepsi"
+                  className="w-full h-full"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

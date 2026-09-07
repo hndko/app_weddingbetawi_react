@@ -5,11 +5,18 @@ import { useThemeTokens } from '../../themes';
 import { Map, Armchair } from 'lucide-react';
 import { GuestSeatingLookupModal } from '../components/GuestSeatingLookupModal';
 import { cn } from '../../../../utils/cn';
+import { getEmbedMapUrl } from '../../../../utils/mapUrl';
 
 export function LocationSection() {
   const { weddingConfig } = useWeddingConfig();
   const { tokens, isDark } = useThemeTokens();
   const [isSeatingModalOpen, setIsSeatingModalOpen] = useState(false);
+
+  const embedMapUrl = getEmbedMapUrl(
+    weddingConfig.events.resepsi.mapUrl,
+    weddingConfig.events.resepsi.venue,
+    weddingConfig.events.resepsi.address
+  );
 
   const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const guestNameFromUrl = searchParams ? searchParams.get('to') || '' : '';
@@ -44,7 +51,7 @@ export function LocationSection() {
         >
           <div className="rounded-[16px] overflow-hidden w-full h-[300px] bg-black/10 relative">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126907.08639207855!2d106.7441865!3d-6.229728!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3e945e34b9d%3A0x5371bf0fdad786a2!2sJakarta%2C%20Daerah%20Khusus%20Ibukota%20Jakarta!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid" 
+              src={embedMapUrl}
               width="100%" 
               height="100%" 
               style={{ border: 0 }} 

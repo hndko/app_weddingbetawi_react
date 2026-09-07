@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.44.2`
+- **Versi Aplikasi Saat Ini**: `v1.44.3`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -156,6 +156,15 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
 3. **Aset & Audio Lazy-Loading**:
    - Elemen audio menggunakan mode streaming atau play-on-user-interaction.
    - Gambar didistribusikan dengan kompresi WebP/JPEG teroptimasi dan memanfaatkan atribut `loading="lazy"`.
+4. **Kompresi Gambar Otomatis Client-Side (`compressImageToFile`)**:
+   - Seluruh foto yang diunggah melalui Admin Panel (profil mempelai, banner, QRIS, galeri) WAJIB dikompresi di browser menggunakan Canvas sebelum diunggah ke endpoint REST API server. Foto dikonversi menjadi WebP/JPEG max 1400px (~150-250KB) untuk menghemat 95% bandwidth jaringan dan ruang penyimpanan disk server.
+5. **Caching Aset Statis & Uploads di Server**:
+   - Endpoint statis `/uploads` WAJIB mengembalikan header `Cache-Control: public, max-age=2592000, stale-while-revalidate=86400` (30 hari) agar browser pengguna tidak mengunduh ulang foto yang sama berulang kali.
+   - Aset terkompilasi di `dist` dikonfigurasi dengan cache `1y` (immutable) dengan pengecualian `index.html` yang wajib `no-cache`.
+6. **Instant Hydration Stale-While-Revalidate (SWR) pada Konfigurasi**:
+   - `WeddingContext` memanfaatkan sinkronisasi ganda: data dimuat seketika dari cache `localStorage` (0ms delay rendering, menghilangkan spinner tunggu) dan secara asinkron diselaraskan dengan backend melalui REST API dan event Socket.io `config:updated`.
+7. **Peta Google Maps Dinamis Smart Hybrid (`getEmbedMapUrl`)**:
+   - Komponen peta (`LocationSection.tsx`) DILARANG MENGGUNAKAN URL IFRAME HARDCODED. URL iframe embed WAJIB diproses secara dinamis menggunakan helper `getEmbedMapUrl` yang mampu mengekstrak tag `<iframe>`, link embed resmi, link share Google Maps (`maps.app.goo.gl`), atau mensintesis otomatis dari nama tempat (*venue*) dan alamat lengkap (*address*) tanpa memerlukan API key berbayar.
 
 ---
 

@@ -103,9 +103,12 @@ graph TD
     E --> F["Linimasa Kisah Cinta (Love Story)"]
     F --> G["Jadwal Akad & Resepsi + Navigasi Google Maps"]
     G --> H["Galeri Foto & Amplop Digital (Bank/QRIS)"]
-    H --> I["Formulir RSVP & Ucapan Selamat"]
+    H --> I["Formulir RSVP (+ Input Nomor WhatsApp) & Ucapan Selamat"]
     I -->|"Submit Data via REST API"| J[("Express API & MySQL Database")]
-    J -->|"Socket.io Real-Time Broadcast"| K["Dinding Ucapan Terbarui Otomatis"]
+    J -->|"Socket.io Real-Time Broadcast"| K["Dinding Ucapan & Layar Proyektor Terbarui"]
+    J -->|"Background Fire-and-Forget Worker"| L["Notifikasi WhatsApp Dua Arah (Gateway)"]
+    L -->|"Alert Masuk"| M["WhatsApp Admin / Mempelai"]
+    L -->|"Tiket QR & Link Undangan"| N["WhatsApp Tamu Otomatis"]
 ```
 
 ### 2. Alur Pengelolaan Administrator (Admin Flow)
@@ -114,13 +117,14 @@ graph LR
     A["Akses URL: /login"] --> B{"Autentikasi MySQL (bcryptjs)"}
     B -->|"Kredensial Valid"| C["URL: /modules (Dashboard Admin)"]
     B -->|"Kredensial Salah"| D["Pesan Error"]
-    C --> E["Link & WA Generator"]
-    C --> F["Edit Data & Konten Website"]
-    C --> G["Monitor & Rekapitulasi RSVP"]
-    C --> H["Moderasi & Hapus Ucapan"]
-    C --> I["Modal Ganti Password Admin"]
-    F -->|"Simpan & Auto-Unlink File Lama"| J[("MySQL: wedding_config & uploads/")]
-    J -->|"Otomatis Tayang"| K["Tampilan Publik Terupdate"]
+    C --> E["Link & Broadcast WhatsApp (Safe Jitter)"]
+    C --> F["WhatsApp Gateway (Fonnte/WAHA/Twilio/Manual)"]
+    C --> G["Edit Data & Konten Website"]
+    C --> H["Monitor & Rekapitulasi RSVP"]
+    C --> I["Meja Resepsi Scanner QR & Souvenir Tracker"]
+    C --> J["Moderasi & Hapus Ucapan"]
+    G -->|"Simpan & Auto-Unlink File Lama"| K[("MySQL: wedding_config & uploads/")]
+    K -->|"Otomatis Tayang"| L["Tampilan Publik Terupdate"]
 ```
 
 ---

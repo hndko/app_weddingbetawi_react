@@ -75,6 +75,15 @@ npm run lint
 .\node_modules\.bin\tsc.cmd --noEmit # (Windows)
 ./node_modules/.bin/tsc --noEmit     # (macOS/Linux)
 
+# Menjalankan seluruh pengujian unit & integrasi (Vitest - 35 Test Cases)
+npm test
+
+# Menjalankan unit test khusus WhatsApp Gateway
+npx vitest run server/src/__tests__/whatsappGateway.test.ts
+
+# Pengujian ketahanan & konkurensi tinggi (Load Testing Autocannon)
+npm run test:load
+
 # Verifikasi kompilasi produksi
 npm run build
 ```

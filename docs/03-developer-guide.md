@@ -42,6 +42,9 @@ app_weddingbetawi_react/
 │   └── assets/themes/{theme_id}/ # Paket aset luring mandiri (thumbnail.svg, pattern.svg, favicon.svg)
 ├── server/                     # Backend Node.js Express + MySQL + Socket.io
 │   ├── src/
+│   │   ├── __tests__/          # Automated Test Suite (Vitest)
+│   │   │   ├── api.test.ts     # Pengujian integrasi REST API server
+│   │   │   └── whatsappGateway.test.ts # Pengujian unit provider WhatsApp
 │   │   ├── db/
 │   │   │   ├── index.ts        # Koneksi pool MySQL (mysql2/promise)
 │   │   │   ├── migrate.ts      # Skrip DDL migrasi tabel otomatis
@@ -53,13 +56,16 @@ app_weddingbetawi_react/
 │   │   │   ├── auth.ts         # Login & Ubah Password (bcryptjs)
 │   │   │   ├── config.ts       # Wedding Config & Auto-Unlink Disk Cleanup
 │   │   │   ├── wishes.ts       # Ucapan & Doa (+ Realtime Socket.io Broadcast)
-│   │   │   ├── rsvps.ts        # Konfirmasi Kehadiran Tamu
+│   │   │   ├── rsvps.ts        # Konfirmasi Kehadiran Tamu (+ Two-Way WA Alert)
 │   │   │   ├── guests.ts       # Manajemen Tamu Undangan
 │   │   │   ├── budget.ts       # Pos Anggaran & Vendor Tracker
 │   │   │   ├── seating.ts      # Denah Meja & Alokasi Kursi
 │   │   │   ├── trivia.ts       # Kuis Interaktif Trivia Tamu
 │   │   │   ├── checkins.ts     # Check-in Resepsi Hari-H & Souvenir
-│   │   │   └── upload.ts       # Upload Berkas Multer & Auto-Unlink
+│   │   │   ├── upload.ts       # Upload Berkas Multer & Auto-Unlink
+│   │   │   └── whatsapp.ts     # Endpoint Uji Coba & Kirim WhatsApp Gateway
+│   │   ├── services/           # Logika Bisnis & Gateway Pihak Ketiga
+│   │   │   └── whatsappGateway.ts # Provider Registry (Manual, Fonnte, WAHA, Twilio)
 │   │   └── index.ts            # Entrypoint server Express & Socket.io (Port 5000)
 │   └── uploads/                # Direktori penyimpanan berkas (.gitkeep)
 ├── src/
@@ -119,7 +125,7 @@ Sistem menggunakan basis data relasional **MySQL** (kompatibel dengan Laragon / 
 | **`users`** | `id`, `username`, `password`, `role`, `created_at`, `updated_at` | Kredensial login admin dengan kata sandi ter-hash `bcryptjs`. |
 | **`wedding_config`** | `id`, `config_data` (LONGTEXT JSON), `updated_at` | Seluruh pengaturan mempelai, tanggal, rekening, galeri, musik, dan SEO. |
 | **`wishes`** | `id`, `name`, `text`, `created_at` | Ucapan doa tamu, dibroadcast real-time via Socket.io. |
-| **`rsvps`** | `id`, `name`, `attendance`, `guest_count`, `notes`, `created_at` | Konfirmasi kehadiran tamu undangan. |
+| **`rsvps`** | `id`, `name`, `phone`, `attendance`, `guest_count`, `notes`, `created_at` | Konfirmasi kehadiran tamu undangan & kontak notifikasi. |
 | **`guests`** | `id`, `name`, `phone`, `pax`, `status`, `assigned_table`, `qr_code`, `created_at`, `updated_at` | Buku tamu undangan & generator WhatsApp. |
 | **`budget_items`** | `id`, `category`, `name`, `vendor`, `phone`, `estimated_cost`, `actual_cost`, `paid_amount`, `status`, `is_ready`, `created_at`, `updated_at` | Pelacak pos anggaran pernikahan dan kesiapan vendor. |
 | **`seating_tables`** | `id`, `table_number`, `table_name`, `zone`, `capacity`, `shape`, `assigned_guests` (JSON), `notes`, `created_at`, `updated_at` | Denah meja & alokasi kursi resepsi. |
@@ -320,3 +326,53 @@ Aplikasi menerapkan pengamanan berlapis pada seluruh antarmuka REST API:
    - Menggunakan algoritma in-memory sliding window dengan pembersihan berkala dan deteksi IP pengunjung di balik reverse proxy (`x-forwarded-for`).
 3. **Optimasi Beban Data & Paginasi Doa**:
    - Kueri `GET /api/wishes` dibatasi default `LIMIT 50` dengan dukungan `offset` untuk paginasi inkremental di sisi klien, mencegah penurunan performa rendering DOM browser saat jumlah ucapan doa bertambah banyak. Mode `?all=true` tetap didukung untuk Dasbor Admin dan Layar Panggung Proyektor (`/live`).
+
+---
+
+## 📲 11. Arsitektur WhatsApp Gateway Multi-Provider & Two-Way RSVP Engine (v1.57.0)
+
+Untuk memfasilitasi pengiriman undangan secara masif dan interaktivitas status konfirmasi kehadiran secara otomatis, sistem menerapkan arsitektur WhatsApp modular:
+
+### A. Provider Pattern & Kontrak Antarmuka (`server/src/services/whatsappGateway.ts`)
+```typescript
+export type WhatsAppGatewayProvider = 'manual' | 'fonnte' | 'waha' | 'twilio';
+
+export interface SendMessageResult {
+  success: boolean;
+  provider: string;
+  messageId?: string;
+  error?: string;
+  details?: unknown;
+}
+
+export interface IWhatsAppProvider {
+  readonly name: string;
+  sendMessage(to: string, message: string, config: WhatsAppGatewayConfig): Promise<SendMessageResult>;
+}
+```
+
+- **Registri Provider Modular (`providerRegistry`)**:
+  - `ManualProvider`: Fallback standar tanpa biaya. Mengembalikan status sukses instan untuk memicu link `https://wa.me/...`.
+  - `FonnteProvider`: Menggunakan endpoint `https://api.fonnte.com/send` dengan header `Authorization: token` dan payload form-encoded.
+  - `WahaProvider`: Menggunakan endpoint `/api/sendText` server WAHA (WhatsApp HTTP API) dengan JSON body `{ session, chatId, text }` dan header `X-Api-Key`.
+  - `TwilioProvider`: Menggunakan API Twilio Messages via Basic Auth (`AccountSid:AuthToken`) dengan format nomor `whatsapp:+62...`.
+- **Normalisasi Nomor Telepon (`cleanPhoneNumber`)**:
+  - Mengonversi format lokal (`0812...` atau `812...`) maupun internasional bersimbol (`+62 812-...`) menjadi nomor standar internasional murni digit tanpa simbol (`62812...`).
+
+### B. Two-Way RSVP Automated Notification Engine (`server/src/routes/rsvps.ts`)
+Saat tamu mengirimkan formulir konfirmasi kehadiran (`POST /api/rsvps`):
+1. Data disimpan ke MySQL dengan kolom baru `phone`.
+2. Response HTTP 201 segera dikembalikan ke tamu (*0ms lag*).
+3. Di latar belakang (*fire-and-forget async worker*):
+   - **Alert ke Admin**: Jika `notifyAdminOnRsvp: true` dan `adminPhone` terisi, sistem mengirimkan rincian nama tamu, status kehadiran (`hadir`/`tidak_hadir`), jumlah rombongan (*pax*), dan doa restu.
+   - **Konfirmasi Otomatis ke Tamu**: Jika `notifyGuestOnRsvp: true` dan tamu menyertakan nomor teleponnya, sistem mengirimkan pesan terima kasih personal lengkap dengan link kartu undangan personal dan akses tiket digital QR pass tamu.
+
+### C. Automated Test Suite (Vitest - 14 Test Cases)
+Pengujian unit pada [`server/src/__tests__/whatsappGateway.test.ts`](../server/src/__tests__/whatsappGateway.test.ts) mencakup:
+- Normalisasi format nomor telepon (`cleanPhoneNumber`).
+- Eksekusi instan fallback mode `manual`.
+- Validasi kredensial kosong per-provider (Fonnte token, WAHA endpoint, Twilio Account SID/token/from).
+- Penolakan nomor tujuan tidak valid atau terlalu pendek.
+- Mocked network API calls untuk Fonnte, WAHA, dan Twilio.
+- Fungsi ping uji konektivitas gateway (`testWhatsAppGateway`).
+

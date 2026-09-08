@@ -67,6 +67,14 @@ Untuk menaikkan harga jual dari kelas menengah (Rp 150.000 - Rp 300.000) menjadi
 - **Implementasi**:
   - Banner dinamis beranimasi halus di bagian atas undangan: *"Sedang Berlangsung: Sesi Foto Keluarga & Ramah Tamah"* yang diubah realtime oleh tim WO dari Admin Panel HP.
 
+### 🌟 6. Multi-Provider WhatsApp Gateway & Smart Broadcast Queue (v1.57.0)
+- **Mengapa Penting**: Calon pengantin dan WO sering kewalahan menyebarkan undangan ke 500-1.000 nomor kontak satu per satu secara manual.
+- **Implementasi**:
+  - Pilihan 4 Gateway: Manual `wa.me` gratis, Fonnte, WAHA self-hosted, atau Twilio enterprise.
+  - Kirim otomatis antrean massal dengan *safe anti-spam random delay jitter* (2.5s–4.0s) anti pemblokiran WhatsApp.
+  - Notifikasi dua arah otomatis: Alert ke WhatsApp Admin/WO setiap ada tamu konfirmasi RSVP dan tiket QR otomatis ke WhatsApp tamu.
+  - Filter penerima per-tier (VVIP, VIP, Keluarga, Reguler), status RSVP, dan status check-in fisik di ballroom.
+
 ---
 
 ## 3. Peta Target Pasar & Ekosistem Mitra (B2B vs B2C)

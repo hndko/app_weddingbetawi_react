@@ -176,6 +176,28 @@ graph LR
    - Klik ikon centang untuk mengubah status terkirim secara manual kapan saja.
    - Klik tombol **"Generator Cepat"** di pojok kanan atas untuk membuat link personal dadakan bagi 1 tamu tanpa perlu mengimpor.
 
+### D. Siaran Pesan WhatsApp Cerdas & Antrean Otomatis (WhatsApp Broadcast Suite - v1.57.0)
+Klik tombol **"Kirim Broadcast WhatsApp"** berikon pesawat kertas (`Send`) di bilah tindakan atas modul generator tamu untuk membuka modal siaran canggih:
+
+1. **Penyaringan Penerima Multi-Dimensi (Smart Recipient Filters)**:
+   - **Status Pengiriman**: *Belum Terkirim* (fokus pada tamu yang belum menerima undangan), *Sudah Terkirim*, atau *Semua Status*.
+   - **Klasifikasi VIP (Tier)**: Saring khusus untuk tamu *VVIP*, *VIP*, *Keluarga Besar (Family)*, *Reguler*, atau *Semua Kategori*.
+   - **Status Konfirmasi RSVP**: Saring tamu yang *Belum Konfirmasi* (untuk pengingat RSVP), *Akan Hadir*, *Tidak Hadir*, atau *Semua*.
+   - **Status Check-in Hari-H**: Saring tamu yang *Sudah Hadir di Venue* vs *Belum Hadir*.
+   - **Pencarian Real-Time**: Ketik nama atau nomor telepon untuk menyaring daftar secara seketika tanpa jeda.
+2. **Pilihan Template Pesan Siaran**:
+   - **Undangan Resmi**: Format lengkap dengan salam islami, nama kedua mempelai, jadwal, alamat venue, dan tautan personal tamu.
+   - **Pengingat H-3**: Pesan ramah mengingatkan bahwa acara tinggal 3 hari lagi dan meminta konfirmasi RSVP.
+   - **Pengingat H-1**: Ringkasan jadwal besok, tautan Google Maps, dan pengingat tiket QR check-in resepsi.
+   - **Kustom**: Tulis pesan sendiri dengan dukungan variabel dinamis: `{nama}`, `{groom}`, `{bride}`, `{mempelai}`, `{tanggal}`, `{waktu}`, `{venue}`, `{mapUrl}`, dan `{link}`.
+3. **Dua Mode Pengiriman**:
+   - **Mode Satuan (Single Dispatch)**: Kirim pesan satu per satu melalui gateway aktif atau langsung membuka WhatsApp Web/App (`wa.me`) dengan tombol **"Kirim via WhatsApp"**.
+   - **Mode Kirim Otomatis Antrean (*Auto-Queue Broadcast*)**:
+     - Cukup klik tombol **"Kirim Otomatis Antrean (X Tamu)"**.
+     - Sistem akan mengirim pesan ke seluruh tamu yang tersaring secara berurutan di latar belakang.
+     - **Safe Anti-Spam Random Delay Jitter**: Di antara setiap pesan, sistem memberikan jeda acak 2.5 hingga 4.0 detik dengan penghitung mundur visual (*countdown timer*) untuk melindungi nomor WhatsApp pengirim dari risiko pemblokiran WhatsApp.
+     - Dilengkapi *progress bar* persentase, kartu penerima yang sedang diproses, dan tombol **"Batal Kirim"** yang dapat ditekan sewaktu-waktu.
+
 ---
 
 ## ✏️ 8. Modul Manajemen Konten Website (Menu 4)
@@ -278,6 +300,22 @@ Panel Admin menyediakan katalog tema paling komprehensif dengan total **35 tema*
 * **1-Klik Ganti Tema**: Klik tombol **"Aktifkan Tema"** pada tema yang berstatus *ready* untuk mengaktifkan tema secara instan.
 * **Tautan Pratinjau Langsung**: Klik ikon tautan eksternal untuk menguji coba tampilan tema via URL query parameter (misal: `?theme=dayak` atau `?theme=cyberpunk`) tanpa mengubah tema utama pengantin.
 * **Proteksi Tema Coming Soon**: Tema berstatus *coming soon* menampilkan badge status jam (*"Segera Hadir"*), menonaktifkan tombol aktivasi, dan menyembunyikan pratinjau live secara elegan.
+
+### H. Sub-Tab WhatsApp & Gateway (v1.57.0)
+Sub-tab ini mengelola penyedia gateway pengiriman WhatsApp dan notifikasi otomatis dua arah:
+
+1. **Pemilihan Provider WhatsApp Gateway**:
+   - **Manual (wa.me link)** *(Default / Gratis)*: Membuka link resmi WhatsApp Web / App. Cocok untuk pengantin yang tidak memiliki langganan API berbayar.
+   - **Fonnte Gateway**: Menggunakan API resmi Fonnte (`https://api.fonnte.com/send`). Masukkan **API Token** Fonnte dari dasbor akun Anda.
+   - **WAHA (WhatsApp HTTP API)**: Menghubungkan ke server WAHA *self-hosted* open-source Anda. Masukkan **URL Endpoint** (misal: `http://localhost:3000` atau `https://waha.domainanda.com`), **API Key** (opsional), dan **Nama Session** (default: `default`).
+   - **Twilio Programmable Messaging**: Layanan skala enterprise internasional. Masukkan **Twilio Account SID**, **Auth Token**, dan **Nomor Pengirim WhatsApp Twilio** (format `whatsapp:+14155238886`).
+2. **Pengaturan Notifikasi Otomatis Status RSVP**:
+   - **Nomor Telepon Admin / Mempelai**: Masukkan nomor WhatsApp panitia/mempelai yang akan menerima notifikasi setiap ada tamu yang mengisi konfirmasi kehadiran.
+   - **Notifikasi Admin saat Ada RSVP Baru (Toggle)**: Jika aktif, server otomatis mengirim alert ringkasan kehadiran tamu (Nama, Status Hadir/Tidak, Jumlah Pax, dan Pesan Doa).
+   - **Konfirmasi Otomatis ke Tamu (Toggle)**: Jika aktif, setiap tamu yang mencantumkan nomor teleponnya akan otomatis menerima pesan konfirmasi ucapan terima kasih beserta link undangan personal dan akses tiket QR pass mereka.
+3. **Uji Coba Koneksi Gateway Interaktif**:
+   - Ketik nomor telepon uji coba (format `08...` atau `628...`) lalu klik tombol **"Kirim Pesan Uji Coba"**.
+   - Sistem akan menguji konektivitas ke gateway yang sedang dipilih dan menampilkan hasil verifikasi instan dengan detail respon server.
 
 > [!IMPORTANT]
 > Selalu tekan tombol **"Simpan Perubahan"** pada bilah aksi mengambang (*sticky save bar*) di bagian bawah setelah selesai memilih tema atau mengedit data agar data tersimpan permanen ke basis data MySQL.
@@ -524,3 +562,9 @@ graph LR
 
 ### T: Apakah nama tamu dengan karakter khusus (seperti gelar, tanda koma, atau "&") akan terbaca normal?
 **J:** Ya. Generator link WhatsApp pada Tab 1 sudah dilengkapi fitur *URL Encoding* otomatis, sehingga karakter khusus seperti `&`, spasi, titik, dan koma akan tetap tampil sempurna di layar tamu.
+
+### T: Apakah saya wajib berlangganan WhatsApp Gateway pihak ketiga (Fonnte / WAHA / Twilio)?
+**J:** Tidak wajib. Mode bawaan sistem adalah **Manual (`wa.me`)** yang 100% gratis tanpa perlu API key apa pun. Anda cukup mengeklik tombol kirim dan peramban akan membuka WhatsApp secara instan. Integrasi pihak ketiga (Fonnte, WAHA, Twilio) bersifat opsional bagi pengantin atau Wedding Organizer yang menginginkan pengiriman broadcast massal otomatis di latar belakang dan notifikasi dua arah tanpa perlu membuka tab chat perorangan.
+
+### T: Apakah nomor WhatsApp saya aman dari risiko blokir saat melakukan broadcast massal?
+**J:** Sistem siaran massal (*Auto-Queue Broadcast*) telah dipersenjatai perlindungan **Safe Anti-Spam Random Delay Jitter**. Di antara pengiriman setiap pesan ke tamu, sistem memberikan jeda acak antara 2.5 hingga 4.0 detik dengan tampilan penghitung mundur. Hal ini menyimulasikan ritme pengiriman manusia sehingga secara signifikan meminimalkan risiko pendeteksian bot spam oleh algoritma keamanan WhatsApp. Namun, kami tetap menyarankan untuk tidak mengirim lebih dari 200–300 pesan secara serentak dalam satu waktu pada nomor baru.

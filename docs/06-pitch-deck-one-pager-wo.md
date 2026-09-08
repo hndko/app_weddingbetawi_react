@@ -48,6 +48,9 @@ Kru WO dapat menyiarkan status prosesi acara hari-H langsung dari HP (misal: *"S
 ### 5. 🏷️ 100% White-Label Agensi (Brand Milik WO Anda)
 Sistem ini dapat menggunakan logo resmi WO Anda, nama agensi, dan subdomain kustom (`undangan.namawoanda.com`). Klien pengantin Anda akan melihat teknologi canggih ini sebagai **fasilitas in-house eksklusif milik WO Anda**, tanpa embel-embel nama vendor pihak ketiga.
 
+### 6. 📲 Automated WhatsApp Broadcast & Two-Way RSVP Alerts (Safe Jitter)
+Kirim ratusan undangan ke daftar tamu secara massal di latar belakang dengan antrean berjadwal aman (jeda acak 2.5–4.0 detik anti-ban), filter cerdas per-kategori/tier VIP, serta notifikasi instan dua arah: alert ke HP WO/pengantin saat tamu konfirmasi RSVP dan tiket QR otomatis ke WhatsApp tamu.
+
 ---
 
 ## 💰 Skema Kemitraan & Struktur Harga Khusus WO (Wholesale B2B)

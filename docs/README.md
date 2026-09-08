@@ -29,9 +29,9 @@ docs/
 | Berkas Dokumen | Judul Panduan | Target Pembaca | Topik Pembahasan Utama |
 | :--- | :--- | :--- | :--- |
 | [**AGENTS.md**](../AGENTS.md) | **Panduan & Aturan AI Coding Agent** | *AI Assistant / Developer* | 10 pilar aturan operasional AI Assistant: SemVer, Conventional Commits, Sync Docs, OWASP, & Clean Code. |
-| [**01-daftar-command.md**](01-daftar-command.md) | **Daftar Perintah CLI & Operasional** | *Developer / DevOps* | Perintah `npm`, migrasi & seeding MySQL, server Express, dev server Vite, kompilasi produksi, testing Vitest, load test Autocannon, & CLI deployment. |
-| [**02-buku-panduan-pengguna.md**](02-buku-panduan-pengguna.md) | **Buku Panduan Pengguna (User Manual)** | *Mempelai / Admin Operasional* | Panduan akses Admin Panel (`superadmin` / `password`), fitur ganti password, generator WhatsApp, modifikasi konten, monitoring RSVP, dan meja resepsi. |
-| [**03-developer-guide.md**](03-developer-guide.md) | **Panduan Arsitektur & Pengembang** | *Frontend / Full-Stack Engineer* | Arsitektur SPA React 19 + Node.js Express + MySQL + Socket.io, skema basis data relasional, REST API, sistem pembersihan disk otomatis (*auto-unlink*), dan multi-tema (35 tema). |
+| [**01-daftar-command.md**](01-daftar-command.md) | **Daftar Perintah CLI & Operasional** | *Developer / DevOps* | Perintah `npm`, migrasi & seeding MySQL, server Express, dev server Vite, kompilasi produksi, testing Vitest (35 tests), load test Autocannon, & CLI deployment. |
+| [**02-buku-panduan-pengguna.md**](02-buku-panduan-pengguna.md) | **Buku Panduan Pengguna (User Manual)** | *Mempelai / Admin Operasional* | Panduan akses Admin Panel (`superadmin` / `password`), fitur ganti password, broadcast WhatsApp (safe jitter), WhatsApp Gateway (Fonnte/WAHA/Twilio), modifikasi konten, monitoring RSVP, dan meja resepsi. |
+| [**03-developer-guide.md**](03-developer-guide.md) | **Panduan Arsitektur & Pengembang** | *Frontend / Full-Stack Engineer* | Arsitektur SPA React 19 + Express + MySQL + Socket.io, arsitektur WhatsApp Gateway multi-provider, skema basis data relasional, REST API, pembersihan disk otomatis, dan multi-tema (35 tema). |
 | [**04-panduan-deployment.md**](04-panduan-deployment.md) | **Panduan Deployment Multi-Platform** | *DevOps / SysAdmin / Webmaster* | Penerbitan produksi arsitektur *self-hosted* ke VPS Linux, cPanel, aaPanel, kalkulasi kapasitas multi-client 1 server, dan batasan hardware. |
 | [**05-panduan-bisnis-kemitraan-dan-sales-playbook.md**](05-panduan-bisnis-kemitraan-dan-sales-playbook.md) | **Panduan Bisnis & Sales Playbook** | *Owner / Business Dev / Sales* | Strategi kemitraan Wedding Organizer, taktik lead gen via Google Maps & Bridestory, cold outreach scripts, skema bagi hasil, dan objection handling. |
 | [**06-pitch-deck-one-pager-wo.md**](06-pitch-deck-one-pager-wo.md) | **Pitch Deck One-Pager untuk WO** | *Mitra Wedding Organizer* | Proposal kemitraan 1 halaman siap kirim: 5 fitur unggulan hari-H, scanner offline PWA, master report, paket wholesale WO, dan free trial 1 event. |
@@ -66,11 +66,11 @@ Pilih skenario kebutuhan Anda di bawah ini untuk langsung menuju langkah-langkah
 4. Buka browser pada alamat `http://localhost:3000`.
 5. Panduan perintah selengkapnya dapat dipelajari di [01-daftar-command.md](01-daftar-command.md).
 
-### 💌 2. Saya Ingin Membuat Link Undangan Khusus Tamu & Pesan WhatsApp
+### 💌 2. Saya Ingin Membuat Link Undangan Khusus Tamu & Siaran WhatsApp
 1. Buka URL login admin pada `http://localhost:3000/login` (setelah login URL otomatis berpindah ke `/modules`).
 2. Masukkan Username: **`superadmin`** dan Password: **`password`**.
-3. Pilih tab **Link Tamu Undangan**, masukkan nama tamu, lalu klik tombol **"Kirim / Bagikan via WhatsApp"**.
-4. Pelajari alur kerja lengkap di [02-buku-panduan-pengguna.md](02-buku-panduan-pengguna.md#3-modul-generator-link-tamu--pesan-whatsapp).
+3. Pilih menu **Generator Link WA**, klik tombol **"Kirim Broadcast WhatsApp"** untuk menyaring tamu berdasarkan status RSVP / Tier dan mengirim siaran massal berjadwal aman (safe delay jitter).
+4. Pelajari alur kerja lengkap di [02-buku-panduan-pengguna.md](02-buku-panduan-pengguna.md#7-modul-generator--manajemen-tamu-whatsapp-menu-3).
 
 ### ☁️ 3. Saya Ingin Men-deploy Undangan ke Server VPS Linux (Nginx + PM2)
 1. Siapkan VPS Ubuntu 22.04 LTS dan pasang Node.js, MySQL, Nginx, dan PM2.

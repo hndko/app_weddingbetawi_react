@@ -1,7 +1,7 @@
 {
   "name": "app_weddingbetawi_react",
   "private": true,
-  "version": "1.57.0",
+  "version": "1.57.1",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
@@ -71,5 +71,10 @@
     "@rollup/rollup-win32-x64-msvc": "^4.63.1",
     "@tailwindcss/oxide-win32-x64-msvc": "^4.3.3",
     "lightningcss-win32-x64-msvc": "^1.33.0"
+  },
+  "overrides": {
+    "hyperid": "^4.0.0",
+    "uuid": "^11.1.0",
+    "glob": "^13.0.6"
   }
 }

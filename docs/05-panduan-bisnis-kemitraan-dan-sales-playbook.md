@@ -205,34 +205,111 @@ Jika ada waktu santai 5 menit, kami sangat senang jika bisa berbagi demo singkat
 
 ## 6. Skema Harga & Model Kemitraan Bagi Hasil (Pricing Strategy)
 
-Agar WO tertarik dan antusias merekomendasikan platform Anda ke setiap calon pengantinnya, tawarkan opsi kemitraan yang saling menguntungkan (*Win-Win*):
+Agar Wedding Organizer (WO) dan vendor pernikahan antusias bermitra dan menjadikan platform Anda sebagai rekanan *default* di setiap *event* mereka, tetapkan skema penetapan harga yang jelas, memberikan margin profit menggiurkan bagi WO, serta transparan:
 
 ```text
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                       3 MODEL SKEMA HARGA KEMITRAAN                             │
-├──────────────────────────┬──────────────────────────┬───────────────────────────┤
-│ Model A: Revenue Share   │ Model B: Paket Bundling  │ Model C: Agensi / White   │
-│ (Komisi Per Proyek)      │ (Voucher Borongan WO)    │ Label Full System         │
-│ • Harga jual: Rp 350.000 │ • WO beli kuota 10 event │ • WO punya sistem sendiri │
-│ • Komisi WO: Rp 150.000  │ • Harga modal: Rp 150.000│ • Biaya langganan tahunan │
-│ • Bagian Anda: Rp 200.000│ • WO bebas mark-up harga │ • Bebas cetak tanpa limit │
-└──────────────────────────┴──────────────────────────┴───────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                             STRUKTUR HARGA REKOMENDASI (PRICING MATRIX)                          │
+├───────────────────────┬──────────────────────────┬─────────────────────────┬─────────────────────┤
+│ Tingkatan Paket       │ Harga Modal WO (B2B)     │ Harga Jual Pengantin    │ Profit Margin WO    │
+├───────────────────────┼──────────────────────────┼─────────────────────────┼─────────────────────┤
+│ 1. Basic / Silver     │ Rp 100.000 - Rp 120.000  │ Rp 250.000 - Rp 350.000 │ Rp 150.000 - 230.000│
+│ 2. Premium / Gold     │ Rp 150.000 - Rp 180.000  │ Rp 450.000 - Rp 650.000 │ Rp 300.000 - 470.000│
+│ 3. Sultan VIP Hari-H  │ Rp 250.000 - Rp 350.000  │ Rp 850.000 - 1.500.000  │ Rp 600.000 - 1.15jt │
+│ 4. White-Label Agensi │ Rp 350.000 - Rp 450.000  │ Bundling Paket WO       │ Nilai Tambah Eksklusif
+└───────────────────────┴──────────────────────────┴─────────────────────────┴─────────────────────┘
 ```
 
-### 💰 Model A: Revenue Share (Komisi Per Proyek) — *Paling Mudah Diterima Pemula*
-- **Harga Resmi ke Calon Pengantin**: Rp 350.000 - Rp 500.000.
-- **Komisi Tunai untuk WO**: **30% - 40% (Rp 100.000 - Rp 175.000 per pasangan)**.
-- **Tanggung Jawab**: Anda yang menangani setup input data pengantin, foto, dan lagu. WO hanya cukup menyodorkan link portofolio ke calon pengantin mereka. Begitu pengantin deal, komisi langsung ditransfer ke rekening WO.
+---
 
-### 💰 Model B: Paket Bundling Borongan (Prepaid License Voucher)
-- WO membeli paket lisensi di awal untuk dimasukkan ke dalam katalog brosur paket *All-in Wedding Organizer* mereka:
-  - **Paket 5 Event**: Rp 850.000 (Hanya Rp 170.000 / event).
-  - **Paket 15 Event**: Rp 2.250.000 (Hanya Rp 150.000 / event).
-- **Keuntungan WO**: Di dalam brosur mereka, mereka bisa menuliskan: *"Bonus Gratis Undangan Digital Luxury SPA senilai Rp 500.000"*. Pengantin merasa mendapatkan promo bernilai tinggi, sementara WO menghemat biaya dan operasional terbantu.
+### 📦 Rincian Tingkatan Paket & Fitur yang Ditawarkan
 
-### 💰 Model C: White-Label Agensi Eksklusif
-- Khusus untuk WO kelas atas yang ingin sistem ini tampil murni dengan nama brand mereka sendiri (`undangan.namawo.com`).
-- **Skema**: Biaya setup awal Rp 2.500.000 + Biaya server/pemeliharaan Rp 500.000/bulan atau Rp 100.000 per event yang berjalan.
+#### 🥉 Paket 1: Basic / Silver (Undangan Digital Standar)
+- **Target**: Calon pengantin dengan anggaran hemat atau acara syukuran keluarga sederhana.
+- **Fitur Termasuk**:
+  - Sampul Pembuka (*Opening Cover*) dengan personalisasi nama tamu (`?to=Nama+Tamu`).
+  - Hitung Mundur (*Countdown Timer*), Jadwal Akad & Resepsi, serta navigasi rute Google Maps dinamis.
+  - Formulir konfirmasi kehadiran RSVP & Dinding Doa Ucapan (*Wishes Stream*).
+  - Amplop Digital (Nomor Rekening Bank & Gambar Barcode QRIS).
+- **Rekomendasi Harga**:
+  - **Harga Modal ke WO (Wholesale)**: **Rp 100.000 - Rp 120.000 / event**.
+  - **Harga Jual Resmi ke Pengantin (SRP)**: **Rp 250.000 - Rp 350.000**.
+  - **Keuntungan WO**: **Rp 150.000 - Rp 230.000 (Margin 60% - 65%)**.
+
+#### 🥈 Paket 2: Premium / Gold (All Themes & Media Suite)
+- **Target**: Pengantin modern yang menginginkan visual estetik, musik latar beragam, dan galeri foto lengkap.
+- **Fitur Termasuk**:
+  - Seluruh fitur Paket Basic.
+  - Akses bebas memilih **35 Tema Pernikahan Eksklusif** (Adat Nusantara, Modern Pop Culture, Syar'i / Islami).
+  - Multi-Track Music Playlist (Repeat All, Repeat One, Shuffle, Linear) + Smart Auto-Ducking.
+  - Galeri Foto Prewedding HD (Maksimal 20 Foto terkompresi) + Storyboard Perjalanan Cinta (*Love Story*).
+  - Fitur Kuis Trivia Interaktif Mempelai & Generator Teks WhatsApp Otomatis.
+- **Rekomendasi Harga**:
+  - **Harga Modal ke WO (Wholesale)**: **Rp 150.000 - Rp 180.000 / event**.
+  - **Harga Jual Resmi ke Pengantin (SRP)**: **Rp 450.000 - Rp 650.000**.
+  - **Keuntungan WO**: **Rp 300.000 - Rp 470.000 (Margin 65% - 70%)**.
+
+#### 🥇 Paket 3: Sultan VIP Hari-H (Luxury & Operational Suite) — ⭐ *PRODUK TERLARIS (BESTSELLER)*
+- **Target**: Pengantin kelas menengah-atas, pernikahan di hotel/ballroom berbintang, dan WO profesional yang membutuhkan operasional lapangan tanpa kertas (*Paperless Reception*).
+- **Fitur Termasuk**:
+  - Seluruh fitur Paket Premium.
+  - **VIP Guest Tiering**: Klasifikasi tamu 4 tingkatan (`VVIP`, `VIP`, `Keluarga`, `Reguler`) lengkap dengan lencana mahkota emas dan alokasi nomor meja prioritas.
+  - **QR Digital Passcard**: Tamu menerima e-ticket kartu pass eksklusif (unduh PNG HD / PDF).
+  - **Meja Resepsi & Check-in Scanner Hari-H (Offline-First PWA)**: Kru WO dapat memindai tiket tamu via HP/tablet secara luring saat sinyal gedung drop, dilengkapi audio chime Web Audio API dan sinkronisasi otomatis.
+  - **Tracker Suvenir & Photobooth Anti-Ganda**: Mencegah kebocoran suvenir fisik di meja penerima tamu.
+  - **Live Wedding Rundown Broadcaster**: Siaran langsung status prosesi acara hari-H ke HP seluruh tamu via Socket.io.
+  - **Layar Proyektor Panggung Sinematik (`/live`)**: Layar panggung 16:9 yang menampilkan doa tamu masuk secara langsung.
+  - **Master WO Report Export**: Unduh rekapitulasi buku tamu, RSVP, dan alokasi meja dalam format Master Excel 4-Sheet & PDF A4 sekali klik.
+- **Rekomendasi Harga**:
+  - **Harga Modal ke WO (Wholesale)**: **Rp 250.000 - Rp 350.000 / event**.
+  - **Harga Jual Resmi ke Pengantin (SRP)**: **Rp 850.000 - Rp 1.500.000**.
+  - **Keuntungan WO**: **Rp 600.000 - Rp 1.150.000 (Margin 70% - 75%)**.
+
+#### 👑 Paket 4: White-Label Agensi Eksklusif (100% Identitas WO)
+- **Target**: Wedding Organizer papan atas yang ingin memiliki sistem undangan & *check-in* digital bermerek milik sendiri tanpa embel-embel vendor pihak ketiga.
+- **Fitur Termasuk**:
+  - Seluruh fitur Paket Sultan VIP Hari-H.
+  - **Custom Subdomain WO**: Menggunakan domain agensi WO (contoh: `undangan.royalwedding.id` atau `klien.namakreatifwo.com`).
+  - **Logo & Branding WO Penuh**: Logo WO tersemat elegan di cover pembuka, footer undangan, dan dokumen ekspor WO.
+  - **Zero Mari Partner Attribution**: Seluruh tulisan dan identitas Mari Partner dieliminasi 100%.
+- **Rekomendasi Harga**:
+  - **Harga Modal WO ke Anda**: **Rp 350.000 - Rp 450.000 / event** (atau sistem langganan kuota borongan).
+  - **Implementasi WO**: WO menyertakan sistem ini sebagai nilai jual utama dalam paket *All-in Wedding Organizer* mereka yang bernilai puluhan hingga ratusan juta rupiah.
+
+---
+
+### 🎟️ Skema Kuota Borongan untuk WO (Prepaid Voucher Bundle)
+
+Agar WO melakukan komitmen jangka panjang dan memberikan *cash flow* di depan, sediakan opsi pembelian kuota paket *voucher*:
+
+| Paket Voucher Kuota | Harga Total | Harga Efektif per Event | Benefit Tambahan untuk WO |
+| :--- | :---: | :---: | :--- |
+| **Paket Starter (5 Event)** | **Rp 875.000** | Rp 175.000 / event | Masa berlaku voucher 6 bulan. Cocok untuk WO yang baru mencoba. |
+| **Paket Pro Partner (10 Event)** | **Rp 1.500.000** | Rp 150.000 / event | Masa berlaku voucher 12 bulan. Prioritas antrean *setup* data. |
+| **Paket Elite VIP (25 Event)** | **Rp 3.125.000** | Rp 125.000 / event | Tanpa masa kadaluarsa (*Lifetime*), Free setup White-Label logo WO, support teknis prioritas hari-H. |
+
+---
+
+### 📈 Simulasi Finansial & Proyeksi Keuntungan Bulanan Anda
+
+Berikut adalah simulasi angka realistis berdasarkan biaya sewa server VPS dan kerja sama kemitraan WO:
+
+- **Pengeluaran Operasional (Opex)**:
+  - Sewa Server VPS (4 vCPU / 8 GB RAM): **Rp 350.000 / bulan**.
+  - Domain Utama (.com / .id): **Rp 20.000 / bulan** (Rp 240.000/tahun).
+  - **Total Biaya Bulanan: Rp 370.000 / bulan**.
+
+- **Skenario Penjualan (Hanya dengan 3 Mitra WO Aktif)**:
+  - 1 Mitra WO menangani rata-rata 6 - 8 event per bulan.
+  - Dari 3 WO, Anda menerima total **20 pesanan event per bulan**.
+  - Mengambil harga rata-rata Paket Premium/Sultan: **Rp 225.000 / event**.
+  - **Pemasukan Kotor (Gross Revenue)**: `20 event × Rp 225.000 = Rp 4.500.000 / bulan`.
+  - **Keuntungan Bersih (Net Profit)**: `Rp 4.500.000 - Rp 370.000 =` **Rp 4.130.000 / bulan**.
+  - **Net Profit Margin: > 91%!**
+
+> [!IMPORTANT]
+> **Hanya Butuh 2 Klien per Bulan untuk Balik Modal Server (Break-Even)**:  
+> Dengan biaya server Rp 350.000/bulan, Anda hanya butuh menjual **2 paket** seharga Rp 200.000 untuk menutup seluruh biaya server. Klien ke-3 dan seterusnya adalah **keuntungan murni 100% untuk Anda**.
 
 ---
 

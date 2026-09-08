@@ -8,6 +8,7 @@ Dokumen ini memuat instruksi langkah-demi-langkah yang teruji dan bebas dari tek
 4. [Deployment aaPanel Control Panel (Node.js Project Manager + Nginx)](#4-deployment-aapanel-control-panel)
 5. [Konfigurasi Environment Variables Produksi (.env)](#5-konfigurasi-environment-variables-produksi-env)
 6. [Daftar Periksa Pasca-Deployment (Production Checklist)](#6-daftar-periksa-pasca-deployment-production-checklist)
+7. [Rekomendasi Spesifikasi Server & Kalkulasi Skalabilitas Multi-Klien](#7-rekomendasi-spesifikasi-server--kalkulasi-skalabilitas-multi-klien)
 
 ---
 
@@ -588,3 +589,145 @@ Sebelum membagikan tautan undangan kepada para tamu dan keluarga, lakukan uji ve
 - [ ] **Uji Coba Konfirmasi RSVP**: Isi konfirmasi kehadiran dan pastikan data langsung tercatat di tabel RSVP Admin Panel.
 - [ ] **Personalisasi Nama Tamu**: Buka `https://domainanda.com/?to=Nama+Tamu` dan pastikan nama tamu tampil elegan di cover pembuka.
 - [ ] **Layar Proyektor Panggung**: Akses `https://domainanda.com/live` di layar panggung / videotron dan pastikan QR Code panggung serta audio chime berfungsi sempurna saat ada doa baru.
+
+---
+
+## 7. Rekomendasi Spesifikasi Server & Kalkulasi Skalabilitas Multi-Klien
+
+Bagian ini dirancang khusus bagi Anda yang ingin mengoperasikan **satu server VPS mandiri untuk menampung puluhan hingga ratusan proyek undangan klien** dengan model *deploy* terisolasi 1-per-1 (setiap klien memiliki folder *build*, proses port Node.js, dan database terpisah).
+
+### 🏛️ Arsitektur Multi-Instance (1 Server, N Proyek Klien)
+
+```text
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                         INTERNET / CLOUDFLARE DNS                                │
+│          klienA.domain.com              klienB.domain.com       ...              │
+└──────────────────────────────┬───────────────────────────┬───────────────────────┘
+                               ▼                           ▼
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                        NGINX REVERSE PROXY (:80 / :443)                          │
+│   • SSL Let's Encrypt Wildcard (*.domain.com) atau Individual Cert per Domain    │
+│   • Frontend Static: Langsung disajikan dari folder dist masing-masing klien     │
+│   • API & WebSocket: Reverse proxy ke Port internal PM2 masing-masing klien      │
+└──────────────────────────────┬───────────────────────────┬───────────────────────┘
+                               ▼                           ▼
+┌──────────────────────────────────────────────┐ ┌─────────────────────────────────┐
+│        PM2 PROSES KLIEN A (:5001)            │ │   PM2 PROSES KLIEN B (:5002)    │
+│   Folder: /var/www/weddings/klien_a/server   │ │   /var/www/weddings/klien_b/... │
+│   Node.js Memory Footprint: ~65 MB RSS       │ │   Node.js Memory: ~65 MB RSS    │
+└──────────────────────┬───────────────────────┘ └─────────────────┬───────────────┘
+                       ▼                                           ▼
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                       SHARED MYSQL / MARIADB ENGINE (:3306)                      │
+│   • Database Klien A: db_wedding_klien01       • Database Klien B: db_wedding_.. │
+│   • Isolasi Data 100% Aman (Satu klien tidak bisa mengakses data klien lain)     │
+└──────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 📊 Konsumsi Sumber Daya Nyata (*Resource Footprint*) per Klien
+
+Berdasarkan hasil uji beban (*Autocannon load test*) dan arsitektur SPA yang diterapkan:
+
+| Komponen Resource | Kondisi Standar (Masa Sebar Link) | Kondisi Puncak Hari-H (Resepsi) | Penjelasan Teknis |
+| :--- | :---: | :---: | :--- |
+| **RAM (Memori Node.js)** | **~50 - 75 MB** | **~85 - 120 MB** | 1 instance Node.js Express + Socket.io per klien. In-memory SWR config memakan < 5 MB. |
+| **CPU Utilization** | **< 1%** dari 1 vCPU | **8% - 20%** dari 1 vCPU | Server hanya aktif saat menerima request polling atau scan QR check-in panggung. |
+| **Ruang Disk (Storage)** | **~35 MB** | **~50 MB** | Kompresi Canvas browser klien membatasi foto maks 1400px (~200KB/foto). *Auto-unlink* file lama mencegah disk bocor. |
+| **Konsumsi Bandwidth** | **~500 MB** / event | **~1 - 2 GB** / event | Aset SPA terkompilasi (~1.2MB first load) + caching agresif browser (30 hari). |
+
+---
+
+### 🖥️ Matriks Rekomendasi Spesifikasi Server (VPS Linux)
+
+| Kategori | Spesifikasi Hardware | Estimasi Biaya Bulanan | Kapasitas Klien Aktif | Kapasitas Hari-H Bersamaan | Rekomendasi Provider |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **Tier 1: Starter (Pemula / Validasi Pasar)** | • **2 vCPU**<br>• **4 GB RAM**<br>• **60 - 80 GB** NVMe SSD<br>• Bandwidth 1 - 2 TB | Rp 150.000 - Rp 250.000<br>*(~$10 - $15 / bln)* | **15 - 25 Klien Aktif** | **5 - 8 Event Serentak** | IDCloudHost, DomaiNesia, Biznet Gio, Hetzner CPX21 |
+| **Tier 2: Business (Rekomendasi Utama WO)** | • **4 vCPU**<br>• **8 GB RAM**<br>• **120 - 160 GB** NVMe SSD<br>• Bandwidth 3 - 4 TB | Rp 350.000 - Rp 500.000<br>*(~$22 - $32 / bln)* | **40 - 65 Klien Aktif** | **15 - 22 Event Serentak** | Hetzner CPX31, DigitalOcean 8GB, Vultr High-Freq |
+| **Tier 3: Enterprise (Jaringan WO / Skala Besar)** | • **8 vCPU**<br>• **16 GB RAM**<br>• **250 - 400 GB** NVMe SSD<br>• Bandwidth 5+ TB | Rp 750.000 - Rp 1.100.000<br>*(~$50 - $70 / bln)* | **100 - 160+ Klien Aktif** | **35 - 50 Event Serentak** | Hetzner CPX41, Contabo Cloud VPS XL, Linode Dedicated |
+
+> [!TIP]
+> **Rekomendasi Terbaik untuk Memulai**: Pilihlah **Tier 2 (4 vCPU / 8 GB RAM)** seharga ~Rp 350.000 - Rp 500.000/bulan. Hanya dengan **2 atau 3 pesanan klien per bulan**, seluruh biaya operasional server sudah tertutup 100%, sementara kapasitasnya sanggup menampung hingga 50 klien aktif sekaligus!
+
+---
+
+### ⚠️ Batasan (*Limits*) & Bottleneck Teknis yang Wajib Diwaspadai
+
+Memahami batas kemampuan server akan melindungi Anda dari risiko server *down* saat resepsi berlangsung:
+
+#### 1. Batasan Memori RAM (Bottleneck Nomor 1)
+- Node.js adalah aplikasi berbasis proses. Jika Anda menjalankan 40 proses klien di PM2, alokasi memori murni Node.js adalah:  
+  `40 proses × 70 MB = ~2.8 GB RAM`.
+- Ditambah alokasi MySQL (`~1.5 GB`), Nginx (`~100 MB`), dan Kernel OS Linux (`~600 MB`), total konsumsi mencapai **~5.0 GB RAM**.
+- **Aturan**: Pada VPS 4 GB, batas aman adalah **20 - 25 proses PM2 aktif**. Pada VPS 8 GB, batas aman adalah **50 - 60 proses PM2 aktif**.
+
+#### 2. Batasan Koneksi Basis Data MySQL (`max_connections`)
+- Secara default, instalasi MySQL Linux membatasi `max_connections = 151`.
+- Jika setiap klien memiliki pool koneksi `connectionLimit: 15`, maka 15 klien saja sudah bisa menghabiskan `225` koneksi dan memicu error `Too many connections`!
+- **Solusi Wajib**: Edit file konfigurasi `/etc/mysql/mysql.conf.d/mysqld.cnf` dan naikkan batasnya:
+  ```ini
+  [mysqld]
+  max_connections = 600
+  wait_timeout = 60
+  interactive_timeout = 60
+  ```
+
+#### 3. Distribusi Trafik Puncak (Karakteristik Siklus Hari-H)
+- **90% acara resepsi pernikahan di Indonesia terjadi pada akhir pekan (Sabtu & Minggu)**, terpusat pada dua jendela waktu:
+  - *Sesi Siang*: Pukul 11:00 - 14:00 WIB.
+  - *Sesi Malam*: Pukul 18:30 - 21:30 WIB.
+- Artinya, memiliki 50 klien aktif **TIDAK BERARTI** ke-50 klien tersebut mengadakan resepsi di hari dan jam yang sama. Biasanya dalam satu akhir pekan hanya ada 3 sampai 8 event yang berjalan bersamaan. Sisa klien lainnya hanya berada dalam fase sebar link atau persiapan data yang beban servernya mendekati nol (< 0.1% CPU).
+
+#### 4. Strategi Pengarsipan Klien Usang (*Freeze & Archive Strategy*)
+- Undangan pernikahan memiliki batas waktu kadaluarsa alami (setelah hari-H resepsi selesai).
+- **Prosedur Pengarsipan (H+14 atau H+30 Pasca-Acara)**:
+  1. Hentikan proses PM2 klien bersangkutan:
+     ```bash
+     pm2 stop wedding-klien01 && pm2 delete wedding-klien01
+     ```
+  2. Backup database klien:
+     ```bash
+     mysqldump -u root -p db_wedding_klien01 > /var/backups/klien01_final.sql
+     ```
+  3. Konfigurasikan Nginx agar domain klien tetap menampilkan halaman statis arsip ucapan (atau di-*freeze*).
+- **Dampak Finansial**: Tindakan ini seketika **mengembalikan 70 MB RAM ke sistem**. Dengan strategi ini, server VPS 8 GB dapat melayani **300 hingga 500 klien per tahun** tanpa Anda perlu menambah biaya server sepeser pun!
+
+---
+
+### 🛠️ Alur Cepat Deploy Klien Baru (Port & Nginx Matrix)
+
+Untuk menjaga kerapian server, tetapkan standarisasi penomoran port dan direktori:
+
+```text
+/var/www/weddings/
+├── klien01_cecep_ipeh/    ➜ Port: 5001 ➜ DB: db_wedding_klien01 ➜ sub: cecepipeh.domain.com
+├── klien02_dimas_anisa/   ➜ Port: 5002 ➜ DB: db_wedding_klien02 ➜ sub: dimasanisa.domain.com
+├── klien03_rizky_zahra/   ➜ Port: 5003 ➜ DB: db_wedding_klien03 ➜ sub: rizkyzahra.domain.com
+└── ...
+```
+
+#### Langkah Cepat Menambahkan Klien Baru (5 Menit):
+```bash
+# 1. Duplikasi template proyek ke direktori klien baru
+cp -r /var/www/weddings/template /var/www/weddings/klien02_dimas_anisa
+
+# 2. Buat database terisolasi untuk klien baru
+mysql -u root -p -e "CREATE DATABASE db_wedding_klien02 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# 3. Sesuaikan .env klien baru (Port 5002 & DB Baru)
+nano /var/www/weddings/klien02_dimas_anisa/.env
+
+# 4. Migrasi & Seed data akun admin klien
+cd /var/www/weddings/klien02_dimas_anisa
+npm run db:migrate && npm run db:seed
+npm run build
+
+# 5. Daftarkan service backend ke PM2
+pm2 start server/src/index.ts --name "wedding-klien02" --interpreter tsx
+pm2 save
+
+# 6. Tambahkan Nginx server block untuk subdomain klien dan pasang SSL
+certbot --nginx -d dimasanisa.domain.com
+```
+

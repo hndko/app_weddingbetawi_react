@@ -45,8 +45,8 @@ Untuk panduan mendalam sesuai peran dan kebutuhan operasional, silakan telusuri 
 | 📟 **Daftar Perintah CLI** | [`docs/01-daftar-command.md`](docs/01-daftar-command.md) | Cheatsheet CLI harian, dev server, type checking, build produksi, & housekeeping. |
 | 📖 **Buku Panduan Pengguna** | [`docs/02-buku-panduan-pengguna.md`](docs/02-buku-panduan-pengguna.md) | Manual book pengantin: generator link WhatsApp, ubah data, upload foto, & RSVP. |
 | 🛠️ **Panduan Pengembang** | [`docs/03-developer-guide.md`](docs/03-developer-guide.md) | Arsitektur SPA React 19 + Node.js Express, basis data MySQL, Socket.io, OWASP, & siklus fitur baru. |
-| ☁️ **Panduan Deployment** | [`docs/04-panduan-deployment.md`](docs/04-panduan-deployment.md) | Panduan rilis self-hosted ke VPS Linux Ubuntu (Nginx + PM2), cPanel (Node.js Selector), dan aaPanel. |
-| 💼 **Sales & Partnership Playbook** | [`docs/05-panduan-bisnis-kemitraan-dan-sales-playbook.md`](docs/05-panduan-bisnis-kemitraan-dan-sales-playbook.md) | Strategi kemitraan B2B WO, taktik pencarian prospek via Google Maps/IG, skrip penawaran, & objection handling. |
+| ☁️ **Panduan Deployment** | [`docs/04-panduan-deployment.md`](docs/04-panduan-deployment.md) | Panduan rilis self-hosted ke VPS Linux Ubuntu (Nginx + PM2), cPanel, aaPanel, serta kalkulasi spek server multi-client & batasan kapasitas. |
+| 💼 **Sales & Partnership Playbook** | [`docs/05-panduan-bisnis-kemitraan-dan-sales-playbook.md`](docs/05-panduan-bisnis-kemitraan-dan-sales-playbook.md) | Strategi kemitraan B2B WO, matriks penetapan harga wholesale vs retail, paket kuota borongan WO, simulasi ROI, & objection handling. |
 
 ---
 

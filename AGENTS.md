@@ -270,7 +270,7 @@ Format: <type>(<scope>): <description>
 ### 🔄 10. Kewajiban Pengkinian Dokumen (Mandatory Sync)
 1. **Sinkronisasi AGENTS.md**: Setiap kali ada aturan baru atau penyesuaian panduan pengodean, **WAJIB** langsung dicatat dan diperbarui pada `AGENTS.md`.
 2. **Sinkronisasi Wajib & Berkelanjutan README.md**: Setiap kali ada penambahan fitur baru, perbaikan besar, perubahan arsitektur, penambahan tema, modifikasi alur, atau kenaikan versi, AI Assistant **WAJIB** langsung memperbarui `README.md` secara komprehensif agar selalu 100% mencerminkan konsep dan kapabilitas terkini (*Single Source of Truth* publik). Dilarang membiarkan `README.md` tertinggal atau usang (*stale*).
-3. **Sinkronisasi Docs Suite (`docs/`)**: Apabila terdapat penambahan perintah CLI baru, fitur admin baru, strategi bisnis, atau perubahan alur deploy, perbarui dokumen terkait di `docs/01-daftar-command.md`, `docs/02-buku-panduan-pengguna.md`, `docs/03-developer-guide.md`, `docs/04-panduan-deployment.md`, atau `docs/05-panduan-bisnis-kemitraan-dan-sales-playbook.md`.
+3. **Sinkronisasi Docs Suite (`docs/`)**: Apabila terdapat penambahan perintah CLI baru, fitur admin baru, strategi bisnis, atau perubahan alur deploy, perbarui dokumen terkait di `docs/01-daftar-command.md`, `docs/02-buku-panduan-pengguna.md`, `docs/03-developer-guide.md`, `docs/04-panduan-deployment.md`, `docs/05-panduan-bisnis-kemitraan-dan-sales-playbook.md`, `docs/06-pitch-deck-one-pager-wo.md`, `docs/07-formulir-onboarding-klien-baru.md`, atau `docs/08-panduan-skenario-demo-presentasi.md`.
 
 ---
 

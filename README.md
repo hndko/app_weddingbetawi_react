@@ -47,6 +47,9 @@ Untuk panduan mendalam sesuai peran dan kebutuhan operasional, silakan telusuri 
 | 🛠️ **Panduan Pengembang** | [`docs/03-developer-guide.md`](docs/03-developer-guide.md) | Arsitektur SPA React 19 + Node.js Express, basis data MySQL, Socket.io, OWASP, & siklus fitur baru. |
 | ☁️ **Panduan Deployment** | [`docs/04-panduan-deployment.md`](docs/04-panduan-deployment.md) | Panduan rilis self-hosted ke VPS Linux Ubuntu (Nginx + PM2), cPanel, aaPanel, serta kalkulasi spek server multi-client & batasan kapasitas. |
 | 💼 **Sales & Partnership Playbook** | [`docs/05-panduan-bisnis-kemitraan-dan-sales-playbook.md`](docs/05-panduan-bisnis-kemitraan-dan-sales-playbook.md) | Strategi kemitraan B2B WO, matriks penetapan harga wholesale vs retail, paket kuota borongan WO, simulasi ROI, & objection handling. |
+| 📄 **Pitch Deck One-Pager WO** | [`docs/06-pitch-deck-one-pager-wo.md`](docs/06-pitch-deck-one-pager-wo.md) | Proposal kemitraan 1 halaman siap kirim ke WO: 5 fitur killer hari-H, paket harga wholesale, dan tawaran 1 event gratis coba. |
+| 📋 **Formulir Onboarding Klien** | [`docs/07-formulir-onboarding-klien-baru.md`](docs/07-formulir-onboarding-klien-baru.md) | Template kuesioner WhatsApp siap salin untuk pengumpulan data pengantin dan format standar impor tamu Excel. |
+| 🎭 **Panduan Skenario Demo** | [`docs/08-panduan-skenario-demo-presentasi.md`](docs/08-panduan-skenario-demo-presentasi.md) | Alur presentasi langsung 10 menit memukau di depan WO: hook cover personalisasi, trik offline scanner, layar panggung, dan master report Excel. |
 
 ---
 

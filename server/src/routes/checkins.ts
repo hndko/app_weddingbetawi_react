@@ -62,6 +62,87 @@ export function createCheckinsRouter(io: SocketIOServer) {
     }
   });
 
+  // POST /api/checkins/sync - Batch sinkronisasi check-in luring dari antrean IndexedDB
+  router.post('/sync', async (req: Request, res: Response): Promise<void> => {
+    const { items } = req.body;
+    if (!Array.isArray(items) || items.length === 0) {
+      res.status(400).json({ error: 'Data batch items wajib berupa array non-kosong' });
+      return;
+    }
+
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+      let syncedCount = 0;
+
+      for (const item of items) {
+        if (!item || !item.name) continue;
+
+        const id = item.id || ('checkin_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex'));
+        const now = item.souvenirClaimed ? new Date() : null;
+
+        // Idempotent upsert check-in
+        await conn.query(
+          `INSERT INTO checkins (id, guest_id, name, check_in_time, actual_pax, tier, souvenir_claimed, souvenir_claimed_at, table_number, source, notes) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+           ON DUPLICATE KEY UPDATE 
+             actual_pax = VALUES(actual_pax),
+             souvenir_claimed = VALUES(souvenir_claimed),
+             souvenir_claimed_at = COALESCE(checkins.souvenir_claimed_at, VALUES(souvenir_claimed_at)),
+             table_number = COALESCE(VALUES(table_number), checkins.table_number)`,
+          [
+            id,
+            item.guestId || null,
+            item.name,
+            item.checkInTime || new Date().toISOString(),
+            item.actualPax || 1,
+            item.tier || 'regular',
+            item.souvenirClaimed ? 1 : 0,
+            now,
+            item.tableNumber || null,
+            item.source || 'offline_sync',
+            item.notes || null,
+          ]
+        );
+
+        // Jika ada guestId yang cocok, sinkronkan juga status buku tamu
+        if (item.guestId) {
+          await conn.query(
+            `UPDATE guests 
+             SET checked_in = 1, 
+                 check_in_time = COALESCE(check_in_time, ?),
+                 actual_pax = ?,
+                 souvenir_claimed = CASE WHEN ? = 1 THEN 1 ELSE souvenir_claimed END,
+                 souvenir_claimed_at = CASE WHEN ? = 1 AND souvenir_claimed_at IS NULL THEN ? ELSE souvenir_claimed_at END,
+                 table_number = COALESCE(?, table_number)
+             WHERE id = ?`,
+            [
+              item.checkInTime || new Date().toISOString(),
+              item.actualPax || 1,
+              item.souvenirClaimed ? 1 : 0,
+              item.souvenirClaimed ? 1 : 0,
+              now,
+              item.tableNumber || null,
+              item.guestId,
+            ]
+          );
+        }
+
+        syncedCount++;
+      }
+
+      await conn.commit();
+      io.emit('checkins:synced', { count: syncedCount });
+      res.json({ success: true, syncedCount });
+    } catch (error) {
+      await conn.rollback();
+      console.error('[API Checkins Sync Error]:', error);
+      res.status(500).json({ error: 'Gagal menyinkronkan antrean check-in offline' });
+    } finally {
+      conn.release();
+    }
+  });
+
   // PATCH /api/checkins/:id/souvenir - Toggle souvenir status untuk log check-in dan tamu
   router.patch('/:id/souvenir', async (req: Request, res: Response): Promise<void> => {
     try {

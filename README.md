@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.51.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.52.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -246,6 +246,20 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
 ---
 
 ## ✨ Fitur Utama
+
+### 📱 PWA & Offline-First Meja Resepsi Hari-H (v1.52.0)
+- **Operasional Hari-H Tahan Gangguan Sinyal (*Zero Venue Downtime*)**:
+  - Meja penerima tamu (`ReceptionCheckin.tsx`) dipersenjatai penyimpanan lokal **IndexedDB** (`mari_partner_offline_v1`) yang menyimpan snapshot seluruh daftar tamu dan alokasi meja secara luring.
+  - Saat koneksi internet venue/gedung terputus, panitia tetap dapat memindai tiket QR Pass, memeriksa nama tamu secara manual, dan mencatat kehadiran fisik (+ suvenir) tanpa *lag* ataupun pesan galat.
+  - **Optimistic Local Queue & Audio Feedback**: Setiap check-in offline langsung tercatat di state antrean lokal, menaikkan counter ballroom seketika, dan memicu nada chime sukses Web Audio API.
+  - **Auto-Sync & Manual Sync**: Saat sinyal internet kembali stabil (`online` event), antrean check-in otomatis disinkronkan ke server secara massal melalui endpoint atomik `POST /api/checkins/sync` disertai tombol sinkronisasi manual berstatus badge.
+  - **Instalasi PWA 1-Klik**: Dukungan penuh *Web App Manifest* dan *Service Worker Workbox* memungkinkan panitia memasang aplikasi meja resepsi langsung di layar beranda HP/tablet (*Standalone App Mode*).
+
+### 🧪 Enterprise Automated Testing & Load Testing Suite (v1.52.0)
+- **Suite Pengujian Unit & Integrasi REST API (Vitest & Supertest)**:
+  - Eksekusi instan melalui `npm test` mencakup 19 test cases komprehensif: dekoder dan verifikator tiket QR (`qrGenerator.test.ts`), Web Audio synthesizer (`audioBeep.test.ts`), IndexedDB fallback store (`offlineCheckinStore.test.ts`), serta proteksi endpoint Express (`api.test.ts`).
+- **Skrip Load & Stress Testing Autocannon (`npm run test:load`)**:
+  - Tolok ukur (*benchmark*) lonjakan 500-1000 koneksi simultan membuktikan throughput backend mencapai **> 960 req/detik** pada `GET /api/config` (in-memory SWR cache) dan **> 1.090 req/detik** pada `GET /api/wishes` dengan **0% server error** di bawah beban berat.
 
 ### 👑 Luxury & Wedding Organizer (WO) Partnership Suite (v1.49.0)
 - **VIP Guest Tiering & Dedicated Access Pass**:

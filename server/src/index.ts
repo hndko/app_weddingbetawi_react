@@ -146,11 +146,16 @@ if (fs.existsSync(distPath)) {
   });
 }
 
-// Start server
-server.listen(port, '0.0.0.0', () => {
-  console.log(`========================================================`);
-  console.log(`🚀 REST API & Socket.io Gateway aktif di http://localhost:${port}`);
-  console.log(`📁 Static uploads folder: ${uploadsPath}`);
-  console.log(`🔌 Database: MySQL (${process.env.DB_NAME || 'db_weddingbetawi'})`);
-  console.log(`========================================================`);
-});
+// Start server (kecuali saat dijalankan di lingkungan pengujian unit/integration)
+if (process.env.NODE_ENV !== 'test') {
+  server.listen(port, '0.0.0.0', () => {
+    console.log(`========================================================`);
+    console.log(`🚀 REST API & Socket.io Gateway aktif di http://localhost:${port}`);
+    console.log(`📁 Static uploads folder: ${uploadsPath}`);
+    console.log(`🔌 Database: MySQL (${process.env.DB_NAME || 'db_weddingbetawi'})`);
+    console.log(`========================================================`);
+  });
+}
+
+export { app, server, io };
+

@@ -21,6 +21,9 @@ import {
   UserCheck,
   Sparkles,
   FileText,
+  Wifi,
+  WifiOff,
+  Smartphone,
 } from 'lucide-react';
 import jsQR from 'jsqr';
 import { api } from '../../../services/api';
@@ -28,6 +31,12 @@ import { useWeddingConfig } from '../../../context/WeddingContext';
 import { playSuccessBeep, playWarningBeep } from '../../../utils/audioBeep';
 import { parseGuestPayload, generateTicketCode } from '../../../utils/qrGenerator';
 import { renderGuestPassCanvas, downloadPassImage, downloadPassPDF } from '../../../utils/digitalPassGenerator';
+import {
+  saveOfflineCheckin,
+  getPendingCheckins,
+  cacheOfflineGuestsAndTables,
+  syncOfflineCheckinsToServer,
+} from '../../../utils/offlineCheckinStore';
 import type { GuestInvitation, RSVPResponse, CheckInRecord, WeddingTable, GuestTier } from '../../../types';
 import { VipAccessBadge } from '../../frontend/shared/components/VipAccessBadge';
 
@@ -116,6 +125,15 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
   const [deleteTarget, setDeleteTarget] = useState<CheckInRecord | null>(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
+  // Network & Offline Queue States
+  const [isOnline, setIsOnline] = useState<boolean>(
+    typeof navigator !== 'undefined' ? navigator.onLine : true
+  );
+  const [pendingOfflineCount, setPendingOfflineCount] = useState<number>(0);
+  const [isSyncingOffline, setIsSyncingOffline] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+
   // Load checkins and wedding tables from backend
   const loadCheckinsAndTables = async () => {
     try {
@@ -130,9 +148,86 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
     }
   };
 
+  // Refresh pending count from IndexedDB
+  const refreshPendingOfflineCount = useCallback(async () => {
+    try {
+      const pending = await getPendingCheckins();
+      setPendingOfflineCount(pending.length);
+    } catch {
+      // safe fallback
+    }
+  }, []);
+
+  // Sync offline check-in queue to backend
+  const handleSyncOfflineQueue = useCallback(async () => {
+    if (!navigator.onLine || isSyncingOffline) return;
+    setIsSyncingOffline(true);
+    try {
+      const result = await syncOfflineCheckinsToServer((items) => api.syncCheckins(items));
+      if (result.syncedCount > 0) {
+        showToast('success', `✅ ${result.syncedCount} data check-in offline berhasil disinkronkan ke server!`);
+        await loadCheckinsAndTables();
+      }
+      setPendingOfflineCount(result.remainingCount);
+    } catch (err) {
+      console.warn('[Reception] Gagal sinkronisasi offline check-in:', err);
+    } finally {
+      setIsSyncingOffline(false);
+    }
+  }, [isSyncingOffline, showToast]);
+
   useEffect(() => {
     loadCheckinsAndTables();
-  }, []);
+    refreshPendingOfflineCount();
+
+    const handleOnline = () => {
+      setIsOnline(true);
+      showToast('success', 'Koneksi internet pulih. Memulai sinkronisasi antrean...');
+      handleSyncOfflineQueue();
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      showToast('error', 'Koneksi internet terputus. Beralih ke Mode Check-in Offline.');
+    };
+
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, [handleSyncOfflineQueue, refreshPendingOfflineCount, showToast]);
+
+  // Snapshot guests & tables into IndexedDB for offline search
+  useEffect(() => {
+    if (guests.length > 0 || tables.length > 0) {
+      cacheOfflineGuestsAndTables(guests, tables);
+    }
+  }, [guests, tables]);
+
+  // Trigger PWA installation
+  const handleTriggerInstall = async () => {
+    if (!installPrompt) return;
+    try {
+      await installPrompt.prompt();
+      const choiceResult = await installPrompt.userChoice;
+      if (choiceResult.outcome === 'accepted') {
+        showToast('success', 'Aplikasi meja resepsi berhasil dipasang di perangkat!');
+        setInstallPrompt(null);
+      }
+    } catch {
+      // safe fallback
+    }
+  };
 
   // Stop camera media stream
   const stopCameraStream = useCallback(() => {
@@ -330,32 +425,59 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
     }
   }, [cameraFacing, isCameraActive, startCameraStream]);
 
-  // Save / Update Check-In
+  // Save / Update Check-In (Offline-First Hybrid)
   const handleConfirmCheckin = async () => {
     if (!pendingCheckin) return;
     setIsSubmittingCheckin(true);
 
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+    const checkinPayload: CheckInRecord = {
+      guestId: pendingCheckin.guestId || '',
+      name: pendingCheckin.name,
+      checkInTime: timeStr,
+      actualPax: pendingCheckin.actualPax,
+      tier: pendingCheckin.tier || 'regular',
+      souvenirClaimed: pendingCheckin.souvenirClaimed,
+      souvenirClaimedAt: pendingCheckin.souvenirClaimed ? now.toISOString() : undefined,
+      tableNumber: pendingCheckin.tableNumber || '',
+      source: pendingCheckin.source,
+      notes: pendingCheckin.vipNotes || undefined,
+    };
+
+    // Mode A: Perangkat sedang Offline murni
+    if (!navigator.onLine) {
+      try {
+        const offlineId = `offline_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        const offlineRecord: CheckInRecord = { ...checkinPayload, id: offlineId };
+
+        await saveOfflineCheckin(offlineRecord);
+        setCheckins((prev) => [offlineRecord, ...prev]);
+        setPendingOfflineCount((prev) => prev + 1);
+        playSuccessBeep();
+
+        showToast(
+          'success',
+          `⚡ Mode Offline: Check-in "${pendingCheckin.name}" (${pendingCheckin.actualPax} Pax) disimpan lokal!`
+        );
+        setPendingCheckin(null);
+      } catch {
+        showToast('error', 'Gagal menyimpan check-in ke penyimpanan offline lokal.');
+      } finally {
+        setIsSubmittingCheckin(false);
+      }
+      return;
+    }
+
+    // Mode B: Online
     try {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      });
+      await api.createCheckin(checkinPayload);
 
-      // 1. Record checkin to database
-      await api.createCheckin({
-        guestId: pendingCheckin.guestId || '',
-        name: pendingCheckin.name,
-        checkInTime: timeStr,
-        actualPax: pendingCheckin.actualPax,
-        tier: pendingCheckin.tier || 'regular',
-        souvenirClaimed: pendingCheckin.souvenirClaimed,
-        tableNumber: pendingCheckin.tableNumber || '',
-        source: pendingCheckin.source,
-      });
-
-      // 2. Also update matching guest doc if exists
       if (pendingCheckin.guestId) {
         try {
           await api.checkInGuest(pendingCheckin.guestId, { autoClaimSouvenir: pendingCheckin.souvenirClaimed });
@@ -365,6 +487,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       }
 
       await loadCheckinsAndTables();
+      playSuccessBeep();
 
       showToast(
         'success',
@@ -372,7 +495,24 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       );
       setPendingCheckin(null);
     } catch {
-      showToast('error', 'Gagal menyimpan check-in ke database.');
+      // Jika request online gagal (misal sinyal venue drop seketika), fallback simpan ke IndexedDB
+      try {
+        const offlineId = `offline_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        const offlineRecord: CheckInRecord = { ...checkinPayload, id: offlineId };
+
+        await saveOfflineCheckin(offlineRecord);
+        setCheckins((prev) => [offlineRecord, ...prev]);
+        setPendingOfflineCount((prev) => prev + 1);
+        playSuccessBeep();
+
+        showToast(
+          'success',
+          `Sinyal terganggu: Check-in "${pendingCheckin.name}" diamankan di antrean offline lokal.`
+        );
+        setPendingCheckin(null);
+      } catch {
+        showToast('error', 'Gagal menyimpan check-in ke database maupun penyimpanan offline.');
+      }
     } finally {
       setIsSubmittingCheckin(false);
     }
@@ -618,7 +758,46 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+          {/* Offline/Online Status Indicator & Auto-Sync Trigger */}
+          {isOnline ? (
+            pendingOfflineCount === 0 ? (
+              <span className="px-3 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-2xs">
+                <Wifi size={14} className="text-emerald-600" />
+                <span>Online</span>
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={handleSyncOfflineQueue}
+                disabled={isSyncingOffline}
+                className="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+                title="Ada data check-in lokal tersimpan. Klik untuk sinkronkan ke server sekarang."
+              >
+                <RefreshCw size={14} className={isSyncingOffline ? 'animate-spin' : ''} />
+                <span>{isSyncingOffline ? 'Menyinkronkan...' : `Sinkronkan (${pendingOfflineCount})`}</span>
+              </button>
+            )
+          ) : (
+            <span className="px-3 py-2 bg-amber-50 border border-amber-300 text-amber-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-2xs">
+              <WifiOff size={14} className="text-amber-600 animate-pulse" />
+              <span>Offline ({pendingOfflineCount} antrean)</span>
+            </span>
+          )}
+
+          {/* PWA Install Button jika didukung browser */}
+          {installPrompt && (
+            <button
+              type="button"
+              onClick={handleTriggerInstall}
+              className="px-3 py-2 bg-sage/20 border border-sage/40 text-sage-dark hover:bg-sage/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+              title="Pasang aplikasi meja resepsi ke layar utama perangkat"
+            >
+              <Smartphone size={14} />
+              <span>Install App</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={handleExportCSV}

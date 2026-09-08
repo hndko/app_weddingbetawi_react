@@ -209,9 +209,9 @@ export function MusicPlayer({ isOpened }: MusicPlayerProps) {
     setIsMuted((prev) => !prev);
   };
 
-  // Load YouTube IFrame API script once if YouTube URL is used
+  // Load YouTube IFrame API script once if YouTube URL is used and invitation is opened
   useEffect(() => {
-    if (!isYouTube) return;
+    if (!isYouTube || !isOpened) return;
 
     if (window.YT && window.YT.Player) {
       setYtApiReady(true);
@@ -223,6 +223,7 @@ export function MusicPlayer({ isOpened }: MusicPlayerProps) {
       const tag = document.createElement('script');
       tag.id = 'youtube-iframe-api';
       tag.src = 'https://www.youtube.com/iframe_api';
+      tag.async = true;
       document.head.appendChild(tag);
     }
 
@@ -231,7 +232,7 @@ export function MusicPlayer({ isOpened }: MusicPlayerProps) {
       if (prevHandler) prevHandler();
       setYtApiReady(true);
     };
-  }, [isYouTube]);
+  }, [isYouTube, isOpened]);
 
   // Unified playback navigator: safely transitions or rewinds current track
   const playTrackAtIndex = useCallback((index: number) => {
@@ -386,7 +387,7 @@ export function MusicPlayer({ isOpened }: MusicPlayerProps) {
 
   // Initialize or update YouTube Player
   useEffect(() => {
-    if (!isYouTube || !ytApiReady || !ytVideoId || !ytContainerRef.current) return;
+    if (!isYouTube || !ytApiReady || !ytVideoId || !ytContainerRef.current || !isOpened) return;
 
     if (ytPlayerRef.current && typeof ytPlayerRef.current.loadVideoById === 'function') {
       if (currentYtVideoIdRef.current !== ytVideoId) {
@@ -515,7 +516,7 @@ export function MusicPlayer({ isOpened }: MusicPlayerProps) {
     };
 
     window.addEventListener('click', unlockAudio, { once: true });
-    window.addEventListener('touchstart', unlockAudio, { once: true });
+    window.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
 
     return () => {
       window.removeEventListener('click', unlockAudio);

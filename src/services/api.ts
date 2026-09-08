@@ -285,6 +285,11 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(record),
     }),
+  syncCheckins: (items: CheckInRecord[]): Promise<{ success: boolean; syncedCount: number }> =>
+    request('/checkins/sync', {
+      method: 'POST',
+      body: JSON.stringify({ items }),
+    }),
   claimCheckinSouvenir: (id: string, claimed: boolean = true): Promise<{ success: boolean; souvenirClaimed: boolean }> =>
     request(`/checkins/${encodeURIComponent(id)}/souvenir`, {
       method: 'PATCH',

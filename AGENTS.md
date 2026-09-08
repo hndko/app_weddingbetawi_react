@@ -8,8 +8,8 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.51.0`
-- **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
+- **Versi Aplikasi Saat Ini**: `v1.52.0`
+- **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23, PWA (Workbox), Vitest, Autocannon
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
 
@@ -199,6 +199,10 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
     - Impor batch tamu undangan (`POST /api/guests`) WAJIB menggunakan satu transaksi atomik MySQL (`beginTransaction`, `commit`, `rollback`) dengan pemecahan paket kueri per 500 baris. DILARANG mengeksekusi kueri satu per satu dalam loop tanpa transaksi.
 11. **Proteksi Kunci Jawaban Kuis Trivia di Server (`POST /api/trivia/verify`)**:
     - Endpoint kuis publik `GET /api/trivia` menyensor kolom `correct_index` dan `explanation`. Verifikasi jawaban kuis wajib dilakukan secara aman di sisi server via `POST /api/trivia/verify` guna mengeliminasi kecurangan tamu via DevTools Network inspection.
+12. **Protokol PWA & Offline-First Meja Resepsi Hari-H (`offlineCheckinStore.ts` & Workbox)**:
+    - Meja resepsi (`ReceptionCheckin.tsx`) menerapkan arsitektur offline-first menggunakan IndexedDB browser (`mari_partner_offline_v1`) untuk snapshot daftar tamu, penataan meja, dan antrean check-in fisik saat sinyal seluler/Wi-Fi venue drop.
+    - Saat offline, check-in diperbarui seketika (*optimistic UI*), memainkan nada chime Web Audio API, dan disimpan dalam antrean lokal.
+    - Begitu koneksi pulih (`online` event), antrean disinkronkan secara atomik dan idempoten ke backend melalui `POST /api/checkins/sync` disertai tombol sinkronisasi manual.
 
 ---
 
@@ -215,8 +219,17 @@ Sebelum menyatakan tugas selesai atau melakukan commit, AI Assistant WAJIB melak
    npm run lint  # (tsc --noEmit)
    ```
    Wajib menghasilkan exit code 0 tanpa error tipe apa pun.
-2. **Production Build Check**: Dilewati sesuai User Directive di atas, kecuali diminta secara eksplisit oleh pengguna.
-3. **Console Hygiene Check**: Pastikan tidak ada runtime crash atau error unhandled promise di browser.
+2. **Automated Unit & Integration Tests**: Jalankan suite pengujian Vitest:
+   ```bash
+   npm test  # (vitest run)
+   ```
+   Seluruh test case (utilitas tiket QR, synthesizer audio, IndexedDB fallback, dan Express REST API integration) wajib lulus 100%.
+3. **High-Concurrency Load Testing (Benchmark)**: Uji ketahanan server menggunakan Autocannon:
+   ```bash
+   npm run test:load  # (tsx server/loadtest/benchmark.ts)
+   ```
+   Memvalidasi performa in-memory caching SWR, throughput > 900 RPS, dan p95 latency dengan 0% server error.
+4. **Console Hygiene Check**: Pastikan tidak ada runtime crash, error unhandled promise, atau violation Chrome DevTools di browser.
 
 ---
 

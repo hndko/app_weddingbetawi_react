@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3d4e44"/>
+      <stop offset="50%" stop-color="#2a3830"/>
+      <stop offset="100%" stop-color="#18221d"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F9E29D"/>
+      <stop offset="50%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#AA820A"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas with Rounded Border for Standalone App Icon -->
+  <rect width="512" height="512" rx="108" fill="url(#bgGrad)"/>
+  
+  <!-- Outer Gold Luxury Filigree Ring -->
+  <circle cx="256" cy="256" r="216" fill="none" stroke="url(#goldGrad)" stroke-width="4" stroke-opacity="0.5"/>
+  <circle cx="256" cy="256" r="202" fill="none" stroke="url(#goldGrad)" stroke-width="2" stroke-dasharray="6 6" stroke-opacity="0.75"/>
+  <circle cx="256" cy="256" r="186" fill="none" stroke="url(#goldGrad)" stroke-width="6" filter="url(#shadow)"/>
+
+  <!-- Four Ornamental Floral Accents at Cardinal Directions -->
+  <circle cx="256" cy="70" r="10" fill="url(#goldGrad)"/>
+  <circle cx="256" cy="442" r="10" fill="url(#goldGrad)"/>
+  <circle cx="70" cy="256" r="10" fill="url(#goldGrad)"/>
+  <circle cx="442" cy="256" r="10" fill="url(#goldGrad)"/>
+
+  <!-- Interlocking Double Wedding Rings with Diamond Accent -->
+  <g filter="url(#shadow)" transform="translate(0, -10)">
+    <!-- Left Ring -->
+    <circle cx="216" cy="256" r="76" fill="none" stroke="url(#goldGrad)" stroke-width="14"/>
+    <!-- Right Ring -->
+    <circle cx="296" cy="256" r="76" fill="none" stroke="url(#goldGrad)" stroke-width="14"/>
+    <!-- Overlap Cutout Effect -->
+    <path d="M 270 200 A 76 76 0 0 1 270 312" fill="none" stroke="url(#goldGrad)" stroke-width="14" stroke-linecap="round"/>
+    <!-- Solitaire Diamond Accent -->
+    <polygon points="216,162 230,178 216,194 202,178" fill="#FFF9ED" stroke="url(#goldGrad)" stroke-width="2"/>
+    <circle cx="216" cy="178" r="4" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Elegant Monogram Ribbon / Text Pill -->
+  <g transform="translate(0, 70)">
+    <rect x="146" y="270" width="220" height="42" rx="21" fill="#18221D" stroke="url(#goldGrad)" stroke-width="2" filter="url(#shadow)"/>
+    <text x="256" y="297" font-family="'Cinzel', 'Playfair Display', Georgia, serif" font-size="18" font-weight="bold" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="4">
+      MARI PARTNER
+    </text>
+  </g>
+</svg>

@@ -172,26 +172,79 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
   const activeQuestions = questions.length > 0 ? questions : defaultQuestions;
   const currentQ = activeQuestions[currentIdx];
 
+  // Server verification response state (Pilar 3 & Stage 2 Security)
+  const [answeredResult, setAnsweredResult] = useState<{ isCorrect: boolean; correctAnswerIndex: number; explanation?: string } | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+
   const handleStartGame = () => {
     setCurrentIdx(0);
     setSelectedOption(null);
     setIsAnswered(false);
+    setAnsweredResult(null);
     setScore(0);
     setScoreSaved(false);
     setGameState('playing');
   };
 
-  const handleSelectOption = (idx: number) => {
-    if (isAnswered || selectedOption !== null) return;
+  const handleSelectOption = async (idx: number) => {
+    if (isAnswered || selectedOption !== null || isVerifying) return;
     setSelectedOption(idx);
-    setIsAnswered(true);
+    setIsVerifying(true);
 
-    const isCorrect = idx === currentQ.correctAnswerIndex;
-    if (isCorrect) {
-      setScore((prev) => Math.min(activeQuestions.length, prev + 1));
-      playCorrectSound();
-    } else {
-      playWrongSound();
+    try {
+      if (currentQ?.id && !currentQ.id.startsWith('default_')) {
+        // Verifikasi langsung ke server backend MySQL
+        const verifyRes = await api.verifyTriviaAnswer({ questionId: currentQ.id, selectedIndex: idx });
+        setAnsweredResult({
+          isCorrect: verifyRes.isCorrect,
+          correctAnswerIndex: verifyRes.correctAnswerIndex,
+          explanation: verifyRes.explanation,
+        });
+        setIsAnswered(true);
+
+        if (verifyRes.isCorrect) {
+          setScore((prev) => Math.min(activeQuestions.length, prev + 1));
+          playCorrectSound();
+        } else {
+          playWrongSound();
+        }
+      } else {
+        // Fallback untuk kuis offline bawaan
+        const localCorrect = currentQ?.correctAnswerIndex ?? 0;
+        const isCorrect = idx === localCorrect;
+        setAnsweredResult({
+          isCorrect,
+          correctAnswerIndex: localCorrect,
+          explanation: currentQ?.explanation,
+        });
+        setIsAnswered(true);
+
+        if (isCorrect) {
+          setScore((prev) => Math.min(activeQuestions.length, prev + 1));
+          playCorrectSound();
+        } else {
+          playWrongSound();
+        }
+      }
+    } catch {
+      // Graceful offline fallback jika koneksi jaringan terganggu
+      const localCorrect = currentQ?.correctAnswerIndex ?? 0;
+      const isCorrect = idx === localCorrect;
+      setAnsweredResult({
+        isCorrect,
+        correctAnswerIndex: localCorrect,
+        explanation: currentQ?.explanation,
+      });
+      setIsAnswered(true);
+
+      if (isCorrect) {
+        setScore((prev) => Math.min(activeQuestions.length, prev + 1));
+        playCorrectSound();
+      } else {
+        playWrongSound();
+      }
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -200,6 +253,7 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
       setCurrentIdx((prev) => prev + 1);
       setSelectedOption(null);
       setIsAnswered(false);
+      setAnsweredResult(null);
     } else {
       // Quiz Finished
       playVictoryFanfare();
@@ -421,7 +475,8 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
                 <div className="space-y-2.5 mb-4">
                   {currentQ.options.map((opt, oIdx) => {
                     const isSelected = selectedOption === oIdx;
-                    const isCorrect = oIdx === currentQ.correctAnswerIndex;
+                    const verifiedCorrectIdx = answeredResult !== null ? answeredResult.correctAnswerIndex : currentQ.correctAnswerIndex;
+                    const isCorrect = oIdx === verifiedCorrectIdx;
                     
                     let btnStyle = "bg-white/[0.05] border-white/10 text-white/90 hover:bg-white/10 hover:border-white/20";
                     let badgeLetterStyle = "bg-white/10 text-white/80";
@@ -445,7 +500,7 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
                         key={oIdx}
                         type="button"
                         onClick={() => handleSelectOption(oIdx)}
-                        disabled={isAnswered}
+                        disabled={isAnswered || isVerifying}
                         className={`w-full p-3 rounded-2xl border text-left flex items-center justify-between gap-3 transition-all ${btnStyle}`}
                       >
                         <div className="flex items-center gap-3">
@@ -466,20 +521,24 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
                 </div>
 
                 {/* Explanation Card */}
-                {isAnswered && currentQ.explanation && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3.5 mb-4 text-left"
-                  >
-                    <p className="text-[11px] font-bold text-amber-400 flex items-center gap-1.5 mb-1">
-                      <Sparkles size={13} /> Fakta Cerita:
-                    </p>
-                    <p className="text-xs text-white/80 leading-relaxed">
-                      {currentQ.explanation}
-                    </p>
-                  </motion.div>
-                )}
+                {(() => {
+                  const explanationText = answeredResult?.explanation || currentQ.explanation;
+                  if (!isAnswered || !explanationText) return null;
+                  return (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3.5 mb-4 text-left"
+                    >
+                      <p className="text-[11px] font-bold text-amber-400 flex items-center gap-1.5 mb-1">
+                        <Sparkles size={13} /> Fakta Cerita:
+                      </p>
+                      <p className="text-xs text-white/80 leading-relaxed">
+                        {explanationText}
+                      </p>
+                    </motion.div>
+                  );
+                })()}
 
                 {/* Next Button */}
                 {isAnswered && (

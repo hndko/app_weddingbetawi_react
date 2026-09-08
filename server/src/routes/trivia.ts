@@ -7,18 +7,26 @@ import { authenticateJwt } from '../middleware/auth';
 export function createTriviaRouter(io: SocketIOServer) {
   const router = Router();
 
-  // GET /api/trivia - Ambil semua pertanyaan kuis trivia (Publik untuk tamu yang bermain kuis)
+  // GET /api/trivia - Ambil semua pertanyaan kuis trivia (Publik untuk tamu)
+  // Kunci jawaban (correct_index) dan penjelasan (explanation) DISENSOR untuk mencegah kecurangan via DevTools
   router.get('/', async (_req: Request, res: Response): Promise<void> => {
     try {
       const [rows] = await pool.query(
-        `SELECT id, question, options, correct_index as correctIndex, explanation, order_index as orderIndex 
+        `SELECT id, question, options, order_index as orderIndex 
          FROM trivia_questions ORDER BY order_index ASC`
       );
 
-      const parsed = (rows as any[]).map((r) => ({
-        ...r,
+      interface TriviaPublicRow {
+        id: string;
+        question: string;
+        options: string | string[];
+        orderIndex: number;
+      }
+
+      const parsed = (rows as TriviaPublicRow[]).map((r) => ({
+        id: r.id,
+        question: r.question,
         options: typeof r.options === 'string' ? JSON.parse(r.options) : (r.options || []),
-        correctAnswerIndex: r.correctIndex ?? 0,
         order: r.orderIndex ?? 0,
       }));
 
@@ -26,6 +34,75 @@ export function createTriviaRouter(io: SocketIOServer) {
     } catch (error) {
       console.error('[API Trivia Error]:', error);
       res.status(500).json({ error: 'Gagal mengambil pertanyaan trivia' });
+    }
+  });
+
+  // GET /api/trivia/admin - Ambil seluruh data pertanyaan trivia lengkap dengan kunci jawaban (Khusus Admin Panel)
+  router.get('/admin', authenticateJwt, async (_req: Request, res: Response): Promise<void> => {
+    try {
+      const [rows] = await pool.query(
+        `SELECT id, question, options, correct_index as correctIndex, explanation, order_index as orderIndex 
+         FROM trivia_questions ORDER BY order_index ASC`
+      );
+
+      interface TriviaAdminRow {
+        id: string;
+        question: string;
+        options: string | string[];
+        correctIndex: number;
+        explanation: string | null;
+        orderIndex: number;
+      }
+
+      const parsed = (rows as TriviaAdminRow[]).map((r) => ({
+        id: r.id,
+        question: r.question,
+        options: typeof r.options === 'string' ? JSON.parse(r.options) : (r.options || []),
+        correctAnswerIndex: r.correctIndex ?? 0,
+        explanation: r.explanation || '',
+        order: r.orderIndex ?? 0,
+      }));
+
+      res.json(parsed);
+    } catch (error) {
+      console.error('[API Trivia Admin Error]:', error);
+      res.status(500).json({ error: 'Gagal mengambil data administrasi trivia' });
+    }
+  });
+
+  // POST /api/trivia/verify - Verifikasi jawaban kuis per-pertanyaan secara aman di server
+  router.post('/verify', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { questionId, selectedIndex } = req.body;
+
+      if (!questionId || selectedIndex === undefined || typeof selectedIndex !== 'number') {
+        res.status(400).json({ error: 'ID pertanyaan dan indeks pilihan wajib disertakan' });
+        return;
+      }
+
+      const [rows] = await pool.query(
+        `SELECT id, correct_index as correctIndex, explanation 
+         FROM trivia_questions WHERE id = ? LIMIT 1`,
+        [questionId]
+      );
+
+      const item = (rows as Array<{ id: string; correctIndex: number; explanation: string | null }>)[0];
+      if (!item) {
+        res.status(404).json({ error: 'Pertanyaan tidak ditemukan' });
+        return;
+      }
+
+      const isCorrect = selectedIndex === item.correctIndex;
+
+      res.json({
+        success: true,
+        isCorrect,
+        correctAnswerIndex: item.correctIndex,
+        explanation: item.explanation || '',
+      });
+    } catch (error) {
+      console.error('[API Trivia Verify Error]:', error);
+      res.status(500).json({ error: 'Gagal memverifikasi jawaban trivia' });
     }
   });
 

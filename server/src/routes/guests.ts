@@ -33,7 +33,7 @@ export function createGuestsRouter(io: SocketIOServer) {
     try {
       const body = req.body;
 
-      // Handle batch import jika array diberikan
+      // Handle batch import jika array diberikan (Atomic Multi-Row Transaction)
       if (Array.isArray(body.guests)) {
         const guestsList = body.guests;
         if (guestsList.length === 0) {
@@ -41,27 +41,84 @@ export function createGuestsRouter(io: SocketIOServer) {
           return;
         }
 
-        const inserted: any[] = [];
-        for (const g of guestsList) {
-          if (!g.name) continue;
-          const id = 'guest_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
-          const phone = g.phone || null;
-          const status = g.status || 'pending';
-          const tier = g.tier || 'regular';
-          const vipNotes = g.vipNotes || null;
-          const tableNumber = g.tableNumber || null;
-          const notes = g.notes || null;
-
-          await pool.query(
-            `INSERT INTO guests (id, name, phone, status, tier, vip_notes, table_number, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [id, g.name.trim(), phone, status, tier, vipNotes, tableNumber, notes]
-          );
-
-          inserted.push({ id, name: g.name.trim(), phone, status, tier, vipNotes, tableNumber, notes });
+        interface GuestImportItem {
+          id: string;
+          name: string;
+          phone: string | null;
+          status: string;
+          tier: string;
+          vipNotes: string | null;
+          tableNumber: string | null;
+          notes: string | null;
         }
 
-        io.emit('guests:imported', { count: inserted.length });
-        res.status(201).json({ success: true, count: inserted.length, data: inserted });
+        const validGuests: GuestImportItem[] = [];
+        const rowsToInsert: Array<[string, string, string | null, string, string, string | null, string | null, string | null]> = [];
+
+        for (const g of guestsList) {
+          if (!g || !g.name || !String(g.name).trim()) continue;
+          const id = 'guest_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
+          const cleanName = String(g.name).trim();
+          const cleanPhone = g.phone ? String(g.phone).trim() : null;
+          const cleanStatus = g.status || 'pending';
+          const cleanTier = g.tier || 'regular';
+          const cleanVipNotes = g.vipNotes || null;
+          const cleanTable = g.tableNumber || null;
+          const cleanNotes = g.notes || null;
+
+          validGuests.push({
+            id,
+            name: cleanName,
+            phone: cleanPhone,
+            status: cleanStatus,
+            tier: cleanTier,
+            vipNotes: cleanVipNotes,
+            tableNumber: cleanTable,
+            notes: cleanNotes,
+          });
+
+          rowsToInsert.push([
+            id,
+            cleanName,
+            cleanPhone,
+            cleanStatus,
+            cleanTier,
+            cleanVipNotes,
+            cleanTable,
+            cleanNotes,
+          ]);
+        }
+
+        if (rowsToInsert.length === 0) {
+          res.status(400).json({ error: 'Tidak ada data tamu valid yang dapat diimpor' });
+          return;
+        }
+
+        // Jalankan transaksi database MySQL atomik
+        const connection = await pool.getConnection();
+        try {
+          await connection.beginTransaction();
+
+          // Chunking per 500 baris untuk efisiensi kueri
+          const CHUNK_SIZE = 500;
+          for (let i = 0; i < rowsToInsert.length; i += CHUNK_SIZE) {
+            const chunk = rowsToInsert.slice(i, i + CHUNK_SIZE);
+            await connection.query(
+              `INSERT INTO guests (id, name, phone, status, tier, vip_notes, table_number, notes) VALUES ?`,
+              [chunk]
+            );
+          }
+
+          await connection.commit();
+        } catch (dbErr) {
+          await connection.rollback();
+          throw dbErr;
+        } finally {
+          connection.release();
+        }
+
+        io.emit('guests:imported', { count: validGuests.length });
+        res.status(201).json({ success: true, count: validGuests.length, data: validGuests });
         return;
       }
 

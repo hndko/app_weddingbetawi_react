@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.49.1`
+- **Versi Aplikasi Saat Ini**: `v1.50.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -193,6 +193,12 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
 8. **Audio Auto-Ducking & Mutex Pesan Suara (`wedding:voice-memo-play`)**:
    - Pemutaran audio latar (`MusicPlayer.tsx`) dan pesan suara ucapan tamu (`WishAudioPlayer.tsx`) dikomunikasikan secara terisolasi melalui CustomEvent bus `wedding:voice-memo-play`.
    - Ketika tamu memutar pesan suara doa, background music wajib otomatis meredup (*auto-ducking*) ke volume rendah (15%) dan kembali pulih normal saat pemutaran selesai. Hanya boleh 1 pesan suara yang aktif dalam 1 waktu (*mutex playback* via event `wedding:voice-memo-start`).
+9. **In-Memory SWR Caching Konfigurasi Publik (`cachedConfig`)**:
+   - Endpoint `GET /api/config` mengimplementasikan in-memory caching di memori server Node.js dengan TTL 5 menit (`CACHE_TTL_MS = 300000`) dan *instant cache synchronization* saat mutasi data (`PUT /api/config` atau `POST /api/config/rundown`). Menghemat 100% beban kueri MySQL saat ribuan tamu membuka undangan secara serentak.
+10. **Transaksi Atomik Multi-Row Bulk Import (`INSERT INTO guests (...) VALUES ?`)**:
+    - Impor batch tamu undangan (`POST /api/guests`) WAJIB menggunakan satu transaksi atomik MySQL (`beginTransaction`, `commit`, `rollback`) dengan pemecahan paket kueri per 500 baris. DILARANG mengeksekusi kueri satu per satu dalam loop tanpa transaksi.
+11. **Proteksi Kunci Jawaban Kuis Trivia di Server (`POST /api/trivia/verify`)**:
+    - Endpoint kuis publik `GET /api/trivia` menyensor kolom `correct_index` dan `explanation`. Verifikasi jawaban kuis wajib dilakukan secara aman di sisi server via `POST /api/trivia/verify` guna mengeliminasi kecurangan tamu via DevTools Network inspection.
 
 ---
 

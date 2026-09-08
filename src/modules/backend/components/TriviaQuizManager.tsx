@@ -41,7 +41,7 @@ export function TriviaQuizManager({ onNotify }: TriviaQuizManagerProps) {
   const loadQuestions = async () => {
     try {
       setLoading(true);
-      const list = await api.getTrivia();
+      const list = await api.getAdminTrivia();
       setQuestions(list || []);
     } catch {
       // safe fallback

@@ -257,6 +257,12 @@ export const api = {
 
   // Trivia
   getTrivia: (): Promise<TriviaQuestion[]> => request<TriviaQuestion[]>('/trivia'),
+  getAdminTrivia: (): Promise<TriviaQuestion[]> => request<TriviaQuestion[]>('/trivia/admin'),
+  verifyTriviaAnswer: (data: { questionId: string; selectedIndex: number }): Promise<{ success: boolean; isCorrect: boolean; correctAnswerIndex: number; explanation: string }> =>
+    request('/trivia/verify', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
   createTrivia: (q: Partial<TriviaQuestion>): Promise<{ success: boolean; data: TriviaQuestion }> =>
     request('/trivia', {
       method: 'POST',

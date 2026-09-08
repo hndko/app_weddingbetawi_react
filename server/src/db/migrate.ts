@@ -17,6 +17,23 @@ async function ensureIndex(table: string, indexName: string, columns: string): P
   }
 }
 
+/**
+ * Menambahkan foreign key secara idempoten pada tabel MySQL.
+ */
+async function ensureForeignKey(table: string, fkName: string, fkDefinition: string): Promise<void> {
+  try {
+    await pool.query(`ALTER TABLE \`${table}\` ADD CONSTRAINT \`${fkName}\` ${fkDefinition};`);
+    console.log(`[DB Migration] Foreign Key \`${fkName}\` pada tabel \`${table}\` siap.`);
+  } catch (err: unknown) {
+    const code = typeof err === 'object' && err !== null && 'code' in err ? (err as { code: string }).code : '';
+    const errno = typeof err === 'object' && err !== null && 'errno' in err ? (err as { errno: number }).errno : 0;
+    // Abaikan ER_DUP_KEYNAME (1061) atau ER_DUP_CONSTRAINT_NAME (1826) jika constraint sudah ada
+    if (code !== 'ER_DUP_KEYNAME' && errno !== 1061 && errno !== 1826) {
+      console.warn(`[DB Migration Warning] Foreign Key \`${fkName}\` pada \`${table}\`:`, err);
+    }
+  }
+}
+
 export async function migrate() {
   console.log(`[DB Migration] Memulai migrasi database MySQL Laragon (${dbName})...`);
 
@@ -201,7 +218,14 @@ export async function migrate() {
     await ensureIndex('checkins', 'idx_checkins_guest_id', 'guest_id');
     await ensureIndex('checkins', 'idx_checkins_created_at', 'created_at');
 
-    console.log('[DB Migration] Seluruh skema database dan index berhasil dimigrasikan!');
+    // 12. Integritas Relasional Basis Data (Pilar 2)
+    await ensureForeignKey(
+      'checkins',
+      'fk_checkins_guest_id',
+      'FOREIGN KEY (guest_id) REFERENCES guests(id) ON DELETE SET NULL ON UPDATE CASCADE'
+    );
+
+    console.log('[DB Migration] Seluruh skema database, index, dan relasi berhasil dimigrasikan!');
   } catch (error) {
     console.error('[DB Migration Error] Gagal menjalankan migrasi:', error);
     throw error;

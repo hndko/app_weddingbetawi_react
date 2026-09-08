@@ -228,7 +228,7 @@ export interface TriviaQuestion {
   id?: string;
   question: string;
   options: string[]; // 4 pilihan jawaban
-  correctAnswerIndex: number; // 0..3
+  correctAnswerIndex?: number; // 0..3 (disensor pada endpoint publik tamu)
   explanation?: string; // Fakta seru setelah menjawab
   order: number;
   createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;

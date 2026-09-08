@@ -28,13 +28,13 @@ export const ClosingSection: React.FC = () => {
         </span>
 
         <p className="text-xs sm:text-[13px] text-[#451A03]/85 leading-relaxed mb-6 font-light">
-          Merupakan suatu kehormatan dan kebahagiaan bagi kami sekeluarga apabila Bapak/Ibu/Saudara/i berkenan hadir serta melantunkan doa restu untuk kedua mempelai. Atas kehadiran dan untaian doa tulus yang dipanjatkan, kami haturkan terima kasih yang sedalam-dalamnya.
+          {weddingConfig.closing?.thankText || 'Merupakan suatu kehormatan dan kebahagiaan bagi kami sekeluarga apabila Bapak/Ibu/Saudara/i berkenan hadir serta melantunkan doa restu untuk kedua mempelai. Atas kehadiran dan untaian doa tulus yang dipanjatkan, kami haturkan terima kasih yang sedalam-dalamnya.'}
         </p>
 
         <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mb-6" />
 
         <h3 className="font-heading text-lg sm:text-xl text-[#7C2D12] mb-8 font-bold leading-relaxed">
-          Om Shanti, Shanti, Shanti, Om
+          {weddingConfig.closing?.salutation || 'Om Shanti, Shanti, Shanti, Om'}
         </h3>
 
         {/* Couple Names */}

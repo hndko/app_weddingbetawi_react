@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { useWeddingConfig } from '../../../../../context/WeddingContext';
 import { OndelFloralDecoration } from '../decorations/OndelFloralDecoration';
 import { FloatingFlowers } from '../decorations/FloatingFlowers';
 import { FloralDivider } from '../decorations/FloralDivider';
@@ -8,6 +9,11 @@ import { OndelOndel } from '../decorations/OndelOndel';
 import { HouseBackgroundFlowers } from '../decorations/HouseBackgroundFlowers';
 
 export function IntroSection() {
+  const { weddingConfig } = useWeddingConfig();
+  const salutation = weddingConfig.greeting?.salutation || "Assalamu'alaikum Warahmatullahi Wabarakatuh";
+  const introText = weddingConfig.greeting?.introText || "Tanpa mengurangi rasa hormat, kami bermaksud mengundang Bapak/Ibu/Saudara/i pada acara resepsi pernikahan kami.";
+  const quote = weddingConfig.quote;
+
   return (
     <section className="py-24 px-4 md:px-8 text-center bg-white/40 relative overflow-hidden flex flex-col items-center">
       <FloatingFlowers className="opacity-40" />
@@ -65,11 +71,33 @@ export function IntroSection() {
             </svg>
           </div>
           <h3 className="font-heading text-2xl md:text-3xl text-text-dark mb-6 leading-relaxed">
-            Assalamu'alaikum Warahmatullahi Wabarakatuh
+            {salutation}
           </h3>
           <p className="text-sm text-text-dark/80 leading-loose">
-            Tanpa mengurangi rasa hormat, kami bermaksud mengundang Bapak/Ibu/Saudara/i pada acara resepsi pernikahan kami.
+            {introText}
           </p>
+
+          {/* Dynamic Sacred / Love Quote */}
+          {quote?.enabled && (quote.text || quote.arabic) && (
+            <div className="mt-8 p-6 rounded-2xl bg-white/60 border border-sage/20 relative">
+              {quote.arabic && (
+                <p className="font-serif text-base sm:text-lg text-emerald-950 mb-3 leading-loose text-center font-medium" dir="rtl">
+                  {quote.arabic}
+                </p>
+              )}
+              {quote.text && (
+                <p className="text-xs sm:text-[13px] text-text-dark/80 italic leading-relaxed mb-3">
+                  &ldquo;{quote.text}&rdquo;
+                </p>
+              )}
+              {quote.source && (
+                <span className="text-[11px] font-bold uppercase tracking-widest text-amber-800 block">
+                  — {quote.source} —
+                </span>
+              )}
+            </div>
+          )}
+
           <div className="mt-8 flex justify-center">
              <FloralDivider />
           </div>

@@ -89,6 +89,44 @@ export interface RundownScheduleItem {
   zone?: string;
 }
 
+export interface GreetingConfig {
+  salutation?: string; // e.g. "Assalamu'alaikum Warahmatullahi Wabarakatuh", "Shalom", "Om Swastiastu", "Salam Sejahtera"
+  introText?: string;  // e.g. "Tanpa mengurangi rasa hormat, kami bermaksud mengundang Bapak/Ibu/Saudara/i..."
+}
+
+export interface QuoteConfig {
+  enabled?: boolean;
+  text?: string;       // Isi ayat suci atau kutipan mutiara cinta
+  source?: string;     // e.g. "QS. Ar-Rum: 21", "1 Korintus 13:4-7", "Kahlil Gibran"
+  arabic?: string;     // Teks arab (opsional)
+}
+
+export interface CoverTextConfig {
+  title?: string;      // e.g. "The Wedding Of", "Walimatul Ursy", "Pawiwahan"
+  salutation?: string; // e.g. "Kepada Yth. Bapak/Ibu/Saudara/i"
+  buttonText?: string; // e.g. "Buka Undangan", "Open Invitation"
+}
+
+export interface ClosingConfig {
+  thankText?: string;  // e.g. "Merupakan suatu kehormatan dan kebahagiaan bagi kami..."
+  salutation?: string; // e.g. "Wassalamu'alaikum Warahmatullahi Wabarakatuh"
+}
+
+export interface PhysicalGiftConfig {
+  enabled?: boolean;
+  recipientName?: string;
+  phone?: string;
+  address?: string;
+  notes?: string;
+}
+
+export interface StreamingConfig {
+  enabled?: boolean;
+  platform?: 'youtube' | 'zoom' | 'instagram' | 'other';
+  url?: string;
+  label?: string; // e.g. "Live Streaming Akad & Resepsi"
+}
+
 export interface WeddingConfig {
   groom: PersonInfo;
   bride: PersonInfo;
@@ -107,6 +145,12 @@ export interface WeddingConfig {
   agencyBranding?: AgencyBranding;
   liveRundown?: LiveRundownStatus;
   rundownSchedule?: RundownScheduleItem[];
+  greeting?: GreetingConfig;
+  quote?: QuoteConfig;
+  cover?: CoverTextConfig;
+  closing?: ClosingConfig;
+  physicalGift?: PhysicalGiftConfig;
+  streaming?: StreamingConfig;
 }
 
 export interface Wish {

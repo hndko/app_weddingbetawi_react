@@ -92,10 +92,11 @@ function AppContent({ currentPath }: { currentPath: string }) {
     return <RouteLoadingSpinner bg={activeTheme.meta.previewColors.bg} text="Menyiapkan Undangan..." />;
   }
 
-  const siteName = `The Wedding of ${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname}`;
+  const prefixTitle = weddingConfig.cover?.title || 'The Wedding of';
+  const siteName = `${prefixTitle} ${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname}`;
   
   const seoTitle = weddingConfig.seo?.title || `${siteName} | Wedding Invitation`;
-  const seoDesc = weddingConfig.seo?.description || "Kami mengundang Anda untuk hadir di acara pernikahan kami.";
+  const seoDesc = weddingConfig.seo?.description || weddingConfig.greeting?.introText || "Kami mengundang Anda untuk hadir di acara pernikahan kami.";
   const seoKeywords = weddingConfig.seo?.keywords || "wedding, pernikahan, undangan digital";
   const seoImage = weddingConfig.seo?.image || weddingConfig.gallery?.[0] || activeTheme.meta.thumbnail;
 

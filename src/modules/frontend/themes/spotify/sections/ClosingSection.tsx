@@ -31,8 +31,7 @@ export const ClosingSection: React.FC = () => {
       </h2>
 
       <p className="text-xs sm:text-sm text-[#B3B3B3] leading-relaxed max-w-sm mb-6">
-        Kehadiran dan untaian doa restu Anda adalah nada-nada terindah yang menyempurnakan simfoni kebahagiaan kami.
-        Semoga berkah dan kebaikan senantiasa melimpah bagi kita semua.
+        {weddingConfig.closing?.thankText || 'Kehadiran dan untaian doa restu Anda adalah nada-nada terindah yang menyempurnakan simfoni kebahagiaan kami. Semoga berkah dan kebaikan senantiasa melimpah bagi kita semua.'}
       </p>
 
       {/* Production Credits Card */}
@@ -49,7 +48,7 @@ export const ClosingSection: React.FC = () => {
       </div>
 
       <div className="text-[10px] text-[#555555] tracking-widest uppercase">
-        © 2026 THE WEDDING OF {weddingConfig.groom.nickname?.toUpperCase()} &amp; {weddingConfig.bride.nickname?.toUpperCase()} • ALL RIGHTS RESERVED
+        © 2026 {weddingConfig.cover?.title?.toUpperCase() || 'THE WEDDING OF'} {weddingConfig.groom.nickname?.toUpperCase()} &amp; {weddingConfig.bride.nickname?.toUpperCase()} • ALL RIGHTS RESERVED
       </div>
     </section>
   );

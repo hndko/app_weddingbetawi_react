@@ -1,10 +1,12 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { useWeddingConfig } from '../../../../../context/WeddingContext';
 import { MinimalistArch } from '../decorations/MinimalistArch';
 import { MinimalistCornerAccent } from '../decorations/MinimalistCornerAccent';
 import { FloatingBotanicalLeaves } from '../decorations/FloatingBotanicalLeaves';
 
 export const IntroSection: React.FC = () => {
+  const { weddingConfig } = useWeddingConfig();
   return (
     <section className="py-20 px-4 sm:px-6 text-center bg-[#F7FAFC] relative overflow-hidden flex flex-col items-center">
       {/* Floating Botanical Leaves */}
@@ -51,11 +53,11 @@ export const IntroSection: React.FC = () => {
           </span>
 
           <h3 className="font-heading text-xl sm:text-2xl text-[#1A202C] mb-4 leading-relaxed font-normal">
-            Assalamu'alaikum Warahmatullahi Wabarakatuh
+            {weddingConfig.greeting?.salutation || "Assalamu'alaikum Warahmatullahi Wabarakatuh"}
           </h3>
 
           <p className="text-xs sm:text-[13px] text-[#4A5568] leading-relaxed mb-4 font-light">
-            Tanpa mengurangi rasa hormat, dengan memohon rahmat dan ridho Allah Subhanahu Wa Ta'ala, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada momen bahagia pernikahan kami:
+            {weddingConfig.greeting?.introText || "Tanpa mengurangi rasa hormat, dengan memohon rahmat dan ridho Allah Subhanahu Wa Ta'ala, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada momen bahagia pernikahan kami:"}
           </p>
 
           <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#9AA79C] to-transparent mx-auto mt-4" />

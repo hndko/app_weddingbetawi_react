@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useWeddingConfig } from '../../../../context/WeddingContext';
 import { useThemeTokens } from '../../themes';
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import { Calendar, Clock, MapPin, Radio, Video, ExternalLink } from 'lucide-react';
 import { EventDetail } from '../../../../types';
 import { CalendarEventModal } from '../components/CalendarEventModal';
 import { cn } from '../../../../utils/cn';
@@ -192,6 +192,62 @@ export function EventSection() {
           delay={0.2} 
           onSaveCalendar={() => setSelectedEventForCalendar(weddingConfig.events.resepsi)} 
         />
+
+        {/* Live Streaming Virtual Attendance Card */}
+        {weddingConfig.streaming?.enabled && weddingConfig.streaming.url && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="w-full max-w-[340px] mx-auto rounded-[28px] p-6 backdrop-blur-md relative overflow-hidden transition-all duration-300 text-center"
+            style={{
+              backgroundColor: tokens.cardBg,
+              border: `1px solid ${tokens.cardBorder}`,
+              boxShadow: tokens.isDark ? '0 20px 40px -15px rgba(0,0,0,0.7)' : '0 4px 20px -2px rgba(0,0,0,0.05)'
+            }}
+          >
+            <div 
+              className="absolute top-0 right-0 w-24 h-24 rounded-bl-[100px] pointer-events-none opacity-10"
+              style={{ backgroundColor: tokens.accent }}
+            />
+
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase mb-3 bg-red-500/10 text-red-500">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+              <Radio size={13} className="shrink-0" />
+              <span>Siaran Langsung</span>
+            </div>
+
+            <h4 
+              className="font-heading text-xl font-bold mb-2"
+              style={{ color: tokens.textPrimary }}
+            >
+              {weddingConfig.streaming.label || 'Siaran Langsung Acara'}
+            </h4>
+
+            <p 
+              className="text-xs leading-relaxed mb-6 font-medium"
+              style={{ color: tokens.textMuted }}
+            >
+              Bagi kerabat terhormat yang berhalangan hadir secara langsung, Anda dapat menyaksikan momen bahagia kami melalui tautan siaran berikut:
+            </p>
+
+            <a
+              href={weddingConfig.streaming.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3.5 px-6 rounded-full text-[13px] font-semibold tracking-wide flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md hover:opacity-90 active:scale-98 focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
+              style={{
+                backgroundColor: tokens.primary,
+                color: tokens.btnPrimaryText
+              }}
+            >
+              <Video size={16} />
+              <span>Tonton Live Streaming</span>
+              <ExternalLink size={14} className="opacity-70" />
+            </a>
+          </motion.div>
+        )}
       </div>
 
       {/* Calendar Selection & Navigation Modal */}

@@ -111,5 +111,37 @@ export const config = {
     { id: 'rd-3', time: '11:00 - 12:30', title: 'Prosesi Adat & Temu Pengantin', description: 'Upacara adat budaya dan sungkeman kedua orang tua', zone: 'Pelaminan' },
     { id: 'rd-4', time: '12:30 - 14:00', title: 'Ramah Tamah & Prasmanan Resepsi', description: 'Santap siang prasmanan dan hiburan musik pengiring', zone: 'Ballroom' },
     { id: 'rd-5', time: '14:00 - 15:00', title: 'Sesi Foto Bersama & Penutupan', description: 'Sesi foto VIP, rekan kerja, dan sahabat mempelai', zone: 'Panggung Utama' },
-  ]
+  ],
+  cover: {
+    title: "The Wedding Of",
+    salutation: "Kepada Yth. Bapak/Ibu/Saudara/i",
+    buttonText: "Buka Undangan",
+  },
+  greeting: {
+    salutation: "Assalamu'alaikum Warahmatullahi Wabarakatuh",
+    introText: "Tanpa mengurangi rasa hormat, kami bermaksud mengundang Bapak/Ibu/Saudara/i pada acara resepsi pernikahan kami.",
+  },
+  quote: {
+    enabled: true,
+    text: "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.",
+    source: "QS. Ar-Rum: 21",
+    arabic: "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً",
+  },
+  closing: {
+    thankText: "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kami.",
+    salutation: "Wassalamu'alaikum Warahmatullahi Wabarakatuh",
+  },
+  physicalGift: {
+    enabled: false,
+    recipientName: "Cecep Pratama & Ipeh Putri",
+    phone: "+6281234567890",
+    address: "Jl. Taman Cut Mutiah No. 1, RT 01 / RW 05, Menteng, Jakarta Pusat, DKI Jakarta 10350",
+    notes: "Dapat dititipkan ke pos sekuriti jika penerima sedang tidak di tempat.",
+  },
+  streaming: {
+    enabled: false,
+    platform: "youtube" as const,
+    url: "https://youtube.com/live/placeholder",
+    label: "Live Streaming Akad & Resepsi",
+  },
 };

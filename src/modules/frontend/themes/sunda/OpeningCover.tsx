@@ -86,7 +86,7 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
           <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b border-r border-[#D4AF37]" />
 
           <p className="text-[11px] text-[#FAF9F5]/70 mb-1 tracking-wide font-light">
-            Kahatur Kasumpingan Para Wargi Sadaya:
+            {weddingConfig.cover?.salutation || 'Kahatur Kasumpingan Para Wargi Sadaya:'}
           </p>
           <p className="font-heading text-xl text-[#FAF9F5] mb-4 font-bold text-center">
             {guestName}
@@ -98,7 +98,7 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
             className="w-full bg-gradient-to-r from-[#B38B22] via-[#D4AF37] to-[#B38B22] text-[#14261D] font-semibold py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:brightness-110 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer text-xs tracking-wide uppercase"
           >
             <MailOpen size={16} />
-            <span>Buka Serat Ulem</span>
+            <span>{weddingConfig.cover?.buttonText || 'Buka Serat Ulem'}</span>
           </button>
         </div>
       </motion.div>

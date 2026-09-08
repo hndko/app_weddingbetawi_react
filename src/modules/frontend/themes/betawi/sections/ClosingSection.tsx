@@ -19,13 +19,13 @@ export function ClosingSection() {
         className="relative z-10"
       >
         <p className="text-[13px] text-text-dark/70 leading-loose mb-10 max-w-[280px] mx-auto">
-          Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.
+          {weddingConfig.closing?.thankText || 'Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.'}
         </p>
         
         <h3 className="font-heading text-xl md:text-2xl text-text-dark mb-12">
           Terima kasih.
           <br /><br />
-          Wassalamu'alaikum Warahmatullahi Wabarakatuh
+          {weddingConfig.closing?.salutation || "Wassalamu'alaikum Warahmatullahi Wabarakatuh"}
         </h3>
         
         <div className="flex flex-col items-center gap-1 mb-8">

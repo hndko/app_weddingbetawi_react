@@ -82,7 +82,7 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
         {/* Couple Subtitle Pill */}
         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/60 dark:bg-white/10 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-xs mt-1 text-[11px] font-medium text-neutral-700 dark:text-neutral-200">
           <Sparkles size={11} className="text-[#D4AF37]" />
-          <span>The Wedding of {weddingConfig.groom.nickname} &amp; {weddingConfig.bride.nickname}</span>
+          <span>{weddingConfig.cover?.title ? `${weddingConfig.cover.title} ${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname}` : `The Wedding of ${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname}`}</span>
         </div>
       </div>
 
@@ -132,10 +132,10 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
           {/* Notification Body */}
           <div className="space-y-0.5">
             <p className="text-[12px] font-bold text-neutral-900 dark:text-white leading-tight">
-              Katur Dhumateng: {guestName || 'Tamu Undangan'}
+              {weddingConfig.cover?.salutation || 'Katur Dhumateng'}: {guestName || 'Tamu Undangan'}
             </p>
             <p className="text-[11px] text-neutral-600 dark:text-neutral-300 leading-snug">
-              Sentuh untuk membuka undangan pernikahan {weddingConfig.groom.nickname} &amp; {weddingConfig.bride.nickname}.
+              {weddingConfig.cover?.buttonText ? `Sentuh untuk ${weddingConfig.cover.buttonText.toLowerCase()} pernikahan ${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname}.` : `Sentuh untuk membuka undangan pernikahan ${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname}.`}
             </p>
           </div>
         </motion.div>

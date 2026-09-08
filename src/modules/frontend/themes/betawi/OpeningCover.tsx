@@ -32,7 +32,9 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
         transition={{ delay: 0.2, duration: 0.8 }}
         className="z-20 flex flex-col items-center w-full mt-6 shrink-0 min-h-max pb-8"
       >
-        <span className="text-xs md:text-sm tracking-[0.25em] text-sage-dark uppercase mb-4">The Wedding Of</span>
+        <span className="text-xs md:text-sm tracking-[0.25em] text-sage-dark uppercase mb-4">
+          {weddingConfig.cover?.title || 'The Wedding Of'}
+        </span>
         
         <h1 className="font-heading text-5xl md:text-6xl text-text-dark leading-tight mb-4">
           {weddingConfig.groom.nickname}
@@ -66,7 +68,9 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
           <div className="flex justify-center mb-2 relative z-10">
             <VipAccessBadge tier={guestTier} size="sm" />
           </div>
-          <p className="text-xs text-text-dark/70 mb-2 tracking-wide relative z-10">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+          <p className="text-xs text-text-dark/70 mb-2 tracking-wide relative z-10">
+            {weddingConfig.cover?.salutation || 'Kepada Yth. Bapak/Ibu/Saudara/i'}
+          </p>
           <p className="font-heading text-2xl text-text-dark mb-4 relative z-10">{guestName}</p>
           
           <div className="flex justify-center mb-6 relative z-10">
@@ -80,7 +84,9 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
             className="w-full bg-sage text-white py-3.5 px-6 rounded-full flex items-center justify-center gap-3 hover:bg-sage-dark transition-colors duration-300 shadow-sm hover:shadow-md cursor-pointer relative z-50 active:scale-98 focus-visible:ring-2 focus-visible:ring-sage-dark focus-visible:ring-offset-2"
           >
             <MailOpen size={18} aria-hidden="true" />
-            <span className="text-sm font-medium tracking-wide">Buka Undangan</span>
+            <span className="text-sm font-medium tracking-wide">
+              {weddingConfig.cover?.buttonText || 'Buka Undangan'}
+            </span>
           </button>
         </div>
       </motion.div>

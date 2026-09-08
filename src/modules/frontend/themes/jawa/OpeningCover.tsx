@@ -45,7 +45,7 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
         
         <span className="text-[11px] tracking-[0.3em] text-[#E5C158] uppercase mt-2 font-medium flex items-center gap-1.5">
           <Sparkles size={11} className="text-[#E5C158]" />
-          <span>PAWIWAHAN AGENG</span>
+          <span>{weddingConfig.cover?.title || 'PAWIWAHAN AGENG'}</span>
           <Sparkles size={11} className="text-[#E5C158]" />
         </span>
       </motion.div>
@@ -93,7 +93,7 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
           )}
 
           <p className="text-[11px] text-[#FAF7EE]/70 mb-1 tracking-wide font-light">
-            Katur Dhumateng Panjenenganipun:
+            {weddingConfig.cover?.salutation || 'Katur Dhumateng Panjenenganipun:'}
           </p>
           <p className="font-heading text-xl text-[#FAF7EE] mb-1 font-bold text-center">
             {guestDetails.name}
@@ -109,8 +109,8 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
             onClick={onOpen}
             className="w-full bg-gradient-to-r from-[#C5A059] via-[#E5C158] to-[#C5A059] text-[#132A1C] font-semibold py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:brightness-110 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer text-xs tracking-wide uppercase active:scale-98"
           >
-            <MailOpen size={16} />
-            <span>Buka Serat Ulem</span>
+            <MailOpen size={15} />
+            <span>{weddingConfig.cover?.buttonText || 'Buka Serat Ulem'}</span>
           </button>
         </div>
       </motion.div>

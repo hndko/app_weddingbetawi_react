@@ -25,7 +25,7 @@ export const ClosingSection: React.FC = () => {
         </h3>
 
         <p className="text-xs text-neutral-600 dark:text-neutral-300 max-w-xs mt-2 leading-relaxed">
-          Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kami.
+          {weddingConfig.closing?.thankText || 'Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kami.'}
         </p>
 
         <div className="my-4 flex items-center gap-2">
@@ -35,7 +35,7 @@ export const ClosingSection: React.FC = () => {
         </div>
 
         <p className="text-sm font-bold text-neutral-800 dark:text-neutral-200">
-          Kami yang berbahagia,
+          {weddingConfig.closing?.salutation || 'Kami yang berbahagia,'}
         </p>
         <p className="text-lg font-black text-[#007AFF] mt-0.5 tracking-wide">
           {groom.nickname} &amp; {bride.nickname}

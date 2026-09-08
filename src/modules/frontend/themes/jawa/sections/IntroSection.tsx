@@ -1,10 +1,15 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { useWeddingConfig } from '../../../../../context/WeddingContext';
 import { PendopoJoglo } from '../decorations/PendopoJoglo';
 import { JavaneseFiligree } from '../decorations/JavaneseFiligree';
 import { FloatingMelati } from '../decorations/FloatingMelati';
 
 export const IntroSection: React.FC = () => {
+  const { weddingConfig } = useWeddingConfig();
+  const salutation = weddingConfig.greeting?.salutation || "Assalamu'alaikum Warahmatullahi Wabarakatuh";
+  const introText = weddingConfig.greeting?.introText || "Katur dhumateng para rawuh ingkang kinurmatan, lumantar serat ulem punika, kanthi hangajab berkahing Gusti Ingkang Maha Agung, mugi kepareng rawuh hangestreni saha paring berkah pangestu dhumateng pawiwahan dhauping putra-putri kawula:";
+  const quote = weddingConfig.quote;
   return (
     <section className="py-20 px-4 sm:px-6 text-center bg-[#FAF8F2] relative overflow-hidden flex flex-col items-center">
       {/* Floating Sacred Jasmine & Gold Dust */}
@@ -47,12 +52,33 @@ export const IntroSection: React.FC = () => {
           </span>
 
           <h3 className="font-heading text-xl sm:text-2xl text-[#1B3B2B] mb-5 leading-relaxed font-bold">
-            Assalamu'alaikum Warahmatullahi Wabarakatuh
+            {salutation}
           </h3>
 
           <p className="text-xs sm:text-[13px] text-[#2C3E35]/85 leading-relaxed mb-4 font-light">
-            Katur dhumateng para rawuh ingkang kinurmatan, lumantar serat ulem punika, kanthi hangajab berkahing Gusti Ingkang Maha Agung, mugi kepareng rawuh hangestreni saha paring berkah pangestu dhumateng pawiwahan dhauping putra-putri kawula:
+            {introText}
           </p>
+
+          {/* Dynamic Sacred / Love Quote */}
+          {quote?.enabled && (quote.text || quote.arabic) && (
+            <div className="my-5 p-5 rounded-2xl bg-white/70 border border-[#C5A059]/30 relative shadow-xs">
+              {quote.arabic && (
+                <p className="font-serif text-base sm:text-lg text-[#1B3B2B] mb-2 leading-loose text-center font-medium" dir="rtl">
+                  {quote.arabic}
+                </p>
+              )}
+              {quote.text && (
+                <p className="text-xs sm:text-[12.5px] text-[#2C3E35]/90 italic leading-relaxed mb-2 font-serif">
+                  &ldquo;{quote.text}&rdquo;
+                </p>
+              )}
+              {quote.source && (
+                <span className="text-[10px] font-sans font-bold tracking-wider text-[#C5A059] block uppercase">
+                  — {quote.source} —
+                </span>
+              )}
+            </div>
+          )}
 
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#C5A059] to-transparent mx-auto mt-4" />
         </motion.div>

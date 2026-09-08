@@ -100,7 +100,13 @@ export function WhatsAppBroadcastModal({
     const link = getPersonalLink(guest.name);
 
     if (tpl === 'invitation') {
-      return `Kepada Yth.\n*${guest.name}*\nDi Tempat\n\nAssalamu’alaikum Wr. Wb. / Salam Sejahtera,\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri hari bahagia pernikahan kami:\n\n💍 *${groomName} & ${brideName}*\n\n📅 *Hari, Tanggal*: ${eventDate}\n⏰ *Waktu*: ${eventTime}\n📍 *Lokasi*: ${eventVenue}\n\nTautan Undangan Digital Personal Anda:\n🔗 ${link}\n\nMerupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir serta memberikan doa restu kepada kedua mempelai.\n\nAtas kehadiran dan doa restu Anda, kami ucapkan terima kasih yang tulus.\n\nWassalamu’alaikum Wr. Wb.\nKami yang berbahagia,\n*${groomName} & ${brideName}*`;
+      const salutation = weddingConfig.greeting?.salutation || "Assalamu’alaikum Wr. Wb. / Salam Sejahtera";
+      const coverSalutation = weddingConfig.cover?.salutation || "Kepada Yth.";
+      const intro = weddingConfig.greeting?.introText || "Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri hari bahagia pernikahan kami:";
+      const thank = weddingConfig.closing?.thankText || "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir serta memberikan doa restu kepada kedua mempelai.";
+      const closingSalutation = weddingConfig.closing?.salutation || "Wassalamu’alaikum Wr. Wb.";
+
+      return `${coverSalutation}\n*${guest.name}*\nDi Tempat\n\n${salutation},\n\n${intro}\n\n💍 *${groomName} & ${brideName}*\n\n📅 *Hari, Tanggal*: ${eventDate}\n⏰ *Waktu*: ${eventTime}\n📍 *Lokasi*: ${eventVenue}\n\nTautan Undangan Digital Personal Anda:\n🔗 ${link}\n\n${thank}\n\nAtas kehadiran dan doa restu Anda, kami ucapkan terima kasih yang tulus.\n\n${closingSalutation}\nKami yang berbahagia,\n*${groomName} & ${brideName}*`;
     }
 
     if (tpl === 'reminder_h3') {

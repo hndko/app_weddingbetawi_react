@@ -79,21 +79,27 @@ export function GuestManagerTab({
   };
 
   const getGuestWaMessage = (name: string, link: string): string => {
-    return `Assalamu'alaikum Wr. Wb.
+    const salutation = weddingConfig.greeting?.salutation || "Assalamu'alaikum Wr. Wb.";
+    const coverSalutation = weddingConfig.cover?.salutation || "Kepada Yth. Bapak/Ibu/Saudara/i";
+    const intro = weddingConfig.greeting?.introText || "Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami:";
+    const thank = weddingConfig.closing?.thankText || "Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.";
+    const closingSalutation = weddingConfig.closing?.salutation || "Wassalamu'alaikum Wr. Wb.";
 
-Kepada Yth. Bapak/Ibu/Saudara/i ${name || 'Tamu Undangan'},
+    return `${salutation}
 
-Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami:
+${coverSalutation} ${name || 'Tamu Undangan'},
+
+${intro}
 
 *${weddingConfig.groom.nickname} & ${weddingConfig.bride.nickname}*
 
 Berikut link undangan digital kami untuk informasi lebih lengkap:
 ${link}
 
-Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.
+${thank}
 
 Terima kasih,
-Wassalamu'alaikum Wr. Wb.`;
+${closingSalutation}`;
   };
 
   // KPI Metrics

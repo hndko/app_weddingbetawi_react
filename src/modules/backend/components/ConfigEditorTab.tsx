@@ -4,7 +4,7 @@ import {
   Crown, Save, CheckCircle2, User, LayoutGrid, ArrowUp, ArrowDown, 
   Trash2, Plus, MessageSquare, Repeat, Repeat1, Shuffle, ListMusic, 
   Volume2, Briefcase, Building, Sparkles, Share2, Phone, CreditCard, 
-  FileText, Settings, KeyRound
+  FileText, Settings, KeyRound, Gift, Quote, MapPin
 } from 'lucide-react';
 import { WeddingConfig } from '../../../types';
 import { api } from '../../../services/api';
@@ -22,7 +22,7 @@ export interface ConfigEditorTabProps {
   onSubTabChange?: (tab: ConfigSubTab) => void;
 }
 
-export type ConfigSubTab = 'theme' | 'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'seo' | 'agency';
+export type ConfigSubTab = 'theme' | 'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'texts' | 'seo' | 'agency';
 
 export function ConfigEditorTab({
   weddingConfig,
@@ -318,6 +318,19 @@ export function ConfigEditorTab({
         >
           <Music size={14} />
           <span>Musik & Hadiah</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setConfigSubTab('texts')}
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+            configSubTab === 'texts'
+              ? 'bg-sage-dark text-white shadow-xs'
+              : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+          }`}
+        >
+          <FileText size={14} />
+          <span>Teks & Salam</span>
         </button>
 
         <button
@@ -1271,6 +1284,456 @@ export function ConfigEditorTab({
                     )}
                   </div>
                 ))}
+              </div>
+
+              {/* Alamat Pengiriman Kado Fisik Card */}
+              <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-4 text-xs mt-6">
+                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2">
+                    <Gift size={16} className="text-sage-dark" />
+                    <span>Alamat Pengiriman Kado Fisik</span>
+                    {formData.physicalGift?.enabled && (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
+                        Aktif
+                      </span>
+                    )}
+                  </h3>
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.physicalGift?.enabled || false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        physicalGift: {
+                          ...(formData.physicalGift || { recipientName: '', phone: '', address: '', notes: '' }),
+                          enabled: e.target.checked
+                        }
+                      })}
+                      className="rounded text-sage focus:ring-sage"
+                    />
+                    <span className="text-[11px] font-semibold text-gray-700">Aktifkan Kado Fisik</span>
+                  </label>
+                </div>
+
+                {formData.physicalGift?.enabled && (
+                  <div className="flex flex-col gap-3">
+                    <div>
+                      <label className="block text-gray-600 mb-1 font-medium">Nama Penerima Paket</label>
+                      <div className="relative flex items-center">
+                        <User className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                        <input
+                          type="text"
+                          placeholder="Contoh: Cecep Pratama & Ipeh Putri"
+                          value={formData.physicalGift?.recipientName || ''}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            physicalGift: {
+                              ...(formData.physicalGift || { enabled: true, phone: '', address: '' }),
+                              recipientName: e.target.value
+                            }
+                          })}
+                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-600 mb-1 font-medium">Nomor Telepon / WhatsApp Penerima</label>
+                      <div className="relative flex items-center">
+                        <Phone className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                        <input
+                          type="text"
+                          placeholder="Contoh: +6281234567890"
+                          value={formData.physicalGift?.phone || ''}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            physicalGift: {
+                              ...(formData.physicalGift || { enabled: true, recipientName: '', address: '' }),
+                              phone: e.target.value
+                            }
+                          })}
+                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-600 mb-1 font-medium">Alamat Pengiriman Lengkap</label>
+                      <div className="relative flex">
+                        <MapPin className="absolute left-3 top-2.5 text-gray-400 pointer-events-none" size={15} />
+                        <textarea
+                          placeholder="Tuliskan nama jalan, RT/RW, kelurahan, kecamatan, kota, provinsi, dan kode pos lengkap..."
+                          value={formData.physicalGift?.address || ''}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            physicalGift: {
+                              ...(formData.physicalGift || { enabled: true, recipientName: '', phone: '' }),
+                              address: e.target.value
+                            }
+                          })}
+                          rows={3}
+                          className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-sage"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-600 mb-1 font-medium">Catatan Tambahan untuk Kurir (Opsional)</label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: Titipkan ke pos sekuriti atau hubungi WA sebelum antar"
+                        value={formData.physicalGift?.notes || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          physicalGift: {
+                            ...(formData.physicalGift || { enabled: true, recipientName: '', phone: '', address: '' }),
+                            notes: e.target.value
+                          }
+                        })}
+                        className="w-full border border-gray-300 rounded-xl px-3.5 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* SUB-PILL: TEKS, SALAM & QUOTES */}
+        {configSubTab === 'texts' && (
+          <div className="flex flex-col gap-6">
+            {/* Quick Religion & Culture Presets */}
+            <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={16} className="text-amber-500" />
+                  <h3 className="font-heading text-sm font-bold text-text-dark">
+                    Pilihan Cepat Template Salam & Doa (Quick Presets)
+                  </h3>
+                </div>
+                <span className="text-[11px] text-gray-500">
+                  Klik tombol untuk mengisi otomatis teks salam, doa, dan penutup sesuai tradisi/agama.
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-1">
+                {[
+                  {
+                    name: 'Muslim / Islam',
+                    preset: {
+                      greeting: {
+                        salutation: "Assalamu'alaikum Warahmatullahi Wabarakatuh",
+                        introText: "Tanpa mengurangi rasa hormat, kami bermaksud mengundang Bapak/Ibu/Saudara/i pada acara resepsi pernikahan kami.",
+                      },
+                      quote: {
+                        enabled: true,
+                        source: "QS. Ar-Rum: 21",
+                        text: "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.",
+                        arabic: "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً",
+                      },
+                      closing: {
+                        thankText: "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kami.",
+                        salutation: "Wassalamu'alaikum Warahmatullahi Wabarakatuh",
+                      }
+                    }
+                  },
+                  {
+                    name: 'Kristen Protestan',
+                    preset: {
+                      greeting: {
+                        salutation: "Salam Sejahtera dalam Kasih Tuhan Yesus Kristus",
+                        introText: "Dengan mengucap syukur atas kasih dan anugerah Tuhan Yang Maha Esa, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk menghadiri pemberkatan dan resepsi pernikahan kami:",
+                      },
+                      quote: {
+                        enabled: true,
+                        source: "1 Korintus 13:4-7",
+                        text: "Kasih itu sabar; kasih itu murah hati; ia tidak cemburu. Ia tidak memegahkan diri dan tidak sombong. Kasih menutupi segala sesuatu, percaya segala sesuatu, mengharapkan segala sesuatu, sabar menanggung segala sesuatu.",
+                        arabic: "",
+                      },
+                      closing: {
+                        thankText: "Atas kehadiran dan doa restu Bapak/Ibu/Saudara/i sekalian, kami sekeluarga mengucapkan terima kasih yang sebesar-besarnya. Kiranya berkat dan damai sejahtera Tuhan senantiasa menyertai kita.",
+                        salutation: "Tuhan Memberkati Kita Semua",
+                      }
+                    }
+                  },
+                  {
+                    name: 'Katolik',
+                    preset: {
+                      greeting: {
+                        salutation: "Salam Damai Sejahtera Kristus",
+                        introText: "Atas berkat dan kemurahan Allah Bapa, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan merayakan Sakramen Pernikahan putra-putri kami:",
+                      },
+                      quote: {
+                        enabled: true,
+                        source: "Kolose 3:14",
+                        text: "Dan di atas semuanya itu: kenakanlah kasih, sebagai pengikat yang mempersatukan dan menyempurnakan.",
+                        arabic: "",
+                      },
+                      closing: {
+                        thankText: "Merupakan suatu sukacita besar bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu bagi keluarga baru kami.",
+                        salutation: "Salam Hangat dan Berkat Melimpah",
+                      }
+                    }
+                  },
+                  {
+                    name: 'Hindu / Bali',
+                    preset: {
+                      greeting: {
+                        salutation: "Om Swastiastu",
+                        introText: "Atas asung kerta wara nugraha Ida Sang Hyang Widhi Wasa, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri Upacara Pawiwahan (Pernikahan) putra-putri kami:",
+                      },
+                      quote: {
+                        enabled: true,
+                        source: "Rg Veda X.85.42",
+                        text: "Tinggallah di sini bersama, jangan pernah terpisahkan, capailah usia penuh, bergembira bersama anak dan cucumu, bersukacitalah di rumahmu yang tenteram dan penuh bahagia.",
+                        arabic: "",
+                      },
+                      closing: {
+                        thankText: "Merupakan suatu kehormatan dan kebahagiaan bagi kami sekeluarga apabila Bapak/Ibu/Saudara/i berkenan hadir serta memberikan doa restu.",
+                        salutation: "Om Shanti Shanti Shanti Om",
+                      }
+                    }
+                  },
+                  {
+                    name: 'Modern / Netral',
+                    preset: {
+                      greeting: {
+                        salutation: "Salam Hangat & Penuh Sukacita",
+                        introText: "Tanpa mengurangi rasa hormat, dengan penuh kebahagiaan kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk merayakan hari istimewa pernikahan kami:",
+                      },
+                      quote: {
+                        enabled: true,
+                        source: "Kahlil Gibran",
+                        text: "Cinta tidak saling memiliki dan tidak pula dimiliki, sebab cinta telah cukup bagi cinta itu sendiri.",
+                        arabic: "",
+                      },
+                      closing: {
+                        thankText: "Kehadiran dan doa restu Anda merupakan karunia yang sangat berarti bagi kami dalam mengawali langkah baru kehidupan bersama.",
+                        salutation: "Dengan Penuh Rasa Syukur & Hormat Kami",
+                      }
+                    }
+                  },
+                ].map((item, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => {
+                      setFormData(prev => ({
+                        ...prev,
+                        greeting: { ...prev.greeting, ...item.preset.greeting },
+                        quote: { ...prev.quote, ...item.preset.quote },
+                        closing: { ...prev.closing, ...item.preset.closing },
+                      }));
+                      showToast('success', `Template ${item.name} berhasil dimuat!`);
+                    }}
+                    className="p-2.5 rounded-xl border border-gray-200 hover:border-sage bg-gray-50/70 hover:bg-sage/10 text-gray-700 font-semibold text-xs text-center transition-all cursor-pointer active:scale-98 shadow-2xs"
+                  >
+                    {item.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Grid 2 Kolom: Kiri = Cover & Salam, Kanan = Quote & Penutup */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
+              {/* Kolom Kiri 1: Cover Depan Undangan */}
+              <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-4">
+                <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                  <FileText size={16} className="text-sage-dark" />
+                  <span>Teks Halaman Cover Depan (Opening Cover)</span>
+                </h3>
+
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <label className="block text-gray-600 mb-1 font-medium">Judul Cover Depan</label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: The Wedding Of / Walimatul Ursy / Pawiwahan"
+                      value={formData.cover?.title || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        cover: { ...(formData.cover || { salutation: 'Kepada Yth. Bapak/Ibu/Saudara/i', buttonText: 'Buka Undangan' }), title: e.target.value }
+                      })}
+                      className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                    />
+                    <p className="text-[10.5px] text-gray-400 mt-1">Teks di atas nama kedua mempelai pada layar sampul amplop digital.</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-600 mb-1 font-medium">Sapaan Hormat Tamu (Salutation)</label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: Kepada Yth. Bapak/Ibu/Saudara/i"
+                      value={formData.cover?.salutation || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        cover: { ...(formData.cover || { title: 'The Wedding Of', buttonText: 'Buka Undangan' }), salutation: e.target.value }
+                      })}
+                      className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                    />
+                    <p className="text-[10.5px] text-gray-400 mt-1">Muncul tepat di atas nama tamu undangan.</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-600 mb-1 font-medium">Teks Tombol Buka Undangan</label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: Buka Undangan / Open Invitation / Buka Serat Ulem"
+                      value={formData.cover?.buttonText || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        cover: { ...(formData.cover || { title: 'The Wedding Of', salutation: 'Kepada Yth. Bapak/Ibu/Saudara/i' }), buttonText: e.target.value }
+                      })}
+                      className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage font-semibold"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Kolom Kiri 2: Salam Pembuka & Pengantar */}
+              <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-4">
+                <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                  <MessageSquare size={16} className="text-sage-dark" />
+                  <span>Salam Pembuka & Teks Pengantar</span>
+                </h3>
+
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <label className="block text-gray-600 mb-1 font-medium">Salam Pembuka</label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: Assalamu'alaikum Warahmatullahi Wabarakatuh"
+                      value={formData.greeting?.salutation || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        greeting: { ...(formData.greeting || {}), salutation: e.target.value }
+                      })}
+                      className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-600 mb-1 font-medium">Teks Kalimat Pengantar Undangan</label>
+                    <textarea
+                      placeholder="Tuliskan kalimat hormat mengundang tamu..."
+                      value={formData.greeting?.introText || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        greeting: { ...(formData.greeting || {}), introText: e.target.value }
+                      })}
+                      rows={4}
+                      className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-sage leading-relaxed"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Kolom Kanan 1: Ayat Suci / Kutipan Doa & Mutiara Cinta */}
+              <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-4">
+                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2">
+                    <Quote size={16} className="text-sage-dark" />
+                    <span>Ayat Suci / Kutipan Cinta (Quote)</span>
+                  </h3>
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.quote?.enabled !== false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        quote: { ...(formData.quote || {}), enabled: e.target.checked }
+                      })}
+                      className="rounded text-sage focus:ring-sage"
+                    />
+                    <span className="text-[11px] font-semibold text-gray-700">Tampilkan Kutipan</span>
+                  </label>
+                </div>
+
+                {formData.quote?.enabled !== false && (
+                  <div className="flex flex-col gap-3">
+                    <div>
+                      <label className="block text-gray-600 mb-1 font-medium">Sumber Kutipan / Surah / Tokoh</label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: QS. Ar-Rum: 21 / 1 Korintus 13:4-7 / Kahlil Gibran"
+                        value={formData.quote?.source || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          quote: { ...(formData.quote || {}), source: e.target.value }
+                        })}
+                        className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-600 mb-1 font-medium">Isi Teks Terjemahan / Kutipan Mutiara</label>
+                      <textarea
+                        placeholder="Tuliskan isi ayat, doa, atau kata mutiara cinta..."
+                        value={formData.quote?.text || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          quote: { ...(formData.quote || {}), text: e.target.value }
+                        })}
+                        rows={4}
+                        className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-sage leading-relaxed"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-600 mb-1 font-medium">Teks Tulisan Arab / Kitab Suci Asli (Opsional)</label>
+                      <textarea
+                        placeholder="Tempelkan tulisan kaligrafi teks arab (opsional)..."
+                        dir="rtl"
+                        value={formData.quote?.arabic || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          quote: { ...(formData.quote || {}), arabic: e.target.value }
+                        })}
+                        rows={2}
+                        className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-sage font-serif leading-loose"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Kolom Kanan 2: Teks Penutup & Ucapan Terima Kasih */}
+              <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-4">
+                <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                  <CheckCircle2 size={16} className="text-sage-dark" />
+                  <span>Teks Penutup & Ucapan Terima Kasih</span>
+                </h3>
+
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <label className="block text-gray-600 mb-1 font-medium">Ucapan Terima Kasih & Doa Restu</label>
+                    <textarea
+                      placeholder="Tuliskan ucapan rasa syukur atas doa restu tamu..."
+                      value={formData.closing?.thankText || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        closing: { ...(formData.closing || {}), thankText: e.target.value }
+                      })}
+                      rows={4}
+                      className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-sage leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-600 mb-1 font-medium">Salam Penutup</label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: Wassalamu'alaikum Warahmatullahi Wabarakatuh"
+                      value={formData.closing?.salutation || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        closing: { ...(formData.closing || {}), salutation: e.target.value }
+                      })}
+                      className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage font-medium"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Calendar, Clock, Building, MapPin, Link as LinkIcon, 
   Sparkles, SlidersHorizontal, Check, Copy, CheckCircle2,
-  Eye, EyeOff
+  Eye, EyeOff, Video
 } from 'lucide-react';
 import { WeddingConfig } from '../../../types';
 import { getEmbedMapUrl } from '../../../utils/mapUrl';
@@ -964,6 +964,100 @@ export function EventScheduleEditor({ formData, setFormData, showToast }: EventS
             )}
           </div>
         </div>
+      </div>
+
+      {/* KARTU SIARAN LANGSUNG (LIVE STREAMING VIRTUAL ATTENDANCE) */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xs flex flex-col gap-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+              <Video size={18} />
+            </div>
+            <div>
+              <h3 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2">
+                <span>Siaran Langsung (Live Streaming)</span>
+                {formData.streaming?.enabled && (
+                  <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-[10px] font-bold uppercase tracking-wider">
+                    Aktif
+                  </span>
+                )}
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Tampilkan tombol siaran langsung YouTube, Zoom, atau Instagram Live bagi tamu yang hadir secara virtual.
+              </p>
+            </div>
+          </div>
+          <label className="flex items-center gap-2 cursor-pointer self-start sm:self-auto bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors">
+            <input
+              type="checkbox"
+              checked={formData.streaming?.enabled || false}
+              onChange={(e) => setFormData({
+                ...formData,
+                streaming: {
+                  ...(formData.streaming || { platform: 'youtube', url: '', label: 'Live Streaming Akad & Resepsi' }),
+                  enabled: e.target.checked
+                }
+              })}
+              className="rounded text-red-600 focus:ring-red-500"
+            />
+            <span className="text-xs font-semibold text-gray-700">Aktifkan Live Streaming</span>
+          </label>
+        </div>
+
+        {formData.streaming?.enabled && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label className="block text-gray-600 mb-1 font-medium">Judul / Label Tombol Siaran</label>
+              <input
+                type="text"
+                placeholder="Contoh: Live Streaming Akad & Resepsi"
+                value={formData.streaming?.label || ''}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  streaming: { ...(formData.streaming || { enabled: true, platform: 'youtube', url: '' }), label: e.target.value }
+                })}
+                className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white text-gray-800 focus:ring-1 focus:ring-sage shadow-2xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-600 mb-1 font-medium">Platform Siaran</label>
+              <select
+                value={formData.streaming?.platform || 'youtube'}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  streaming: {
+                    ...(formData.streaming || { enabled: true, url: '', label: 'Live Streaming' }),
+                    platform: e.target.value as 'youtube' | 'zoom' | 'instagram' | 'other'
+                  }
+                })}
+                className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 bg-white text-gray-800 focus:ring-1 focus:ring-sage shadow-2xs"
+              >
+                <option value="youtube">YouTube Live</option>
+                <option value="zoom">Zoom Meeting / Webinar</option>
+                <option value="instagram">Instagram Live</option>
+                <option value="other">Platform Lainnya</option>
+              </select>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-gray-600 mb-1 font-medium">Tautan URL Siaran (Link Siaran Langsung)</label>
+              <div className="relative flex items-center">
+                <LinkIcon className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                <input
+                  type="url"
+                  placeholder="https://youtube.com/live/... atau https://zoom.us/j/..."
+                  value={formData.streaming?.url || ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    streaming: { ...(formData.streaming || { enabled: true, platform: 'youtube', label: 'Live Streaming' }), url: e.target.value }
+                  })}
+                  className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white text-gray-800 focus:ring-1 focus:ring-sage font-mono text-[11px] shadow-2xs"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

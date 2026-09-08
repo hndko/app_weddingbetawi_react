@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.56.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.56.1-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)

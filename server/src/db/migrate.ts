@@ -34,6 +34,24 @@ async function ensureForeignKey(table: string, fkName: string, fkDefinition: str
   }
 }
 
+/**
+ * Menambahkan kolom secara idempoten pada tabel MySQL (kompatibel lintas versi MySQL 5.7, 8.0, dan MariaDB).
+ */
+async function ensureColumn(table: string, column: string, definition: string): Promise<void> {
+  try {
+    const [rows] = await pool.query(
+      `SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
+      [dbName, table, column]
+    );
+    if ((rows as any[]).length === 0) {
+      await pool.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition};`);
+      console.log(`[DB Migration] Kolom \`${column}\` pada tabel \`${table}\` siap.`);
+    }
+  } catch (err: unknown) {
+    console.warn(`[DB Migration Warning] Gagal menambahkan kolom \`${column}\` pada \`${table}\`:`, err);
+  }
+}
+
 export async function migrate() {
   console.log(`[DB Migration] Memulai migrasi database MySQL Laragon (${dbName})...`);
 
@@ -100,12 +118,10 @@ export async function migrate() {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
-    try {
-      await pool.query(`ALTER TABLE guests ADD COLUMN IF NOT EXISTS tier VARCHAR(50) DEFAULT 'regular'`);
-      await pool.query(`ALTER TABLE guests ADD COLUMN IF NOT EXISTS vip_notes TEXT DEFAULT NULL`);
-      await pool.query(`ALTER TABLE guests ADD COLUMN IF NOT EXISTS souvenir_claimed TINYINT(1) DEFAULT 0`);
-      await pool.query(`ALTER TABLE guests ADD COLUMN IF NOT EXISTS souvenir_claimed_at DATETIME DEFAULT NULL`);
-    } catch {}
+    await ensureColumn('guests', 'tier', "VARCHAR(50) DEFAULT 'regular'");
+    await ensureColumn('guests', 'vip_notes', 'TEXT DEFAULT NULL');
+    await ensureColumn('guests', 'souvenir_claimed', 'TINYINT(1) DEFAULT 0');
+    await ensureColumn('guests', 'souvenir_claimed_at', 'DATETIME DEFAULT NULL');
     console.log('[DB Migration] Tabel `guests` siap.');
 
     // 6. Buat tabel budget_items
@@ -126,11 +142,9 @@ export async function migrate() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
-    try {
-      await pool.query(`ALTER TABLE budget_items ADD COLUMN IF NOT EXISTS vendor_phone VARCHAR(50) DEFAULT NULL`);
-      await pool.query(`ALTER TABLE budget_items ADD COLUMN IF NOT EXISTS due_date VARCHAR(50) DEFAULT NULL`);
-      await pool.query(`ALTER TABLE budget_items ADD COLUMN IF NOT EXISTS is_completed TINYINT(1) DEFAULT 0`);
-    } catch {}
+    await ensureColumn('budget_items', 'vendor_phone', 'VARCHAR(50) DEFAULT NULL');
+    await ensureColumn('budget_items', 'due_date', 'VARCHAR(50) DEFAULT NULL');
+    await ensureColumn('budget_items', 'is_completed', 'TINYINT(1) DEFAULT 0');
     console.log('[DB Migration] Tabel `budget_items` siap.');
 
     // 7. Buat tabel seating_tables
@@ -150,14 +164,12 @@ export async function migrate() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
-    try {
-      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS number VARCHAR(50) DEFAULT NULL`);
-      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS shape VARCHAR(50) DEFAULT 'round'`);
-      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS zone VARCHAR(50) DEFAULT 'regular_left'`);
-      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS notes TEXT DEFAULT NULL`);
-      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS pos_x INT DEFAULT 0`);
-      await pool.query(`ALTER TABLE seating_tables ADD COLUMN IF NOT EXISTS pos_y INT DEFAULT 0`);
-    } catch {}
+    await ensureColumn('seating_tables', 'number', 'VARCHAR(50) DEFAULT NULL');
+    await ensureColumn('seating_tables', 'shape', "VARCHAR(50) DEFAULT 'round'");
+    await ensureColumn('seating_tables', 'zone', "VARCHAR(50) DEFAULT 'regular_left'");
+    await ensureColumn('seating_tables', 'notes', 'TEXT DEFAULT NULL');
+    await ensureColumn('seating_tables', 'pos_x', 'INT DEFAULT 0');
+    await ensureColumn('seating_tables', 'pos_y', 'INT DEFAULT 0');
     console.log('[DB Migration] Tabel `seating_tables` siap.');
 
     // 8. Buat tabel trivia_questions
@@ -203,10 +215,8 @@ export async function migrate() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
-    try {
-      await pool.query(`ALTER TABLE checkins ADD COLUMN IF NOT EXISTS tier VARCHAR(50) DEFAULT 'regular'`);
-      await pool.query(`ALTER TABLE checkins ADD COLUMN IF NOT EXISTS souvenir_claimed_at DATETIME DEFAULT NULL`);
-    } catch {}
+    await ensureColumn('checkins', 'tier', "VARCHAR(50) DEFAULT 'regular'");
+    await ensureColumn('checkins', 'souvenir_claimed_at', 'DATETIME DEFAULT NULL');
     console.log('[DB Migration] Tabel `checkins` siap.');
 
     // 11. Optimasi Index Kueri Database (Pilar 3 & 6)

@@ -190,6 +190,40 @@ npm install -D @rollup/rollup-win32-x64-msvc
 | Menjalankan migrasi database MySQL | `npm run db:migrate` |
 | Mengisi data awal database (Seeding) | `npm run db:seed` |
 | Verifikasi tipe sebelum commit | `npm run lint` |
+| Menjalankan automated tests | `npm test` |
 | Menguji hasil kompilasi web statis | `npm run build && npm run preview` |
 | Menambahkan pustaka dependensi baru | `npm install <nama-library>` |
 | Mengirim perubahan ke repositori | `git add . && git commit -m "feat: ..." && git push origin main` |
+
+---
+
+## ⚡ 11. Perintah Otomatisasi Deployment Multi-Klien (Multi-Tenant CLI)
+
+Pengelolaan multi-instance otomatis menggunakan skrip Bash (Linux VPS) dan PowerShell (Windows):
+
+```bash
+# 1. Menerbitkan instance klien baru (Wizard Interaktif)
+./scripts/deploy-client.sh create
+
+# 2. Menerbitkan klien baru 1 baris perintah + SSL Certbot otomatis
+./scripts/deploy-client.sh create --slug budi-ani --domain budiani.maripartner.com --ssl
+
+# 3. Melihat daftar seluruh klien aktif beserta port & status
+./scripts/deploy-client.sh list
+
+# 4. Membekukan instance pasca-resepsi (Mematikan PM2, menghemat 70MB RAM, web tetap aktif)
+./scripts/deploy-client.sh freeze budi-ani
+
+# 5. Mengaktifkan kembali instance yang dibekukan
+./scripts/deploy-client.sh resume budi-ani
+
+# 6. Melakukan pencadangan database SQL & foto uploads klien
+./scripts/deploy-client.sh backup budi-ani
+
+# 7. Menghapus instance klien secara bersih dari server
+./scripts/deploy-client.sh delete budi-ani
+
+# 8. Pengujian multi-instance lokal di Windows / Laragon (PowerShell)
+powershell -ExecutionPolicy Bypass -File .\scripts\deploy-client.ps1 -Action create -Slug budi-ani -Port 5002 -SharedModules
+```
+

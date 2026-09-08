@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.52.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.53.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -50,6 +50,7 @@ Untuk panduan mendalam sesuai peran dan kebutuhan operasional, silakan telusuri 
 | 📄 **Pitch Deck One-Pager WO** | [`docs/06-pitch-deck-one-pager-wo.md`](docs/06-pitch-deck-one-pager-wo.md) | Proposal kemitraan 1 halaman siap kirim ke WO: 5 fitur killer hari-H, paket harga wholesale, dan tawaran 1 event gratis coba. |
 | 📋 **Formulir Onboarding Klien** | [`docs/07-formulir-onboarding-klien-baru.md`](docs/07-formulir-onboarding-klien-baru.md) | Template kuesioner WhatsApp siap salin untuk pengumpulan data pengantin dan format standar impor tamu Excel. |
 | 🎭 **Panduan Skenario Demo** | [`docs/08-panduan-skenario-demo-presentasi.md`](docs/08-panduan-skenario-demo-presentasi.md) | Alur presentasi langsung 10 menit memukau di depan WO: hook cover personalisasi, trik offline scanner, layar panggung, dan master report Excel. |
+| ⚡ **Otomatisasi Deploy Klien** | [`docs/09-panduan-otomatisasi-deploy-klien.md`](docs/09-panduan-otomatisasi-deploy-klien.md) | Skrip CLI otomatisasi penerbitan klien < 30 detik (`deploy-client.sh`), mode wizard/flag, hemat disk shared node_modules, freeze H+7, backup, & delete. |
 
 ---
 
@@ -249,6 +250,18 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
 ---
 
 ## ✨ Fitur Utama
+
+### ⚡ Automated Multi-Client Provisioning CLI Suite (v1.53.0)
+- **Penerbitan Klien Baru Dalam < 30 Detik (`scripts/deploy-client.sh`)**:
+  - Skrip otomatisasi terminal Linux (Ubuntu VPS / aaPanel / Debian) untuk *provisioning* multi-instance terisolasi (database MySQL unik, PM2 daemon mandiri, port Express dinamis, & Nginx virtual host) dalam hitungan detik.
+  - **Mendukung Mode Wizard Interaktif & 1-Line Flag**: Memudahkan penerbitan massal saat pesanan pernikahan mulai rutin masuk (`./scripts/deploy-client.sh create --slug klien01 --domain klien01.domain.com --ssl`).
+  - **Inovasi Shared node_modules via Symlink (`--shared-modules`)**: Menghemat > 91% ruang disk server (dari ~400MB menjadi hanya ~35MB per klien) dan mengeliminasi proses `npm install` berulang-ulang.
+  - **Siklus Hidup Klien Lengkap (*Lifecycle Management*)**:
+    - `freeze`: Mematikan PM2 pasca-resepsi untuk **menghemat 70–100MB RAM per klien** sambil tetap mempertahankan halaman web statis arsip.
+    - `resume`: Menghidupkan kembali service klien aktif.
+    - `backup`: Pencadangan instan database SQL (`mysqldump`) dan folder foto unggahan menjadi berkas `.tar.gz`.
+    - `delete`: Pembersihan aman total (backup otomatis sebelum drop DB & remove vhost).
+  - **Dukungan Pengujian Windows / Laragon (`scripts/deploy-client.ps1`)**: Skrip PowerShell mandiri untuk menyimulasikan multi-instance secara lokal di lingkungan pengembang.
 
 ### 📱 PWA & Offline-First Meja Resepsi Hari-H (v1.52.0)
 - **Operasional Hari-H Tahan Gangguan Sinyal (*Zero Venue Downtime*)**:

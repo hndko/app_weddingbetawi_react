@@ -1,0 +1,44 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name {{DOMAIN}};
+
+    root {{CLIENT_DIR}}/dist;
+    index index.html;
+
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript image/svg+xml;
+
+    # 1. Routing Frontend React SPA (Halaman Arsip Statis)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 2. Akses Langsung Berkas Unggahan Foto (Tanpa Node.js)
+    location /uploads/ {
+        alias {{CLIENT_DIR}}/server/uploads/;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    # 3. Notifikasi API Event Telah Diarsipkan
+    location /api/ {
+        default_type application/json;
+        return 200 '{"status":"archived","message":"Acara pernikahan telah selesai dan diarsipkan ke mode statis."}';
+    }
+
+    # 4. Cache Aset Statis Frontend
+    location ~* \.(js|css|png|jpg|jpeg|webp|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    access_log /var/log/nginx/wedding_{{SLUG}}_access.log;
+    error_log /var/log/nginx/wedding_{{SLUG}}_error.log;
+}

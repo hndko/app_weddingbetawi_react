@@ -70,21 +70,28 @@ export function createAuthRouter() {
   // PUT /api/auth/password - Ubah password akun admin (dilindungi JWT)
   router.put('/password', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
-      const { username, oldPassword, newPassword } = req.body;
+      const authReq = req as AuthenticatedRequest;
+      const targetUserId = authReq.user?.id;
+      if (!targetUserId) {
+        res.status(401).json({ error: 'Sesi autentikasi tidak valid' });
+        return;
+      }
 
-      if (!username || !oldPassword || !newPassword) {
+      const { oldPassword, newPassword } = req.body;
+
+      if (!oldPassword || !newPassword) {
         res.status(400).json({ error: 'Data perubahan password tidak lengkap' });
         return;
       }
 
-      if (newPassword.length < 4) {
-        res.status(400).json({ error: 'Password baru minimal 4 karakter' });
+      if (newPassword.length < 6) {
+        res.status(400).json({ error: 'Password baru minimal 6 karakter' });
         return;
       }
 
       const [rows] = await pool.query(
-        'SELECT id, password FROM users WHERE username = ? LIMIT 1',
-        [username.trim()]
+        'SELECT id, password FROM users WHERE id = ? LIMIT 1',
+        [targetUserId]
       );
 
       const user = (rows as Array<{ id: number; password: string }>)[0];

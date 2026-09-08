@@ -7,6 +7,8 @@ import path from 'path';
 import dotenv from 'dotenv';
 import fs from 'fs';
 
+import helmet from 'helmet';
+
 import { createConfigRouter } from './routes/config';
 import { createWishesRouter } from './routes/wishes';
 import { createRsvpsRouter } from './routes/rsvps';
@@ -20,6 +22,16 @@ import { createCheckinsRouter } from './routes/checkins';
 
 // Load environment configuration
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+
+// Enforce strong JWT_SECRET in production mode (Pilar 3 OWASP)
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'mari_partner_jwt_secret_2026') {
+    console.error('FATAL: JWT_SECRET wajib diatur ke nilai acak aman di lingkungan production!');
+    process.exit(1);
+  }
+} else if (!process.env.JWT_SECRET) {
+  console.warn('[Security Warning] JWT_SECRET belum diatur di .env. Menggunakan default untuk development.');
+}
 
 const app = express();
 const server = http.createServer(app);
@@ -44,13 +56,35 @@ io.on('connection', (socket) => {
 });
 
 // Middleware
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://www.youtube.com", "https://s.ytimg.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+        imgSrc: ["'self'", "data:", "blob:", "https:", "http:"],
+        frameSrc: [
+          "'self'",
+          "https://www.youtube.com",
+          "https://www.youtube-nocookie.com",
+          "https://www.google.com",
+          "https://maps.google.com",
+        ],
+        connectSrc: ["'self'", "ws:", "wss:", "https:", "http:"],
+      },
+    },
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
 app.use(cors({
   origin: corsOriginConfig,
   credentials: true,
 }));
 app.use(compression());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
 // Static uploads directory dengan Cache-Control 30 hari (optimasi loading gambar)
 const uploadsPath = path.resolve(process.cwd(), 'server', 'uploads');

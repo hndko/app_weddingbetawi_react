@@ -1,5 +1,22 @@
 import { rawPool, pool, dbName } from './connection';
 
+/**
+ * Membuat indeks basis data secara idempoten tanpa melempar galat jika indeks sudah ada.
+ */
+async function ensureIndex(table: string, indexName: string, columns: string): Promise<void> {
+  try {
+    await pool.query(`CREATE INDEX \`${indexName}\` ON \`${table}\` (${columns});`);
+    console.log(`[DB Migration] Index \`${indexName}\` pada tabel \`${table}\` siap.`);
+  } catch (err: unknown) {
+    const code = typeof err === 'object' && err !== null && 'code' in err ? (err as { code: string }).code : '';
+    const errno = typeof err === 'object' && err !== null && 'errno' in err ? (err as { errno: number }).errno : 0;
+    // Abaikan galat ER_DUP_KEYNAME (1061) jika indeks sudah dibuat sebelumnya
+    if (code !== 'ER_DUP_KEYNAME' && errno !== 1061) {
+      console.warn(`[DB Migration Warning] Indeks \`${indexName}\` pada \`${table}\`:`, err);
+    }
+  }
+}
+
 export async function migrate() {
   console.log(`[DB Migration] Memulai migrasi database MySQL Laragon (${dbName})...`);
 
@@ -175,7 +192,16 @@ export async function migrate() {
     } catch {}
     console.log('[DB Migration] Tabel `checkins` siap.');
 
-    console.log('[DB Migration] Seluruh skema database berhasil dimigrasikan!');
+    // 11. Optimasi Index Kueri Database (Pilar 3 & 6)
+    await ensureIndex('wishes', 'idx_wishes_created_at', 'created_at');
+    await ensureIndex('rsvps', 'idx_rsvps_created_at', 'created_at');
+    await ensureIndex('guests', 'idx_guests_created_at', 'created_at');
+    await ensureIndex('guests', 'idx_guests_status', 'status');
+    await ensureIndex('guests', 'idx_guests_phone', 'phone');
+    await ensureIndex('checkins', 'idx_checkins_guest_id', 'guest_id');
+    await ensureIndex('checkins', 'idx_checkins_created_at', 'created_at');
+
+    console.log('[DB Migration] Seluruh skema database dan index berhasil dimigrasikan!');
   } catch (error) {
     console.error('[DB Migration Error] Gagal menjalankan migrasi:', error);
     throw error;

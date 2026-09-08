@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.49.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.49.1-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -75,6 +75,7 @@ Sistem ini didesain dengan prinsip **Efisiensi Penyimpanan Mandiri (*Zero Storag
 | **Database** | [MySQL](https://laragon.org) (`mysql2/promise`) | `^3.24.3` | Basis data relasional dengan pooling dan *prepared statements*. |
 | **Realtime Engine** | [Socket.io](https://socket.io) | `^4.8.1` | Protokol WebSockets untuk siaran ucapan dan live feed proyektor. |
 | **Security & Auth** | [bcryptjs](https://github.com/dcodeIO/bcrypt.js) | `^3.0.3` | Hashing aman untuk kata sandi administrator. |
+| **HTTP Security Headers** | [Helmet](https://helmetjs.github.io/) | `^8.1.0` | Pengamanan HTTP header & Content Security Policy (CSP). |
 | **File Uploader** | [Multer](https://github.com/expressjs/multer) | `^2.3.0` | Penanganan unggahan berkas foto multipart/form-data. |
 | **Build Tool & Bundler** | [Vite](https://vitejs.dev) | `^6.2.3` | *Development server* berkecepatan tinggi dan *bundling* produksi optimal. |
 | **Styling & CSS** | [Tailwind CSS](https://tailwindcss.com) | `^4.1.14` | *Utility-first CSS framework* v4 dengan skema tema dinamis. |

@@ -21,9 +21,14 @@ export function createUploadRouter() {
       cb(null, uploadDir);
     },
     filename: (_req, file, cb) => {
-      const ext = path.extname(file.originalname).toLowerCase();
+      const mimeToExt: Record<string, string> = {
+        'image/jpeg': '.jpg',
+        'image/png': '.png',
+        'image/webp': '.webp',
+      };
+      const safeExt = mimeToExt[file.mimetype.toLowerCase()] || '.jpg';
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, `img-${uniqueSuffix}${ext || '.jpg'}`);
+      cb(null, `img-${uniqueSuffix}${safeExt}`);
     },
   });
 
@@ -33,14 +38,18 @@ export function createUploadRouter() {
       fileSize: 10 * 1024 * 1024, // Maksimal 10MB per file
     },
     fileFilter: (_req, file, cb) => {
-      const allowed = /jpeg|jpg|png|webp|gif|svg\+xml/;
-      const isMimeValid = allowed.test(file.mimetype);
-      const isExtValid = allowed.test(path.extname(file.originalname).toLowerCase());
+      const allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+      const allowedExts = ['.jpg', '.jpeg', '.png', '.webp'];
 
-      if (isMimeValid || isExtValid) {
+      const fileExt = path.extname(file.originalname).toLowerCase();
+      const isMimeValid = allowedMimes.includes(file.mimetype.toLowerCase());
+      const isExtValid = allowedExts.includes(fileExt);
+
+      // P0 Security Guard: Wajib validasi ganda (MIME type AND extension) dan larang SVG untuk eliminasi Stored XSS
+      if (isMimeValid && isExtValid) {
         cb(null, true);
       } else {
-        cb(new Error('Format file tidak didukung. Harap unggah format JPG, PNG, atau WebP.'));
+        cb(new Error('Format file tidak didukung. Harap unggah format gambar bitmap asli: JPG, PNG, atau WebP.'));
       }
     },
   });

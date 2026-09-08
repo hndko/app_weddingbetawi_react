@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.49.0`
+- **Versi Aplikasi Saat Ini**: `v1.49.1`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -93,10 +93,10 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
    - DILARANG menggunakan `dangerouslySetInnerHTML` tanpa pustaka sanitasi HTML pihak ketiga (seperti DOMPurify).
 3. **Keamanan Basis Data MySQL & Prepared Statements (SQLi Guard)**:
    - Seluruh kueri basis data pada REST API wajib menggunakan *parameterized queries* / *prepared statements* (`mysql2/promise`) untuk mencegah kerentanan SQL Injection.
-4. **Proteksi Panel Admin & Hashing Password**:
+4. **Proteksi Panel Admin, Hashing Password & IDOR Guard**:
    - Rute panel admin dilindungi oleh autentikasi berbasis database MySQL tabel `users`.
    - Kata sandi wajib di-hash menggunakan algoritma `bcryptjs` (salt rounds 10). DILARANG menyimpan kata sandi dalam bentuk plaintext.
-   - Fitur ganti password admin wajib memvalidasi panjang karakter dan meng-hash password baru sebelum memperbarui tabel `users`.
+   - Fitur ganti password admin (`PUT /api/auth/password`) WAJIB mengikat identitas pengguna ke token JWT yang terautentikasi (`user.id`) untuk mencegah serangan IDOR (Insecure Direct Object Reference) serta memvalidasi minimal 6 karakter.
 5. **Aturan Konfigurasi Web Server Nginx & Kompatibilitas Cloudflare**:
    - **Pencegahan Loop Redirect**: Jika domain publik menggunakan Cloudflare dengan mode enkripsi **Flexible**, DILARANG menyertakan blok redirect `if ($server_port !~ 443) { rewrite ... }` di konfigurasi Nginx server origin guna mencegah galat browser *ERR_TOO_MANY_REDIRECTS*.
    - **Protokol Pembersihan Vhost Hantu (*Ghost Cache/Vhost Cleanup*)**: Apabila perintah `nginx -t` atau tombol Save di aaPanel gagal dengan galat `mkdir() ".../proxy_cache_dir" failed (2: No such file or directory)`, pengembang/agen wajib memeriksa sisa konfigurasi website usang dengan `grep -rn` di `/www/server/panel/vhost/nginx/`, menghapus berkas konfigurasi mati tersebut, dan memvalidasi kelulusan `nginx -t` sebelum me-reload Nginx.
@@ -107,6 +107,16 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
    - Endpoint publik penerima data pengguna (`POST /api/wishes` dan `POST /api/rsvps`) WAJIB dilindungi oleh rate limiter sliding-window berbasis IP dengan batas ketat maksimum 2 permohonan per 60 detik per IP.
    - Endpoint login admin (`POST /api/auth/login`) dibatasi maksimum 5 permohonan per 5 menit per IP guna mencegah serangan *brute-force*.
    - Pelanggaran limit wajib mengembalikan status HTTP 429 Too Many Requests beserta header `Retry-After`.
+8. **Pengamanan Unggah Berkas Gambar (*Upload Security Guard & Anti-Stored XSS*)**:
+   - Endpoint upload (`server/src/routes/upload.ts`) WAJIB memvalidasi ganda: MIME type (`image/jpeg`, `image/png`, `image/webp`) DAN ekstensi berkas (`.jpg`, `.jpeg`, `.png`, `.webp`).
+   - Berkas format vektor SVG (`image/svg+xml`) DILARANG KERAS diunggah guna mengeliminasi 100% celah Stored XSS via payload script tersembunyi.
+   - Ekstensi berkas fisik di disk server selalu disintesis dari MIME type yang telah divalidasi (`safeExt`).
+9. **Content Security Policy (CSP) & HTTP Header Hardening (`helmet`)**:
+   - Server Express wajib mengaktifkan `helmet` dengan whitelist CSP ketat yang mendukung YouTube IFrame, Google Maps, Google Fonts, dan Socket.io.
+   - Resource policy wajib menyertakan `crossOriginResourcePolicy: { policy: "cross-origin" }` agar aset unggahan di `/uploads` dapat dimuat dengan aman oleh klien.
+10. **Proteksi DoS Body Parser & JWT Secret Production Enforcement**:
+    - Limit `express.json()` dan `express.urlencoded()` dibatasi maksimum `2mb` (bukan 50mb) untuk mencegah kehabisan memori server (*Memory Exhaustion DoS*).
+    - Pada lingkungan produksi (`NODE_ENV === 'production'`), server wajib memeriksa `JWT_SECRET` dan menolak booting (`process.exit(1)`) jika kunci kosong atau masih menggunakan string fallback bawaan.
 
 ---
 

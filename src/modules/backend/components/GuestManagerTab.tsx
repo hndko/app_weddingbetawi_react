@@ -1267,6 +1267,7 @@ ${closingSalutation}`;
         onClose={() => setIsWhatsAppBroadcastModalOpen(false)}
         guests={guests}
         weddingConfig={weddingConfig}
+        rsvps={rsvps}
         onUpdateGuestStatus={async (guestId: string, status: 'pending' | 'sent') => {
           try {
             await api.updateGuest(guestId, { status });
@@ -1275,7 +1276,7 @@ ${closingSalutation}`;
             // ignore
           }
         }}
-        onToast={showToast}
+        onToast={(msg, type) => showToast(type, msg)}
       />
     </div>
   );

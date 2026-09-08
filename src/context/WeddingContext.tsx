@@ -72,6 +72,13 @@ export const WeddingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           : (defaultConfig.music?.defaultVolume ?? 75),
       },
       seo: { ...defaultConfig.seo, ...(data.seo || {}) },
+      whatsappGateway: {
+        ...defaultConfig.whatsappGateway,
+        ...(data.whatsappGateway || {}),
+        provider: (data.whatsappGateway?.provider && ['manual', 'fonnte', 'waha', 'twilio'].includes(data.whatsappGateway.provider))
+          ? data.whatsappGateway.provider
+          : (defaultConfig.whatsappGateway?.provider || 'manual'),
+      },
     };
   }, []);
 

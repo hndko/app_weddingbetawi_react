@@ -8,7 +8,8 @@ import {
   TriviaQuestion,
   CheckInRecord,
   GuestTier,
-  LiveRundownStatus
+  LiveRundownStatus,
+  WhatsAppGatewayConfig
 } from '../types';
 
 const BASE_URL = '/api';
@@ -116,7 +117,7 @@ export const api = {
 
   // RSVPs
   getRsvps: (): Promise<RSVPResponse[]> => request<RSVPResponse[]>('/rsvps'),
-  createRsvp: (data: { name: string; attendance: string; guestCount: number; notes: string; tier?: GuestTier }): Promise<{ success: boolean; data: RSVPResponse }> =>
+  createRsvp: (data: { name: string; phone?: string; attendance: string; guestCount: number; notes: string; tier?: GuestTier }): Promise<{ success: boolean; data: RSVPResponse }> =>
     request('/rsvps', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -298,5 +299,17 @@ export const api = {
   deleteCheckin: (id: string): Promise<{ success: boolean }> =>
     request(`/checkins/${encodeURIComponent(id)}`, {
       method: 'DELETE',
+    }),
+
+  // WhatsApp Gateway
+  testWhatsAppGateway: (data: { testPhone: string; config: WhatsAppGatewayConfig }): Promise<{ success: boolean; message: string; result: any }> =>
+    request('/whatsapp/test', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  sendWhatsAppMessage: (data: { to: string; message: string; config?: WhatsAppGatewayConfig }): Promise<{ success: boolean; message: string; result: any }> =>
+    request('/whatsapp/send', {
+      method: 'POST',
+      body: JSON.stringify(data),
     }),
 };

@@ -131,6 +131,30 @@ export interface StreamingConfig {
   label?: string; // e.g. "Live Streaming Akad & Resepsi"
 }
 
+export type WhatsAppGatewayProvider = 'manual' | 'fonnte' | 'waha' | 'twilio';
+
+export interface WhatsAppGatewayConfig {
+  provider: WhatsAppGatewayProvider;
+  
+  // Fonnte API credentials
+  fonnteToken?: string;
+  
+  // WAHA (WhatsApp HTTP API) credentials
+  wahaEndpointUrl?: string;
+  wahaApiKey?: string;
+  wahaSession?: string;
+  
+  // Twilio credentials
+  twilioAccountSid?: string;
+  twilioAuthToken?: string;
+  twilioFromNumber?: string;
+  
+  // RSVP Notifications & Alerts
+  adminPhone?: string;
+  notifyAdminOnRsvp?: boolean;
+  notifyGuestOnRsvp?: boolean;
+}
+
 export interface WeddingConfig {
   groom: PersonInfo;
   bride: PersonInfo;
@@ -155,6 +179,7 @@ export interface WeddingConfig {
   closing?: ClosingConfig;
   physicalGift?: PhysicalGiftConfig;
   streaming?: StreamingConfig;
+  whatsappGateway?: WhatsAppGatewayConfig;
 }
 
 export interface Wish {
@@ -172,6 +197,7 @@ export type GuestTier = 'regular' | 'family' | 'vip' | 'vvip';
 export interface RSVPResponse {
   id?: string;
   name: string;
+  phone?: string;
   attendance: string;
   guestCount: number;
   notes: string;

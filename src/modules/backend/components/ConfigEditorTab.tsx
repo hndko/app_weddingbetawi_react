@@ -4,7 +4,8 @@ import {
   Crown, Save, CheckCircle2, User, LayoutGrid, ArrowUp, ArrowDown, 
   Trash2, Plus, MessageSquare, Repeat, Repeat1, Shuffle, ListMusic, 
   Volume2, Briefcase, Building, Sparkles, Share2, Phone, CreditCard, 
-  FileText, Settings, KeyRound, Gift, Quote, MapPin, Eye, Link2
+  FileText, Settings, KeyRound, Gift, Quote, MapPin, Eye, Link2,
+  Send, Server, ShieldCheck, Zap, AlertCircle
 } from 'lucide-react';
 import { WeddingConfig } from '../../../types';
 import { api } from '../../../services/api';
@@ -23,7 +24,7 @@ export interface ConfigEditorTabProps {
   onSubTabChange?: (tab: ConfigSubTab) => void;
 }
 
-export type ConfigSubTab = 'theme' | 'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'texts' | 'seo' | 'agency';
+export type ConfigSubTab = 'theme' | 'couple' | 'events' | 'gallery' | 'story' | 'music_gift' | 'texts' | 'seo' | 'agency' | 'whatsapp';
 
 export function ConfigEditorTab({
   weddingConfig,
@@ -43,6 +44,32 @@ export function ConfigEditorTab({
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState<'groom' | 'bride' | 'seo' | 'agency' | null>(null);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+  const [testPhone, setTestPhone] = useState(formData.whatsappGateway?.adminPhone || '6281234567890');
+  const [isTestingGateway, setIsTestingGateway] = useState(false);
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+
+  const handleTestGateway = async () => {
+    if (!testPhone.trim()) {
+      showToast('error', 'Masukkan nomor WhatsApp tujuan uji coba terlebih dahulu.');
+      return;
+    }
+    setIsTestingGateway(true);
+    setTestResult(null);
+    try {
+      const res = await api.testWhatsAppGateway({
+        testPhone: testPhone.trim(),
+        config: formData.whatsappGateway || { provider: 'manual' },
+      });
+      setTestResult({ success: true, message: res.message || 'Pesan uji coba berhasil terkirim!' });
+      showToast('success', res.message || 'Pesan uji coba berhasil terkirim!');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal terhubung ke WhatsApp Gateway.';
+      setTestResult({ success: false, message: msg });
+      showToast('error', msg);
+    } finally {
+      setIsTestingGateway(false);
+    }
+  };
 
   // Sync internal form data whenever external weddingConfig updates
   useEffect(() => {
@@ -367,6 +394,20 @@ export function ConfigEditorTab({
         >
           <Crown size={14} className="text-amber-400" />
           <span>Agensi & White-Label</span>
+        </button>
+
+        <button
+          type="button"
+          data-active={configSubTab === 'whatsapp'}
+          onClick={() => setConfigSubTab('whatsapp')}
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
+            configSubTab === 'whatsapp'
+              ? 'bg-emerald-600 text-white shadow-xs'
+              : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+          }`}
+        >
+          <MessageSquare size={14} className={configSubTab === 'whatsapp' ? 'text-emerald-200' : 'text-emerald-600'} />
+          <span>WhatsApp & Gateway</span>
         </button>
       </ScrollableTabsContainer>
 
@@ -2325,6 +2366,489 @@ export function ConfigEditorTab({
                 )}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* SUB-PILL 9: WHATSAPP GATEWAY & NOTIFIKASI OTOMATIS */}
+        {configSubTab === 'whatsapp' && (
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs flex flex-col gap-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-4">
+              <div>
+                <h3 className="text-base font-bold text-gray-800 flex items-center gap-2">
+                  <MessageSquare className="text-emerald-600" size={18} />
+                  <span>Integrasi WhatsApp Gateway &amp; Notifikasi Otomatis</span>
+                </h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Konfigurasikan gateway API untuk pengiriman pesan otomatis (Fonnte, WAHA, Twilio) dan notifikasi RSVP dua arah.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  Provider Aktif: {(formData.whatsappGateway?.provider || 'manual').toUpperCase()}
+                </span>
+              </div>
+            </div>
+
+            {/* 1. Pemilih Provider Gateway */}
+            <div className="flex flex-col gap-3">
+              <label className="text-xs font-semibold text-gray-700">
+                Pilih Provider WhatsApp Gateway
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {/* Provider Manual */}
+                <div
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      whatsappGateway: {
+                        ...(formData.whatsappGateway || { adminPhone: '6281234567890' }),
+                        provider: 'manual',
+                      },
+                    })
+                  }
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col gap-2 ${
+                    (formData.whatsappGateway?.provider || 'manual') === 'manual'
+                      ? 'border-emerald-500 bg-emerald-50/40 text-emerald-950'
+                      : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center gap-1.5">
+                      <Share2 size={15} className="text-emerald-600" />
+                      <span>Manual (wa.me)</span>
+                    </span>
+                    {(formData.whatsappGateway?.provider || 'manual') === 'manual' && (
+                      <CheckCircle2 size={16} className="text-emerald-600" />
+                    )}
+                  </div>
+                  <p className="text-[11px] text-gray-500 leading-relaxed">
+                    Mode gratis bawaan. Mengarahkan ke tautan wa.me resmi untuk pengiriman manual dari browser/HP Anda.
+                  </p>
+                </div>
+
+                {/* Provider Fonnte */}
+                <div
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      whatsappGateway: {
+                        ...(formData.whatsappGateway || { adminPhone: '6281234567890' }),
+                        provider: 'fonnte',
+                      },
+                    })
+                  }
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col gap-2 ${
+                    formData.whatsappGateway?.provider === 'fonnte'
+                      ? 'border-emerald-500 bg-emerald-50/40 text-emerald-950'
+                      : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center gap-1.5">
+                      <Zap size={15} className="text-amber-600" />
+                      <span>Fonnte API</span>
+                    </span>
+                    {formData.whatsappGateway?.provider === 'fonnte' && (
+                      <CheckCircle2 size={16} className="text-emerald-600" />
+                    )}
+                  </div>
+                  <p className="text-[11px] text-gray-500 leading-relaxed">
+                    Gateway nomor lokal populer Indonesia. Menggunakan API Token Fonnte untuk broadcast instan.
+                  </p>
+                </div>
+
+                {/* Provider WAHA */}
+                <div
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      whatsappGateway: {
+                        ...(formData.whatsappGateway || { adminPhone: '6281234567890' }),
+                        provider: 'waha',
+                      },
+                    })
+                  }
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col gap-2 ${
+                    formData.whatsappGateway?.provider === 'waha'
+                      ? 'border-emerald-500 bg-emerald-50/40 text-emerald-950'
+                      : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center gap-1.5">
+                      <Server size={15} className="text-blue-600" />
+                      <span>WAHA (Self-Hosted)</span>
+                    </span>
+                    {formData.whatsappGateway?.provider === 'waha' && (
+                      <CheckCircle2 size={16} className="text-emerald-600" />
+                    )}
+                  </div>
+                  <p className="text-[11px] text-gray-500 leading-relaxed">
+                    WhatsApp HTTP API mandiri open-source berbasis Docker/Node.js dengan sesi multi-device.
+                  </p>
+                </div>
+
+                {/* Provider Twilio */}
+                <div
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      whatsappGateway: {
+                        ...(formData.whatsappGateway || { adminPhone: '6281234567890' }),
+                        provider: 'twilio',
+                      },
+                    })
+                  }
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col gap-2 ${
+                    formData.whatsappGateway?.provider === 'twilio'
+                      ? 'border-emerald-500 bg-emerald-50/40 text-emerald-950'
+                      : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center gap-1.5">
+                      <ShieldCheck size={15} className="text-purple-600" />
+                      <span>Twilio Enterprise</span>
+                    </span>
+                    {formData.whatsappGateway?.provider === 'twilio' && (
+                      <CheckCircle2 size={16} className="text-emerald-600" />
+                    )}
+                  </div>
+                  <p className="text-[11px] text-gray-500 leading-relaxed">
+                    Standar industri internasional via Twilio Programmable Messaging API resmi Meta WhatsApp Business.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Formulir Kredensial Provider */}
+            <div className="bg-gray-50/70 p-4 rounded-xl border border-gray-200 flex flex-col gap-4">
+              <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                Kredensial API {formData.whatsappGateway?.provider?.toUpperCase() || 'MANUAL'}
+              </h4>
+
+              {(formData.whatsappGateway?.provider || 'manual') === 'manual' && (
+                <div className="p-4 bg-emerald-50/50 border border-emerald-200 rounded-xl text-xs text-emerald-800 leading-relaxed">
+                  <p className="font-semibold mb-1">Mode Manual (wa.me) Aktif</p>
+                  <p className="text-[11px] text-emerald-700">
+                    Sistem akan membuat tautan resmi WhatsApp Web / WhatsApp Mobile (`https://wa.me/...`) untuk setiap tamu. Anda tidak memerlukan API Key atau langganan gateway pihak ketiga pada mode ini.
+                  </p>
+                </div>
+              )}
+
+              {formData.whatsappGateway?.provider === 'fonnte' && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-semibold text-gray-700 flex items-center justify-between">
+                    <span>Fonnte API Token</span>
+                    <a
+                      href="https://fonnte.com"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[11px] text-emerald-600 hover:underline flex items-center gap-1"
+                    >
+                      <Link2 size={12} /> Buka Dashboard Fonnte
+                    </a>
+                  </label>
+                  <div className="relative flex items-center">
+                    <KeyRound size={15} className="absolute left-3 text-gray-400" />
+                    <input
+                      type="password"
+                      value={formData.whatsappGateway?.fonnteToken || ''}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          whatsappGateway: {
+                            ...(formData.whatsappGateway || { provider: 'fonnte' }),
+                            fonnteToken: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Masukkan Token API Fonnte (contoh: a1b2c3d4e5f6...)"
+                      className="w-full text-xs bg-white border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {formData.whatsappGateway?.provider === 'waha' && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <label className="text-xs font-semibold text-gray-700">
+                      URL Endpoint Server WAHA
+                    </label>
+                    <div className="relative flex items-center">
+                      <Server size={15} className="absolute left-3 text-gray-400" />
+                      <input
+                        type="url"
+                        value={formData.whatsappGateway?.wahaEndpointUrl || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            whatsappGateway: {
+                              ...(formData.whatsappGateway || { provider: 'waha' }),
+                              wahaEndpointUrl: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="Contoh: https://waha.domainanda.com"
+                        className="w-full text-xs bg-white border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-gray-700">
+                      Nama Session WAHA
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.whatsappGateway?.wahaSession || 'default'}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          whatsappGateway: {
+                            ...(formData.whatsappGateway || { provider: 'waha' }),
+                            wahaSession: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="default"
+                      className="w-full text-xs bg-white border border-gray-300 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5 sm:col-span-3">
+                    <label className="text-xs font-semibold text-gray-700">
+                      WAHA API Key (Opsional)
+                    </label>
+                    <div className="relative flex items-center">
+                      <KeyRound size={15} className="absolute left-3 text-gray-400" />
+                      <input
+                        type="password"
+                        value={formData.whatsappGateway?.wahaApiKey || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            whatsappGateway: {
+                              ...(formData.whatsappGateway || { provider: 'waha' }),
+                              wahaApiKey: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="Masukkan API Key jika server WAHA Anda diamankan"
+                        className="w-full text-xs bg-white border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {formData.whatsappGateway?.provider === 'twilio' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-gray-700">
+                      Twilio Account SID
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.whatsappGateway?.twilioAccountSid || ''}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          whatsappGateway: {
+                            ...(formData.whatsappGateway || { provider: 'twilio' }),
+                            twilioAccountSid: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                      className="w-full text-xs bg-white border border-gray-300 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-gray-700">
+                      Twilio Auth Token
+                    </label>
+                    <input
+                      type="password"
+                      value={formData.whatsappGateway?.twilioAuthToken || ''}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          whatsappGateway: {
+                            ...(formData.whatsappGateway || { provider: 'twilio' }),
+                            twilioAuthToken: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Masukkan Twilio Auth Token"
+                      className="w-full text-xs bg-white border border-gray-300 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5 sm:col-span-2">
+                    <label className="text-xs font-semibold text-gray-700">
+                      Nomor Pengirim Twilio WhatsApp (From)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.whatsappGateway?.twilioFromNumber || ''}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          whatsappGateway: {
+                            ...(formData.whatsappGateway || { provider: 'twilio' }),
+                            twilioFromNumber: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="whatsapp:+14155238886 (atau nomor bisnis Twilio Anda)"
+                      className="w-full text-xs bg-white border border-gray-300 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 3. Pemberitahuan Status RSVP Otomatis */}
+            <div className="bg-white p-5 rounded-xl border border-gray-200 flex flex-col gap-4">
+              <div>
+                <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles size={15} className="text-amber-500" />
+                  <span>Pemberitahuan Status RSVP Otomatis</span>
+                </h4>
+                <p className="text-[11px] text-gray-500 mt-0.5">
+                  Atur pengiriman pesan WhatsApp otomatis setiap kali ada tamu mengonfirmasi kehadiran di website.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-semibold text-gray-700">
+                  Nomor WhatsApp Admin / Pengantin Penerima Alert
+                </label>
+                <div className="relative flex items-center">
+                  <Phone size={15} className="absolute left-3 text-gray-400" />
+                  <input
+                    type="tel"
+                    value={formData.whatsappGateway?.adminPhone || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        whatsappGateway: {
+                          ...(formData.whatsappGateway || { provider: 'manual' }),
+                          adminPhone: e.target.value,
+                        },
+                      })
+                    }
+                    placeholder="Contoh: 6281234567890"
+                    className="w-full text-xs bg-white border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                  />
+                </div>
+                <span className="text-[10px] text-gray-500">
+                  Gunakan format internasional tanpa spasi atau tanda plus (contoh: 6281234567890).
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <label className="p-3 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3 cursor-pointer hover:bg-gray-100/70 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={formData.whatsappGateway?.notifyAdminOnRsvp !== false}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        whatsappGateway: {
+                          ...(formData.whatsappGateway || { provider: 'manual' }),
+                          notifyAdminOnRsvp: e.target.checked,
+                        },
+                      })
+                    }
+                    className="w-4 h-4 text-emerald-600 rounded-sm border-gray-300 focus:ring-emerald-500 cursor-pointer"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-gray-800">Alert WhatsApp ke Admin</span>
+                    <span className="text-[10px] text-gray-500">Kirim notifikasi setiap ada tamu submit RSVP</span>
+                  </div>
+                </label>
+
+                <label className="p-3 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-3 cursor-pointer hover:bg-gray-100/70 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={formData.whatsappGateway?.notifyGuestOnRsvp !== false}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        whatsappGateway: {
+                          ...(formData.whatsappGateway || { provider: 'manual' }),
+                          notifyGuestOnRsvp: e.target.checked,
+                        },
+                      })
+                    }
+                    className="w-4 h-4 text-emerald-600 rounded-sm border-gray-300 focus:ring-emerald-500 cursor-pointer"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-gray-800">Balasan Otomatis ke Tamu</span>
+                    <span className="text-[10px] text-gray-500">Kirim tiket digital &amp; QR pass ke WhatsApp tamu</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* 4. Uji Coba Koneksi Gateway */}
+            {formData.whatsappGateway?.provider && formData.whatsappGateway.provider !== 'manual' && (
+              <div className="bg-emerald-50/50 p-5 rounded-xl border border-emerald-200 flex flex-col gap-3">
+                <div>
+                  <h4 className="text-xs font-bold text-emerald-950 uppercase tracking-wider flex items-center gap-1.5">
+                    <Zap size={14} className="text-emerald-600" />
+                    <span>Uji Coba Koneksi WhatsApp Gateway</span>
+                  </h4>
+                  <p className="text-[11px] text-emerald-800 mt-0.5">
+                    Kirim pesan tes ke nomor Anda untuk memastikan kredensial API dan koneksi berjalan normal.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-2">
+                  <div className="relative flex items-center w-full sm:w-80">
+                    <Phone size={15} className="absolute left-3 text-emerald-600" />
+                    <input
+                      type="tel"
+                      value={testPhone}
+                      onChange={(e) => setTestPhone(e.target.value)}
+                      placeholder="Nomor HP Pengujian (contoh: 6281234567890)"
+                      className="w-full text-xs bg-white border border-emerald-300 rounded-xl pl-9 pr-3 py-2.5 outline-none focus:border-emerald-600 font-mono"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleTestGateway}
+                    disabled={isTestingGateway}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs active:scale-98 cursor-pointer disabled:opacity-50 shrink-0"
+                  >
+                    <Send size={14} />
+                    <span>{isTestingGateway ? 'Menguji...' : 'Kirim Pesan Uji Coba'}</span>
+                  </button>
+                </div>
+
+                {testResult && (
+                  <div
+                    className={`p-3 rounded-xl border text-xs flex items-center gap-2 ${
+                      testResult.success
+                        ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                        : 'bg-red-100 text-red-900 border-red-300'
+                    }`}
+                  >
+                    {testResult.success ? (
+                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                    ) : (
+                      <AlertCircle size={16} className="text-red-600 shrink-0" />
+                    )}
+                    <span>{testResult.message}</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

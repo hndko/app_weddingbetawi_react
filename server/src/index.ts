@@ -19,6 +19,7 @@ import { createSeatingRouter } from './routes/seating';
 import { createTriviaRouter } from './routes/trivia';
 import { createAuthRouter } from './routes/auth';
 import { createCheckinsRouter } from './routes/checkins';
+import { createWhatsAppRouter } from './routes/whatsapp';
 
 // Load environment configuration
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -120,6 +121,7 @@ app.use('/api/budget', createBudgetRouter(io));
 app.use('/api/seating', createSeatingRouter(io));
 app.use('/api/trivia', createTriviaRouter(io));
 app.use('/api/checkins', createCheckinsRouter(io));
+app.use('/api/whatsapp', createWhatsAppRouter());
 
 // Serve frontend static build if dist directory exists (Production SPA support)
 const distPath = path.resolve(process.cwd(), 'dist');

@@ -91,12 +91,14 @@ export async function migrate() {
       CREATE TABLE IF NOT EXISTS rsvps (
         id VARCHAR(64) PRIMARY KEY,
         name VARCHAR(150) NOT NULL,
+        phone VARCHAR(50) DEFAULT NULL,
         attendance VARCHAR(50) NOT NULL,
         guest_count INT DEFAULT 1,
         notes TEXT DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
+    await ensureColumn('rsvps', 'phone', 'VARCHAR(50) DEFAULT NULL');
     console.log('[DB Migration] Tabel `rsvps` siap.');
 
     // 5. Buat tabel guests

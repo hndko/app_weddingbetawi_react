@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.56.1`
+- **Versi Aplikasi Saat Ini**: `v1.57.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23, PWA (Workbox), Vitest, Autocannon
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -205,6 +205,13 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
     - Meja resepsi (`ReceptionCheckin.tsx`) menerapkan arsitektur offline-first menggunakan IndexedDB browser (`mari_partner_offline_v1`) untuk snapshot daftar tamu, penataan meja, dan antrean check-in fisik saat sinyal seluler/Wi-Fi venue drop.
     - Saat offline, check-in diperbarui seketika (*optimistic UI*), memainkan nada chime Web Audio API, dan disimpan dalam antrean lokal.
     - Begitu koneksi pulih (`online` event), antrean disinkronkan secara atomik dan idempoten ke backend melalui `POST /api/checkins/sync` disertai tombol sinkronisasi manual.
+13. **Suite WhatsApp Gateway Multi-Provider & Filter Kategori Tamu (`whatsappGateway.ts` & `WhatsAppBroadcastModal.tsx`)**:
+    - Mendukung 4 mode pengiriman pesan: Manual `wa.me`, Fonnte, WAHA (WhatsApp HTTP API self-hosted), dan Twilio Programmable Messaging dengan *graceful fallback* ke mode manual saat langganan gateway belum tersedia.
+    - Pengiriman pesan massal (*automated queue broadcast*) WAJIB menerapkan *safe anti-spam random delay jitter* (2.5 - 4.0 detik per pesan) untuk mencegah pemblokiran nomor oleh WhatsApp.
+    - Sistem notifikasi dua arah (*two-way automated alert*) via background fire-and-forget worker saat tamu mengisi formulir konfirmasi kehadiran RSVP:
+      1. Notifikasi seketika ke WhatsApp Admin / Mempelai berisikan nama tamu, status kehadiran, jumlah pax, dan doa.
+      2. Pesan konfirmasi dan tautan kartu undangan / QR Pass tamu secara otomatis ke nomor WhatsApp tamu yang bersangkutan.
+    - Penyaringan penerima pesan multi-dimensi (Status Pengiriman, Tier Tamu, Status RSVP, Status Check-in, dan Pencarian Teks).
 
 ---
 

@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.56.1-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.57.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -156,6 +156,7 @@ Menyimpan konfirmasi kehadiran dari para tamu.
 | :--- | :--- | :--- |
 | `id` | `INT AUTO_INCREMENT PRIMARY KEY` | ID unik RSVP. |
 | `name` | `VARCHAR(255) NOT NULL` | Nama tamu yang mengisi konfirmasi. |
+| `phone` | `VARCHAR(50) DEFAULT NULL` | Nomor kontak WhatsApp tamu untuk konfirmasi otomatis. |
 | `attendance` | `VARCHAR(50) NOT NULL` | Status konfirmasi: `"hadir"` atau `"tidak_hadir"`. |
 | `guest_count` | `INT DEFAULT 1` | Jumlah rombongan tamu yang hadir. |
 | `notes` | `TEXT` | Catatan atau doa tambahan dari tamu. |
@@ -250,6 +251,29 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
 ---
 
 ## ✨ Fitur Utama
+
+### 📲 Multi-Provider WhatsApp Gateway & Smart Recipient Suite (v1.57.0)
+- **Arsitektur WhatsApp Gateway Multi-Provider Ekstensibel (`whatsappGateway.ts`)**:
+  - Mendukung 4 opsi pengiriman pesan WhatsApp fleksibel:
+    1. **Manual (wa.me link)**: Tanpa biaya & tanpa API key, membuka tautan chat resmi WhatsApp Web/App secara instan.
+    2. **Fonnte Gateway**: Integrasi API Fonnte via token autentikasi untuk pengiriman otomatis tanpa membuka tab browser.
+    3. **WAHA (WhatsApp HTTP API)**: Integrasi server WAHA self-hosted open-source dengan kustomisasi URL endpoint, API key, dan nama session.
+    4. **Twilio Programmable Messaging**: Integrasi WhatsApp API Twilio skala enterprise dengan Account SID, Auth Token, dan nomor pengirim Twilio.
+  - **Uji Coba Koneksi Gateway Interaktif**: Tombol tes koneksi instan di subtab admin WhatsApp untuk menguji validitas kredensial sebelum broadcast.
+- **Penyaringan Penerima Multi-Dimensi & Kategori Tamu Cerdas (`WhatsAppBroadcastModal.tsx`)**:
+  - Filter kombinatif berkinerja tinggi tanpa lag:
+    - **Status Pengiriman**: Belum Terkirim (*Pending*), Sudah Terkirim (*Sent*), atau Seluruh Tamu.
+    - **Klasifikasi VIP (Tier)**: VVIP, VIP, Keluarga Besar (Family), Reguler, atau Semua Tier.
+    - **Status RSVP**: Belum Konfirmasi, Akan Hadir, Tidak Hadir, atau Semua Status.
+    - **Status Check-in Hari-H**: Sudah Hadir di Venue vs Belum Hadir.
+    - **Pencarian Instan**: Real-time in-memory filter berdasarkan nama atau nomor WhatsApp tamu.
+- **Siaran Massal Otomatis Aman Anti-Spam (*Automated Queue Broadcast*)**:
+  - Mengirim pesan ke seluruh tamu tersaring satu per satu secara otomatis.
+  - **Randomized Safe Jitter**: Jeda acak 2.5 hingga 4.0 detik di antara setiap pengiriman pesan untuk mencegah nomor WhatsApp terblokir (*anti-ban protection*).
+  - Tampilan progress bar animasi, estimasi waktu tersisa, dan kontrol pause/batal seketika.
+- **Notifikasi Dua Arah Status RSVP Otomatis (*Two-Way RSVP Alerts*)**:
+  - **Pemberitahuan Admin/Mempelai**: Notifikasi instan ke WhatsApp panitia/mempelai setiap kali ada tamu baru yang mengisi formulir konfirmasi RSVP.
+  - **Konfirmasi Otomatis Tamu**: Tamu yang mencantumkan nomor WhatsApp otomatis menerima pesan konfirmasi terima kasih beserta link undangan personal dan akses tiket QR pass mereka.
 
 ### 🧭 Interactive Scrollable Tabs Container Suite (v1.55.0)
 - **Navigasi Tab Horizontal Responsif & Mulus (*ScrollableTabsContainer*)**:

@@ -4,7 +4,7 @@ import { api } from '../../../../services/api';
 import { useGuestName } from '../../../../hooks/useGuestName';
 import { useThemeTokens } from '../../themes';
 import { cn } from '../../../../utils/cn';
-import { AlertCircle, User, Users, CheckCircle2, MessageSquare, Send, RotateCcw, Loader2, QrCode } from 'lucide-react';
+import { AlertCircle, User, Users, CheckCircle2, MessageSquare, Send, RotateCcw, Loader2, QrCode, Phone } from 'lucide-react';
 
 const GuestQRPassModal = lazy(() => 
   import('../components/GuestQRPassModal').then(m => ({ default: m.GuestQRPassModal }))
@@ -17,6 +17,7 @@ export function RSVPSection() {
   const defaultGuestName = useGuestName();
   const { tokens, isDark } = useThemeTokens();
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [guestCount, setGuestCount] = useState(1);
   const [attendance, setAttendance] = useState('hadir');
   const [notes, setNotes] = useState('');
@@ -43,6 +44,7 @@ export function RSVPSection() {
     try {
       await api.createRsvp({
         name: name.trim(),
+        phone: phone.trim() || undefined,
         guestCount: Number(guestCount),
         attendance,
         notes: notes.trim(),
@@ -118,6 +120,32 @@ export function RSVPSection() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Nama Lengkap Tamu"
+                  className="w-full rounded-xl pl-10 pr-4 py-3.5 text-sm outline-none transition-all focus-visible:ring-2 focus-visible:ring-sage/60 focus-visible:ring-offset-1"
+                  style={{
+                    backgroundColor: tokens.inputBg,
+                    border: `1px solid ${tokens.inputBorder}`,
+                    color: tokens.inputText,
+                  }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label 
+                htmlFor="rsvp-phone"
+                className="block text-[11px] font-medium uppercase tracking-widest mb-1.5 ml-1"
+                style={{ color: tokens.textMuted }}
+              >
+                No. WhatsApp <span className="text-[10px] font-normal normal-case opacity-75">(Opsional, untuk tiket digital)</span>
+              </label>
+              <div className="relative flex items-center">
+                <Phone size={16} className="absolute left-3.5 pointer-events-none" style={{ color: tokens.accent }} aria-hidden="true" />
+                <input 
+                  id="rsvp-phone"
+                  type="tel" 
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Contoh: 08123456789"
                   className="w-full rounded-xl pl-10 pr-4 py-3.5 text-sm outline-none transition-all focus-visible:ring-2 focus-visible:ring-sage/60 focus-visible:ring-offset-1"
                   style={{
                     backgroundColor: tokens.inputBg,

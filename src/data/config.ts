@@ -148,4 +148,17 @@ export const config = {
     url: "https://youtube.com/live/placeholder",
     label: "Live Streaming Akad & Resepsi",
   },
+  whatsappGateway: {
+    provider: 'manual' as const,
+    fonnteToken: '',
+    wahaEndpointUrl: '',
+    wahaApiKey: '',
+    wahaSession: 'default',
+    twilioAccountSid: '',
+    twilioAuthToken: '',
+    twilioFromNumber: '',
+    adminPhone: '6281234567890',
+    notifyAdminOnRsvp: true,
+    notifyGuestOnRsvp: true,
+  },
 };

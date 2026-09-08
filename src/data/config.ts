@@ -5,14 +5,14 @@ export const config = {
     fullName: "Cecep Pratama",
     parents: "Putra dari Bapak H. Abdullah & Ibu Hj. Siti Aminah",
     instagram: "@rizkypratama",
-    image: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+    image: "/assets/defaults/groom.jpg"
   },
   bride: {
     nickname: "Ipeh",
     fullName: "Ipeh Putri",
     parents: "Putri dari Bapak H. Rahman & Ibu Hj. Fatimah",
     instagram: "@aisyahputri",
-    image: "https://images.unsplash.com/photo-1595861173007-8e104fcc74cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+    image: "/assets/defaults/bride.jpg"
   },
   dateStr: "Minggu, 20 September 2026",
   dateISO: "2026-09-20T09:00:00+07:00",

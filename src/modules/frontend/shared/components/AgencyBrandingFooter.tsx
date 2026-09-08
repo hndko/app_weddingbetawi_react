@@ -7,15 +7,29 @@ export const AgencyBrandingFooter: React.FC<{ className?: string }> = ({ classNa
   const branding = weddingConfig.agencyBranding || {
     mode: 'co_branded',
     agencyName: 'Mari Partner Wedding Organizer',
+    agencyRole: 'Official Wedding Organizer',
     agencyTagline: 'Professional Wedding Planner & Digital Concierge',
     agencyInstagram: '@maripartner.wedding',
     agencyWebsite: 'https://maripartner.com',
+    poweredByText: 'Powered by Mari Partner Digital Wedding Invitation Platform',
+    poweredByUrl: 'https://maripartner.com',
+    hideMariPartnerBranding: false,
   };
+
+  const agencyRole = branding.agencyRole || 'Official Wedding Organizer';
+  const poweredByText = branding.poweredByText || 'Powered by Mari Partner Digital Wedding Invitation Platform';
+  const poweredByUrl = branding.poweredByUrl;
+  const hidePlatformBranding = Boolean(branding.hideMariPartnerBranding);
+  const groom = weddingConfig.groom?.nickname || 'Mempelai Pria';
+  const bride = weddingConfig.bride?.nickname || 'Mempelai Wanita';
+  const organizedForText = branding.organizedForText
+    ? branding.organizedForText.replace('{groom}', groom).replace('{bride}', bride)
+    : `Organized exclusively for ${groom} & ${bride}`;
 
   if (branding.mode === 'disabled') {
     return (
       <footer className={`py-6 text-center text-xs text-stone-500 ${className}`}>
-        <p>© {new Date().getFullYear()} {weddingConfig.groom.nickname} &amp; {weddingConfig.bride.nickname}. All Rights Reserved.</p>
+        <p>© {new Date().getFullYear()} {groom} &amp; {bride}. All Rights Reserved.</p>
       </footer>
     );
   }
@@ -84,7 +98,7 @@ export const AgencyBrandingFooter: React.FC<{ className?: string }> = ({ classNa
           </div>
 
           <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-2">
-            Organized exclusively for {weddingConfig.groom.nickname} &amp; {weddingConfig.bride.nickname}
+            {organizedForText}
           </p>
         </div>
       </footer>
@@ -106,7 +120,7 @@ export const AgencyBrandingFooter: React.FC<{ className?: string }> = ({ classNa
             <span className="font-semibold">{branding.agencyName}</span>
           )}
           <span className="text-stone-400">•</span>
-          <span className="text-stone-500 dark:text-stone-400 text-[11px]">Official Wedding Organizer</span>
+          <span className="text-stone-500 dark:text-stone-400 text-[11px]">{agencyRole}</span>
         </div>
 
         {branding.agencyInstagram && (
@@ -121,9 +135,22 @@ export const AgencyBrandingFooter: React.FC<{ className?: string }> = ({ classNa
           </a>
         )}
 
-        <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-1">
-          Powered by Mari Partner Digital Wedding Invitation Platform
-        </p>
+        {!hidePlatformBranding && poweredByText && (
+          poweredByUrl ? (
+            <a
+              href={poweredByUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[10px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 mt-1 transition-colors hover:underline"
+            >
+              {poweredByText}
+            </a>
+          ) : (
+            <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-1">
+              {poweredByText}
+            </p>
+          )
+        )}
       </div>
     </footer>
   );

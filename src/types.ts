@@ -61,13 +61,17 @@ export type GalleryLayoutStyle = 'editorial' | 'masonry' | 'carousel' | 'polaroi
 export interface AgencyBranding {
   mode: 'disabled' | 'co_branded' | 'white_label';
   agencyName?: string;
+  agencyRole?: string;
   agencyLogoUrl?: string;
   agencyTagline?: string;
   agencyInstagram?: string;
   agencyWebsite?: string;
   agencyPhone?: string;
   agencyWhatsapp?: string;
+  poweredByText?: string;
+  poweredByUrl?: string;
   hideMariPartnerBranding?: boolean;
+  organizedForText?: string;
 }
 
 export interface LiveRundownStatus {

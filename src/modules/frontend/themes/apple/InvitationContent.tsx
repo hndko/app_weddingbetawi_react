@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { motion } from 'motion/react';
 import { Sparkles } from 'lucide-react';
 import { BottomNavigation } from '../../shared/components/BottomNavigation';
+import { AgencyBrandingFooter } from '../../shared/components/AgencyBrandingFooter';
 import { BentoHero } from './sections/BentoHero';
 import { BentoCoupleProfile } from './sections/BentoCoupleProfile';
 import { BentoCalendarSchedule } from './sections/BentoCalendarSchedule';
@@ -81,6 +82,7 @@ export const InvitationContent: React.FC = () => {
 
         {/* 9. Closing Section */}
         <ClosingSection />
+        <AgencyBrandingFooter />
       </motion.div>
 
       {/* Persistent Bottom Navigation */}

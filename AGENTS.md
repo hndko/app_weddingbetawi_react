@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.55.0`
+- **Versi Aplikasi Saat Ini**: `v1.56.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23, PWA (Workbox), Vitest, Autocannon
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -168,7 +168,7 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
 12. **Suite Kemewahan & Kemitraan Wedding Organizer (Luxury & WO Partnership Suite)**:
     - **VIP Guest Tiering & Dedicated Access Pass**: Klasifikasi tamu bertingkat (`vvip`, `vip`, `family`, `regular`) lengkap dengan lencana kemewahan emas/amber/emerald, alokasi meja prioritas, catatan protokoler VIP, dan passcard digital eksklusif.
     - **Digital Souvenir & Photobooth Redemption Tracker**: Pelacak penukaran suvenir resepsi anti-ganda berbasis scanner dan toggle 1-klik di Reception Check-in & Buku Tamu, tersinkronisasi realtime ke database MySQL.
-    - **White-Label Agensi Mode**: Kustomisasi identitas penuh untuk Wedding Organizer (`co_branded` dan `white_label`), menampilkan logo WO, nama, tagline, tautan sosial/web/WA, serta opsi eliminasi 100% branding Mari Partner pada footer publik dan dokumen ekspor WO.
+    - **White-Label Agensi Mode & Dynamic Footer Suite**: Kustomisasi identitas penuh untuk Wedding Organizer (`co_branded` dan `white_label`) yang terintegrasi di seluruh 21 tema undangan via `<AgencyBrandingFooter />`. Menampilkan logo WO, nama, peran kustom (`agencyRole`), tagline, tautan sosial/web/WA, format dedikasi dinamis (`organizedForText`), teks platform (`poweredByText`), URL platform (`poweredByUrl`), serta toggle eliminasi 100% branding platform (`hideMariPartnerBranding`) pada footer publik dan dokumen ekspor WO.
     - **Live Wedding Rundown Broadcaster**: Siaran status rundown pernikahan hari-H secara langsung (*realtime broadcast* via Socket.io `rundown:updated`) dari HP tim WO, memunculkan floating banner siaran status hidup (`🔴 LIVE`) dan drawer linimasa acara pada layar seluruh tamu.
 13. **Navigasi Tab Interaktif & Gestur Geser (*ScrollableTabsContainer*)**:
     - Deretan tab dan pill filter yang meluap horizontal (subtab `ConfigEditorTab`, kategori tema `ThemeSelector`, dan zona meja `SeatingChartManager`) WAJIB dibungkus `ScrollableTabsContainer` dengan tombol panah navigasi mengambang (`<ChevronLeft />` & `<ChevronRight />`), efek fade gradasi halus, gesture *mouse drag-to-scroll*, dan penyesuaian otomatis ke tab aktif (*auto-scroll active tab into view*).

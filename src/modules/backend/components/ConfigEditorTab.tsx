@@ -4,7 +4,7 @@ import {
   Crown, Save, CheckCircle2, User, LayoutGrid, ArrowUp, ArrowDown, 
   Trash2, Plus, MessageSquare, Repeat, Repeat1, Shuffle, ListMusic, 
   Volume2, Briefcase, Building, Sparkles, Share2, Phone, CreditCard, 
-  FileText, Settings, KeyRound, Gift, Quote, MapPin
+  FileText, Settings, KeyRound, Gift, Quote, MapPin, Eye, Link2
 } from 'lucide-react';
 import { WeddingConfig } from '../../../types';
 import { api } from '../../../services/api';
@@ -2094,6 +2094,235 @@ export function ConfigEditorTab({
                     }
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Kustomisasi Teks Footer & Label Branding */}
+            <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-xs flex flex-col gap-5">
+              <h4 className="font-heading text-sm font-bold text-text-dark flex items-center gap-2 border-b border-gray-100 pb-3">
+                <FileText size={16} className="text-sage" />
+                <span>Kustomisasi Teks Footer & Label Branding</span>
+              </h4>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 text-xs">
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-1">
+                    Label Peran / Subjudul Agensi
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.agencyBranding?.agencyRole || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        agencyBranding: {
+                          ...(formData.agencyBranding || { mode: 'disabled' }),
+                          agencyRole: e.target.value,
+                        },
+                      })
+                    }
+                    placeholder="Bawaan: Official Wedding Organizer (atau Wedding Planner, Event Stylist)"
+                    className="w-full border border-gray-300 rounded-xl px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                  />
+                  <p className="text-[11px] text-gray-400 mt-1">
+                    Label pendamping di sebelah nama WO pada footer (misal: "Mari Partner • Official Wedding Organizer").
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-1">
+                    Teks Branding Platform ("Powered by...")
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.agencyBranding?.poweredByText || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        agencyBranding: {
+                          ...(formData.agencyBranding || { mode: 'disabled' }),
+                          poweredByText: e.target.value,
+                        },
+                      })
+                    }
+                    placeholder="Bawaan: Powered by Mari Partner Digital Wedding Invitation Platform"
+                    className="w-full border border-gray-300 rounded-xl px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                  />
+                  <p className="text-[11px] text-gray-400 mt-1">
+                    Kalimat hak cipta / platform digital di baris paling bawah.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-1">
+                    Tautan URL "Powered by" (Opsional)
+                  </label>
+                  <div className="relative flex items-center">
+                    <Link2 className="absolute left-3 text-gray-400 pointer-events-none" size={15} />
+                    <input
+                      type="url"
+                      value={formData.agencyBranding?.poweredByUrl || ''}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          agencyBranding: {
+                            ...(formData.agencyBranding || { mode: 'disabled' }),
+                            poweredByUrl: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Contoh: https://maripartner.com (Teks dapat diklik)"
+                      className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                    />
+                  </div>
+                  <p className="text-[11px] text-gray-400 mt-1">
+                    Jika diisi, pengunjung yang mengklik teks "Powered by..." akan diarahkan ke URL ini.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-1">
+                    Teks Eksklusif (Mode White-Label)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.agencyBranding?.organizedForText || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        agencyBranding: {
+                          ...(formData.agencyBranding || { mode: 'disabled' }),
+                          organizedForText: e.target.value,
+                        },
+                      })
+                    }
+                    placeholder="Bawaan: Organized exclusively for {groom} & {bride}"
+                    className="w-full border border-gray-300 rounded-xl px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-sage"
+                  />
+                  <p className="text-[11px] text-gray-400 mt-1">
+                    Gunakan variabel <code className="text-sage font-mono">{"{groom}"}</code> dan <code className="text-sage font-mono">{"{bride}"}</code>.
+                  </p>
+                </div>
+
+                {/* Sembunyikan Branding Platform Toggle */}
+                <div className="lg:col-span-2 pt-2 border-t border-gray-100 flex items-center justify-between">
+                  <div>
+                    <span className="font-semibold text-gray-800 text-xs block">
+                      Sembunyikan Branding Platform Secara Total
+                    </span>
+                    <span className="text-[11px] text-gray-500 block">
+                      Hilangkan tulisan "Powered by Mari Partner..." sepenuhnya dari footer undangan publik klien.
+                    </span>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(formData.agencyBranding?.hideMariPartnerBranding)}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          agencyBranding: {
+                            ...(formData.agencyBranding || { mode: 'disabled' }),
+                            hideMariPartnerBranding: e.target.checked,
+                          },
+                        })
+                      }
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Interactive Footer Mockup / Preview Card */}
+            <div className="bg-gradient-to-br from-[#FAF9F6] to-[#F3EFE6] rounded-3xl p-6 border border-amber-200/80 shadow-xs flex flex-col gap-3">
+              <div className="flex items-center justify-between border-b border-amber-200/60 pb-3">
+                <span className="font-heading text-xs font-bold text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
+                  <Eye size={14} className="text-amber-700" />
+                  <span>Pratinjau Langsung Tampilan Footer Undangan</span>
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-semibold uppercase">
+                  Mode: {formData.agencyBranding?.mode || 'co_branded'}
+                </span>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-inner text-center flex flex-col items-center gap-2">
+                {/* Simulated Footer UI */}
+                {formData.agencyBranding?.mode === 'disabled' ? (
+                  <p className="text-xs text-stone-500">
+                    © {new Date().getFullYear()} {formData.groom.nickname || 'Groom'} &amp; {formData.bride.nickname || 'Bride'}. All Rights Reserved.
+                  </p>
+                ) : formData.agencyBranding?.mode === 'white_label' ? (
+                  <div className="flex flex-col items-center gap-2">
+                    {formData.agencyBranding?.agencyLogoUrl ? (
+                      <img
+                        src={formData.agencyBranding.agencyLogoUrl}
+                        alt="Logo"
+                        className="h-10 w-auto object-contain rounded-md"
+                      />
+                    ) : (
+                      <span className="text-xs font-bold uppercase tracking-widest text-stone-800">
+                        {formData.agencyBranding?.agencyName || 'Nama Agensi WO'}
+                      </span>
+                    )}
+                    {formData.agencyBranding?.agencyTagline && (
+                      <p className="text-[11px] text-stone-500 italic">
+                        {formData.agencyBranding.agencyTagline}
+                      </p>
+                    )}
+                    <p className="text-[10px] text-stone-400 mt-1">
+                      {formData.agencyBranding?.organizedForText
+                        ? formData.agencyBranding.organizedForText
+                            .replace('{groom}', formData.groom.nickname || 'Groom')
+                            .replace('{bride}', formData.bride.nickname || 'Bride')
+                        : `Organized exclusively for ${formData.groom.nickname || 'Groom'} & ${formData.bride.nickname || 'Bride'}`}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex items-center justify-center gap-2 text-xs text-stone-600">
+                      {formData.agencyBranding?.agencyLogoUrl ? (
+                        <img
+                          src={formData.agencyBranding.agencyLogoUrl}
+                          alt="Logo"
+                          className="h-6 w-auto object-contain inline-block"
+                        />
+                      ) : (
+                        <span className="font-semibold">
+                          {formData.agencyBranding?.agencyName || 'Mari Partner Wedding Organizer'}
+                        </span>
+                      )}
+                      <span className="text-stone-400">•</span>
+                      <span className="text-stone-500 text-[11px]">
+                        {formData.agencyBranding?.agencyRole || 'Official Wedding Organizer'}
+                      </span>
+                    </div>
+
+                    {formData.agencyBranding?.agencyInstagram && (
+                      <span className="text-[11px] text-pink-600">
+                        {formData.agencyBranding.agencyInstagram}
+                      </span>
+                    )}
+
+                    {!formData.agencyBranding?.hideMariPartnerBranding && (
+                      formData.agencyBranding?.poweredByUrl ? (
+                        <a
+                          href={formData.agencyBranding.poweredByUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[10px] text-stone-400 hover:text-stone-600 hover:underline mt-1"
+                        >
+                          {formData.agencyBranding?.poweredByText || 'Powered by Mari Partner Digital Wedding Invitation Platform'}
+                        </a>
+                      ) : (
+                        <p className="text-[10px] text-stone-400 mt-1">
+                          {formData.agencyBranding?.poweredByText || 'Powered by Mari Partner Digital Wedding Invitation Platform'}
+                        </p>
+                      )
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

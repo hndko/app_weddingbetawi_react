@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { motion } from 'motion/react';
 import { BungaJepun } from './decorations/BungaJepun';
 import { BottomNavigation } from '../../shared/components/BottomNavigation';
+import { AgencyBrandingFooter } from '../../shared/components/AgencyBrandingFooter';
 import { HeroSection } from './sections/HeroSection';
 import { IntroSection } from './sections/IntroSection';
 
@@ -51,6 +52,7 @@ export const InvitationContent: React.FC = () => {
           <RSVPSection />
           <div id="ucapan"><WishesSection /></div>
           <ClosingSection />
+          <AgencyBrandingFooter />
         </Suspense>
       </motion.div>
 

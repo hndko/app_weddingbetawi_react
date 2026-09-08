@@ -7,6 +7,7 @@ import { useGuestName } from '../../../../../hooks/useGuestName';
 import { RSVPPollSticker } from '../components/InteractiveStickers';
 import { Wish } from '../../../../../types';
 import { playStoryPop } from '../utils/instagramAudio';
+import { AgencyBrandingFooter } from '../../../shared/components/AgencyBrandingFooter';
 
 const defaultMockWishes: Wish[] = [
   { id: '1', name: 'Dimas & Keluarga', text: 'Barakallahu lakuma! Bahagia selalu sampai kakek nenek! ❤️', time: '10m' },
@@ -134,10 +135,14 @@ export const WishesSlide: React.FC = () => {
       </div>
 
       {/* Bottom Hint */}
-      <div className="relative z-10 pb-8 text-center">
+      <div className="relative z-10 pb-4 text-center">
         <span className="text-[10px] text-white/60">
           Ketuk kiri untuk kembali ke awal
         </span>
+      </div>
+
+      <div className="relative z-10 pb-4">
+        <AgencyBrandingFooter />
       </div>
     </div>
   );

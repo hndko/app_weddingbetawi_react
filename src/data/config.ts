@@ -94,10 +94,14 @@ export const config = {
   agencyBranding: {
     mode: 'co_branded' as const,
     agencyName: 'Mari Partner Wedding Organizer',
+    agencyRole: 'Official Wedding Organizer',
     agencyTagline: 'Professional Wedding Planner & Digital Concierge',
     agencyInstagram: '@maripartner.wedding',
     agencyWebsite: 'https://maripartner.com',
     agencyPhone: '+6281234567890',
+    poweredByText: 'Powered by Mari Partner Digital Wedding Invitation Platform',
+    poweredByUrl: 'https://maripartner.com',
+    hideMariPartnerBranding: false,
   },
   liveRundown: {
     isActive: false,

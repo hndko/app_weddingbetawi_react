@@ -768,8 +768,9 @@ export function MusicPlayer({ isOpened }: MusicPlayerProps) {
                     <button
                       type="button"
                       onClick={toggleMute}
-                      className="cursor-pointer hover:opacity-80 transition-opacity"
+                      className="cursor-pointer hover:opacity-80 transition-opacity p-0.5 rounded focus-visible:ring-1 focus-visible:ring-sage"
                       title={isMuted ? "Bunyikan Musik" : "Bisukan Musik"}
+                      aria-label={isMuted ? "Bunyikan Musik" : "Bisukan Musik"}
                     >
                       {isMuted || volume === 0 ? <VolumeX size={14} className="text-red-500" /> : <Volume2 size={14} style={{ color: tokens.accent }} />}
                     </button>
@@ -787,7 +788,8 @@ export function MusicPlayer({ isOpened }: MusicPlayerProps) {
                     max={100}
                     value={isMuted ? 0 : volume}
                     onChange={(e) => handleVolumeChange(Number(e.target.value))}
-                    className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-stone-200 dark:bg-stone-700"
+                    aria-label="Tingkat volume audio"
+                    className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-stone-200 dark:bg-stone-700 focus-visible:ring-2 focus-visible:ring-sage"
                     style={{ accentColor: tokens.primary }}
                   />
                 </div>

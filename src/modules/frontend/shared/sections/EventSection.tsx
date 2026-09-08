@@ -9,7 +9,7 @@ import { cn } from '../../../../utils/cn';
 
 function SectionDivider({ className = '' }: { className?: string }) {
   return (
-    <div className={`flex items-center justify-center gap-2 opacity-60 ${className}`}>
+    <div className={`flex items-center justify-center gap-2 opacity-60 ${className}`} aria-hidden="true">
       <span className="w-16 h-[1px] bg-gradient-to-r from-transparent to-current" />
       <span className="text-xs">✦</span>
       <span className="w-16 h-[1px] bg-gradient-to-l from-transparent to-current" />
@@ -136,13 +136,14 @@ function EventCard({
           <button 
             type="button"
             onClick={onSaveCalendar}
-            className="w-full py-3.5 rounded-full text-[13px] font-medium tracking-wide text-center transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer group hover:opacity-90 active:scale-98"
+            aria-label={`Simpan acara ${event.title} ke kalender`}
+            className="w-full py-3.5 rounded-full text-[13px] font-medium tracking-wide text-center transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer group hover:opacity-90 active:scale-98 focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
             style={{
               backgroundColor: tokens.primary,
               color: tokens.btnPrimaryText
             }}
           >
-            <Calendar size={16} className="group-hover:scale-110 transition-transform" />
+            <Calendar size={16} className="group-hover:scale-110 transition-transform" aria-hidden="true" />
             <span>Simpan ke Kalender</span>
           </button>
         </div>

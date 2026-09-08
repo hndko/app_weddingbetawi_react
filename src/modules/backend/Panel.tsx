@@ -611,7 +611,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
                     {weddingConfig?.groom?.nickname || 'Groom'} & {weddingConfig?.bride?.nickname || 'Bride'}
                   </span>
                 </div>
-                <span className="text-[10px] uppercase font-bold text-gold px-1.5 py-0.5 rounded bg-white shadow-2xs">
+                <span className="text-[10px] uppercase font-bold text-emerald-700 px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200/60 shadow-2xs">
                   Active
                 </span>
               </div>

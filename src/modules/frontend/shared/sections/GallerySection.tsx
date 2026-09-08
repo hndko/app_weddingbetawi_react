@@ -497,41 +497,47 @@ export function GallerySection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Pratinjau Foto Galeri"
             className="fixed inset-0 z-[100] bg-black/95 flex flex-col justify-center items-center backdrop-blur-md select-none"
             onClick={closeLightbox}
           >
             <button 
+              type="button"
               onClick={closeLightbox} 
-              className="absolute top-6 right-6 text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
-              aria-label="Tutup Pratinjau"
+              className="absolute top-6 right-6 text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-white"
+              aria-label="Tutup Pratinjau Foto"
             >
-              <X size={28} />
+              <X size={28} aria-hidden="true" />
             </button>
             
             <div className="relative w-full max-w-[460px] px-4 flex items-center justify-between" onClick={e => e.stopPropagation()}>
               <button 
+                type="button"
                 onClick={prevImage} 
-                className="text-white/70 hover:text-white p-2.5 bg-black/40 hover:bg-black/70 rounded-full transition-colors cursor-pointer shrink-0 active:scale-95"
+                className="text-white/70 hover:text-white p-2.5 bg-black/40 hover:bg-black/70 rounded-full transition-colors cursor-pointer shrink-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-white"
                 aria-label="Foto Sebelumnya"
               >
-                <ChevronLeft size={24} />
+                <ChevronLeft size={24} aria-hidden="true" />
               </button>
               
               <div className="w-full mx-3 rounded-2xl overflow-hidden shadow-2xl bg-black/40 border border-white/10">
                 <img 
                   key={lightboxIndex}
                   src={images[lightboxIndex]} 
-                  alt={`Lightbox ${lightboxIndex + 1}`} 
+                  alt={`Foto galeri ${lightboxIndex + 1}`} 
                   className="w-full h-auto max-h-[72vh] object-contain mx-auto"
                 />
               </div>
               
               <button 
+                type="button"
                 onClick={nextImage} 
-                className="text-white/70 hover:text-white p-2.5 bg-black/40 hover:bg-black/70 rounded-full transition-colors cursor-pointer shrink-0 active:scale-95"
+                className="text-white/70 hover:text-white p-2.5 bg-black/40 hover:bg-black/70 rounded-full transition-colors cursor-pointer shrink-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-white"
                 aria-label="Foto Selanjutnya"
               >
-                <ChevronRight size={24} />
+                <ChevronRight size={24} aria-hidden="true" />
               </button>
             </div>
 

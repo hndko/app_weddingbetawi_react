@@ -103,20 +103,22 @@ export function RSVPSection() {
             )}
             <div>
               <label 
+                htmlFor="rsvp-name"
                 className="block text-[11px] font-medium uppercase tracking-widest mb-1.5 ml-1"
                 style={{ color: tokens.textMuted }}
               >
                 Nama
               </label>
               <div className="relative flex items-center">
-                <User size={16} className="absolute left-3.5 pointer-events-none" style={{ color: tokens.accent }} />
+                <User size={16} className="absolute left-3.5 pointer-events-none" style={{ color: tokens.accent }} aria-hidden="true" />
                 <input 
+                  id="rsvp-name"
                   type="text" 
                   required 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Nama Lengkap Tamu"
-                  className="w-full rounded-xl pl-10 pr-4 py-3.5 text-sm outline-none transition-all"
+                  className="w-full rounded-xl pl-10 pr-4 py-3.5 text-sm outline-none transition-all focus-visible:ring-2 focus-visible:ring-sage/60 focus-visible:ring-offset-1"
                   style={{
                     backgroundColor: tokens.inputBg,
                     border: `1px solid ${tokens.inputBorder}`,
@@ -128,17 +130,19 @@ export function RSVPSection() {
             
             <div>
               <label 
+                htmlFor="rsvp-guest-count"
                 className="block text-[11px] font-medium uppercase tracking-widest mb-1.5 ml-1"
                 style={{ color: tokens.textMuted }}
               >
                 Jumlah Tamu
               </label>
               <div className="relative flex items-center">
-                <Users size={16} className="absolute left-3.5 pointer-events-none" style={{ color: tokens.accent }} />
+                <Users size={16} className="absolute left-3.5 pointer-events-none" style={{ color: tokens.accent }} aria-hidden="true" />
                 <select 
+                  id="rsvp-guest-count"
                   value={guestCount}
                   onChange={(e) => setGuestCount(Number(e.target.value))}
-                  className="w-full rounded-xl pl-10 pr-4 py-3.5 text-sm outline-none transition-all appearance-none cursor-pointer"
+                  className="w-full rounded-xl pl-10 pr-4 py-3.5 text-sm outline-none transition-all appearance-none cursor-pointer focus-visible:ring-2 focus-visible:ring-sage/60 focus-visible:ring-offset-1"
                   style={{
                     backgroundColor: tokens.inputBg,
                     border: `1px solid ${tokens.inputBorder}`,
@@ -155,17 +159,19 @@ export function RSVPSection() {
             
             <div>
               <label 
+                htmlFor="rsvp-attendance"
                 className="block text-[11px] font-medium uppercase tracking-widest mb-1.5 ml-1"
                 style={{ color: tokens.textMuted }}
               >
                 Kehadiran
               </label>
               <div className="relative flex items-center">
-                <CheckCircle2 size={16} className="absolute left-3.5 pointer-events-none" style={{ color: tokens.accent }} />
+                <CheckCircle2 size={16} className="absolute left-3.5 pointer-events-none" style={{ color: tokens.accent }} aria-hidden="true" />
                 <select 
+                  id="rsvp-attendance"
                   value={attendance}
                   onChange={(e) => setAttendance(e.target.value)}
-                  className="w-full rounded-xl pl-10 pr-4 py-3.5 text-sm outline-none transition-all appearance-none cursor-pointer"
+                  className="w-full rounded-xl pl-10 pr-4 py-3.5 text-sm outline-none transition-all appearance-none cursor-pointer focus-visible:ring-2 focus-visible:ring-sage/60 focus-visible:ring-offset-1"
                   style={{
                     backgroundColor: tokens.inputBg,
                     border: `1px solid ${tokens.inputBorder}`,
@@ -180,19 +186,21 @@ export function RSVPSection() {
 
             <div>
               <label 
+                htmlFor="rsvp-notes"
                 className="block text-[11px] font-medium uppercase tracking-widest mb-1.5 ml-1"
                 style={{ color: tokens.textMuted }}
               >
                 Pesan / Catatan (Opsional)
               </label>
               <div className="relative flex">
-                <MessageSquare size={16} className="absolute left-3.5 top-3.5 pointer-events-none" style={{ color: tokens.accent }} />
+                <MessageSquare size={16} className="absolute left-3.5 top-3.5 pointer-events-none" style={{ color: tokens.accent }} aria-hidden="true" />
                 <textarea 
+                  id="rsvp-notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Pesan doa atau ucapan tambahan..."
                   rows={2}
-                  className="w-full rounded-xl pl-10 pr-4 py-3.5 text-xs outline-none transition-all resize-none"
+                  className="w-full rounded-xl pl-10 pr-4 py-3.5 text-xs outline-none transition-all resize-none focus-visible:ring-2 focus-visible:ring-sage/60 focus-visible:ring-offset-1"
                   style={{
                     backgroundColor: tokens.inputBg,
                     border: `1px solid ${tokens.inputBorder}`,
@@ -205,7 +213,7 @@ export function RSVPSection() {
             <button 
               type="submit" 
               disabled={isSubmitting}
-              className="mt-2 w-full py-3.5 rounded-full text-[13px] font-semibold tracking-wide transition-all disabled:opacity-70 cursor-pointer shadow-md flex items-center justify-center gap-2 active:scale-98"
+              className="mt-2 w-full py-3.5 rounded-full text-[13px] font-semibold tracking-wide transition-all disabled:opacity-70 cursor-pointer shadow-md flex items-center justify-center gap-2 active:scale-98 focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
               style={{
                 backgroundColor: tokens.primary,
                 color: tokens.btnPrimaryText
@@ -213,12 +221,12 @@ export function RSVPSection() {
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 size={16} className="animate-spin" />
+                  <Loader2 size={16} className="animate-spin" aria-hidden="true" />
                   <span>Mengirim...</span>
                 </>
               ) : (
                 <>
-                  <Send size={16} />
+                  <Send size={16} aria-hidden="true" />
                   <span>Kirim Konfirmasi</span>
                 </>
               )}

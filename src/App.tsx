@@ -55,9 +55,12 @@ function RouteLoadingSpinner({ bg = '#F4F7F4', text = 'Memuat...' }: { bg?: stri
     <div 
       className="min-h-screen w-full flex flex-col items-center justify-center font-body gap-3 select-none"
       style={{ backgroundColor: bg }}
+      role="status"
+      aria-live="polite"
     >
-      <div className="w-9 h-9 border-4 border-sage/40 border-t-sage rounded-full animate-spin"></div>
+      <div className="w-9 h-9 border-4 border-sage/40 border-t-sage rounded-full animate-spin" aria-hidden="true"></div>
       {text && <span className="text-xs font-semibold text-text-dark/70 tracking-wider animate-pulse">{text}</span>}
+      <span className="sr-only">{text || 'Memuat tampilan undangan...'}</span>
     </div>
   );
 }

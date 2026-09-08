@@ -27,7 +27,7 @@ export function LoveStory() {
                "absolute left-[11px] top-1.5 w-[9px] h-[9px] rounded-full border-2 border-warm-white outline outline-1 outline-sage-soft bg-sage"
             )}></div>
             <div className="bg-white/50 backdrop-blur-sm p-5 rounded-2xl border border-sage/10 shadow-sm">
-               <span className="inline-block text-[10px] font-bold tracking-widest text-gold mb-2 bg-gold/10 px-2 py-0.5 rounded-full">{story.year}</span>
+               <span className="inline-block text-[10px] font-bold tracking-widest text-amber-800 mb-2 bg-amber-500/10 px-2 py-0.5 rounded-full">{story.year}</span>
                <h4 className="font-heading text-xl text-text-dark mb-2">{story.title}</h4>
                <p className="text-xs text-text-dark/70 leading-relaxed">{story.description}</p>
             </div>

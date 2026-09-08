@@ -12,7 +12,7 @@ import { WishAudioPlayer } from '../components/WishAudioPlayer';
 
 function SectionDivider({ className = '' }: { className?: string }) {
   return (
-    <div className={`flex items-center justify-center gap-2 text-gold opacity-60 ${className}`}>
+    <div className={`flex items-center justify-center gap-2 text-gold opacity-60 ${className}`} aria-hidden="true">
       <span className="w-16 h-[1px] bg-gradient-to-r from-transparent to-current" />
       <span className="text-xs">✦</span>
       <span className="w-16 h-[1px] bg-gradient-to-l from-transparent to-current" />
@@ -166,14 +166,15 @@ export function WishesSection() {
             </div>
           )}
           <div className="relative flex items-center">
-            <User size={16} className="absolute left-3.5 pointer-events-none" style={{ color: tokens.accent }} />
+            <User size={16} className="absolute left-3.5 pointer-events-none" style={{ color: tokens.accent }} aria-hidden="true" />
             <input 
               type="text" 
               placeholder="Nama Lengkap Anda" 
+              aria-label="Nama Lengkap Anda"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full rounded-xl pl-10 pr-4 py-3.5 text-[13px] outline-none transition-all"
+              className="w-full rounded-xl pl-10 pr-4 py-3.5 text-[13px] outline-none transition-all focus-visible:ring-2 focus-visible:ring-sage/60 focus-visible:ring-offset-1"
               style={{
                 backgroundColor: tokens.inputBg,
                 border: `1px solid ${tokens.inputBorder}`,
@@ -182,14 +183,15 @@ export function WishesSection() {
             />
           </div>
           <div className="relative flex">
-            <MessageSquareQuote size={16} className="absolute left-3.5 top-3.5 pointer-events-none" style={{ color: tokens.accent }} />
+            <MessageSquareQuote size={16} className="absolute left-3.5 top-3.5 pointer-events-none" style={{ color: tokens.accent }} aria-hidden="true" />
             <textarea 
               placeholder="Tulis ucapan dan doa restu terbaik Anda..."
+              aria-label="Tulis ucapan dan doa restu terbaik Anda"
               value={wishText}
               onChange={(e) => setWishText(e.target.value)}
               required
               rows={3}
-              className="w-full rounded-xl pl-10 pr-4 py-3.5 text-[13px] outline-none transition-all resize-none"
+              className="w-full rounded-xl pl-10 pr-4 py-3.5 text-[13px] outline-none transition-all resize-none focus-visible:ring-2 focus-visible:ring-sage/60 focus-visible:ring-offset-1"
               style={{
                 backgroundColor: tokens.inputBg,
                 border: `1px solid ${tokens.inputBorder}`,
@@ -210,7 +212,7 @@ export function WishesSection() {
           <button 
             type="submit" 
             disabled={isSubmitting}
-            className="w-full py-3.5 rounded-xl text-[13px] font-semibold tracking-wide transition-all disabled:opacity-70 shadow-md cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+            className="w-full py-3.5 rounded-xl text-[13px] font-semibold tracking-wide transition-all disabled:opacity-70 shadow-md cursor-pointer flex items-center justify-center gap-2 active:scale-98 focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
             style={{
               backgroundColor: tokens.primary,
               color: tokens.btnPrimaryText
@@ -218,13 +220,13 @@ export function WishesSection() {
           >
             {isSubmitting ? (
               <>
-                <Loader2 size={16} className="animate-spin" />
+                <Loader2 size={16} className="animate-spin" aria-hidden="true" />
                 <span>Mengirim...</span>
               </>
             ) : (
               <>
-                <Send size={16} />
-                <span>Kirim Ucapan & Doa</span>
+                <Send size={16} aria-hidden="true" />
+                <span>Kirim Ucapan Restu</span>
               </>
             )}
           </button>

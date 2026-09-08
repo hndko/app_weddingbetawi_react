@@ -41,8 +41,11 @@ export function BottomNavigation() {
           return (
             <button
               key={item.id}
+              type="button"
               onClick={() => scrollTo(item.id)}
-              className="flex flex-col items-center gap-1 group relative outline-none min-w-[44px]"
+              aria-label={item.label}
+              aria-current={isActive ? 'page' : undefined}
+              className="flex flex-col items-center gap-1 group relative outline-none min-w-[44px] cursor-pointer rounded-xl focus-visible:ring-2 focus-visible:ring-sage/60"
             >
               <div 
                 className="transition-colors duration-300"
@@ -51,7 +54,7 @@ export function BottomNavigation() {
                   paddingBottom: isActive ? '12px' : '0px'
                 }}
               >
-                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} aria-hidden="true" />
               </div>
               <span 
                 className={cn(

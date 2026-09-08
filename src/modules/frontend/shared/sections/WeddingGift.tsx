@@ -62,7 +62,7 @@ export function WeddingGift() {
               
               <h4 
                 className="font-heading text-xl font-bold mb-4"
-                style={{ color: tokens.accent }}
+                style={{ color: tokens.isDark ? tokens.accent : tokens.primary }}
               >
                 {bank.name}
               </h4>
@@ -94,14 +94,16 @@ export function WeddingGift() {
                   </p>
                   
                   <button 
+                    type="button"
                     onClick={() => handleCopy(bank.account)}
-                    className="w-full py-3.5 rounded-full text-[13px] font-semibold tracking-wide flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm hover:opacity-90 active:scale-98"
+                    aria-label={`Salin nomor rekening ${bank.name} ${bank.account}`}
+                    className="w-full py-3.5 rounded-full text-[13px] font-semibold tracking-wide flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm hover:opacity-90 active:scale-98 focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
                     style={{
                       backgroundColor: tokens.primary,
                       color: tokens.btnPrimaryText
                     }}
                   >
-                    <Copy size={16} />
+                    <Copy size={16} aria-hidden="true" />
                     SALIN NOMOR REKENING
                   </button>
                 </>

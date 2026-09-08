@@ -85,7 +85,7 @@ export function CountdownSection() {
               >
                 <span 
                   className="font-heading text-2xl md:text-3xl font-black tracking-tight"
-                  style={{ color: tokens.accent }}
+                  style={{ color: tokens.isDark ? tokens.accent : tokens.primary }}
                 >
                   {String(block.value).padStart(2, '0')}
                 </span>

@@ -58,7 +58,7 @@ export function LocationSection() {
               allowFullScreen={false} 
               loading="lazy" 
               referrerPolicy="no-referrer-when-downgrade"
-              title="Location Map"
+              title={`Peta Lokasi ${weddingConfig.events?.resepsi?.venue || 'Acara Pernikahan'}`}
               className="absolute inset-0"
             />
           </div>
@@ -68,28 +68,30 @@ export function LocationSection() {
           <a 
             href={weddingConfig.events.resepsi.mapUrl || "#"}
             target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 py-3.5 px-7 rounded-full text-[13px] font-medium tracking-wide transition-all shadow-sm"
+            aria-label={`Buka peta lokasi ${weddingConfig.events.resepsi.venue} di Google Maps (membuka tab baru)`}
+            className="inline-flex items-center justify-center gap-2 py-3.5 px-7 rounded-full text-[13px] font-medium tracking-wide transition-all shadow-sm focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
             style={{
               backgroundColor: tokens.cardBg,
               border: `1px solid ${tokens.cardBorder}`,
               color: tokens.textPrimary
             }}
           >
-            <Map size={16} style={{ color: tokens.accent }} />
-            Buka Google Maps
+            <Map size={16} style={{ color: tokens.accent }} aria-hidden="true" />
+            <span>Buka Google Maps</span>
           </a>
 
           <button
             type="button"
             onClick={() => setIsSeatingModalOpen(true)}
-            className="inline-flex items-center justify-center gap-2 py-3.5 px-7 rounded-full text-[13px] font-semibold tracking-wide transition-all shadow-md cursor-pointer hover:opacity-90 active:scale-95"
+            aria-label="Cari nomor meja dan denah tempat duduk Anda"
+            className="inline-flex items-center justify-center gap-2 py-3.5 px-7 rounded-full text-[13px] font-semibold tracking-wide transition-all shadow-md cursor-pointer hover:opacity-90 active:scale-95 focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
             style={{
               backgroundColor: tokens.primary,
               color: tokens.btnPrimaryText
             }}
           >
-            <Armchair size={16} />
-            Cari Meja & Denah Anda
+            <Armchair size={16} aria-hidden="true" />
+            <span>Cari Meja & Denah Anda</span>
           </button>
         </div>
       </motion.div>

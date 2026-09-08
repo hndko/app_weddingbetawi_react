@@ -48,6 +48,23 @@ export default defineConfig(() => {
                 return 'vendor-pdf';
               }
             }
+
+            // Split admin backend modules away from client guest bundle
+            if (normalized.includes('/src/modules/backend/')) {
+              return 'admin-panel';
+            }
+
+            // Split each theme into its own dedicated chunk so guests only download the active theme
+            const themeMatch = normalized.match(/\/src\/modules\/frontend\/themes\/([^/]+)\//);
+            if (themeMatch) {
+              const themeName = themeMatch[1];
+              return `theme-${themeName}`;
+            }
+
+            // Split heavy live wishes projector
+            if (normalized.includes('LiveWishesProjector')) {
+              return 'live-projector';
+            }
           },
         },
       },

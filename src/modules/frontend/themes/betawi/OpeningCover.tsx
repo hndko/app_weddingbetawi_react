@@ -74,10 +74,12 @@ export const OpeningCover: React.FC<{ onOpen: () => void }> = ({ onOpen }) => {
           </div>
           
           <button 
-             onClick={onOpen}
-            className="w-full bg-sage text-white py-3.5 px-6 rounded-full flex items-center justify-center gap-3 hover:bg-sage-dark transition-colors duration-300 shadow-sm hover:shadow-md cursor-pointer relative z-50 active:scale-98"
+            type="button"
+            onClick={onOpen}
+            aria-label={`Buka Undangan Pernikahan ${weddingConfig.groom.nickname} dan ${weddingConfig.bride.nickname}`}
+            className="w-full bg-sage text-white py-3.5 px-6 rounded-full flex items-center justify-center gap-3 hover:bg-sage-dark transition-colors duration-300 shadow-sm hover:shadow-md cursor-pointer relative z-50 active:scale-98 focus-visible:ring-2 focus-visible:ring-sage-dark focus-visible:ring-offset-2"
           >
-            <MailOpen size={18} />
+            <MailOpen size={18} aria-hidden="true" />
             <span className="text-sm font-medium tracking-wide">Buka Undangan</span>
           </button>
         </div>

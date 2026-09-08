@@ -83,7 +83,7 @@ export function ThemeSelector({ currentThemeId, onSelectTheme }: ThemeSelectorPr
                     (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80';
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
                 {/* Status Badges */}
                 <div className="absolute top-3 left-3 flex items-center gap-1.5">

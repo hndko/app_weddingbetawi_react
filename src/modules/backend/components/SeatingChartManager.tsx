@@ -842,7 +842,7 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
       <div className="bg-[#FAF8F5] rounded-3xl p-5 sm:p-7 border border-amber-200/70 shadow-inner flex flex-col gap-6">
         {/* Stage Pelaminan Banner */}
         <div className="relative w-full max-w-2xl mx-auto">
-          <div className="bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-amber-950 font-bold py-3.5 px-6 rounded-2xl shadow-md border border-amber-400 text-center flex items-center justify-center gap-2.5">
+          <div className="bg-linear-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-amber-950 font-bold py-3.5 px-6 rounded-2xl shadow-md border border-amber-400 text-center flex items-center justify-center gap-2.5">
             <Crown size={20} className="text-amber-800 animate-pulse" />
             <span className="tracking-wider uppercase text-xs sm:text-sm font-heading">
               Panggung Pelaminan & Stage Utama Pengantin
@@ -1031,7 +1031,7 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
       {/* ------------------------------------------------------------- */}
       {inspectingTable && (
         <div
-          className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
           onClick={() => setInspectingTable(null)}
         >
           <div
@@ -1204,7 +1204,7 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
       {/* ------------------------------------------------------------- */}
       {isUnassignedDrawerOpen && (
         <div
-          className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-xs flex justify-end"
+          className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-xs flex justify-end"
           onClick={() => setIsUnassignedDrawerOpen(false)}
         >
           <div
@@ -1322,7 +1322,7 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
       {/* ------------------------------------------------------------- */}
       {isTableModalOpen && (
         <div
-          className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
           onClick={() => setIsTableModalOpen(false)}
         >
           <div
@@ -1471,7 +1471,7 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
       {/* ------------------------------------------------------------- */}
       {deleteConfirmTarget && (
         <div
-          className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
+          className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
           onClick={() => setDeleteConfirmTarget(null)}
         >
           <div
@@ -1517,7 +1517,7 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
       {/* ------------------------------------------------------------- */}
       {isPresetConfirmOpen && (
         <div
-          className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
+          className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
           onClick={() => setIsPresetConfirmOpen(false)}
         >
           <div

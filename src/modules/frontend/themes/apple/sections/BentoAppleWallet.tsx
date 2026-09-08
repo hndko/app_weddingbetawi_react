@@ -129,7 +129,7 @@ export const BentoAppleWallet: React.FC = () => {
       {/* QRIS Modal Overlay */}
       {showQrisModal && (
         <div
-          className="fixed inset-0 w-screen h-screen z-[9999] bg-black/70 backdrop-blur-md flex items-center justify-center p-4"
+          className="fixed inset-0 w-screen h-screen z-9999 bg-black/70 backdrop-blur-md flex items-center justify-center p-4"
           onClick={() => setShowQrisModal(null)}
         >
           <motion.div

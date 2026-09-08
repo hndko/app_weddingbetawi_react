@@ -227,7 +227,7 @@ export function DragDropUpload({
       {/* Lightbox / Slider Full-Screen Modal */}
       {previewModalIndex !== null && previewItems[previewModalIndex] && (
         <div
-          className="fixed inset-0 w-screen h-screen z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 select-none"
+          className="fixed inset-0 w-screen h-screen z-9999 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 select-none"
           onClick={() => setPreviewModalIndex(null)}
           role="dialog"
           aria-modal="true"

@@ -312,12 +312,12 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 w-screen h-screen z-[9999] bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 select-none">
+    <div className="fixed inset-0 w-screen h-screen z-9999 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 select-none">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative w-full max-w-md max-h-[92vh] bg-gradient-to-b from-[#18181b] to-[#09090b] text-white rounded-3xl shadow-2xl border border-white/10 flex flex-col overflow-hidden"
+        className="relative w-full max-w-md max-h-[92vh] bg-linear-to-b from-[#18181b] to-[#09090b] text-white rounded-3xl shadow-2xl border border-white/10 flex flex-col overflow-hidden"
       >
         {/* Header Bar */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/[0.03]">
@@ -402,7 +402,7 @@ export function TriviaQuizModal({ isOpen, onClose }: TriviaQuizModalProps) {
 
                 {/* Guest Name Input / Greeting */}
                 <div className="w-full bg-white/[0.04] border border-white/10 rounded-2xl p-4 text-left mb-6">
-                  <label className="text-[11px] font-semibold text-white/60 uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
+                  <label className="text-[11px] font-semibold text-white/60 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                     <User size={12} className="text-amber-400" /> Nama Peserta Kuis
                   </label>
                   <input

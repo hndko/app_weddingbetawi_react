@@ -678,7 +678,7 @@ export function TriviaQuizManager({ onNotify }: TriviaQuizManagerProps) {
 
       {/* SweetAlert-style Add / Edit Modal (Pilar 5) */}
       {isFormModalOpen && (
-        <div className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 select-none">
+        <div className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 select-none">
           <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100 bg-stone-50/60">
               <h3 className="font-heading font-bold text-base text-stone-800 flex items-center gap-2">
@@ -817,7 +817,7 @@ export function TriviaQuizManager({ onNotify }: TriviaQuizManagerProps) {
 
       {/* SweetAlert-style Delete Confirmation Modal (Pilar 5.2) */}
       {deleteTarget && (
-        <div className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 select-none">
+        <div className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 select-none">
           <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl border border-stone-200 text-center animate-in fade-in zoom-in-95 duration-200">
             <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
               <AlertTriangle size={28} />

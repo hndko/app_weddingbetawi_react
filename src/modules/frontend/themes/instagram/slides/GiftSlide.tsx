@@ -112,7 +112,7 @@ export const GiftSlide: React.FC = () => {
       {/* QRIS Modal */}
       {qrisModal && (
         <div
-          className="fixed inset-0 w-screen h-screen z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+          className="fixed inset-0 w-screen h-screen z-9999 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
           onClick={() => setQrisModal(null)}
         >
           <div

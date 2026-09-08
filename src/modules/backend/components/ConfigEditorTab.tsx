@@ -966,7 +966,7 @@ export function ConfigEditorTab({
               {/* Default Music Volume Slider */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <label className="block text-gray-600 font-medium flex items-center gap-1.5">
+                  <label className="text-gray-600 font-medium flex items-center gap-1.5">
                     <Volume2 size={15} className="text-sage-dark" />
                     <span>Volume Bawaan Undangan</span>
                   </label>
@@ -1355,7 +1355,7 @@ export function ConfigEditorTab({
         {configSubTab === 'agency' && (
           <div className="flex flex-col gap-6">
             {/* Header Card */}
-            <div className="bg-gradient-to-r from-amber-500/15 via-white to-amber-500/5 rounded-3xl p-6 border border-amber-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="bg-linear-to-r from-amber-500/15 via-white to-amber-500/5 rounded-3xl p-6 border border-amber-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider mb-2">
                   <Crown size={13} className="text-amber-600" />

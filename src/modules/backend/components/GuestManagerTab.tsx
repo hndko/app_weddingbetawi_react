@@ -909,7 +909,7 @@ Wassalamu'alaikum Wr. Wb.`;
       {/* Modal: Tambah Tamu Baru */}
       {isAddGuestModalOpen && (
         <div 
-          className="fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-200"
+          className="fixed inset-0 w-screen h-screen z-9999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-200"
           onClick={() => {
             if (!isSubmittingGuest) setIsAddGuestModalOpen(false);
           }}
@@ -1055,7 +1055,7 @@ Wassalamu'alaikum Wr. Wb.`;
       {/* Modal: Impor Tamu (Excel / CSV / Multiline Text) */}
       {isImportModalOpen && (
         <div 
-          className="fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-200 overflow-y-auto"
+          className="fixed inset-0 w-screen h-screen z-9999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-200 overflow-y-auto"
           onClick={() => {
             if (!isProcessingImport) setIsImportModalOpen(false);
           }}

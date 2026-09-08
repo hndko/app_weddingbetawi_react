@@ -744,7 +744,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-sage/15 via-white to-sage/5 rounded-2xl p-6 border border-sage/20 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-linear-to-r from-sage/15 via-white to-sage/5 rounded-2xl p-6 border border-sage/20 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sage/20 text-sage-dark text-xs font-semibold uppercase tracking-wider mb-2">
             <Sparkles size={13} />
@@ -959,7 +959,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                   <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-[#D4AF37] rounded-br-lg" />
 
                   {/* Animated laser scanline */}
-                  <div className="absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_8px_#ef4444] animate-pulse" />
+                  <div className="absolute left-2 right-2 h-0.5 bg-linear-to-r from-transparent via-red-500 to-transparent shadow-[0_0_8px_#ef4444] animate-pulse" />
 
                   <span className="text-[10px] text-white/80 bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs font-medium">
                     Arahkan QR Pass ke Kotak
@@ -1245,7 +1245,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       {/* Confirmation Modal for Check-In (SweetAlert-style) */}
       <AnimatePresence>
         {pendingCheckin && (
-          <div className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="fixed inset-0" onClick={() => setPendingCheckin(null)} />
 
             <motion.div
@@ -1452,7 +1452,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       {/* Delete / Cancel Check-in Confirmation Modal (SweetAlert-style) */}
       <AnimatePresence>
         {deleteTarget && (
-          <div className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="fixed inset-0" onClick={() => setDeleteTarget(null)} />
 
             <motion.div

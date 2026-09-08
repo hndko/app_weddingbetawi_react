@@ -93,7 +93,7 @@ export const LiveRundownBanner: React.FC = () => {
       {/* Full Rundown Drawer / Modal */}
       <AnimatePresence>
         {isOpenDrawer && (
-          <div className="fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 w-screen h-screen z-9999 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

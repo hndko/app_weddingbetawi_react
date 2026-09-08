@@ -44,7 +44,7 @@ export function CalendarEventModal({ isOpen, onClose, event, weddingConfig }: Ca
 
   return (
     <div 
-      className="fixed inset-0 w-screen h-screen z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 w-screen h-screen z-9999 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}

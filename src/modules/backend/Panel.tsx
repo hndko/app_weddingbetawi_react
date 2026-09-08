@@ -596,9 +596,9 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
         <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200/80 shrink-0 select-none justify-between">
           <div>
             {/* Cultural Betawi Brand Header */}
-            <div className="p-5 border-b border-gray-100 bg-gradient-to-br from-warm-white to-gray-50/60">
+            <div className="p-5 border-b border-gray-100 bg-linear-to-br from-warm-white to-gray-50/60">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-50 to-emerald-50 border border-gold/30 flex items-center justify-center text-sage-dark shadow-xs">
+                <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-amber-50 to-emerald-50 border border-gold/30 flex items-center justify-center text-sage-dark shadow-xs">
                   <Sparkles size={20} className="text-gold" />
                 </div>
                 <div>
@@ -965,7 +965,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
           {activeMenu === 'overview' && (
             <div className="flex flex-col gap-6">
               {/* Event Countdown & Welcome Banner */}
-              <div className="bg-gradient-to-r from-sage-dark via-[#435334] to-[#2C3E2D] rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden">
+              <div className="bg-linear-to-r from-sage-dark via-[#435334] to-[#2C3E2D] rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden">
                 {/* Subtle Betawi Ornament Watermark */}
                 <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none translate-x-10 translate-y-10">
                   <Sparkles size={240} />
@@ -1105,7 +1105,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
               </div>
 
               {/* LIVE WEDDING RUNDOWN BROADCAST CONTROL (WO Hari-H Suite) */}
-              <div className="bg-gradient-to-br from-gray-900 via-gray-850 to-gray-900 text-white rounded-3xl p-6 border border-gray-700/60 shadow-xl relative overflow-hidden">
+              <div className="bg-linear-to-br from-gray-900 via-gray-850 to-gray-900 text-white rounded-3xl p-6 border border-gray-700/60 shadow-xl relative overflow-hidden">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-gray-750">
                   <div className="flex items-center gap-3">
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${
@@ -1526,7 +1526,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
       {/* Full-Screen Viewport Backdrop Modal: Ubah Password Akun Admin */}
       {isPasswordModalOpen && (
         <div 
-          className="fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-200"
+          className="fixed inset-0 w-screen h-screen z-9999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-200"
           onClick={() => {
             if (!isSubmittingPassword) setIsPasswordModalOpen(false);
           }}
@@ -1660,7 +1660,7 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
       {/* SweetAlert2-Style Full-Screen Viewport Confirmation Modal */}
       {deleteModal && (
         <div 
-          className="fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-200"
+          className="fixed inset-0 w-screen h-screen z-9999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-200"
           onClick={() => setDeleteModal(null)}
         >
           <div 

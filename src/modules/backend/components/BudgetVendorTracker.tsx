@@ -512,7 +512,7 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
       {/* Toast Alert */}
       {toastMessage && (
         <div
-          className={`fixed top-4 right-4 z-[9999] px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 transition-all duration-300 animate-in fade-in slide-in-from-top-4 border ${
+          className={`fixed top-4 right-4 z-9999 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 transition-all duration-300 animate-in fade-in slide-in-from-top-4 border ${
             toastMessage.type === 'success'
               ? 'bg-emerald-800 text-white border-emerald-700'
               : 'bg-rose-800 text-white border-rose-700'
@@ -534,7 +534,7 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
       )}
 
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-sage/15 via-white to-sage/5 rounded-2xl p-6 border border-sage/20 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-linear-to-r from-sage/15 via-white to-sage/5 rounded-2xl p-6 border border-sage/20 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sage/20 text-sage-dark text-xs font-semibold uppercase tracking-wider mb-2">
             <Wallet size={13} />
@@ -703,7 +703,7 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
         </div>
         <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden flex">
           <div
-            className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-500 rounded-full"
+            className="h-full bg-linear-to-r from-emerald-500 to-teal-500 transition-all duration-500 rounded-full"
             style={{ width: `${stats.paidPercentage}%` }}
           />
         </div>
@@ -1007,10 +1007,10 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
 
       {/* Modal Add / Edit Form (Full-Screen Viewport Backdrop) */}
       {isFormOpen && (
-        <div className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-sage/10 via-white to-amber-50/30">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-linear-to-r from-sage/10 via-white to-amber-50/30">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-sage/15 text-sage-dark border border-sage/20">
                   <Wallet size={16} />
@@ -1242,7 +1242,7 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
 
       {/* Delete Confirmation Modal (SweetAlert2 Style) */}
       {deleteTarget && (
-        <div className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white border border-gray-200 rounded-3xl w-full max-w-sm p-6 text-center shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
               <AlertTriangle size={24} />

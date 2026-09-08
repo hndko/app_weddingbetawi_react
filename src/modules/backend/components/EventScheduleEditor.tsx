@@ -362,7 +362,7 @@ export function EventScheduleEditor({ formData, setFormData, showToast }: EventS
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           {/* Target Countdown Picker */}
           <div>
-            <label className="block text-gray-700 mb-1.5 font-semibold flex items-center justify-between">
+            <label className="text-gray-700 mb-1.5 font-semibold flex items-center justify-between">
               <span>Waktu Target Countdown (Kalender & Jam)</span>
               <span className="text-[10px] text-sage-dark bg-sage/10 px-2 py-0.5 rounded-full font-medium">
                 WIB (UTC+7)
@@ -398,7 +398,7 @@ export function EventScheduleEditor({ formData, setFormData, showToast }: EventS
 
           {/* Format Tanggal Tampil */}
           <div>
-            <label className="block text-gray-700 mb-1.5 font-semibold flex items-center justify-between">
+            <label className="text-gray-700 mb-1.5 font-semibold flex items-center justify-between">
               <span>Format Teks Tanggal Tampil</span>
               <span className="text-[10px] text-gray-400 font-normal">
                 Ditampilkan di Cover & Hero
@@ -683,7 +683,7 @@ export function EventScheduleEditor({ formData, setFormData, showToast }: EventS
             </p>
 
             {showAkadMapPreview && (
-              <div className="mt-2 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 h-[220px] relative shadow-inner">
+              <div className="mt-2 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 h-55 relative shadow-inner">
                 <iframe
                   src={getEmbedMapUrl(formData.events.akad.mapUrl, formData.events.akad.venue, formData.events.akad.address)}
                   width="100%"
@@ -950,7 +950,7 @@ export function EventScheduleEditor({ formData, setFormData, showToast }: EventS
             </p>
 
             {showResepsiMapPreview && (
-              <div className="mt-2 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 h-[220px] relative shadow-inner">
+              <div className="mt-2 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 h-55 relative shadow-inner">
                 <iframe
                   src={getEmbedMapUrl(formData.events.resepsi.mapUrl, formData.events.resepsi.venue, formData.events.resepsi.address)}
                   width="100%"

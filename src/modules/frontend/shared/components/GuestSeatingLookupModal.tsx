@@ -270,7 +270,7 @@ export function GuestSeatingLookupModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 w-screen h-screen z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div className="fixed inset-0 w-screen h-screen z-9999 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
           {/* Backdrop click to dismiss */}
           <div className="fixed inset-0" onClick={onClose} />
 

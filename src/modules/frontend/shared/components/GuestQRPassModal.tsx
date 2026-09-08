@@ -187,7 +187,7 @@ export function GuestQRPassModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 w-screen h-screen z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+        <div className="fixed inset-0 w-screen h-screen z-9999 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
           {/* Backdrop click to dismiss */}
           <div className="fixed inset-0" onClick={onClose} />
 

@@ -86,13 +86,13 @@ export const VipPassModal: React.FC<VipPassModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+        <div className="fixed inset-0 w-screen h-screen z-9999 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.92, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-sm my-auto bg-gradient-to-b from-[#1C1917] via-[#292524] to-[#1C1917] text-[#FAF8F5] rounded-3xl border-2 border-[#D4AF37]/50 shadow-2xl overflow-hidden p-6"
+            className="relative w-full max-w-sm my-auto bg-linear-to-b from-[#1C1917] via-[#292524] to-[#1C1917] text-[#FAF8F5] rounded-3xl border-2 border-[#D4AF37]/50 shadow-2xl overflow-hidden p-6"
           >
             {/* Ambient Background Gold Glow */}
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#D4AF37]/20 rounded-full blur-3xl pointer-events-none" />

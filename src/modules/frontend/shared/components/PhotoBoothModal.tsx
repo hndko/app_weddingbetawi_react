@@ -305,7 +305,7 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
 
   return (
     <div 
-      className="fixed inset-0 w-screen h-[100dvh] max-h-[100dvh] z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-0 md:p-4 overflow-hidden"
+      className="fixed inset-0 w-screen h-[100dvh] max-h-[100dvh] z-9999 bg-black/85 backdrop-blur-md flex items-center justify-center p-0 md:p-4 overflow-hidden"
       role="dialog"
       aria-modal="true"
       aria-label="Digital Photo Booth"
@@ -385,7 +385,7 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
 
               {/* 1. Format Layout */}
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider opacity-70 block mb-2 flex items-center gap-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">
                   <Layers size={13} /> 1. Format Photostrip
                 </label>
                 <div className="grid grid-cols-2 gap-2.5">
@@ -440,7 +440,7 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
 
               {/* 2. Frame Template */}
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider opacity-70 block mb-2 flex items-center gap-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">
                   <Palette size={13} /> 2. Desain Bingkai
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -480,7 +480,7 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
 
               {/* 3. Source Method */}
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider opacity-70 block mb-2 flex items-center gap-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider opacity-70 mb-2 flex items-center gap-1.5">
                   <Camera size={13} /> 3. Metode Pengambilan
                 </label>
                 <div className="grid grid-cols-2 gap-2.5">
@@ -734,7 +734,7 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
             >
               {/* Photo Filter Switcher */}
               <div>
-                <label className="text-[11px] font-bold uppercase tracking-wider opacity-70 block mb-1.5 flex items-center gap-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider opacity-70 mb-1.5 flex items-center gap-1.5">
                   <Sliders size={12} /> Pilih Filter Warna
                 </label>
                 <div className="grid grid-cols-4 gap-1.5">
@@ -769,7 +769,7 @@ export function PhotoBoothModal({ isOpen, onClose }: PhotoBoothModalProps) {
 
               {/* Quick Frame Style Switcher */}
               <div>
-                <label className="text-[11px] font-bold uppercase tracking-wider opacity-70 block mb-1.5 flex items-center gap-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider opacity-70 mb-1.5 flex items-center gap-1.5">
                   <Palette size={12} /> Ganti Warna Bingkai
                 </label>
                 <div className="grid grid-cols-4 gap-1.5">

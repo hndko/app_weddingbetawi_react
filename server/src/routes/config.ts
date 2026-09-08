@@ -153,15 +153,21 @@ export function createConfigRouter(io: SocketIOServer) {
   // POST /api/config/rundown - Broadcast status rundown hari-H secara instan via Socket.io
   router.post('/rundown', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
-      const { currentEvent, customNote, isActive } = req.body;
+      const { currentEvent, customNote, broadcastMessage, isActive, active, currentEventTime } = req.body;
       const [rows] = await pool.query('SELECT config_json FROM wedding_config WHERE id = 1 LIMIT 1');
       const record = (rows as Array<{ config_json: string }>)[0];
       const cfg = record?.config_json ? JSON.parse(record.config_json) : { ...defaultConfig };
 
+      const resolvedActive = isActive !== undefined ? Boolean(isActive) : (active !== undefined ? Boolean(active) : true);
+      const resolvedNote = customNote || broadcastMessage || '';
+
       const liveRundown = {
-        isActive: isActive !== false,
+        isActive: resolvedActive,
+        active: resolvedActive,
         currentEvent: currentEvent || 'Acara Sedang Berlangsung',
-        customNote: customNote || '',
+        currentEventTime: currentEventTime || '',
+        customNote: resolvedNote,
+        broadcastMessage: resolvedNote,
         updatedAt: new Date().toISOString(),
       };
 

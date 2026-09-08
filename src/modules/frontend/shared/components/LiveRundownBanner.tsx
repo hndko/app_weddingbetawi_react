@@ -43,7 +43,9 @@ export const LiveRundownBanner: React.FC = () => {
     { id: 'rd-5', time: '14:00 - 15:00', title: 'Sesi Foto Bersama & Penutupan', description: 'Sesi foto VIP, rekan kerja, dan sahabat mempelai', zone: 'Panggung Utama' },
   ];
 
-  if (!liveStatus.isActive) return null;
+  const isCurrentlyActive = Boolean(liveStatus.isActive ?? liveStatus.active);
+
+  if (!isCurrentlyActive) return null;
 
   return (
     <>
@@ -73,9 +75,9 @@ export const LiveRundownBanner: React.FC = () => {
               <span className="text-[11px] font-bold text-amber-200 block truncate group-hover:text-amber-300 transition-colors">
                 {liveStatus.currentEvent}
               </span>
-              {liveStatus.customNote ? (
+              {(liveStatus.customNote || liveStatus.broadcastMessage) ? (
                 <span className="text-[9px] text-stone-400 block truncate">
-                  {liveStatus.customNote}
+                  {liveStatus.customNote || liveStatus.broadcastMessage}
                 </span>
               ) : null}
             </div>
@@ -133,9 +135,9 @@ export const LiveRundownBanner: React.FC = () => {
                 <h4 className="text-base font-bold text-amber-200">
                   {liveStatus.currentEvent}
                 </h4>
-                {liveStatus.customNote ? (
+                {(liveStatus.customNote || liveStatus.broadcastMessage) ? (
                   <p className="text-xs text-stone-300 mt-1 italic">
-                    "{liveStatus.customNote}"
+                    "{liveStatus.customNote || liveStatus.broadcastMessage}"
                   </p>
                 ) : null}
               </div>

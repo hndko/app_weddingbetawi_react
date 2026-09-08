@@ -367,16 +367,22 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   const handleBroadcastRundown = async (overrides?: Partial<LiveRundownStatus>) => {
     setIsBroadcastingRundown(true);
     try {
+      const isAct = overrides?.active !== undefined ? overrides.active : (overrides?.isActive !== undefined ? overrides.isActive : rundownActive);
+      const noteMsg = overrides?.broadcastMessage !== undefined ? overrides.broadcastMessage : (overrides?.customNote !== undefined ? overrides.customNote : rundownMessage);
+
       const payload: LiveRundownStatus = {
-        active: overrides?.active !== undefined ? overrides.active : rundownActive,
+        active: isAct,
+        isActive: isAct,
         currentEvent: overrides?.currentEvent !== undefined ? overrides.currentEvent : rundownCurrentEvent,
         currentEventTime: overrides?.currentEventTime !== undefined ? overrides.currentEventTime : rundownCurrentTime,
-        broadcastMessage: overrides?.broadcastMessage !== undefined ? overrides.broadcastMessage : rundownMessage,
+        broadcastMessage: noteMsg,
+        customNote: noteMsg,
         lastUpdated: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       await api.broadcastRundown(payload);
-      setRundownActive(payload.active);
+      setRundownActive(Boolean(payload.active));
       setRundownCurrentEvent(payload.currentEvent);
       setRundownCurrentTime(payload.currentEventTime || '');
       setRundownMessage(payload.broadcastMessage || '');

@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.50.0`
+- **Versi Aplikasi Saat Ini**: `v1.50.1`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -45,7 +45,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 ### 🏗️ 2. Arsitektur Kode & Pemisahan Tanggung Jawab (Separation of Concerns)
 1. **Struktur Direktori Modular Terstandarisasi (`src/modules/`)**:
    - `src/modules/auth/`: Modul autentikasi panel admin (`Login.tsx`).
-   - `src/modules/backend/`: Modul pengelolaan data dan dasbor admin (`Panel.tsx`, `components/DragDropUpload.tsx`, `components/ThemeSelector.tsx`, `components/EventScheduleEditor.tsx`).
+   - `src/modules/backend/`: Modul pengelolaan data dan dasbor admin (`Panel.tsx`, `components/GuestManagerTab.tsx`, `components/ConfigEditorTab.tsx`, `components/RsvpManagerTab.tsx`, `components/WishesManagerTab.tsx`, `components/ReceptionCheckin.tsx`, `components/SeatingChartManager.tsx`, `components/BudgetVendorTracker.tsx`, `components/TriviaQuizManager.tsx`, `components/ExportReportModal.tsx`, `components/WhatsAppBroadcastModal.tsx`, `components/DragDropUpload.tsx`, `components/ThemeSelector.tsx`, `components/EventScheduleEditor.tsx`).
    - `src/modules/frontend/shared/`: Komponen dan seksi bersama lintas tema (`components/BottomNavigation.tsx`, `components/MusicPlayer.tsx`, `components/SEO.tsx`, `sections/RSVPSection.tsx`, `sections/WishesSection.tsx`, `sections/CountdownSection.tsx`, `sections/EventSection.tsx`, `sections/GallerySection.tsx`, `sections/LocationSection.tsx`, `sections/LoveStory.tsx`, `sections/WeddingGift.tsx`).
    - `src/modules/frontend/themes/`: Modul tema modular (`betawi/`, `jawa/`, `index.ts`, `types.ts`).
    - `server/`: Backend Node.js Express + MySQL + Socket.io (`src/routes/`, `src/db/`, `uploads/`).

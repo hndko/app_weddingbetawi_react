@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { THEME_CATALOG } from '../../frontend/themes/catalog';
 import { ThemeMeta } from '../../frontend/themes/types';
+import { ScrollableTabsContainer } from './ScrollableTabsContainer';
 
 export interface ThemeSelectorProps {
   currentThemeId: string;
@@ -34,7 +35,12 @@ export function ThemeSelector({ currentThemeId, onSelectTheme }: ThemeSelectorPr
         </div>
 
         {/* Category Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+        <ScrollableTabsContainer
+          activeKey={filterCategory}
+          gradientBg="white"
+          className="sm:max-w-xs md:max-w-md"
+          innerClassName="gap-1.5 py-1"
+        >
           {[
             { id: 'all', label: 'Semua Gaya' },
             { id: 'adat', label: 'Adat Nusantara' },
@@ -44,8 +50,9 @@ export function ThemeSelector({ currentThemeId, onSelectTheme }: ThemeSelectorPr
             <button
               key={tab.id}
               type="button"
+              data-active={filterCategory === tab.id}
               onClick={() => setFilterCategory(tab.id as 'all' | 'adat' | 'modern' | 'islami')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
                 filterCategory === tab.id
                   ? 'bg-sage-dark text-white shadow-xs'
                   : 'bg-gray-100 hover:bg-gray-200/70 text-gray-600'
@@ -54,7 +61,7 @@ export function ThemeSelector({ currentThemeId, onSelectTheme }: ThemeSelectorPr
               {tab.label}
             </button>
           ))}
-        </div>
+        </ScrollableTabsContainer>
       </div>
 
       {/* Theme Cards Grid */}

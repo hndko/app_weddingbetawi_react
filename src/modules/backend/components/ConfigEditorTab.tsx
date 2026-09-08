@@ -12,6 +12,7 @@ import { THEME_CATALOG } from '../../frontend/themes';
 import { ThemeSelector } from './ThemeSelector';
 import { EventScheduleEditor } from './EventScheduleEditor';
 import { DragDropUpload } from './DragDropUpload';
+import { ScrollableTabsContainer } from './ScrollableTabsContainer';
 import { compressImageToFile, compressImageToDataUrl } from '../../../utils/imageCompressor';
 
 export interface ConfigEditorTabProps {
@@ -241,11 +242,12 @@ export function ConfigEditorTab({
   return (
     <div className="flex flex-col gap-6">
       {/* Sub-Pills Navigation Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+      <ScrollableTabsContainer activeKey={configSubTab} gradientBg="page">
         <button
           type="button"
+          data-active={configSubTab === 'theme'}
           onClick={() => setConfigSubTab('theme')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
             configSubTab === 'theme'
               ? 'bg-sage-dark text-white shadow-xs'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -257,8 +259,9 @@ export function ConfigEditorTab({
 
         <button
           type="button"
+          data-active={configSubTab === 'couple'}
           onClick={() => setConfigSubTab('couple')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
             configSubTab === 'couple'
               ? 'bg-sage-dark text-white shadow-xs'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -270,8 +273,9 @@ export function ConfigEditorTab({
 
         <button
           type="button"
+          data-active={configSubTab === 'events'}
           onClick={() => setConfigSubTab('events')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
             configSubTab === 'events'
               ? 'bg-sage-dark text-white shadow-xs'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -283,8 +287,9 @@ export function ConfigEditorTab({
 
         <button
           type="button"
+          data-active={configSubTab === 'gallery'}
           onClick={() => setConfigSubTab('gallery')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
             configSubTab === 'gallery'
               ? 'bg-sage-dark text-white shadow-xs'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -296,8 +301,9 @@ export function ConfigEditorTab({
 
         <button
           type="button"
+          data-active={configSubTab === 'story'}
           onClick={() => setConfigSubTab('story')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
             configSubTab === 'story'
               ? 'bg-sage-dark text-white shadow-xs'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -309,8 +315,9 @@ export function ConfigEditorTab({
 
         <button
           type="button"
+          data-active={configSubTab === 'music_gift'}
           onClick={() => setConfigSubTab('music_gift')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
             configSubTab === 'music_gift'
               ? 'bg-sage-dark text-white shadow-xs'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -322,8 +329,9 @@ export function ConfigEditorTab({
 
         <button
           type="button"
+          data-active={configSubTab === 'texts'}
           onClick={() => setConfigSubTab('texts')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
             configSubTab === 'texts'
               ? 'bg-sage-dark text-white shadow-xs'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -335,8 +343,9 @@ export function ConfigEditorTab({
 
         <button
           type="button"
+          data-active={configSubTab === 'seo'}
           onClick={() => setConfigSubTab('seo')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
             configSubTab === 'seo'
               ? 'bg-sage-dark text-white shadow-xs'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -348,8 +357,9 @@ export function ConfigEditorTab({
 
         <button
           type="button"
+          data-active={configSubTab === 'agency'}
           onClick={() => setConfigSubTab('agency')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
             configSubTab === 'agency'
               ? 'bg-amber-700 text-white shadow-xs'
               : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -358,7 +368,7 @@ export function ConfigEditorTab({
           <Crown size={14} className="text-amber-400" />
           <span>Agensi & White-Label</span>
         </button>
-      </div>
+      </ScrollableTabsContainer>
 
       {/* Form Content Container */}
       <form onSubmit={handleSaveConfig} className="flex flex-col gap-6">

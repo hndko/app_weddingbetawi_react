@@ -12,6 +12,7 @@ import {
   WeddingTable, TableShape, TableZone, TableGuestAssignment,
   GuestInvitation, RSVPResponse
 } from '../../../types';
+import { ScrollableTabsContainer } from './ScrollableTabsContainer';
 
 interface SeatingChartManagerProps {
   onNotify?: (message: string, type: 'success' | 'error') => void;
@@ -777,11 +778,16 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
         </div>
 
         {/* Zone Filter Pill Buttons */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none text-xs">
+        <ScrollableTabsContainer
+          activeKey={selectedZoneFilter}
+          gradientBg="white"
+          innerClassName="gap-1.5 pb-1 md:pb-0 text-xs"
+        >
           <button
             type="button"
+            data-active={selectedZoneFilter === 'all'}
             onClick={() => setSelectedZoneFilter('all')}
-            className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap shrink-0 ${
               selectedZoneFilter === 'all'
                 ? 'bg-sage-dark text-white shadow-xs'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -791,8 +797,9 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
           </button>
           <button
             type="button"
+            data-active={selectedZoneFilter === 'vip_front'}
             onClick={() => setSelectedZoneFilter('vip_front')}
-            className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+            className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1 ${
               selectedZoneFilter === 'vip_front'
                 ? 'bg-amber-600 text-white shadow-xs'
                 : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200/60'
@@ -802,8 +809,9 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
           </button>
           <button
             type="button"
+            data-active={selectedZoneFilter === 'family_center'}
             onClick={() => setSelectedZoneFilter('family_center')}
-            className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+            className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1 ${
               selectedZoneFilter === 'family_center'
                 ? 'bg-emerald-600 text-white shadow-xs'
                 : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200/60'
@@ -813,8 +821,9 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
           </button>
           <button
             type="button"
+            data-active={selectedZoneFilter === 'regular_left'}
             onClick={() => setSelectedZoneFilter('regular_left')}
-            className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+            className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1 ${
               selectedZoneFilter === 'regular_left'
                 ? 'bg-blue-600 text-white shadow-xs'
                 : 'bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200/60'
@@ -824,8 +833,9 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
           </button>
           <button
             type="button"
+            data-active={selectedZoneFilter === 'regular_right'}
             onClick={() => setSelectedZoneFilter('regular_right')}
-            className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+            className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1 ${
               selectedZoneFilter === 'regular_right'
                 ? 'bg-purple-600 text-white shadow-xs'
                 : 'bg-purple-50 text-purple-800 hover:bg-purple-100 border border-purple-200/60'
@@ -833,7 +843,7 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
           >
             <span>🏢 Sayap Kanan</span>
           </button>
-        </div>
+        </ScrollableTabsContainer>
       </div>
 
       {/* ------------------------------------------------------------- */}

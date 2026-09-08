@@ -2,7 +2,7 @@
 
 > Platform undangan pernikahan digital interaktif dan responsif multi-tema (Suite 35 Tema: Adat Nusantara, Modern & Pop Culture, serta Syar'i / Islami) dengan sinkronisasi data *real-time*, audio *playlist* multifungsi, generator pesan WhatsApp, serta panel admin mandiri.
 
-[![Version](https://img.shields.io/badge/Version-1.54.0-blue?style=for-the-badge)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.55.0-blue?style=for-the-badge)](package.json)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -250,6 +250,20 @@ Mencatat kehadiran tamu dan pembagian suvenir hari-H secara real-time.
 ---
 
 ## ✨ Fitur Utama
+
+### 🧭 Interactive Scrollable Tabs Container Suite (v1.55.0)
+- **Navigasi Tab Horizontal Responsif & Mulus (*ScrollableTabsContainer*)**:
+  - Mengatasi kendala subtab yang terpotong pada berbagai resolusi layar dengan menghadirkan wadah geser interaktif untuk subtab **Kelola Konten Undangan** (`ConfigEditorTab`), filter kategori tema (`ThemeSelector`), dan zona meja (`SeatingChartManager`).
+  - **Tombol Panah Mengambang & Masking Gradasi Halus (*Floating Chevrons & Edge Fade Masks*)**: Tombol navigasi kiri (`ChevronLeft`) dan kanan (`ChevronRight`) mengambang dengan efek bayangan gradasi yang memudar secara elegan, otomatis muncul saat terdapat konten yang meluap dan menghilang saat mencapai ujung batas scroll.
+  - **Gesture Drag Mouse di Desktop (*Mouse Drag-to-Scroll*)**: Pengguna desktop dapat menahan klik kiri mouse dan menggeser deretan tab secara leluasa dengan kursor dinamis (*grab/grabbing*), dilengkapi proteksi *drag distance threshold* (6px) agar klik normal pada tombol tab tidak terpicu secara tidak sengaja.
+  - **Penyelarasan Tab Aktif Otomatis (*Auto-Scroll Active Tab*)**: Saat pengguna berpindah tab atau halaman dimuat, sistem secara otomatis menggeser viewport horizontal tepat ke posisi tab aktif (`[data-active="true"]`) agar selalu berada di area fokus yang nyaman.
+
+### 📜 Digital Multi-Culture Content & Live Stream Engine (v1.54.0)
+- **100% Konten Teks & Narasi Dinamis Tanpa Teks Statis**:
+  - Seluruh teks salam pembuka, sambutan, ayat suci/kutipan cinta, cover depan, hingga teks penutup dan doa restu kini dapat diatur secara visual di panel admin melalui subtab baru `Teks & Salam`.
+  - **5 Quick Religion & Culture Presets (1-Klik)**: Template siap pakai untuk Islam, Kristen Protestan, Katolik, Hindu Bali, dan Modern/Netral.
+  - **Alamat Kado Fisik Dinamis**: Kartu pengiriman kado fisik dengan nama penerima, nomor kontak, alamat lengkap, catatan kurir, dan tombol salin alamat dengan notifikasi toast.
+  - **Kartu Siaran Langsung (Live Streaming)**: Integrasi kehadiran virtual interaktif berbadge live pulsing untuk YouTube Live, Zoom, dan Instagram Live.
 
 ### ⚡ Automated Multi-Client Provisioning CLI Suite (v1.53.0)
 - **Penerbitan Klien Baru Dalam < 30 Detik (`scripts/deploy-client.sh`)**:

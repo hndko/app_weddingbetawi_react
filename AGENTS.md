@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.54.0`
+- **Versi Aplikasi Saat Ini**: `v1.55.0`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23, PWA (Workbox), Vitest, Autocannon
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -45,7 +45,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 ### 🏗️ 2. Arsitektur Kode & Pemisahan Tanggung Jawab (Separation of Concerns)
 1. **Struktur Direktori Modular Terstandarisasi (`src/modules/`)**:
    - `src/modules/auth/`: Modul autentikasi panel admin (`Login.tsx`).
-   - `src/modules/backend/`: Modul pengelolaan data dan dasbor admin (`Panel.tsx`, `components/GuestManagerTab.tsx`, `components/ConfigEditorTab.tsx`, `components/RsvpManagerTab.tsx`, `components/WishesManagerTab.tsx`, `components/ReceptionCheckin.tsx`, `components/SeatingChartManager.tsx`, `components/BudgetVendorTracker.tsx`, `components/TriviaQuizManager.tsx`, `components/ExportReportModal.tsx`, `components/WhatsAppBroadcastModal.tsx`, `components/DragDropUpload.tsx`, `components/ThemeSelector.tsx`, `components/EventScheduleEditor.tsx`).
+   - `src/modules/backend/`: Modul pengelolaan data dan dasbor admin (`Panel.tsx`, `components/GuestManagerTab.tsx`, `components/ConfigEditorTab.tsx`, `components/RsvpManagerTab.tsx`, `components/WishesManagerTab.tsx`, `components/ReceptionCheckin.tsx`, `components/SeatingChartManager.tsx`, `components/BudgetVendorTracker.tsx`, `components/TriviaQuizManager.tsx`, `components/ExportReportModal.tsx`, `components/WhatsAppBroadcastModal.tsx`, `components/DragDropUpload.tsx`, `components/ThemeSelector.tsx`, `components/EventScheduleEditor.tsx`, `components/ScrollableTabsContainer.tsx`).
    - `src/modules/frontend/shared/`: Komponen dan seksi bersama lintas tema (`components/BottomNavigation.tsx`, `components/MusicPlayer.tsx`, `components/SEO.tsx`, `sections/RSVPSection.tsx`, `sections/WishesSection.tsx`, `sections/CountdownSection.tsx`, `sections/EventSection.tsx`, `sections/GallerySection.tsx`, `sections/LocationSection.tsx`, `sections/LoveStory.tsx`, `sections/WeddingGift.tsx`).
    - `src/modules/frontend/themes/`: Modul tema modular (`betawi/`, `jawa/`, `index.ts`, `types.ts`).
    - `server/`: Backend Node.js Express + MySQL + Socket.io (`src/routes/`, `src/db/`, `uploads/`).
@@ -170,6 +170,8 @@ Proyek ini mengadopsi secara penuh spesifikasi **Skill Global `interactive-ux-st
     - **Digital Souvenir & Photobooth Redemption Tracker**: Pelacak penukaran suvenir resepsi anti-ganda berbasis scanner dan toggle 1-klik di Reception Check-in & Buku Tamu, tersinkronisasi realtime ke database MySQL.
     - **White-Label Agensi Mode**: Kustomisasi identitas penuh untuk Wedding Organizer (`co_branded` dan `white_label`), menampilkan logo WO, nama, tagline, tautan sosial/web/WA, serta opsi eliminasi 100% branding Mari Partner pada footer publik dan dokumen ekspor WO.
     - **Live Wedding Rundown Broadcaster**: Siaran status rundown pernikahan hari-H secara langsung (*realtime broadcast* via Socket.io `rundown:updated`) dari HP tim WO, memunculkan floating banner siaran status hidup (`🔴 LIVE`) dan drawer linimasa acara pada layar seluruh tamu.
+13. **Navigasi Tab Interaktif & Gestur Geser (*ScrollableTabsContainer*)**:
+    - Deretan tab dan pill filter yang meluap horizontal (subtab `ConfigEditorTab`, kategori tema `ThemeSelector`, dan zona meja `SeatingChartManager`) WAJIB dibungkus `ScrollableTabsContainer` dengan tombol panah navigasi mengambang (`<ChevronLeft />` & `<ChevronRight />`), efek fade gradasi halus, gesture *mouse drag-to-scroll*, dan penyesuaian otomatis ke tab aktif (*auto-scroll active tab into view*).
 
 ---
 

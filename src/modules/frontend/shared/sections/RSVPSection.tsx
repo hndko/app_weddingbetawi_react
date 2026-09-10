@@ -26,12 +26,24 @@ export function RSVPSection() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPassModalOpen, setIsPassModalOpen] = useState(false);
 
+  const getGuestStorageKey = (guestName: string) => {
+    const clean = (guestName || '').trim().toLowerCase();
+    return clean ? `rsvp_submitted_${encodeURIComponent(clean)}` : 'rsvp_submitted';
+  };
+
   useEffect(() => {
     if (defaultGuestName && defaultGuestName !== 'Tamu Undangan') {
       setName(defaultGuestName);
-    }
-    if (localStorage.getItem('rsvp_submitted') === 'true') {
-      setIsSubmitted(true);
+      const key = getGuestStorageKey(defaultGuestName);
+      if (localStorage.getItem(key) === 'true') {
+        setIsSubmitted(true);
+      } else {
+        setIsSubmitted(false);
+      }
+    } else {
+      if (localStorage.getItem('rsvp_submitted') === 'true') {
+        setIsSubmitted(true);
+      }
     }
   }, [defaultGuestName]);
 
@@ -50,6 +62,8 @@ export function RSVPSection() {
         notes: notes.trim(),
       });
       setIsSubmitted(true);
+      const key = getGuestStorageKey(name.trim());
+      localStorage.setItem(key, 'true');
       localStorage.setItem('rsvp_submitted', 'true');
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : '';
@@ -312,7 +326,12 @@ export function RSVPSection() {
 
             <button
               type="button"
-              onClick={() => setIsSubmitted(false)}
+              onClick={() => {
+                setIsSubmitted(false);
+                const key = getGuestStorageKey(name.trim() || defaultGuestName);
+                localStorage.removeItem(key);
+                localStorage.removeItem('rsvp_submitted');
+              }}
               className="text-xs hover:underline flex items-center gap-1.5 font-semibold cursor-pointer"
               style={{ color: tokens.accent }}
             >

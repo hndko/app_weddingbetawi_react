@@ -94,13 +94,21 @@ export function WhatsAppBroadcastModal({
     return map;
   }, [rsvps]);
 
-  // Clean phone number format for WhatsApp link
+  // Clean phone number format for WhatsApp link with international preservation
   const getCleanPhone = (phone?: string): string => {
     if (!phone) return '';
-    let clean = phone.replace(/[^0-9]/g, '');
+    const trimmed = phone.trim();
+    const startsWithPlus = trimmed.startsWith('+');
+    let clean = trimmed.replace(/[^0-9]/g, '');
+    if (!clean) return '';
+
+    if (startsWithPlus) {
+      return clean;
+    }
+
     if (clean.startsWith('0')) {
       clean = '62' + clean.substring(1);
-    } else if (clean.startsWith('8')) {
+    } else if (clean.startsWith('8') && clean.length >= 9 && clean.length <= 13) {
       clean = '62' + clean;
     }
     return clean;

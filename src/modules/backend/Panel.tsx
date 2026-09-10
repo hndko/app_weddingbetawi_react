@@ -122,12 +122,14 @@ export function Panel({ currentRoute = 'login', onNavigate, onReplace }: PanelPr
   // Sync RSVPs from REST API + Socket.io
   useEffect(() => {
     api.getRsvps().then(setRsvps).catch(console.warn);
-    const onCreated = (r: RSVPResponse) => setRsvps(prev => [r, ...prev.filter(x => x.id !== r.id)]);
+    const onCreatedOrUpdated = (r: RSVPResponse) => setRsvps(prev => [r, ...prev.filter(x => x.id !== r.id)]);
     const onDeleted = (id: string) => setRsvps(prev => prev.filter(x => x.id !== id));
-    socket.on('rsvp:created', onCreated);
+    socket.on('rsvp:created', onCreatedOrUpdated);
+    socket.on('rsvp:updated', onCreatedOrUpdated);
     socket.on('rsvp:deleted', onDeleted);
     return () => {
-      socket.off('rsvp:created', onCreated);
+      socket.off('rsvp:created', onCreatedOrUpdated);
+      socket.off('rsvp:updated', onCreatedOrUpdated);
       socket.off('rsvp:deleted', onDeleted);
     };
   }, []);

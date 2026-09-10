@@ -22,7 +22,7 @@ export function createRsvpsRouter(io: SocketIOServer) {
     }
   });
 
-  // POST /api/rsvps - Simpan konfirmasi kehadiran RSVP baru (dilindungi Anti-Spam Rate Limiter)
+  // POST /api/rsvps - Simpan atau perbarui konfirmasi kehadiran RSVP (Anti-Duplikasi & Rate Limiter)
   router.post('/', submissionRateLimiter, async (req: Request, res: Response): Promise<void> => {
     try {
       const { name, phone, attendance, guestCount, notes } = req.body;
@@ -32,31 +32,65 @@ export function createRsvpsRouter(io: SocketIOServer) {
         return;
       }
 
-      const id = 'rsvp_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
+      const cleanName = String(name).trim();
       const count = parseInt(String(guestCount || 1), 10) || 1;
       const cleanPhone = phone ? String(phone).trim() : null;
 
-      await pool.query(
-        `INSERT INTO rsvps (id, name, phone, attendance, guest_count, notes) 
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [id, name.trim(), cleanPhone, attendance, count, (notes || '').trim()]
+      // Cek apakah tamu dengan nama (atau nomor telepon) yang sama sudah pernah mengirim RSVP sebelumnya
+      const [existingRows] = await pool.query(
+        'SELECT id, name, phone, attendance, guest_count as guestCount, notes, created_at as createdAt FROM rsvps WHERE LOWER(TRIM(name)) = LOWER(?) OR (phone IS NOT NULL AND phone != "" AND phone = ?) LIMIT 1',
+        [cleanName, cleanPhone || '___NO_PHONE___']
       );
+      const existingList = existingRows as any[];
+      const isExisting = existingList.length > 0;
 
-      const newRsvp = {
-        id,
-        name: name.trim(),
-        phone: cleanPhone || undefined,
-        attendance,
-        guestCount: count,
-        notes: (notes || '').trim(),
-        createdAt: new Date().toISOString(),
-      };
+      let rsvpRecord: any;
 
-      // Realtime broadcast ke admin panel
-      io.emit('rsvp:created', newRsvp);
+      if (isExisting) {
+        const existingId = existingList[0].id;
+        await pool.query(
+          `UPDATE rsvps 
+           SET name = ?, phone = COALESCE(?, phone), attendance = ?, guest_count = ?, notes = ? 
+           WHERE id = ?`,
+          [cleanName, cleanPhone, attendance, count, (notes || '').trim(), existingId]
+        );
 
-      // Kirim respons sukses terlebih dahulu
-      res.status(201).json({ success: true, data: newRsvp });
+        rsvpRecord = {
+          id: existingId,
+          name: cleanName,
+          phone: cleanPhone || existingList[0].phone || undefined,
+          attendance,
+          guestCount: count,
+          notes: (notes || '').trim(),
+          createdAt: existingList[0].createdAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        // Realtime broadcast update ke admin panel
+        io.emit('rsvp:updated', rsvpRecord);
+        res.status(200).json({ success: true, data: rsvpRecord, isUpdate: true });
+      } else {
+        const id = 'rsvp_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
+        await pool.query(
+          `INSERT INTO rsvps (id, name, phone, attendance, guest_count, notes) 
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [id, cleanName, cleanPhone, attendance, count, (notes || '').trim()]
+        );
+
+        rsvpRecord = {
+          id,
+          name: cleanName,
+          phone: cleanPhone || undefined,
+          attendance,
+          guestCount: count,
+          notes: (notes || '').trim(),
+          createdAt: new Date().toISOString(),
+        };
+
+        // Realtime broadcast pembuatan baru ke admin panel
+        io.emit('rsvp:created', rsvpRecord);
+        res.status(201).json({ success: true, data: rsvpRecord, isUpdate: false });
+      }
 
       // Jalankan notifikasi WhatsApp di latar belakang (fire-and-forget)
       (async () => {
@@ -73,10 +107,17 @@ export function createRsvpsRouter(io: SocketIOServer) {
           const bride = weddingConfig.bride?.nickname || weddingConfig.bride?.fullName || 'Mempelai Wanita';
           const attendanceLabel = attendance === 'hadir' ? 'Hadir' : attendance === 'tidak_hadir' ? 'Tidak Hadir' : 'Masih Ragu';
 
+          // Tentukan URL origin dinamis dari header request atau host server aktif
+          const rawOrigin = req.get('origin');
+          const clientOrigin = (rawOrigin && rawOrigin !== 'null') 
+            ? rawOrigin 
+            : `${req.protocol}://${req.get('host')}`;
+          const invitationUrl = `${clientOrigin}/?to=${encodeURIComponent(cleanName)}`;
+
           // 1. Kirim notifikasi alert ke Admin/Pengantin
           if (gateway.notifyAdminOnRsvp !== false && gateway.adminPhone) {
-            const adminMsg = `🔔 *Konfirmasi RSVP Baru Diterima!*\n\n` +
-              `👤 *Nama Tamu*: ${name.trim()}\n` +
+            const adminMsg = `🔔 *Konfirmasi RSVP ${isExisting ? 'Pembaruan' : 'Baru'} Diterima!*\n\n` +
+              `👤 *Nama Tamu*: ${cleanName}\n` +
               (cleanPhone ? `📞 *No. WhatsApp*: ${cleanPhone}\n` : '') +
               `✅ *Status*: ${attendanceLabel}\n` +
               `👥 *Jumlah*: ${count} Orang\n` +
@@ -92,7 +133,7 @@ export function createRsvpsRouter(io: SocketIOServer) {
           if (gateway.notifyGuestOnRsvp !== false && cleanPhone) {
             const eventDate = weddingConfig.events?.resepsi?.date || weddingConfig.dateStr || 'Hari Bahagia';
             const eventVenue = weddingConfig.events?.resepsi?.venue || 'Gedung Resepsi';
-            const guestMsg = `Halo *${name.trim()}*,\n\n` +
+            const guestMsg = `Halo *${cleanName}*,\n\n` +
               `Terima kasih telah mengonfirmasi kehadiran untuk hari bahagia pernikahan *${groom} & ${bride}*.\n\n` +
               `📋 *Rincian Konfirmasi Anda*:\n` +
               `• Status Kehadiran: *${attendanceLabel}*\n` +
@@ -100,7 +141,7 @@ export function createRsvpsRouter(io: SocketIOServer) {
               `📅 Tanggal: ${eventDate}\n` +
               `📍 Lokasi: ${eventVenue}\n\n` +
               `Tautan Undangan & QR Pass Digital Anda:\n` +
-              `🔗 https://maripartner.com/?to=${encodeURIComponent(name.trim())}\n\n` +
+              `🔗 ${invitationUrl}\n\n` +
               `Sampai jumpa di hari bahagia kami! 🙏❤️`;
 
             sendWhatsAppMessage(cleanPhone, guestMsg, gateway).catch((e) =>

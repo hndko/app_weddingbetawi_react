@@ -37,7 +37,7 @@ describe('Server REST API Integration Suite', () => {
     });
   });
 
-  describe('POST /api/rsvps Validation', () => {
+  describe('POST /api/rsvps Upsert & Validation', () => {
     it('should reject RSVP submission with missing guest name', async () => {
       const res = await request(app)
         .post('/api/rsvps')
@@ -45,6 +45,30 @@ describe('Server REST API Integration Suite', () => {
 
       expect(res.status).toBe(400);
       expect(res.body).toHaveProperty('error');
+    });
+
+    it('should upsert RSVP when guest re-submits with same name to prevent duplicates', async () => {
+      const testName = 'Test Guest Vitest ' + Date.now();
+      const firstRes = await request(app)
+        .post('/api/rsvps')
+        .send({ name: testName, attendance: 'tidak_hadir', guestCount: 1, notes: 'Awalnya tidak bisa' });
+
+      expect(firstRes.status).toBe(201);
+      expect(firstRes.body.isUpdate).toBe(false);
+
+      const secondRes = await request(app)
+        .post('/api/rsvps')
+        .send({ name: testName, attendance: 'hadir', guestCount: 2, notes: 'Bisa hadir berdua' });
+
+      expect(secondRes.status).toBe(200);
+      expect(secondRes.body.isUpdate).toBe(true);
+      expect(secondRes.body.data.guestCount).toBe(2);
+      expect(secondRes.body.data.attendance).toBe('hadir');
+
+      // Cleanup database
+      if (firstRes.body.data?.id) {
+        await pool.query('DELETE FROM rsvps WHERE id = ?', [firstRes.body.data.id]);
+      }
     });
   });
 

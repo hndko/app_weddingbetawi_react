@@ -148,6 +148,17 @@ if (fs.existsSync(distPath)) {
   });
 }
 
+// Middleware Penanganan Error Terpusat (Pilar 3 OWASP: Menjamin respons format JSON murni anti-HTML dump)
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction): void => {
+  console.error('[Unhandled Server Error]:', err);
+  const status = typeof err.status === 'number' 
+    ? err.status 
+    : (err.name === 'MulterError' ? 400 : 500);
+  res.status(status).json({
+    error: err.message || 'Terjadi kesalahan pada server',
+  });
+});
+
 // Start server (kecuali saat dijalankan di lingkungan pengujian unit/integration)
 if (process.env.NODE_ENV !== 'test') {
   server.listen(port, '0.0.0.0', () => {

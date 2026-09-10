@@ -35,7 +35,17 @@ export function GuestManagerTab({
   const [guestViewMode, setGuestViewMode] = useState<'list' | 'single'>('list');
   const [guestSearchQuery, setGuestSearchQuery] = useState('');
   const [guestStatusFilter, setGuestStatusFilter] = useState<'all' | 'pending' | 'sent'>('all');
+  const [guestRsvpFilter, setGuestRsvpFilter] = useState<'all' | 'hadir' | 'tidak_hadir' | 'pending'>('all');
   const [guestTierFilter, setGuestTierFilter] = useState<'all' | GuestTier>('all');
+
+  // Map RSVPs by name for fast lookup
+  const rsvpMap = useMemo(() => {
+    const map = new Map<string, RSVPResponse>();
+    rsvps.forEach((r) => {
+      map.set(r.name.toLowerCase().trim(), r);
+    });
+    return map;
+  }, [rsvps]);
 
   // Quick single generator state
   const [singleGuestName, setSingleGuestName] = useState('');
@@ -62,15 +72,20 @@ export function GuestManagerTab({
   // WhatsApp broadcast modal state
   const [isWhatsAppBroadcastModalOpen, setIsWhatsAppBroadcastModalOpen] = useState(false);
 
-  // Phone number sanitizer
+  // Phone number sanitizer (standar internasional wa.me tanpa simbol +)
   const sanitizePhoneNumber = (rawPhone: string): string => {
-    const cleaned = rawPhone.replace(/[^\d+]/g, '');
-    if (!cleaned) return '';
-    if (cleaned.startsWith('+62')) return '62' + cleaned.slice(3);
-    if (cleaned.startsWith('62')) return cleaned;
-    if (cleaned.startsWith('0')) return '62' + cleaned.slice(1);
-    if (cleaned.startsWith('8')) return '62' + cleaned;
-    return cleaned;
+    const trimmed = rawPhone.trim();
+    const startsWithPlus = trimmed.startsWith('+');
+    const digits = trimmed.replace(/[^\d]/g, '');
+    if (!digits) return '';
+
+    if (startsWithPlus) {
+      return digits;
+    }
+
+    if (digits.startsWith('0')) return '62' + digits.slice(1);
+    if (digits.startsWith('8') && digits.length >= 9 && digits.length <= 13) return '62' + digits;
+    return digits;
   };
 
   const getGuestInvitationUrl = (name: string): string => {
@@ -113,6 +128,15 @@ ${closingSalutation}`;
     if (guestStatusFilter !== 'all') {
       result = result.filter(g => g.status === guestStatusFilter);
     }
+    if (guestRsvpFilter !== 'all') {
+      result = result.filter(g => {
+        const rsvp = rsvpMap.get(g.name.toLowerCase().trim());
+        if (guestRsvpFilter === 'pending') return !rsvp;
+        if (guestRsvpFilter === 'hadir') return rsvp?.attendance === 'hadir';
+        if (guestRsvpFilter === 'tidak_hadir') return rsvp?.attendance === 'tidak_hadir';
+        return true;
+      });
+    }
     if (guestTierFilter !== 'all') {
       result = result.filter(g => (g.tier || 'regular') === guestTierFilter);
     }
@@ -127,7 +151,7 @@ ${closingSalutation}`;
       );
     }
     return result;
-  }, [guests, guestStatusFilter, guestTierFilter, guestSearchQuery]);
+  }, [guests, guestStatusFilter, guestRsvpFilter, guestTierFilter, guestSearchQuery, rsvpMap]);
 
   // Actions
   const handleSendGuestWhatsapp = async (guest: GuestInvitation) => {
@@ -612,14 +636,14 @@ ${closingSalutation}`;
           </div>
 
           {/* Search & Filter Bar */}
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-            <div className="sm:col-span-6 relative flex items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+            <div className="sm:col-span-3 relative flex items-center">
               <Search size={16} className="absolute left-3.5 text-gray-400 pointer-events-none" />
               <input
                 type="text"
                 value={guestSearchQuery}
                 onChange={(e) => setGuestSearchQuery(e.target.value)}
-                placeholder="Cari nama tamu, nomor WA, tier, atau meja..."
+                placeholder="Cari nama, WA, tier, meja..."
                 className="w-full pl-10 pr-10 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sage focus:border-sage placeholder:text-gray-400 shadow-2xs"
               />
               {guestSearchQuery && (
@@ -640,9 +664,23 @@ ${closingSalutation}`;
                 onChange={(e) => setGuestStatusFilter(e.target.value as 'all' | 'pending' | 'sent')}
                 className="w-full text-xs bg-transparent border-none focus:outline-none text-gray-700 py-1.5"
               >
-                <option value="all">Semua Status Pengiriman</option>
+                <option value="all">Semua Pengiriman</option>
                 <option value="pending">Belum Terkirim</option>
                 <option value="sent">Sudah Terkirim</option>
+              </select>
+            </div>
+
+            <div className="sm:col-span-3 flex items-center gap-1.5 bg-white border border-gray-200 rounded-xl px-3 py-1 shadow-2xs">
+              <CheckCheck size={14} className="text-emerald-500 shrink-0" />
+              <select
+                value={guestRsvpFilter}
+                onChange={(e) => setGuestRsvpFilter(e.target.value as 'all' | 'hadir' | 'tidak_hadir' | 'pending')}
+                className="w-full text-xs bg-transparent border-none focus:outline-none text-gray-700 py-1.5"
+              >
+                <option value="all">Semua RSVP</option>
+                <option value="hadir">✅ Hadir</option>
+                <option value="tidak_hadir">❌ Tidak Hadir</option>
+                <option value="pending">⏳ Belum RSVP</option>
               </select>
             </div>
 
@@ -667,16 +705,17 @@ ${closingSalutation}`;
             <div className="text-center py-14 bg-white border border-dashed border-gray-200 rounded-3xl flex flex-col items-center gap-2 shadow-2xs">
               <Users size={36} className="text-gray-300" />
               <p className="text-xs text-gray-500 font-medium">
-                {guestSearchQuery || guestStatusFilter !== 'all' || guestTierFilter !== 'all'
+                {guestSearchQuery || guestStatusFilter !== 'all' || guestRsvpFilter !== 'all' || guestTierFilter !== 'all'
                   ? 'Tidak ada tamu yang cocok dengan filter yang dipilih.'
                   : 'Belum ada data tamu undangan.'}
               </p>
-              {(guestSearchQuery || guestStatusFilter !== 'all' || guestTierFilter !== 'all') && (
+              {(guestSearchQuery || guestStatusFilter !== 'all' || guestRsvpFilter !== 'all' || guestTierFilter !== 'all') && (
                 <button
                   type="button"
                   onClick={() => {
                     setGuestSearchQuery('');
                     setGuestStatusFilter('all');
+                    setGuestRsvpFilter('all');
                     setGuestTierFilter('all');
                   }}
                   className="text-xs text-sage-dark hover:underline flex items-center gap-1 font-semibold mt-1 cursor-pointer"
@@ -695,6 +734,7 @@ ${closingSalutation}`;
                     <th className="py-3 px-4">Nama Tamu & Tier</th>
                     <th className="py-3 px-3 text-center">Nomor WA</th>
                     <th className="py-3 px-3 text-center">Meja</th>
+                    <th className="py-3 px-3 text-center">Status RSVP</th>
                     <th className="py-3 px-3 text-center">Kehadiran Hari-H</th>
                     <th className="py-3 px-3 text-center">Suvenir</th>
                     <th className="py-3 px-3 text-center">Status Kirim</th>
@@ -729,6 +769,32 @@ ${closingSalutation}`;
                             {guest.tableNumber}
                           </span>
                         ) : '-'}
+                      </td>
+                      <td className="py-3.5 px-3 text-center whitespace-nowrap">
+                        {(() => {
+                          const r = rsvpMap.get(guest.name.toLowerCase().trim());
+                          if (!r) {
+                            return (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-500">
+                                Belum RSVP
+                              </span>
+                            );
+                          }
+                          if (r.attendance === 'hadir') {
+                            return (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <Check size={11} />
+                                <span>Hadir ({r.guestCount || 1})</span>
+                              </span>
+                            );
+                          }
+                          return (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                              <X size={11} />
+                              <span>Tidak Hadir</span>
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="py-3.5 px-3 text-center whitespace-nowrap">
                         {guest.checkedIn ? (

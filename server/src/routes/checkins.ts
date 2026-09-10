@@ -27,24 +27,50 @@ export function createCheckinsRouter(io: SocketIOServer) {
     }
   });
 
-  // POST /api/checkins - Tambah atau perbarui log check-in
+  // POST /api/checkins - Tambah atau perbarui log check-in (Atomik dengan tabel guests)
   router.post('/', async (req: Request, res: Response): Promise<void> => {
+    const conn = await pool.getConnection();
     try {
+      await conn.beginTransaction();
       const { guestId, name, checkInTime, actualPax, tier, souvenirClaimed, tableNumber, source, notes } = req.body;
       const id = 'checkin_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
       const now = souvenirClaimed ? new Date() : null;
+      const checkinDate = new Date();
 
-      await pool.query(
+      await conn.query(
         `INSERT INTO checkins (id, guest_id, name, check_in_time, actual_pax, tier, souvenir_claimed, souvenir_claimed_at, table_number, source, notes) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id, guestId || null, name, checkInTime, actualPax || 1, tier || 'regular', souvenirClaimed ? 1 : 0, now, tableNumber || null, source || 'qr_scan', notes || null]
+        [id, guestId || null, name, checkInTime || checkinDate.toISOString(), actualPax || 1, tier || 'regular', souvenirClaimed ? 1 : 0, now, tableNumber || null, source || 'qr_scan', notes || null]
       );
+
+      // Sinkronkan juga ke tabel guests jika guestId disertakan (Transaksi Atomik)
+      if (guestId) {
+        await conn.query(
+          `UPDATE guests 
+           SET checked_in = 1, 
+               checked_in_at = COALESCE(checked_in_at, ?),
+               souvenir_claimed = CASE WHEN ? = 1 THEN 1 ELSE souvenir_claimed END,
+               souvenir_claimed_at = CASE WHEN ? = 1 AND souvenir_claimed_at IS NULL THEN ? ELSE souvenir_claimed_at END,
+               table_number = COALESCE(?, table_number)
+           WHERE id = ?`,
+          [
+            checkinDate,
+            souvenirClaimed ? 1 : 0,
+            souvenirClaimed ? 1 : 0,
+            now,
+            tableNumber || null,
+            guestId,
+          ]
+        );
+      }
+
+      await conn.commit();
 
       const newRecord = {
         id,
         guestId,
         name,
-        checkInTime,
+        checkInTime: checkInTime || checkinDate.toISOString(),
         actualPax: actualPax || 1,
         tier: tier || 'regular',
         souvenirClaimed: !!souvenirClaimed,
@@ -55,10 +81,23 @@ export function createCheckinsRouter(io: SocketIOServer) {
       };
 
       io.emit('checkin:created', newRecord);
+      if (guestId) {
+        io.emit('guest:checked_in', {
+          id: guestId,
+          checkedIn: true,
+          checkedInAt: checkinDate.toISOString(),
+          souvenirClaimed: !!souvenirClaimed,
+          souvenirClaimedAt: now ? now.toISOString() : undefined,
+        });
+      }
+
       res.status(201).json({ success: true, data: newRecord });
     } catch (error) {
+      await conn.rollback();
       console.error('[API Checkins Error]:', error);
       res.status(500).json({ error: 'Gagal mencatat check-in' });
+    } finally {
+      conn.release();
     }
   });
 
@@ -105,20 +144,19 @@ export function createCheckinsRouter(io: SocketIOServer) {
           ]
         );
 
-        // Jika ada guestId yang cocok, sinkronkan juga status buku tamu
+        // Jika ada guestId yang cocok, sinkronkan juga status buku tamu secara benar sesuai skema MySQL
         if (item.guestId) {
+          const syncCheckinDate = item.checkInTime ? new Date(item.checkInTime) : new Date();
           await conn.query(
             `UPDATE guests 
              SET checked_in = 1, 
-                 check_in_time = COALESCE(check_in_time, ?),
-                 actual_pax = ?,
+                 checked_in_at = COALESCE(checked_in_at, ?),
                  souvenir_claimed = CASE WHEN ? = 1 THEN 1 ELSE souvenir_claimed END,
                  souvenir_claimed_at = CASE WHEN ? = 1 AND souvenir_claimed_at IS NULL THEN ? ELSE souvenir_claimed_at END,
                  table_number = COALESCE(?, table_number)
              WHERE id = ?`,
             [
-              item.checkInTime || new Date().toISOString(),
-              item.actualPax || 1,
+              syncCheckinDate,
               item.souvenirClaimed ? 1 : 0,
               item.souvenirClaimed ? 1 : 0,
               now,

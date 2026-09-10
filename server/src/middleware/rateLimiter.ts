@@ -35,6 +35,12 @@ export function createRateLimiter(options: RateLimiterOptions) {
   }, 5 * 60 * 1000).unref();
 
   return (req: Request, res: Response, next: NextFunction): void => {
+    // Lewati rate limiter pada lingkungan pengujian unit/integration
+    if (process.env.NODE_ENV === 'test') {
+      next();
+      return;
+    }
+
     // Ekstraksi alamat IP klien (mendukung proxy Nginx / Cloudflare)
     const forwarded = req.headers['x-forwarded-for'];
     const ip = (typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : req.ip) || 'unknown_ip';

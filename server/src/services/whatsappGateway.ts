@@ -24,13 +24,25 @@ export interface SendMessageResult {
 
 /**
  * Membersihkan format nomor telepon menjadi standar internasional tanpa tanda + atau spasi (contoh: 6281234567890).
+ * Mendukung preservasi nomor internasional jika diawali tanda '+' (contoh: +81, +82, +65).
  */
 export function cleanPhoneNumber(phone: string): string {
   if (!phone) return '';
-  let clean = phone.replace(/[^0-9]/g, '');
+  const trimmed = phone.trim();
+  const startsWithPlus = trimmed.startsWith('+');
+  let clean = trimmed.replace(/[^0-9]/g, '');
+  if (!clean) return '';
+
+  if (startsWithPlus) {
+    // Nomor internasional eksplisit dengan prefix +, pertahankan kode negara asli
+    return clean;
+  }
+
+  // Penanganan format nomor Indonesia lokal
   if (clean.startsWith('0')) {
     clean = '62' + clean.substring(1);
-  } else if (clean.startsWith('8')) {
+  } else if (clean.startsWith('8') && clean.length >= 9 && clean.length <= 13) {
+    // Konvensi seluler Indonesia tanpa angka 0 di depan (misal 81234567890)
     clean = '62' + clean;
   }
   return clean;

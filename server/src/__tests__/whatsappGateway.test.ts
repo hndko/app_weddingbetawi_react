@@ -20,6 +20,12 @@ describe('WhatsApp Gateway Service Suite', () => {
       expect(cleanPhoneNumber('+62 812-3456-7890')).toBe('6281234567890');
     });
 
+    it('should preserve international country codes when starting with +', () => {
+      expect(cleanPhoneNumber('+81 90-1234-5678')).toBe('819012345678');
+      expect(cleanPhoneNumber('+65 9123 4567')).toBe('6591234567');
+      expect(cleanPhoneNumber('+1 (555) 123-4567')).toBe('15551234567');
+    });
+
     it('should handle empty or whitespace-only inputs', () => {
       expect(cleanPhoneNumber('')).toBe('');
       expect(cleanPhoneNumber('   ')).toBe('');

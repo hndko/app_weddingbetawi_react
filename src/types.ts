@@ -220,6 +220,7 @@ export interface GuestInvitation {
   createdAt?: Timestamp | Date | { toDate?: () => Date; seconds?: number; nanoseconds?: number } | null;
   checkedIn?: boolean;
   checkInTime?: string;
+  checkedInAt?: string;
   actualPax?: number;
   souvenirClaimed?: boolean;
   souvenirClaimedAt?: string;

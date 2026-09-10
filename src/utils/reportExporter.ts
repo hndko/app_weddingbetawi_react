@@ -78,6 +78,31 @@ const formatTimestamp = (ts: unknown): string => {
   return '-';
 };
 
+export const isAttending = (attendance?: string): boolean => {
+  if (!attendance) return false;
+  const val = attendance.toLowerCase().trim();
+  return val === 'hadir' || val === 'attending' || val === 'yes';
+};
+
+export const isDeclined = (attendance?: string): boolean => {
+  if (!attendance) return false;
+  const val = attendance.toLowerCase().trim();
+  return val === 'tidak_hadir' || val === 'tidak hadir' || val === 'declined' || val === 'no';
+};
+
+export const isMaybe = (attendance?: string): boolean => {
+  if (!attendance) return false;
+  const val = attendance.toLowerCase().trim();
+  return val === 'ragu' || val === 'masih_ragu' || val === 'maybe';
+};
+
+export const getAttendanceLabel = (attendance?: string): string => {
+  if (isAttending(attendance)) return 'Hadir';
+  if (isDeclined(attendance)) return 'Tidak Hadir';
+  if (isMaybe(attendance)) return 'Masih Ragu';
+  return 'Belum Konfirmasi';
+};
+
 /* =========================================================================
    EXCEL (.XLSX) GENERATOR SUITE
    ========================================================================= */
@@ -99,8 +124,10 @@ function createExecutiveSummarySheet(data: ExportMasterData): XLSX.WorkSheet {
   const totalGuests = guests.length;
   const sentGuests = guests.filter((g) => g.status === 'sent').length;
   const totalRsvps = rsvps.length;
-  const attendingRsvps = rsvps.filter((r) => r.attendance === 'attending');
+  const attendingRsvps = rsvps.filter((r) => isAttending(r.attendance));
   const attendingPax = attendingRsvps.reduce((acc, r) => acc + (Number(r.guestCount) || 1), 0);
+  const declinedRsvpsCount = rsvps.filter((r) => isDeclined(r.attendance)).length;
+  const maybeRsvpsCount = rsvps.filter((r) => isMaybe(r.attendance)).length;
   const checkedInGuests = guests.filter((g) => g.checkedIn).length || checkins.length;
 
   const totalCapacity = tables.reduce((acc, t) => acc + (Number(t.capacity) || 0), 0);
@@ -141,8 +168,8 @@ function createExecutiveSummarySheet(data: ExportMasterData): XLSX.WorkSheet {
     ['Total Respon RSVP Masuk', totalRsvps],
     ['Konfirmasi Hadir (Responses)', attendingRsvps.length],
     ['Estimasi Total Pax Hadir', attendingPax],
-    ['Konfirmasi Berhalangan Hadir', rsvps.filter((r) => r.attendance === 'declined').length],
-    ['Konfirmasi Masih Ragu', rsvps.filter((r) => r.attendance === 'maybe').length],
+    ['Konfirmasi Berhalangan Hadir', declinedRsvpsCount],
+    ['Konfirmasi Masih Ragu', maybeRsvpsCount],
     ['Total Tamu Sudah Check-In di Lokasi', checkedInGuests],
     [],
     ['2. REKAPITULASI SUSUNAN MEJA & KURSI'],
@@ -203,13 +230,9 @@ function createGuestsSheet(guests: GuestInvitation[], rsvps: RSVPResponse[]): XL
 
   const dataRows = guests.map((g, idx) => {
     const rsvp = rsvpMap.get((g.name || '').trim().toLowerCase());
-    const rsvpStatus = !rsvp
-      ? 'Belum Konfirmasi'
-      : rsvp.attendance === 'attending'
-      ? 'Hadir'
-      : rsvp.attendance === 'declined'
-      ? 'Tidak Hadir'
-      : 'Masih Ragu';
+    const rsvpStatus = !rsvp ? 'Belum Konfirmasi' : getAttendanceLabel(rsvp.attendance);
+    const guestPax = rsvp ? (rsvp.guestCount || (isAttending(rsvp.attendance) ? 1 : 0)) : (g.actualPax || 1);
+    const checkinTime = g.checkedInAt || g.checkInTime;
 
     return [
       idx + 1,
@@ -218,10 +241,10 @@ function createGuestsSheet(guests: GuestInvitation[], rsvps: RSVPResponse[]): XL
       g.phone || '-',
       g.status === 'sent' ? 'Terkirim' : 'Pending (Belum)',
       rsvpStatus,
-      rsvp?.guestCount || (rsvp?.attendance === 'attending' ? 1 : 0),
+      guestPax,
       g.tableNumber || '-',
       g.checkedIn ? 'Sudah Hadir' : 'Belum',
-      g.checkInTime ? formatTimestamp(g.checkInTime) : '-',
+      checkinTime ? formatTimestamp(checkinTime) : '-',
       g.souvenirClaimed ? 'Sudah' : 'Belum',
       g.vipNotes || '-',
       rsvp?.notes || '-'
@@ -261,18 +284,13 @@ function createRsvpsSheet(rsvps: RSVPResponse[]): XLSX.WorkSheet {
   ];
 
   const dataRows = rsvps.map((r, idx) => {
-    const attendanceLabel =
-      r.attendance === 'attending'
-        ? 'Hadir'
-        : r.attendance === 'declined'
-        ? 'Tidak Hadir'
-        : 'Masih Ragu';
+    const attendanceLabel = getAttendanceLabel(r.attendance);
 
     return [
       idx + 1,
       r.name || '-',
       attendanceLabel,
-      r.attendance === 'attending' ? (r.guestCount || 1) : 0,
+      isAttending(r.attendance) ? (r.guestCount || 1) : 0,
       r.notes || '-',
       formatTimestamp(r.createdAt)
     ];
@@ -699,7 +717,7 @@ export function exportMasterPDF(data: ExportMasterData): void {
 
   // KPI Grid
   const totalGuests = guests.length;
-  const attendingRsvps = rsvps.filter((r) => r.attendance === 'attending');
+  const attendingRsvps = rsvps.filter((r) => isAttending(r.attendance));
   const attendingPax = attendingRsvps.reduce((acc, r) => acc + (Number(r.guestCount) || 1), 0);
   const totalCapacity = tables.reduce((acc, t) => acc + (Number(t.capacity) || 0), 0);
   const assignedPax = tables.reduce(
@@ -803,11 +821,12 @@ export function exportMasterPDF(data: ExportMasterData): void {
     const rsvp = rsvpMap.get((g.name || '').trim().toLowerCase());
     const rsvpStatus = !rsvp
       ? 'Belum'
-      : rsvp.attendance === 'attending'
+      : isAttending(rsvp.attendance)
       ? 'Hadir'
-      : rsvp.attendance === 'declined'
+      : isDeclined(rsvp.attendance)
       ? 'Tidak'
       : 'Ragu';
+    const guestPax = rsvp ? (rsvp.guestCount || (isAttending(rsvp.attendance) ? 1 : 0)) : (g.actualPax || 1);
 
     return [
       String(idx + 1),
@@ -816,7 +835,7 @@ export function exportMasterPDF(data: ExportMasterData): void {
       g.phone || '-',
       g.status === 'sent' ? 'Terkirim' : 'Pending',
       rsvpStatus,
-      String(rsvp?.guestCount || (rsvp?.attendance === 'attending' ? 1 : 0)),
+      String(guestPax),
       g.tableNumber || '-',
       g.checkedIn ? 'Hadir' : 'Belum',
       g.souvenirClaimed ? 'Sudah' : 'Belum',
@@ -909,11 +928,12 @@ export function exportGuestsPDF(guests: GuestInvitation[], rsvps: RSVPResponse[]
     const rsvp = rsvpMap.get((g.name || '').trim().toLowerCase());
     const rsvpStatus = !rsvp
       ? 'Belum'
-      : rsvp.attendance === 'attending'
+      : isAttending(rsvp.attendance)
       ? 'Hadir'
-      : rsvp.attendance === 'declined'
+      : isDeclined(rsvp.attendance)
       ? 'Tidak'
       : 'Ragu';
+    const guestPax = rsvp ? (rsvp.guestCount || (isAttending(rsvp.attendance) ? 1 : 0)) : (g.actualPax || 1);
 
     return [
       String(idx + 1),
@@ -922,7 +942,7 @@ export function exportGuestsPDF(guests: GuestInvitation[], rsvps: RSVPResponse[]
       g.phone || '-',
       g.status === 'sent' ? 'Terkirim' : 'Pending',
       rsvpStatus,
-      String(rsvp?.guestCount || (rsvp?.attendance === 'attending' ? 1 : 0)),
+      String(guestPax),
       g.tableNumber || '-',
       g.souvenirClaimed ? 'Sudah' : 'Belum',
       '', // blank for physical signature

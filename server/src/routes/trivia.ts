@@ -74,8 +74,8 @@ export function createTriviaRouter(io: SocketIOServer) {
   router.post('/verify', async (req: Request, res: Response): Promise<void> => {
     try {
       const { questionId, selectedIndex } = req.body;
-
-      if (!questionId || selectedIndex === undefined || typeof selectedIndex !== 'number') {
+      const parsedIndex = Number(selectedIndex);
+      if (!questionId || selectedIndex === undefined || isNaN(parsedIndex)) {
         res.status(400).json({ error: 'ID pertanyaan dan indeks pilihan wajib disertakan' });
         return;
       }
@@ -92,7 +92,7 @@ export function createTriviaRouter(io: SocketIOServer) {
         return;
       }
 
-      const isCorrect = selectedIndex === item.correctIndex;
+      const isCorrect = parsedIndex === item.correctIndex;
 
       res.json({
         success: true,

@@ -271,12 +271,13 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
     const totalActual = expenses.reduce((acc, item) => acc + (Number(item.actualCost) || 0), 0);
     const totalPaid = expenses.reduce((acc, item) => acc + (Number(item.paidAmount) || 0), 0);
     const totalRemaining = expenses.reduce((acc, item) => {
-      const actual = Number(item.actualCost) || 0;
+      const target = Number(item.actualCost) || Number(item.estimatedCost) || 0;
       const paid = Number(item.paidAmount) || 0;
-      return acc + Math.max(0, actual - paid);
+      return acc + Math.max(0, target - paid);
     }, 0);
 
-    const paidPercentage = totalActual > 0 ? Math.min(100, Math.round((totalPaid / totalActual) * 100)) : 0;
+    const baseCost = totalActual > 0 ? totalActual : totalEstimated;
+    const paidPercentage = baseCost > 0 ? Math.min(100, Math.round((totalPaid / baseCost) * 100)) : 0;
     const completedTasks = expenses.filter((item) => item.isCompleted).length;
     const totalTasks = expenses.length;
 
@@ -346,8 +347,9 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
     try {
       // Determine automatic payment status if paid amount matches or is zero
       let finalStatus = formData.paymentStatus;
-      if (formData.actualCost > 0) {
-        if (formData.paidAmount >= formData.actualCost) {
+      const targetCost = Number(formData.actualCost) || Number(formData.estimatedCost) || 0;
+      if (targetCost > 0) {
+        if (formData.paidAmount >= targetCost) {
           finalStatus = 'paid';
         } else if (formData.paidAmount > 0) {
           finalStatus = 'partial';
@@ -466,7 +468,8 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
     const rows = expenses.map((item, index) => {
       const actual = Number(item.actualCost) || 0;
       const paid = Number(item.paidAmount) || 0;
-      const remaining = Math.max(0, actual - paid);
+      const target = actual || Number(item.estimatedCost) || 0;
+      const remaining = Math.max(0, target - paid);
       const categoryLabel = CATEGORY_MAP[item.category]?.label || item.category;
       const statusLabel =
         item.paymentStatus === 'paid'
@@ -851,7 +854,8 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
                 filteredExpenses.map((item, index) => {
                   const actual = Number(item.actualCost) || 0;
                   const paid = Number(item.paidAmount) || 0;
-                  const remaining = Math.max(0, actual - paid);
+                  const target = actual || Number(item.estimatedCost) || 0;
+                  const remaining = Math.max(0, target - paid);
                   const catConfig = CATEGORY_MAP[item.category] || CATEGORY_MAP.logistics_other;
                   const Icon = catConfig.icon;
 

@@ -288,7 +288,8 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
       if (!norm || seen.has(norm)) return;
       seen.add(norm);
 
-      if (!assignedGuestIdsOrNames.has(norm) && rsvp.attendance === 'attending') {
+      const isAttending = rsvp.attendance === 'hadir' || rsvp.attendance === 'attending' || rsvp.attendance === 'yes';
+      if (!assignedGuestIdsOrNames.has(norm) && isAttending) {
         list.push({
           id: rsvp.id || norm,
           name: rsvp.name,
@@ -488,6 +489,23 @@ export function SeatingChartManager({ onNotify }: SeatingChartManagerProps) {
     ];
 
     try {
+      // If guest was already seated at another table, remove them from previous table first
+      const previousTable = tables.find(
+        (t) =>
+          t.id !== targetTable.id &&
+          (t.assignedGuests || []).some(
+            (g) => g.name.toLowerCase() === guest.name.toLowerCase() || (guest.id && g.id === guest.id)
+          )
+      );
+      if (previousTable?.id) {
+        const cleanedAssignments = (previousTable.assignedGuests || []).filter(
+          (g) => g.name.toLowerCase() !== guest.name.toLowerCase() && (!guest.id || g.id !== guest.id)
+        );
+        await api.updateSeatingTable(previousTable.id, {
+          assignedGuests: cleanedAssignments,
+        });
+      }
+
       await api.updateSeatingTable(targetTable.id, {
         assignedGuests: updatedGuests,
       });

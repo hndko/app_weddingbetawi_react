@@ -73,5 +73,23 @@ describe('qrGenerator Utility Suite', () => {
       const parsed = parseGuestPayload(serialized);
       expect(parsed.pax).toBe(1);
     });
+
+    it('should parse URL query parameters (?to=Name or ?name=Name) accurately', () => {
+      const url1 = 'https://demo-invitation.maripartner.com/?to=Budi+Santoso&pax=3';
+      const parsed1 = parseGuestPayload(url1);
+      expect(parsed1.name).toBe('Budi Santoso');
+      expect(parsed1.pax).toBe(3);
+      expect(parsed1.code).toMatch(/^WDG-[A-F0-9]{6}$/);
+
+      const url2 = 'https://maripartner.com/wedding?name=Siti%20Aisyah';
+      const parsed2 = parseGuestPayload(url2);
+      expect(parsed2.name).toBe('Siti Aisyah');
+      expect(parsed2.pax).toBe(1);
+
+      const queryOnly = '?to=Farhan%20Kurniawan&p=2';
+      const parsed3 = parseGuestPayload(queryOnly);
+      expect(parsed3.name).toBe('Farhan Kurniawan');
+      expect(parsed3.pax).toBe(2);
+    });
   });
 });

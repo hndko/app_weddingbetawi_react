@@ -81,7 +81,45 @@ export function parseGuestPayload(raw: string): {
     return { id, name, pax, code, raw: trimmed };
   }
 
-  // 3. Fallback: Treat as plain guest name or ticket code
+  // 3. Try parse URL with query params (?to=Name or ?name=Name or ?guest=Name)
+  if (
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.includes('?to=') ||
+    trimmed.includes('?name=') ||
+    trimmed.includes('&to=') ||
+    trimmed.includes('&name=')
+  ) {
+    try {
+      const urlStr = trimmed.startsWith('http://') || trimmed.startsWith('https://')
+        ? trimmed
+        : `https://dummy.maripartner.local/${trimmed.startsWith('/') ? trimmed.slice(1) : trimmed}`;
+      const parsedUrl = new URL(urlStr);
+      const toParam =
+        parsedUrl.searchParams.get('to') ||
+        parsedUrl.searchParams.get('name') ||
+        parsedUrl.searchParams.get('guest');
+      const paxParam = parsedUrl.searchParams.get('pax') || parsedUrl.searchParams.get('p');
+      const idParam = parsedUrl.searchParams.get('id');
+      const codeParam = parsedUrl.searchParams.get('code') || parsedUrl.searchParams.get('c');
+
+      if (toParam && toParam.trim()) {
+        const guestName = toParam.trim();
+        const pax = paxParam ? Math.max(1, parseInt(paxParam, 10) || 1) : 1;
+        return {
+          id: idParam || undefined,
+          name: guestName,
+          pax,
+          code: codeParam || generateTicketCode(guestName, idParam || undefined),
+          raw: trimmed,
+        };
+      }
+    } catch {
+      // Fallback below
+    }
+  }
+
+  // 4. Fallback: Treat as plain guest name or ticket code
   return {
     name: trimmed,
     pax: 1,

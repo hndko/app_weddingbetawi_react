@@ -8,7 +8,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
 
 ## 📌 Metadata Proyek
 - **Nama Proyek**: Mari Partner Digital Wedding Invitation SPA
-- **Versi Aplikasi Saat Ini**: `v1.57.3`
+- **Versi Aplikasi Saat Ini**: `v1.57.4`
 - **Tech Stack**: React 19, TypeScript 5.8, Vite 6, Tailwind CSS v4, Node.js + Express (TypeScript), MySQL / MariaDB (Laragon), Socket.io 4.8, Motion 12.23, PWA (Workbox), Vitest, Autocannon
 - **Tipe Aplikasi**: Full-Stack Single Page Application (SPA + Node.js Express REST API)
 - **Status CI/CD & Deploy**: Self-Hosted (PM2 + Nginx / cPanel / aaPanel)
@@ -78,6 +78,9 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
        next();
      });
      ```
+10. **Pola Thin Controller & Layered Service Architecture (`server/src/services/`)**:
+    - Seluruh handler rute di `server/src/routes/` WAJIB bertindak sebagai Thin Controller murni yang hanya memvalidasi parameter HTTP request, memanggil service layer di `server/src/services/` (`budgetService`, `rsvpService`, `guestService`, `checkinService`, `seatingService`, `triviaService`, `wishesService`, `configService`), memicu event Socket.io, dan mengembalikan respon JSON terstandarisasi.
+    - Seluruh kueri SQL, kalkulasi matematika keuangan, dan pembungkusan transaksi database WAJIB dipusatkan di service layer terkait untuk menjamin pemisahan tanggung jawab yang bersih (*Clean MVC Layering*).
 
 ---
 
@@ -111,6 +114,7 @@ Setiap agen yang menginspeksi, memodifikasi, atau menambahkan kode pada proyek i
    - Endpoint upload (`server/src/routes/upload.ts`) WAJIB memvalidasi ganda: MIME type (`image/jpeg`, `image/png`, `image/webp`) DAN ekstensi berkas (`.jpg`, `.jpeg`, `.png`, `.webp`).
    - Berkas format vektor SVG (`image/svg+xml`) DILARANG KERAS diunggah guna mengeliminasi 100% celah Stored XSS via payload script tersembunyi.
    - Ekstensi berkas fisik di disk server selalu disintesis dari MIME type yang telah divalidasi (`safeExt`).
+   - **Validasi Header Magic Bytes**: Setiap berkas yang diunggah wajib divalidasi header magic bytes-nya (JPEG `FF D8 FF`, PNG `89 50 4E 47`, WebP `RIFF...WEBP`) menggunakan `verifyImageMagicBytes`. Berkas yang tidak cocok langsung dihapus dari disk (*auto-unlink*) dan ditolak dengan status HTTP 400.
 9. **Content Security Policy (CSP) & HTTP Header Hardening (`helmet`)**:
    - Server Express wajib mengaktifkan `helmet` dengan whitelist CSP ketat yang mendukung YouTube IFrame, Google Maps, Google Fonts, dan Socket.io.
    - Resource policy wajib menyertakan `crossOriginResourcePolicy: { policy: "cross-origin" }` agar aset unggahan di `/uploads` dapat dimuat dengan aman oleh klien.

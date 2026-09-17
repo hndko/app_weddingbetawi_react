@@ -4,6 +4,50 @@ import path from 'path';
 import fs from 'fs';
 import { authenticateJwt } from '../middleware/auth';
 
+/**
+ * Verifikasi Magic Bytes berkas gambar untuk mencegah manipulasi ekstensi/MIME spoofing (OWASP Pilar 4).
+ * Mendukung JPEG (FF D8 FF), PNG (89 50 4E 47), dan WebP (RIFF .... WEBP).
+ */
+export function verifyImageMagicBytes(filePath: string): boolean {
+  try {
+    const fd = fs.openSync(filePath, 'r');
+    const buffer = Buffer.alloc(16);
+    const bytesRead = fs.readSync(fd, buffer, 0, 16, 0);
+    fs.closeSync(fd);
+
+    if (bytesRead < 12) return false;
+
+    // JPEG: FF D8 FF
+    const isJpeg = buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
+
+    // PNG: 89 50 4E 47 0D 0A 1A 0A
+    const isPng =
+      buffer[0] === 0x89 &&
+      buffer[1] === 0x50 &&
+      buffer[2] === 0x4e &&
+      buffer[3] === 0x47 &&
+      buffer[4] === 0x0d &&
+      buffer[5] === 0x0a &&
+      buffer[6] === 0x1a &&
+      buffer[7] === 0x0a;
+
+    // WebP: RIFF (bytes 0..3: 52 49 46 46) and WEBP (bytes 8..11: 57 45 42 50)
+    const isWebP =
+      buffer[0] === 0x52 &&
+      buffer[1] === 0x49 &&
+      buffer[2] === 0x46 &&
+      buffer[3] === 0x46 &&
+      buffer[8] === 0x57 &&
+      buffer[9] === 0x45 &&
+      buffer[10] === 0x42 &&
+      buffer[11] === 0x50;
+
+    return isJpeg || isPng || isWebP;
+  } catch {
+    return false;
+  }
+}
+
 export function createUploadRouter() {
   const router = Router();
 
@@ -62,6 +106,15 @@ export function createUploadRouter() {
         return;
       }
 
+      const filePath = path.resolve(uploadDir, req.file.filename);
+      if (!verifyImageMagicBytes(filePath)) {
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+        res.status(400).json({ error: 'Berkas tidak valid atau rusak (magic bytes mismatch). Harap unggah format JPG, PNG, atau WebP asli.' });
+        return;
+      }
+
       const relativeUrl = `/uploads/${req.file.filename}`;
       res.json({
         success: true,
@@ -81,6 +134,33 @@ export function createUploadRouter() {
       const files = req.files as Express.Multer.File[];
       if (!files || files.length === 0) {
         res.status(400).json({ error: 'Tidak ada file yang diunggah' });
+        return;
+      }
+
+      const validFiles: Express.Multer.File[] = [];
+      const invalidFiles: Express.Multer.File[] = [];
+
+      for (const f of files) {
+        const filePath = path.resolve(uploadDir, f.filename);
+        if (!verifyImageMagicBytes(filePath)) {
+          invalidFiles.push(f);
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
+        } else {
+          validFiles.push(f);
+        }
+      }
+
+      if (invalidFiles.length > 0) {
+        // Jika ada berkas rusak, hapus juga berkas valid dalam batch ini demi konsistensi atomik
+        for (const vf of validFiles) {
+          const vfPath = path.resolve(uploadDir, vf.filename);
+          if (fs.existsSync(vfPath)) {
+            fs.unlinkSync(vfPath);
+          }
+        }
+        res.status(400).json({ error: 'Sebagian atau seluruh berkas tidak valid (magic bytes mismatch).' });
         return;
       }
 

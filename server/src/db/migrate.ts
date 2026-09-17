@@ -224,11 +224,20 @@ export async function migrate() {
     // 11. Optimasi Index Kueri Database (Pilar 3 & 6)
     await ensureIndex('wishes', 'idx_wishes_created_at', 'created_at');
     await ensureIndex('rsvps', 'idx_rsvps_created_at', 'created_at');
+    await ensureIndex('rsvps', 'idx_rsvps_name', 'name');
+    await ensureIndex('rsvps', 'idx_rsvps_phone', 'phone');
     await ensureIndex('guests', 'idx_guests_created_at', 'created_at');
     await ensureIndex('guests', 'idx_guests_status', 'status');
     await ensureIndex('guests', 'idx_guests_phone', 'phone');
+    await ensureIndex('guests', 'idx_guests_name', 'name');
     await ensureIndex('checkins', 'idx_checkins_guest_id', 'guest_id');
     await ensureIndex('checkins', 'idx_checkins_created_at', 'created_at');
+    await ensureIndex('budget_items', 'idx_budget_category', 'category');
+    await ensureIndex('budget_items', 'idx_budget_status', 'status');
+    await ensureIndex('budget_items', 'idx_budget_created_at', 'created_at');
+    await ensureIndex('seating_tables', 'idx_seating_zone', 'zone');
+    await ensureIndex('seating_tables', 'idx_seating_number', 'number');
+    await ensureIndex('trivia_questions', 'idx_trivia_order', 'order_index');
 
     // 12. Integritas Relasional Basis Data (Pilar 2)
     await ensureForeignKey(

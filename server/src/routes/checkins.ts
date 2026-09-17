@@ -1,8 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
-import { pool } from '../db/connection';
-import crypto from 'crypto';
 import { authenticateJwt } from '../middleware/auth';
+import { checkinService } from '../services/checkinService';
 
 export function createCheckinsRouter(io: SocketIOServer) {
   const router = Router();
@@ -13,13 +12,7 @@ export function createCheckinsRouter(io: SocketIOServer) {
   // GET /api/checkins - Ambil semua log check-in
   router.get('/', async (_req: Request, res: Response): Promise<void> => {
     try {
-      const [rows] = await pool.query(
-        `SELECT id, guest_id as guestId, name, check_in_time as checkInTime, 
-                actual_pax as actualPax, tier, souvenir_claimed as souvenirClaimed, 
-                souvenir_claimed_at as souvenirClaimedAt,
-                table_number as tableNumber, source, notes, created_at as createdAt 
-         FROM checkins ORDER BY created_at DESC`
-      );
+      const rows = await checkinService.getAllCheckins();
       res.json(rows);
     } catch (error) {
       console.error('[API Checkins Error]:', error);
@@ -29,56 +22,24 @@ export function createCheckinsRouter(io: SocketIOServer) {
 
   // POST /api/checkins - Tambah atau perbarui log check-in (Atomik dengan tabel guests)
   router.post('/', async (req: Request, res: Response): Promise<void> => {
-    const conn = await pool.getConnection();
     try {
-      await conn.beginTransaction();
       const { guestId, name, checkInTime, actualPax, tier, souvenirClaimed, tableNumber, source, notes } = req.body;
-      const id = 'checkin_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
-      const now = souvenirClaimed ? new Date() : null;
-      const checkinDate = new Date();
-
-      await conn.query(
-        `INSERT INTO checkins (id, guest_id, name, check_in_time, actual_pax, tier, souvenir_claimed, souvenir_claimed_at, table_number, source, notes) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id, guestId || null, name, checkInTime || checkinDate.toISOString(), actualPax || 1, tier || 'regular', souvenirClaimed ? 1 : 0, now, tableNumber || null, source || 'qr_scan', notes || null]
-      );
-
-      // Sinkronkan juga ke tabel guests jika guestId disertakan (Transaksi Atomik)
-      if (guestId) {
-        await conn.query(
-          `UPDATE guests 
-           SET checked_in = 1, 
-               checked_in_at = COALESCE(checked_in_at, ?),
-               souvenir_claimed = CASE WHEN ? = 1 THEN 1 ELSE souvenir_claimed END,
-               souvenir_claimed_at = CASE WHEN ? = 1 AND souvenir_claimed_at IS NULL THEN ? ELSE souvenir_claimed_at END,
-               table_number = COALESCE(?, table_number)
-           WHERE id = ?`,
-          [
-            checkinDate,
-            souvenirClaimed ? 1 : 0,
-            souvenirClaimed ? 1 : 0,
-            now,
-            tableNumber || null,
-            guestId,
-          ]
-        );
+      if (!name) {
+        res.status(400).json({ error: 'Nama tamu check-in wajib disertakan' });
+        return;
       }
 
-      await conn.commit();
-
-      const newRecord = {
-        id,
+      const { newRecord, checkinDate, now } = await checkinService.createCheckin({
         guestId,
         name,
-        checkInTime: checkInTime || checkinDate.toISOString(),
-        actualPax: actualPax || 1,
-        tier: tier || 'regular',
-        souvenirClaimed: !!souvenirClaimed,
-        souvenirClaimedAt: now ? now.toISOString() : undefined,
+        checkInTime,
+        actualPax,
+        tier,
+        souvenirClaimed,
         tableNumber,
         source,
         notes,
-      };
+      });
 
       io.emit('checkin:created', newRecord);
       if (guestId) {
@@ -93,11 +54,8 @@ export function createCheckinsRouter(io: SocketIOServer) {
 
       res.status(201).json({ success: true, data: newRecord });
     } catch (error) {
-      await conn.rollback();
       console.error('[API Checkins Error]:', error);
       res.status(500).json({ error: 'Gagal mencatat check-in' });
-    } finally {
-      conn.release();
     }
   });
 
@@ -109,110 +67,29 @@ export function createCheckinsRouter(io: SocketIOServer) {
       return;
     }
 
-    const conn = await pool.getConnection();
     try {
-      await conn.beginTransaction();
-      let syncedCount = 0;
-
-      for (const item of items) {
-        if (!item || !item.name) continue;
-
-        const id = item.id || ('checkin_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex'));
-        const now = item.souvenirClaimed ? new Date() : null;
-
-        // Idempotent upsert check-in
-        await conn.query(
-          `INSERT INTO checkins (id, guest_id, name, check_in_time, actual_pax, tier, souvenir_claimed, souvenir_claimed_at, table_number, source, notes) 
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-           ON DUPLICATE KEY UPDATE 
-             actual_pax = VALUES(actual_pax),
-             souvenir_claimed = VALUES(souvenir_claimed),
-             souvenir_claimed_at = COALESCE(checkins.souvenir_claimed_at, VALUES(souvenir_claimed_at)),
-             table_number = COALESCE(VALUES(table_number), checkins.table_number)`,
-          [
-            id,
-            item.guestId || null,
-            item.name,
-            item.checkInTime || new Date().toISOString(),
-            item.actualPax || 1,
-            item.tier || 'regular',
-            item.souvenirClaimed ? 1 : 0,
-            now,
-            item.tableNumber || null,
-            item.source || 'offline_sync',
-            item.notes || null,
-          ]
-        );
-
-        // Jika ada guestId yang cocok, sinkronkan juga status buku tamu secara benar sesuai skema MySQL
-        if (item.guestId) {
-          const syncCheckinDate = item.checkInTime ? new Date(item.checkInTime) : new Date();
-          await conn.query(
-            `UPDATE guests 
-             SET checked_in = 1, 
-                 checked_in_at = COALESCE(checked_in_at, ?),
-                 souvenir_claimed = CASE WHEN ? = 1 THEN 1 ELSE souvenir_claimed END,
-                 souvenir_claimed_at = CASE WHEN ? = 1 AND souvenir_claimed_at IS NULL THEN ? ELSE souvenir_claimed_at END,
-                 table_number = COALESCE(?, table_number)
-             WHERE id = ?`,
-            [
-              syncCheckinDate,
-              item.souvenirClaimed ? 1 : 0,
-              item.souvenirClaimed ? 1 : 0,
-              now,
-              item.tableNumber || null,
-              item.guestId,
-            ]
-          );
-        }
-
-        syncedCount++;
-      }
-
-      await conn.commit();
+      const syncedCount = await checkinService.syncOfflineCheckins(items);
       io.emit('checkins:synced', { count: syncedCount });
       res.json({ success: true, syncedCount });
     } catch (error) {
-      await conn.rollback();
       console.error('[API Checkins Sync Error]:', error);
       res.status(500).json({ error: 'Gagal menyinkronkan antrean check-in offline' });
-    } finally {
-      conn.release();
     }
   });
 
   // PATCH /api/checkins/:id/souvenir - Toggle souvenir status untuk log check-in dan tamu
   router.patch('/:id/souvenir', async (req: Request, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = String(req.params.id);
       const { claimed } = req.body;
-      const isClaimed = claimed !== undefined ? Boolean(claimed) : true;
-      const now = isClaimed ? new Date() : null;
 
-      interface CheckinGuestRow {
-        guest_id: string | null;
-      }
-      const [rows] = await pool.query<CheckinGuestRow[] & import('mysql2').RowDataPacket[]>(
-        'SELECT guest_id FROM checkins WHERE id = ?',
-        [id]
-      );
-
-      if (!rows || rows.length === 0) {
+      const { found, guestId, isClaimed, now } = await checkinService.toggleCheckinSouvenir(id, claimed);
+      if (!found) {
         res.status(404).json({ error: 'Data check-in tidak ditemukan' });
         return;
       }
 
-      await pool.query(
-        'UPDATE checkins SET souvenir_claimed = ?, souvenir_claimed_at = ? WHERE id = ?',
-        [isClaimed ? 1 : 0, now, id]
-      );
-
-      const guestId = rows[0]?.guest_id;
       if (guestId) {
-        await pool.query(
-          'UPDATE guests SET souvenir_claimed = ?, souvenir_claimed_at = ? WHERE id = ?',
-          [isClaimed ? 1 : 0, now, guestId]
-        );
         io.emit('guest:souvenir_claimed', {
           id: guestId,
           souvenirClaimed: isClaimed,
@@ -237,8 +114,8 @@ export function createCheckinsRouter(io: SocketIOServer) {
   // DELETE /api/checkins/:id - Hapus satu log check-in
   router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
-      await pool.query('DELETE FROM checkins WHERE id = ?', [id]);
+      const id = String(req.params.id);
+      await checkinService.deleteCheckin(id);
       io.emit('checkin:deleted', id);
       res.json({ success: true, message: 'Log check-in berhasil dihapus' });
     } catch (error) {

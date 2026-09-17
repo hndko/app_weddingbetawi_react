@@ -1,9 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
-import { pool } from '../db/connection';
-import crypto from 'crypto';
 import { authenticateJwt } from '../middleware/auth';
 import { submissionRateLimiter } from '../middleware/rateLimiter';
+import { wishesService } from '../services/wishesService';
 
 export function createWishesRouter(io: SocketIOServer) {
   const router = Router();
@@ -12,22 +11,10 @@ export function createWishesRouter(io: SocketIOServer) {
   router.get('/', async (req: Request, res: Response): Promise<void> => {
     try {
       const isAll = req.query.all === 'true';
+      const limit = parseInt(String(req.query.limit || 50), 10) || 50;
+      const offset = parseInt(String(req.query.offset || 0), 10) || 0;
 
-      if (isAll) {
-        const [rows] = await pool.query(
-          'SELECT id, name, text, time, attendance, is_approved as isApproved, created_at as createdAt FROM wishes ORDER BY created_at DESC'
-        );
-        res.json(rows);
-        return;
-      }
-
-      const limit = Math.max(1, Math.min(100, parseInt(String(req.query.limit || 50), 10) || 50));
-      const offset = Math.max(0, parseInt(String(req.query.offset || 0), 10) || 0);
-
-      const [rows] = await pool.query(
-        'SELECT id, name, text, time, attendance, is_approved as isApproved, created_at as createdAt FROM wishes ORDER BY created_at DESC LIMIT ? OFFSET ?',
-        [limit, offset]
-      );
+      const rows = await wishesService.getWishes(isAll, limit, offset);
       res.json(rows);
     } catch (error) {
       console.error('[API Wishes Error] Gagal mengambil ucapan:', error);
@@ -45,25 +32,12 @@ export function createWishesRouter(io: SocketIOServer) {
         return;
       }
 
-      const id = 'wish_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
-      const timeStr = time || 'Baru saja';
-      const isApproved = 1;
-
-      await pool.query(
-        `INSERT INTO wishes (id, name, text, time, attendance, is_approved) 
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [id, name.trim(), text.trim(), timeStr, attendance || 'hadir', isApproved]
-      );
-
-      const newWish = {
-        id,
-        name: name.trim(),
-        text: text.trim(),
-        time: timeStr,
-        attendance: attendance || 'hadir',
-        isApproved: true,
-        createdAt: new Date().toISOString(),
-      };
+      const newWish = await wishesService.createWish({
+        name,
+        text,
+        attendance,
+        time,
+      });
 
       // Realtime broadcast ke proyektor panggung dan admin panel
       io.emit('wish:created', newWish);
@@ -78,8 +52,8 @@ export function createWishesRouter(io: SocketIOServer) {
   // DELETE /api/wishes/:id - Hapus ucapan (dilindungi JWT Admin)
   router.delete('/:id', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
-      await pool.query('DELETE FROM wishes WHERE id = ?', [id]);
+      const id = String(req.params.id);
+      await wishesService.deleteWish(id);
 
       // Realtime broadcast penghapusan ucapan
       io.emit('wish:deleted', id);

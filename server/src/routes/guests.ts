@@ -1,8 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
-import { pool } from '../db/connection';
-import crypto from 'crypto';
 import { authenticateJwt } from '../middleware/auth';
+import { guestService } from '../services/guestService';
 
 export function createGuestsRouter(io: SocketIOServer) {
   const router = Router();
@@ -13,14 +12,7 @@ export function createGuestsRouter(io: SocketIOServer) {
   // GET /api/guests - Ambil semua daftar tamu undangan
   router.get('/', async (_req: Request, res: Response): Promise<void> => {
     try {
-      const [rows] = await pool.query(
-        `SELECT id, name, phone, status, tier, vip_notes as vipNotes, 
-                table_number as tableNumber, notes, 
-                checked_in as checkedIn, checked_in_at as checkedInAt, 
-                souvenir_claimed as souvenirClaimed, souvenir_claimed_at as souvenirClaimedAt,
-                created_at as createdAt, updated_at as updatedAt 
-         FROM guests ORDER BY created_at DESC`
-      );
+      const rows = await guestService.getAllGuests();
       res.json(rows);
     } catch (error) {
       console.error('[API Guests Error] Gagal mengambil data tamu:', error);
@@ -41,84 +33,14 @@ export function createGuestsRouter(io: SocketIOServer) {
           return;
         }
 
-        interface GuestImportItem {
-          id: string;
-          name: string;
-          phone: string | null;
-          status: string;
-          tier: string;
-          vipNotes: string | null;
-          tableNumber: string | null;
-          notes: string | null;
-        }
-
-        const validGuests: GuestImportItem[] = [];
-        const rowsToInsert: Array<[string, string, string | null, string, string, string | null, string | null, string | null]> = [];
-
-        for (const g of guestsList) {
-          if (!g || !g.name || !String(g.name).trim()) continue;
-          const id = 'guest_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
-          const cleanName = String(g.name).trim();
-          const cleanPhone = g.phone ? String(g.phone).trim() : null;
-          const cleanStatus = g.status || 'pending';
-          const cleanTier = g.tier || 'regular';
-          const cleanVipNotes = g.vipNotes || null;
-          const cleanTable = g.tableNumber || null;
-          const cleanNotes = g.notes || null;
-
-          validGuests.push({
-            id,
-            name: cleanName,
-            phone: cleanPhone,
-            status: cleanStatus,
-            tier: cleanTier,
-            vipNotes: cleanVipNotes,
-            tableNumber: cleanTable,
-            notes: cleanNotes,
-          });
-
-          rowsToInsert.push([
-            id,
-            cleanName,
-            cleanPhone,
-            cleanStatus,
-            cleanTier,
-            cleanVipNotes,
-            cleanTable,
-            cleanNotes,
-          ]);
-        }
-
-        if (rowsToInsert.length === 0) {
+        const { count, validGuests } = await guestService.importGuestsBatch(guestsList);
+        if (count === 0) {
           res.status(400).json({ error: 'Tidak ada data tamu valid yang dapat diimpor' });
           return;
         }
 
-        // Jalankan transaksi database MySQL atomik
-        const connection = await pool.getConnection();
-        try {
-          await connection.beginTransaction();
-
-          // Chunking per 500 baris untuk efisiensi kueri
-          const CHUNK_SIZE = 500;
-          for (let i = 0; i < rowsToInsert.length; i += CHUNK_SIZE) {
-            const chunk = rowsToInsert.slice(i, i + CHUNK_SIZE);
-            await connection.query(
-              `INSERT INTO guests (id, name, phone, status, tier, vip_notes, table_number, notes) VALUES ?`,
-              [chunk]
-            );
-          }
-
-          await connection.commit();
-        } catch (dbErr) {
-          await connection.rollback();
-          throw dbErr;
-        } finally {
-          connection.release();
-        }
-
-        io.emit('guests:imported', { count: validGuests.length });
-        res.status(201).json({ success: true, count: validGuests.length, data: validGuests });
+        io.emit('guests:imported', { count });
+        res.status(201).json({ success: true, count, data: validGuests });
         return;
       }
 
@@ -129,31 +51,14 @@ export function createGuestsRouter(io: SocketIOServer) {
         return;
       }
 
-      const id = 'guest_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
-      const cleanPhone = phone || null;
-      const cleanTier = tier || 'regular';
-      const cleanVipNotes = vipNotes || null;
-      const cleanTable = tableNumber || null;
-      const cleanNotes = notes || null;
-
-      await pool.query(
-        `INSERT INTO guests (id, name, phone, status, tier, vip_notes, table_number, notes) VALUES (?, ?, ?, 'pending', ?, ?, ?, ?)`,
-        [id, name.trim(), cleanPhone, cleanTier, cleanVipNotes, cleanTable, cleanNotes]
-      );
-
-      const newGuest = {
-        id,
-        name: name.trim(),
-        phone: cleanPhone,
-        status: 'pending',
-        tier: cleanTier,
-        vipNotes: cleanVipNotes,
-        tableNumber: cleanTable,
-        notes: cleanNotes,
-        checkedIn: false,
-        souvenirClaimed: false,
-        createdAt: new Date().toISOString(),
-      };
+      const newGuest = await guestService.createGuest({
+        name,
+        phone,
+        tier,
+        vipNotes,
+        tableNumber,
+        notes,
+      });
 
       io.emit('guest:created', newGuest);
       res.status(201).json({ success: true, data: newGuest });
@@ -166,22 +71,19 @@ export function createGuestsRouter(io: SocketIOServer) {
   // PUT /api/guests/:id - Update status atau detail tamu
   router.put('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = String(req.params.id);
       const { name, phone, status, tier, vipNotes, tableNumber, notes, souvenirClaimed } = req.body;
 
-      await pool.query(
-        `UPDATE guests 
-         SET name = COALESCE(?, name),
-             phone = COALESCE(?, phone),
-             status = COALESCE(?, status),
-             tier = COALESCE(?, tier),
-             vip_notes = COALESCE(?, vip_notes),
-             table_number = COALESCE(?, table_number),
-             notes = COALESCE(?, notes),
-             souvenir_claimed = COALESCE(?, souvenir_claimed)
-         WHERE id = ?`,
-        [name, phone, status, tier, vipNotes, tableNumber, notes, souvenirClaimed !== undefined ? (souvenirClaimed ? 1 : 0) : null, id]
-      );
+      await guestService.updateGuest(id, {
+        name,
+        phone,
+        status,
+        tier,
+        vipNotes,
+        tableNumber,
+        notes,
+        souvenirClaimed,
+      });
 
       io.emit('guest:updated', { id, name, phone, status, tier, vipNotes, tableNumber, notes, souvenirClaimed });
       res.json({ success: true, message: 'Data tamu berhasil diperbarui' });
@@ -194,27 +96,17 @@ export function createGuestsRouter(io: SocketIOServer) {
   // PATCH /api/guests/:id/checkin - Check-in resepsi (QR scan / manual)
   router.patch('/:id/checkin', async (req: Request, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = String(req.params.id);
       const { autoClaimSouvenir } = req.body || {};
-      const now = new Date();
-      const claimSouvenir = autoClaimSouvenir !== false;
 
-      await pool.query(
-        `UPDATE guests 
-         SET checked_in = 1,
-             checked_in_at = ?,
-             souvenir_claimed = CASE WHEN ? = 1 THEN 1 ELSE souvenir_claimed END,
-             souvenir_claimed_at = CASE WHEN ? = 1 AND souvenir_claimed_at IS NULL THEN ? ELSE souvenir_claimed_at END
-         WHERE id = ?`,
-        [now, claimSouvenir ? 1 : 0, claimSouvenir ? 1 : 0, now, id]
-      );
+      const checkinResult = await guestService.checkinGuest(id, autoClaimSouvenir);
 
       io.emit('guest:checked_in', { 
         id, 
         checkedIn: true, 
-        checkedInAt: now.toISOString(),
-        souvenirClaimed: claimSouvenir,
-        souvenirClaimedAt: claimSouvenir ? now.toISOString() : undefined 
+        checkedInAt: checkinResult.checkedInAt.toISOString(),
+        souvenirClaimed: checkinResult.souvenirClaimed,
+        souvenirClaimedAt: checkinResult.souvenirClaimedAt ? checkinResult.souvenirClaimedAt.toISOString() : undefined 
       });
       res.json({ success: true, message: 'Tamu berhasil check-in' });
     } catch (error) {
@@ -226,23 +118,14 @@ export function createGuestsRouter(io: SocketIOServer) {
   // PATCH /api/guests/:id/souvenir - Klaim atau batal klaim souvenir
   router.patch('/:id/souvenir', async (req: Request, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = String(req.params.id);
       const { claimed } = req.body || {};
-      const isClaimed = claimed !== false;
-      const now = isClaimed ? new Date() : null;
-
-      await pool.query(
-        `UPDATE guests 
-         SET souvenir_claimed = ?,
-             souvenir_claimed_at = ?
-         WHERE id = ?`,
-        [isClaimed ? 1 : 0, now, id]
-      );
+      const { isClaimed, timestamp } = await guestService.toggleGuestSouvenir(id, claimed);
 
       io.emit('guest:souvenir_claimed', { 
         id, 
         souvenirClaimed: isClaimed, 
-        souvenirClaimedAt: now ? now.toISOString() : null 
+        souvenirClaimedAt: timestamp ? timestamp.toISOString() : null 
       });
       res.json({ success: true, souvenirClaimed: isClaimed, message: isClaimed ? 'Souvenir berhasil diklaim' : 'Klaim souvenir dibatalkan' });
     } catch (error) {
@@ -254,8 +137,8 @@ export function createGuestsRouter(io: SocketIOServer) {
   // DELETE /api/guests/:id - Hapus satu tamu
   router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
-      await pool.query('DELETE FROM guests WHERE id = ?', [id]);
+      const id = String(req.params.id);
+      await guestService.deleteGuest(id);
 
       io.emit('guest:deleted', id);
       res.json({ success: true, message: 'Tamu berhasil dihapus' });
@@ -268,7 +151,7 @@ export function createGuestsRouter(io: SocketIOServer) {
   // DELETE /api/guests - Reset / kosongkan seluruh daftar tamu
   router.delete('/', async (_req: Request, res: Response): Promise<void> => {
     try {
-      await pool.query('DELETE FROM guests');
+      await guestService.resetAllGuests();
       io.emit('guests:reset', true);
       res.json({ success: true, message: 'Seluruh daftar tamu berhasil dikosongkan' });
     } catch (error) {

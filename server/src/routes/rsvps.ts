@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { Server as SocketIOServer } from 'socket.io';
 import { pool } from '../db/connection';
-import crypto from 'crypto';
 import { authenticateJwt } from '../middleware/auth';
 import { submissionRateLimiter } from '../middleware/rateLimiter';
 import { sendWhatsAppMessage } from '../services/whatsappGateway';
+import { rsvpService } from '../services/rsvpService';
 
 export function createRsvpsRouter(io: SocketIOServer) {
   const router = Router();
@@ -12,9 +12,7 @@ export function createRsvpsRouter(io: SocketIOServer) {
   // GET /api/rsvps - Ambil semua konfirmasi kehadiran RSVP (dilindungi JWT Admin)
   router.get('/', authenticateJwt, async (_req: Request, res: Response): Promise<void> => {
     try {
-      const [rows] = await pool.query(
-        'SELECT id, name, phone, attendance, guest_count as guestCount, notes, created_at as createdAt FROM rsvps ORDER BY created_at DESC'
-      );
+      const rows = await rsvpService.getAllRsvps();
       res.json(rows);
     } catch (error) {
       console.error('[API RSVPs Error] Gagal mengambil data RSVP:', error);
@@ -32,64 +30,21 @@ export function createRsvpsRouter(io: SocketIOServer) {
         return;
       }
 
-      const cleanName = String(name).trim();
-      const count = parseInt(String(guestCount || 1), 10) || 1;
-      const cleanPhone = phone ? String(phone).trim() : null;
+      const { record, isUpdate, cleanName, cleanPhone, count } = await rsvpService.saveOrUpdateRsvp({
+        name,
+        phone,
+        attendance,
+        guestCount,
+        notes,
+      });
 
-      // Cek apakah tamu dengan nama (atau nomor telepon) yang sama sudah pernah mengirim RSVP sebelumnya
-      const [existingRows] = await pool.query(
-        'SELECT id, name, phone, attendance, guest_count as guestCount, notes, created_at as createdAt FROM rsvps WHERE LOWER(TRIM(name)) = LOWER(?) OR (phone IS NOT NULL AND phone != "" AND phone = ?) LIMIT 1',
-        [cleanName, cleanPhone || '___NO_PHONE___']
-      );
-      const existingList = existingRows as any[];
-      const isExisting = existingList.length > 0;
-
-      let rsvpRecord: any;
-
-      if (isExisting) {
-        const existingId = existingList[0].id;
-        await pool.query(
-          `UPDATE rsvps 
-           SET name = ?, phone = COALESCE(?, phone), attendance = ?, guest_count = ?, notes = ? 
-           WHERE id = ?`,
-          [cleanName, cleanPhone, attendance, count, (notes || '').trim(), existingId]
-        );
-
-        rsvpRecord = {
-          id: existingId,
-          name: cleanName,
-          phone: cleanPhone || existingList[0].phone || undefined,
-          attendance,
-          guestCount: count,
-          notes: (notes || '').trim(),
-          createdAt: existingList[0].createdAt || new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
-        // Realtime broadcast update ke admin panel
-        io.emit('rsvp:updated', rsvpRecord);
-        res.status(200).json({ success: true, data: rsvpRecord, isUpdate: true });
+      // Realtime broadcast ke admin panel
+      if (isUpdate) {
+        io.emit('rsvp:updated', record);
+        res.status(200).json({ success: true, data: record, isUpdate: true });
       } else {
-        const id = 'rsvp_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
-        await pool.query(
-          `INSERT INTO rsvps (id, name, phone, attendance, guest_count, notes) 
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [id, cleanName, cleanPhone, attendance, count, (notes || '').trim()]
-        );
-
-        rsvpRecord = {
-          id,
-          name: cleanName,
-          phone: cleanPhone || undefined,
-          attendance,
-          guestCount: count,
-          notes: (notes || '').trim(),
-          createdAt: new Date().toISOString(),
-        };
-
-        // Realtime broadcast pembuatan baru ke admin panel
-        io.emit('rsvp:created', rsvpRecord);
-        res.status(201).json({ success: true, data: rsvpRecord, isUpdate: false });
+        io.emit('rsvp:created', record);
+        res.status(201).json({ success: true, data: record, isUpdate: false });
       }
 
       // Jalankan notifikasi WhatsApp di latar belakang (fire-and-forget)
@@ -116,7 +71,7 @@ export function createRsvpsRouter(io: SocketIOServer) {
 
           // 1. Kirim notifikasi alert ke Admin/Pengantin
           if (gateway.notifyAdminOnRsvp !== false && gateway.adminPhone) {
-            const adminMsg = `🔔 *Konfirmasi RSVP ${isExisting ? 'Pembaruan' : 'Baru'} Diterima!*\n\n` +
+            const adminMsg = `🔔 *Konfirmasi RSVP ${isUpdate ? 'Pembaruan' : 'Baru'} Diterima!*\n\n` +
               `👤 *Nama Tamu*: ${cleanName}\n` +
               (cleanPhone ? `📞 *No. WhatsApp*: ${cleanPhone}\n` : '') +
               `✅ *Status*: ${attendanceLabel}\n` +
@@ -161,8 +116,8 @@ export function createRsvpsRouter(io: SocketIOServer) {
   // DELETE /api/rsvps/:id - Hapus data RSVP (dilindungi JWT Admin)
   router.delete('/:id', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
-      await pool.query('DELETE FROM rsvps WHERE id = ?', [id]);
+      const id = String(req.params.id);
+      await rsvpService.deleteRsvp(id);
 
       // Realtime broadcast penghapusan RSVP
       io.emit('rsvp:deleted', id);

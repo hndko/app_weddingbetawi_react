@@ -202,6 +202,9 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
     isCompleted: false,
   });
 
+  // Form submitting state (Double-submit prevention)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Delete modal state (SweetAlert2 style)
   const [deleteTarget, setDeleteTarget] = useState<WeddingExpense | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -344,6 +347,9 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
       return;
     }
 
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
       // Determine automatic payment status if paid amount matches or is zero
       let finalStatus = formData.paymentStatus;
@@ -385,6 +391,8 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem';
       showToast('Gagal menyimpan data: ' + msg, 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -1109,6 +1117,9 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
                       onChange={(e) => setFormData({ ...formData, estimatedCost: Number(e.target.value) || 0 })}
                       className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs text-text-dark font-mono focus:outline-none focus:border-sage focus:ring-1 focus:ring-sage/20 transition-all"
                     />
+                    <div className="text-[10px] text-gray-500 font-mono mt-1">
+                      {formatRupiah(formData.estimatedCost || 0)}
+                    </div>
                   </div>
 
                   <div>
@@ -1124,6 +1135,9 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
                       onChange={(e) => setFormData({ ...formData, actualCost: Number(e.target.value) || 0 })}
                       className="w-full px-3 py-2 bg-white border border-amber-200 rounded-xl text-xs text-amber-900 font-mono font-semibold focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200 transition-all"
                     />
+                    <div className="text-[10px] text-amber-700 font-mono mt-1">
+                      {formatRupiah(formData.actualCost || 0)}
+                    </div>
                   </div>
 
                   <div>
@@ -1139,6 +1153,9 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
                       onChange={(e) => setFormData({ ...formData, paidAmount: Number(e.target.value) || 0 })}
                       className="w-full px-3 py-2 bg-white border border-emerald-200 rounded-xl text-xs text-emerald-800 font-mono font-semibold focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200 transition-all"
                     />
+                    <div className="text-[10px] text-emerald-700 font-mono mt-1">
+                      {formatRupiah(formData.paidAmount || 0)}
+                    </div>
                   </div>
                 </div>
 
@@ -1146,7 +1163,7 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
                 <div className="pt-2.5 border-t border-gray-200/80 flex items-center justify-between text-xs">
                   <span className="text-gray-600 font-medium">Sisa Tagihan yang Wajib Dilunasi:</span>
                   <span className="font-mono font-bold text-rose-600 text-sm sm:text-base">
-                    {formatRupiah(Math.max(0, formData.actualCost - formData.paidAmount))}
+                    {formatRupiah(Math.max(0, (formData.actualCost || formData.estimatedCost || 0) - formData.paidAmount))}
                   </span>
                 </div>
               </div>
@@ -1233,10 +1250,17 @@ export function BudgetVendorTracker({ onNotify }: BudgetVendorTrackerProps) {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-sage-dark hover:bg-sage text-white text-xs font-semibold shadow-xs transition-all cursor-pointer active:scale-98"
+                  disabled={isSubmitting}
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-sage-dark hover:bg-sage text-white text-xs font-semibold shadow-xs transition-all cursor-pointer active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Check size={14} />
-                  <span>{editingExpense ? 'Simpan Perubahan' : 'Tambah Pos Pengeluaran'}</span>
+                  <span>
+                    {isSubmitting
+                      ? 'Menyimpan...'
+                      : editingExpense
+                        ? 'Simpan Perubahan'
+                        : 'Tambah Pos Pengeluaran'}
+                  </span>
                 </button>
               </div>
             </form>

@@ -115,9 +115,22 @@ export function createCheckinsRouter(io: SocketIOServer) {
   router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
       const id = String(req.params.id);
-      await checkinService.deleteCheckin(id);
+      const result = await checkinService.deleteCheckin(id);
+      if (!result.success) {
+        res.status(404).json({ error: 'Data check-in tidak ditemukan' });
+        return;
+      }
       io.emit('checkin:deleted', id);
-      res.json({ success: true, message: 'Log check-in berhasil dihapus' });
+      if (result.guestId) {
+        io.emit('guest:updated', {
+          id: result.guestId,
+          checkedIn: false,
+          checkedInAt: null,
+          souvenirClaimed: false,
+          souvenirClaimedAt: null,
+        });
+      }
+      res.json({ success: true, message: 'Log check-in berhasil dihapus', guestId: result.guestId });
     } catch (error) {
       console.error('[API Checkins Error]:', error);
       res.status(500).json({ error: 'Gagal menghapus check-in' });

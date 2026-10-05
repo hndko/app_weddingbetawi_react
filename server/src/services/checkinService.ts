@@ -28,6 +28,15 @@ export interface CheckinInput {
   notes?: string | null;
 }
 
+/**
+ * Mengonversi nilai waktu ke ISO 8601 string secara aman tanpa melempar RangeError
+ */
+export function safeIsoTimestamp(val: unknown): string {
+  if (!val) return new Date().toISOString();
+  const d = new Date(String(val));
+  return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+}
+
 export const checkinService = {
   /**
    * Mengambil semua log riwayat check-in resepsi
@@ -45,15 +54,15 @@ export const checkinService = {
       id: r.id,
       guestId: r.guestId || null,
       name: r.name,
-      checkInTime: r.checkInTime ? new Date(r.checkInTime).toISOString() : new Date().toISOString(),
+      checkInTime: safeIsoTimestamp(r.checkInTime),
       actualPax: Number(r.actualPax || 1),
       tier: r.tier || 'regular',
       souvenirClaimed: !!r.souvenirClaimed,
-      souvenirClaimedAt: r.souvenirClaimedAt ? new Date(r.souvenirClaimedAt).toISOString() : null,
+      souvenirClaimedAt: r.souvenirClaimedAt ? safeIsoTimestamp(r.souvenirClaimedAt) : null,
       tableNumber: r.tableNumber || null,
       source: r.source || 'qr_scan',
       notes: r.notes || null,
-      createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : new Date().toISOString(),
+      createdAt: safeIsoTimestamp(r.createdAt),
     }));
   },
 
@@ -68,6 +77,7 @@ export const checkinService = {
       const id = 'checkin_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex');
       const now = data.souvenirClaimed ? new Date() : null;
       const checkinDate = new Date();
+      const validCheckinTime = safeIsoTimestamp(data.checkInTime || checkinDate);
       // Invarian Domain: Tamu yang check-in minimal 1 pax
       const actualPax = Math.max(1, parseInt(String(data.actualPax || 1), 10) || 1);
 
@@ -78,7 +88,7 @@ export const checkinService = {
           id,
           data.guestId || null,
           data.name,
-          data.checkInTime || checkinDate.toISOString(),
+          validCheckinTime,
           actualPax,
           data.tier || 'regular',
           data.souvenirClaimed ? 1 : 0,
@@ -116,7 +126,7 @@ export const checkinService = {
         id,
         guestId: data.guestId || null,
         name: data.name,
-        checkInTime: data.checkInTime || checkinDate.toISOString(),
+        checkInTime: validCheckinTime,
         actualPax,
         tier: data.tier || 'regular',
         souvenirClaimed: !!data.souvenirClaimed,
@@ -150,11 +160,13 @@ export const checkinService = {
         const id = item.id || ('checkin_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex'));
         const now = item.souvenirClaimed ? new Date() : null;
         const pax = Math.max(1, parseInt(String(item.actualPax || 1), 10) || 1);
+        const validCheckinTime = safeIsoTimestamp(item.checkInTime);
 
         await conn.query(
           `INSERT INTO checkins (id, guest_id, name, check_in_time, actual_pax, tier, souvenir_claimed, souvenir_claimed_at, table_number, source, notes) 
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
            ON DUPLICATE KEY UPDATE 
+             check_in_time = COALESCE(checkins.check_in_time, VALUES(check_in_time)),
              actual_pax = VALUES(actual_pax),
              souvenir_claimed = VALUES(souvenir_claimed),
              souvenir_claimed_at = COALESCE(checkins.souvenir_claimed_at, VALUES(souvenir_claimed_at)),
@@ -163,7 +175,7 @@ export const checkinService = {
             id,
             item.guestId || null,
             item.name,
-            item.checkInTime || new Date().toISOString(),
+            validCheckinTime,
             pax,
             item.tier || 'regular',
             item.souvenirClaimed ? 1 : 0,
@@ -175,7 +187,7 @@ export const checkinService = {
         );
 
         if (item.guestId) {
-          const syncCheckinDate = item.checkInTime ? new Date(item.checkInTime) : new Date();
+          const syncCheckinDate = new Date(validCheckinTime);
           await conn.query(
             `UPDATE guests 
              SET checked_in = 1, 
@@ -244,10 +256,50 @@ export const checkinService = {
   },
 
   /**
-   * Menghapus log check-in
+   * Menghapus log check-in dengan rollback atomik pada data tamu (Pilar 2 Domain Invariants)
    */
-  async deleteCheckin(id: string): Promise<boolean> {
-    const [result] = await pool.query('DELETE FROM checkins WHERE id = ?', [id]);
-    return (result as any).affectedRows > 0;
+  async deleteCheckin(id: string): Promise<{ success: boolean; guestId: string | null }> {
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+
+      interface CheckinGuestRow {
+        guest_id: string | null;
+      }
+      const [rows] = await conn.query<CheckinGuestRow[] & import('mysql2').RowDataPacket[]>(
+        'SELECT guest_id FROM checkins WHERE id = ? FOR UPDATE',
+        [id]
+      );
+
+      if (!rows || rows.length === 0) {
+        await conn.rollback();
+        return { success: false, guestId: null };
+      }
+
+      const guestId = rows[0]?.guest_id || null;
+
+      const [delResult] = await conn.query('DELETE FROM checkins WHERE id = ?', [id]);
+      const success = (delResult as any).affectedRows > 0;
+
+      if (success && guestId) {
+        await conn.query(
+          `UPDATE guests 
+           SET checked_in = 0, 
+               checked_in_at = NULL, 
+               souvenir_claimed = 0, 
+               souvenir_claimed_at = NULL 
+           WHERE id = ?`,
+          [guestId]
+        );
+      }
+
+      await conn.commit();
+      return { success, guestId };
+    } catch (error) {
+      await conn.rollback();
+      throw error;
+    } finally {
+      conn.release();
+    }
   },
 };

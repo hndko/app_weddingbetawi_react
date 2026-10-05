@@ -232,6 +232,7 @@ export async function migrate() {
     await ensureIndex('guests', 'idx_guests_name', 'name');
     await ensureIndex('checkins', 'idx_checkins_guest_id', 'guest_id');
     await ensureIndex('checkins', 'idx_checkins_created_at', 'created_at');
+    await ensureIndex('checkins', 'idx_checkins_name', 'name');
     await ensureIndex('budget_items', 'idx_budget_category', 'category');
     await ensureIndex('budget_items', 'idx_budget_status', 'status');
     await ensureIndex('budget_items', 'idx_budget_created_at', 'created_at');

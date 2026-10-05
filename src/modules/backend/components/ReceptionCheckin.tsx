@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import jsQR from 'jsqr';
 import { api } from '../../../services/api';
+import { socket } from '../../../services/socket';
 import { useWeddingConfig } from '../../../context/WeddingContext';
 import { playSuccessBeep, playWarningBeep } from '../../../utils/audioBeep';
 import { parseGuestPayload, generateTicketCode } from '../../../utils/qrGenerator';
@@ -39,6 +40,23 @@ import {
 } from '../../../utils/offlineCheckinStore';
 import type { GuestInvitation, RSVPResponse, CheckInRecord, WeddingTable, GuestTier } from '../../../types';
 import { VipAccessBadge } from '../../frontend/shared/components/VipAccessBadge';
+
+/**
+ * Format timestamp ISO 8601 ke jam lokal (HH:mm:ss) secara aman
+ */
+export const formatDisplayTime = (timeStr?: string): string => {
+  if (!timeStr) return '-';
+  if (/^\d{2}[:.]\d{2}/.test(timeStr) && timeStr.length <= 8) {
+    return timeStr.replace('.', ':');
+  }
+  const d = new Date(timeStr);
+  if (isNaN(d.getTime())) return timeStr;
+  return d.toLocaleTimeString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+};
 
 interface ReceptionCheckinProps {
   guests: GuestInvitation[];
@@ -115,7 +133,28 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [historySearchQuery, setHistorySearchQuery] = useState<string>('');
+  const [debouncedHistorySearchQuery, setDebouncedHistorySearchQuery] = useState<string>('');
+
+  // Debounce search query to prevent lag on keystroke (Pilar 5 UI/UX)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedHistorySearchQuery(historySearchQuery);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [historySearchQuery]);
+
+  // Loading & In-flight Lock States
+  const [isLoadingCheckins, setIsLoadingCheckins] = useState<boolean>(true);
+  const [updatingSouvenirIds, setUpdatingSouvenirIds] = useState<Set<string>>(new Set());
 
   // Confirmation Modal State
   const [pendingCheckin, setPendingCheckin] = useState<PendingCheckinData | null>(null);
@@ -135,7 +174,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
   const [installPrompt, setInstallPrompt] = useState<any>(null);
 
   // Load checkins and wedding tables from backend
-  const loadCheckinsAndTables = async () => {
+  const loadCheckinsAndTables = useCallback(async () => {
     try {
       const [cList, tList] = await Promise.all([
         api.getCheckins(),
@@ -145,8 +184,10 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       setTables(tList || []);
     } catch {
       // safe fallback
+    } finally {
+      setIsLoadingCheckins(false);
     }
-  };
+  }, []);
 
   // Refresh pending count from IndexedDB
   const refreshPendingOfflineCount = useCallback(async () => {
@@ -174,7 +215,53 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
     } finally {
       setIsSyncingOffline(false);
     }
-  }, [isSyncingOffline, showToast]);
+  }, [isSyncingOffline, loadCheckinsAndTables, showToast]);
+
+  // Real-time synchronization across multi-tablets/devices via Socket.io (Pilar 6 Realtime)
+  useEffect(() => {
+    const onCheckinCreated = (record: CheckInRecord) => {
+      setCheckins((prev) => {
+        if (prev.some((c) => c.id === record.id)) {
+          return prev.map((c) => (c.id === record.id ? record : c));
+        }
+        return [record, ...prev];
+      });
+    };
+
+    const onCheckinDeleted = (deletedId: string) => {
+      setCheckins((prev) => prev.filter((c) => c.id !== deletedId));
+    };
+
+    const onSouvenirUpdated = (data: { id: string; souvenirClaimed: boolean; souvenirClaimedAt: string | null }) => {
+      setCheckins((prev) =>
+        prev.map((c) =>
+          c.id === data.id
+            ? {
+                ...c,
+                souvenirClaimed: data.souvenirClaimed,
+                souvenirClaimedAt: data.souvenirClaimedAt || undefined,
+              }
+            : c
+        )
+      );
+    };
+
+    const onCheckinsSynced = () => {
+      loadCheckinsAndTables();
+    };
+
+    socket.on('checkin:created', onCheckinCreated);
+    socket.on('checkin:deleted', onCheckinDeleted);
+    socket.on('checkin:souvenir_updated', onSouvenirUpdated);
+    socket.on('checkins:synced', onCheckinsSynced);
+
+    return () => {
+      socket.off('checkin:created', onCheckinCreated);
+      socket.off('checkin:deleted', onCheckinDeleted);
+      socket.off('checkin:souvenir_updated', onSouvenirUpdated);
+      socket.off('checkins:synced', onCheckinsSynced);
+    };
+  }, [loadCheckinsAndTables]);
 
   useEffect(() => {
     loadCheckinsAndTables();
@@ -205,7 +292,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
-  }, [handleSyncOfflineQueue, refreshPendingOfflineCount, showToast]);
+  }, [handleSyncOfflineQueue, loadCheckinsAndTables, refreshPendingOfflineCount, showToast]);
 
   // Snapshot guests & tables into IndexedDB for offline search
   useEffect(() => {
@@ -431,20 +518,16 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
     setIsSubmittingCheckin(true);
 
     const now = new Date();
-    const timeStr = now.toLocaleTimeString('id-ID', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    });
+    const timeIso = now.toISOString();
 
     const checkinPayload: CheckInRecord = {
       guestId: pendingCheckin.guestId || '',
       name: pendingCheckin.name,
-      checkInTime: timeStr,
+      checkInTime: timeIso,
       actualPax: pendingCheckin.actualPax,
       tier: pendingCheckin.tier || 'regular',
       souvenirClaimed: pendingCheckin.souvenirClaimed,
-      souvenirClaimedAt: pendingCheckin.souvenirClaimed ? now.toISOString() : undefined,
+      souvenirClaimedAt: pendingCheckin.souvenirClaimed ? timeIso : undefined,
       tableNumber: pendingCheckin.tableNumber || '',
       source: pendingCheckin.source,
       notes: pendingCheckin.vipNotes || undefined,
@@ -518,10 +601,13 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
     }
   };
 
-  // Toggle Souvenir Claim Status Directly from History Table
+  // Toggle Souvenir Claim Status Directly from History Table (Anti Double-Click)
   const handleToggleSouvenir = async (item: CheckInRecord) => {
-    if (!item.id) return;
+    if (!item.id || updatingSouvenirIds.has(item.id)) return;
     const newStatus = !item.souvenirClaimed;
+
+    setUpdatingSouvenirIds((prev) => new Set(prev).add(item.id!));
+
     // Optimistic UI update
     setCheckins((prev) =>
       prev.map((c) =>
@@ -549,6 +635,12 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
         )
       );
       showToast('error', 'Gagal memperbarui status suvenir tamu.');
+    } finally {
+      setUpdatingSouvenirIds((prev) => {
+        const next = new Set(prev);
+        next.delete(item.id!);
+        return next;
+      });
     }
   };
 
@@ -639,10 +731,10 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
   const totalExpectedGuests = Math.max(guests.length, rsvps.length);
   const pendingArrivals = Math.max(0, totalExpectedGuests - totalCheckinsCount);
 
-  // Filtered guest list for manual search
+  // Filtered guest list for manual search (Debounced)
   const filteredManualGuests = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const qLower = searchQuery.toLowerCase().trim();
+    if (!debouncedSearchQuery.trim()) return [];
+    const qLower = debouncedSearchQuery.toLowerCase().trim();
 
     const resolveTableForGuest = (name: string, id?: string) => {
       const norm = name.toLowerCase().trim();
@@ -695,12 +787,12 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
     return Array.from(map.values())
       .filter((item) => item.name.toLowerCase().includes(qLower) || (item.phone && item.phone.includes(qLower)))
       .slice(0, 10);
-  }, [guests, rsvps, checkins, tables, searchQuery]);
+  }, [guests, rsvps, checkins, tables, debouncedSearchQuery]);
 
-  // Filtered attendance records for history table
+  // Filtered attendance records for history table (Debounced)
   const filteredCheckins = useMemo(() => {
-    if (!historySearchQuery.trim()) return checkins;
-    const qLower = historySearchQuery.toLowerCase().trim();
+    if (!debouncedHistorySearchQuery.trim()) return checkins;
+    const qLower = debouncedHistorySearchQuery.toLowerCase().trim();
     return checkins.filter(
       (c) =>
         c.name.toLowerCase().includes(qLower) ||
@@ -708,7 +800,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
         (c.checkInTime && c.checkInTime.includes(qLower)) ||
         (c.tier && c.tier.toLowerCase().includes(qLower))
     );
-  }, [checkins, historySearchQuery]);
+  }, [checkins, debouncedHistorySearchQuery]);
 
   // Export CSV Handler
   const handleExportCSV = () => {
@@ -720,7 +812,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
     const headers = ['No', 'Waktu Masuk', 'Nama Tamu', 'Tier Akses', 'Pax Hadir', 'Suvenir', 'Nomor Meja', 'Metode'];
     const rows = checkins.map((item, index) => [
       index + 1,
-      `"${item.checkInTime || '-'}"`,
+      `"${formatDisplayTime(item.checkInTime)}"`,
       `"${item.name.replace(/"/g, '""')}"`,
       `"${(item.tier || 'regular').toUpperCase()}"`,
       item.actualPax || 1,
@@ -1137,7 +1229,21 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredCheckins.length === 0 ? (
+              {isLoadingCheckins ? (
+                Array.from({ length: 5 }).map((_, idx) => (
+                  <tr key={`skeleton-${idx}`} className="animate-pulse border-b border-gray-100">
+                    <td className="py-3 px-3 text-center"><div className="h-3 w-4 bg-gray-200 rounded mx-auto" /></td>
+                    <td className="py-3 px-3"><div className="h-3 w-16 bg-gray-200 rounded" /></td>
+                    <td className="py-3 px-3"><div className="h-3.5 w-32 bg-gray-200 rounded" /></td>
+                    <td className="py-3 px-3 text-center"><div className="h-5 w-16 bg-gray-200 rounded-full mx-auto" /></td>
+                    <td className="py-3 px-3 text-center"><div className="h-5 w-10 bg-gray-200 rounded-full mx-auto" /></td>
+                    <td className="py-3 px-3 text-center"><div className="h-6 w-16 bg-gray-200 rounded-full mx-auto" /></td>
+                    <td className="py-3 px-3"><div className="h-3 w-20 bg-gray-200 rounded" /></td>
+                    <td className="py-3 px-3 text-center"><div className="h-4 w-12 bg-gray-200 rounded mx-auto" /></td>
+                    <td className="py-3 px-3 text-center"><div className="h-6 w-16 bg-gray-200 rounded mx-auto" /></td>
+                  </tr>
+                ))
+              ) : filteredCheckins.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="py-12 text-center text-text-dark/40 text-xs">
                     Belum ada riwayat kedatangan tamu yang tercatat.
@@ -1150,7 +1256,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                       {index + 1}
                     </td>
                     <td className="py-3 px-3 font-mono text-text-dark/70 whitespace-nowrap">
-                      {item.checkInTime || '-'}
+                      {formatDisplayTime(item.checkInTime)}
                     </td>
                     <td className="py-3 px-3 font-bold text-text-dark whitespace-nowrap">
                       {item.name}
@@ -1168,7 +1274,8 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                       <button
                         type="button"
                         onClick={() => handleToggleSouvenir(item)}
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-semibold text-[11px] transition-all cursor-pointer ${
+                        disabled={updatingSouvenirIds.has(item.id || '')}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-semibold text-[11px] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                           item.souvenirClaimed
                             ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
                             : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
@@ -1280,7 +1387,7 @@ export function ReceptionCheckin({ guests, rsvps, showToast }: ReceptionCheckinP
                 {pendingCheckin.isDuplicate && pendingCheckin.previousCheckInTime && (
                   <p className="text-xs text-amber-700 mt-1">
                     Tamu ini tercatat telah masuk sebelumnya pada pukul{' '}
-                    <strong>{pendingCheckin.previousCheckInTime}</strong>.
+                    <strong>{formatDisplayTime(pendingCheckin.previousCheckInTime)}</strong>.
                   </p>
                 )}
               </div>
